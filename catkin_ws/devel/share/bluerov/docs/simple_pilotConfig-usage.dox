@@ -1,0 +1,11 @@
+\subsubsection usage Usage
+\verbatim
+<node name="simple_pilot" pkg="bluerov" type="simple_pilot">
+  <param name="front_strafe_decouple" type="double" value="0.5" />
+  <param name="front_forward_decouple" type="double" value="-0.13" />
+  <param name="front_pitch_bias" type="double" value="0.5" />
+  <param name="front_vertical_bias" type="double" value="0.75" />
+  <param name="buoyancy_control" type="double" value="0.0" />
+</node>
+\endverbatim
+

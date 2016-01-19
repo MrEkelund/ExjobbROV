@@ -1,0 +1,8 @@
+prefix=/home/erik/Documents/exjobb/catkin_ws/install
+
+Name: bluerov
+Description: Description of bluerov
+Version: 0.3.0
+Cflags: -I/home/erik/Documents/exjobb/catkin_ws/install/include
+Libs: -L/home/erik/Documents/exjobb/catkin_ws/install/lib 
+Requires: message_runtime
