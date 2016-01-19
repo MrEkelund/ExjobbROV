@@ -1,7 +1,0 @@
-set(_CATKIN_CURRENT_PACKAGE "bluerov")
-set(bluerov_MAINTAINER "Josh Villbrandt <josh@javconcepts.com>")
-set(bluerov_DEPRECATED "")
-set(bluerov_VERSION "0.3.0")
-set(bluerov_BUILD_DEPENDS "geometry_msgs" "roscpp" "rospy" "sensor_msgs" "std_msgs" "tf" "joy" "mavros" "message_generation")
-set(bluerov_RUN_DEPENDS "geometry_msgs" "roscpp" "rospy" "sensor_msgs" "std_msgs" "tf" "joy" "mavros" "message_runtime")
-set(bluerov_BUILDTOOL_DEPENDS "catkin")
