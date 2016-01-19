@@ -1,2 +1,2 @@
 bluerov
--DCATKIN_DEVEL_PREFIX=/home/erik/Documents/exjobb/catkin_ws/devel -DCMAKE_INSTALL_PREFIX=/home/erik/Documents/exjobb/catkin_ws/install -G Unix Makefiles
+-DCATKIN_DEVEL_PREFIX=/home/erik/Documents/ExjobbROV/catkin_ws/devel -DCMAKE_INSTALL_PREFIX=/home/erik/Documents/ExjobbROV/catkin_ws/install -G Unix Makefiles

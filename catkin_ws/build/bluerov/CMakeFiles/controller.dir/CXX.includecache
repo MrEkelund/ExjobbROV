@@ -6,7 +6,7 @@
 
 #IncludeRegexTransform: 
 
-/home/erik/Documents/exjobb/catkin_ws/devel/include/bluerov/Thruster.h
+/home/erik/Documents/ExjobbROV/catkin_ws/devel/include/bluerov/Thruster.h
 string
 -
 vector
@@ -26,7 +26,7 @@ std_msgs/Header.h
 std_msgs/UInt16MultiArray.h
 -
 
-/home/erik/Documents/exjobb/catkin_ws/src/bluerov/src/controller.cpp
+/home/erik/Documents/ExjobbROV/catkin_ws/src/bluerov/src/controller.cpp
 ros/ros.h
 -
 ros/console.h

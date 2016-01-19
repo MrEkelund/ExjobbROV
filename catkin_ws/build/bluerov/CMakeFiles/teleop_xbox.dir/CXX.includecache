@@ -6,7 +6,7 @@
 
 #IncludeRegexTransform: 
 
-/home/erik/Documents/exjobb/catkin_ws/devel/include/bluerov/teleop_xboxConfig.h
+/home/erik/Documents/ExjobbROV/catkin_ws/devel/include/bluerov/teleop_xboxConfig.h
 dynamic_reconfigure/config_tools.h
 -
 limits
@@ -24,7 +24,7 @@ dynamic_reconfigure/config_init_mutex.h
 boost/any.hpp
 -
 
-/home/erik/Documents/exjobb/catkin_ws/src/bluerov/src/teleop_xbox.cpp
+/home/erik/Documents/ExjobbROV/catkin_ws/src/bluerov/src/teleop_xbox.cpp
 math.h
 -
 ros/ros.h

@@ -1,8 +1,8 @@
-# Install script for directory: /home/erik/Documents/exjobb/catkin_ws/src/bluerov
+# Install script for directory: /home/erik/Documents/ExjobbROV/catkin_ws/src/bluerov
 
 # Set the install prefix
 IF(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  SET(CMAKE_INSTALL_PREFIX "/home/erik/Documents/exjobb/catkin_ws/install")
+  SET(CMAKE_INSTALL_PREFIX "/home/erik/Documents/ExjobbROV/catkin_ws/install")
 ENDIF(NOT DEFINED CMAKE_INSTALL_PREFIX)
 STRING(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -34,67 +34,67 @@ ENDIF(NOT DEFINED CMAKE_INSTALL_SO_NO_EXE)
 
 IF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
   FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/bluerov/msg" TYPE FILE FILES
-    "/home/erik/Documents/exjobb/catkin_ws/src/bluerov/msg/Thruster.msg"
-    "/home/erik/Documents/exjobb/catkin_ws/src/bluerov/msg/Health.msg"
+    "/home/erik/Documents/ExjobbROV/catkin_ws/src/bluerov/msg/Thruster.msg"
+    "/home/erik/Documents/ExjobbROV/catkin_ws/src/bluerov/msg/Health.msg"
     )
 ENDIF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
 
 IF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/bluerov/cmake" TYPE FILE FILES "/home/erik/Documents/exjobb/catkin_ws/build/bluerov/catkin_generated/installspace/bluerov-msg-paths.cmake")
+  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/bluerov/cmake" TYPE FILE FILES "/home/erik/Documents/ExjobbROV/catkin_ws/build/bluerov/catkin_generated/installspace/bluerov-msg-paths.cmake")
 ENDIF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
 
 IF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include" TYPE DIRECTORY FILES "/home/erik/Documents/exjobb/catkin_ws/devel/include/bluerov")
+  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include" TYPE DIRECTORY FILES "/home/erik/Documents/ExjobbROV/catkin_ws/devel/include/bluerov")
 ENDIF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
 
 IF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/common-lisp/ros" TYPE DIRECTORY FILES "/home/erik/Documents/exjobb/catkin_ws/devel/share/common-lisp/ros/bluerov")
+  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/common-lisp/ros" TYPE DIRECTORY FILES "/home/erik/Documents/ExjobbROV/catkin_ws/devel/share/common-lisp/ros/bluerov")
 ENDIF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
 
 IF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  execute_process(COMMAND "/usr/bin/python" -m compileall "/home/erik/Documents/exjobb/catkin_ws/devel/lib/python2.7/dist-packages/bluerov")
+  execute_process(COMMAND "/usr/bin/python" -m compileall "/home/erik/Documents/ExjobbROV/catkin_ws/devel/lib/python2.7/dist-packages/bluerov")
 ENDIF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
 
 IF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/python2.7/dist-packages" TYPE DIRECTORY FILES "/home/erik/Documents/exjobb/catkin_ws/devel/lib/python2.7/dist-packages/bluerov")
+  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/python2.7/dist-packages" TYPE DIRECTORY FILES "/home/erik/Documents/ExjobbROV/catkin_ws/devel/lib/python2.7/dist-packages/bluerov")
 ENDIF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
 
 IF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include/bluerov" TYPE FILE FILES "/home/erik/Documents/exjobb/catkin_ws/devel/include/bluerov/teleop_xboxConfig.h")
+  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include/bluerov" TYPE FILE FILES "/home/erik/Documents/ExjobbROV/catkin_ws/devel/include/bluerov/teleop_xboxConfig.h")
 ENDIF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
 
 IF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include/bluerov" TYPE FILE FILES "/home/erik/Documents/exjobb/catkin_ws/devel/include/bluerov/simple_pilotConfig.h")
+  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include/bluerov" TYPE FILE FILES "/home/erik/Documents/ExjobbROV/catkin_ws/devel/include/bluerov/simple_pilotConfig.h")
 ENDIF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
 
 IF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/python2.7/dist-packages/bluerov" TYPE FILE FILES "/home/erik/Documents/exjobb/catkin_ws/devel/lib/python2.7/dist-packages/bluerov/__init__.py")
+  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/python2.7/dist-packages/bluerov" TYPE FILE FILES "/home/erik/Documents/ExjobbROV/catkin_ws/devel/lib/python2.7/dist-packages/bluerov/__init__.py")
 ENDIF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
 
 IF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  execute_process(COMMAND "/usr/bin/python" -m compileall "/home/erik/Documents/exjobb/catkin_ws/devel/lib/python2.7/dist-packages/bluerov/cfg")
+  execute_process(COMMAND "/usr/bin/python" -m compileall "/home/erik/Documents/ExjobbROV/catkin_ws/devel/lib/python2.7/dist-packages/bluerov/cfg")
 ENDIF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
 
 IF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/python2.7/dist-packages/bluerov" TYPE DIRECTORY FILES "/home/erik/Documents/exjobb/catkin_ws/devel/lib/python2.7/dist-packages/bluerov/cfg")
+  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/python2.7/dist-packages/bluerov" TYPE DIRECTORY FILES "/home/erik/Documents/ExjobbROV/catkin_ws/devel/lib/python2.7/dist-packages/bluerov/cfg")
 ENDIF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
 
 IF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/erik/Documents/exjobb/catkin_ws/build/bluerov/catkin_generated/installspace/bluerov.pc")
+  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/erik/Documents/ExjobbROV/catkin_ws/build/bluerov/catkin_generated/installspace/bluerov.pc")
 ENDIF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
 
 IF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/bluerov/cmake" TYPE FILE FILES "/home/erik/Documents/exjobb/catkin_ws/build/bluerov/catkin_generated/installspace/bluerov-msg-extras.cmake")
+  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/bluerov/cmake" TYPE FILE FILES "/home/erik/Documents/ExjobbROV/catkin_ws/build/bluerov/catkin_generated/installspace/bluerov-msg-extras.cmake")
 ENDIF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
 
 IF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
   FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/bluerov/cmake" TYPE FILE FILES
-    "/home/erik/Documents/exjobb/catkin_ws/build/bluerov/catkin_generated/installspace/bluerovConfig.cmake"
-    "/home/erik/Documents/exjobb/catkin_ws/build/bluerov/catkin_generated/installspace/bluerovConfig-version.cmake"
+    "/home/erik/Documents/ExjobbROV/catkin_ws/build/bluerov/catkin_generated/installspace/bluerovConfig.cmake"
+    "/home/erik/Documents/ExjobbROV/catkin_ws/build/bluerov/catkin_generated/installspace/bluerovConfig-version.cmake"
     )
 ENDIF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
 
 IF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/bluerov" TYPE FILE FILES "/home/erik/Documents/exjobb/catkin_ws/src/bluerov/package.xml")
+  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/bluerov" TYPE FILE FILES "/home/erik/Documents/ExjobbROV/catkin_ws/src/bluerov/package.xml")
 ENDIF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
 

@@ -1,7 +1,7 @@
 FILE(REMOVE_RECURSE
   "CMakeFiles/pilot.dir/src/pilot.cpp.o"
-  "/home/erik/Documents/exjobb/catkin_ws/devel/lib/bluerov/pilot.pdb"
-  "/home/erik/Documents/exjobb/catkin_ws/devel/lib/bluerov/pilot"
+  "/home/erik/Documents/ExjobbROV/catkin_ws/devel/lib/bluerov/pilot.pdb"
+  "/home/erik/Documents/ExjobbROV/catkin_ws/devel/lib/bluerov/pilot"
 )
 
 # Per-language clean rules from dependency scanning.

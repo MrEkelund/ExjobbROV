@@ -1,7 +1,7 @@
 FILE(REMOVE_RECURSE
   "CMakeFiles/controller.dir/src/controller.cpp.o"
-  "/home/erik/Documents/exjobb/catkin_ws/devel/lib/bluerov/controller.pdb"
-  "/home/erik/Documents/exjobb/catkin_ws/devel/lib/bluerov/controller"
+  "/home/erik/Documents/ExjobbROV/catkin_ws/devel/lib/bluerov/controller.pdb"
+  "/home/erik/Documents/ExjobbROV/catkin_ws/devel/lib/bluerov/controller"
 )
 
 # Per-language clean rules from dependency scanning.

@@ -35,62 +35,62 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/erik/Documents/exjobb/catkin_ws/src
+CMAKE_SOURCE_DIR = /home/erik/Documents/ExjobbROV/catkin_ws/src
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/erik/Documents/exjobb/catkin_ws/build
+CMAKE_BINARY_DIR = /home/erik/Documents/ExjobbROV/catkin_ws/build
 
 # Utility rule file for bluerov_gencfg.
 
 # Include the progress variables for this target.
 include bluerov/CMakeFiles/bluerov_gencfg.dir/progress.make
 
-bluerov/CMakeFiles/bluerov_gencfg: /home/erik/Documents/exjobb/catkin_ws/devel/include/bluerov/teleop_xboxConfig.h
-bluerov/CMakeFiles/bluerov_gencfg: /home/erik/Documents/exjobb/catkin_ws/devel/lib/python2.7/dist-packages/bluerov/cfg/teleop_xboxConfig.py
-bluerov/CMakeFiles/bluerov_gencfg: /home/erik/Documents/exjobb/catkin_ws/devel/include/bluerov/simple_pilotConfig.h
-bluerov/CMakeFiles/bluerov_gencfg: /home/erik/Documents/exjobb/catkin_ws/devel/lib/python2.7/dist-packages/bluerov/cfg/simple_pilotConfig.py
+bluerov/CMakeFiles/bluerov_gencfg: /home/erik/Documents/ExjobbROV/catkin_ws/devel/include/bluerov/teleop_xboxConfig.h
+bluerov/CMakeFiles/bluerov_gencfg: /home/erik/Documents/ExjobbROV/catkin_ws/devel/lib/python2.7/dist-packages/bluerov/cfg/teleop_xboxConfig.py
+bluerov/CMakeFiles/bluerov_gencfg: /home/erik/Documents/ExjobbROV/catkin_ws/devel/include/bluerov/simple_pilotConfig.h
+bluerov/CMakeFiles/bluerov_gencfg: /home/erik/Documents/ExjobbROV/catkin_ws/devel/lib/python2.7/dist-packages/bluerov/cfg/simple_pilotConfig.py
 
-/home/erik/Documents/exjobb/catkin_ws/devel/include/bluerov/teleop_xboxConfig.h: /home/erik/Documents/exjobb/catkin_ws/src/bluerov/config/teleop_xbox.config
-/home/erik/Documents/exjobb/catkin_ws/devel/include/bluerov/teleop_xboxConfig.h: /opt/ros/indigo/share/dynamic_reconfigure/cmake/../templates/ConfigType.py.template
-/home/erik/Documents/exjobb/catkin_ws/devel/include/bluerov/teleop_xboxConfig.h: /opt/ros/indigo/share/dynamic_reconfigure/cmake/../templates/ConfigType.h.template
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/erik/Documents/exjobb/catkin_ws/build/CMakeFiles $(CMAKE_PROGRESS_1)
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold "Generating dynamic reconfigure files from config/teleop_xbox.config: /home/erik/Documents/exjobb/catkin_ws/devel/include/bluerov/teleop_xboxConfig.h /home/erik/Documents/exjobb/catkin_ws/devel/lib/python2.7/dist-packages/bluerov/cfg/teleop_xboxConfig.py"
-	cd /home/erik/Documents/exjobb/catkin_ws/build/bluerov && ../catkin_generated/env_cached.sh /home/erik/Documents/exjobb/catkin_ws/src/bluerov/config/teleop_xbox.config /opt/ros/indigo/share/dynamic_reconfigure/cmake/.. /home/erik/Documents/exjobb/catkin_ws/devel/share/bluerov /home/erik/Documents/exjobb/catkin_ws/devel/include/bluerov /home/erik/Documents/exjobb/catkin_ws/devel/lib/python2.7/dist-packages/bluerov
+/home/erik/Documents/ExjobbROV/catkin_ws/devel/include/bluerov/teleop_xboxConfig.h: /home/erik/Documents/ExjobbROV/catkin_ws/src/bluerov/config/teleop_xbox.config
+/home/erik/Documents/ExjobbROV/catkin_ws/devel/include/bluerov/teleop_xboxConfig.h: /opt/ros/indigo/share/dynamic_reconfigure/cmake/../templates/ConfigType.py.template
+/home/erik/Documents/ExjobbROV/catkin_ws/devel/include/bluerov/teleop_xboxConfig.h: /opt/ros/indigo/share/dynamic_reconfigure/cmake/../templates/ConfigType.h.template
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/erik/Documents/ExjobbROV/catkin_ws/build/CMakeFiles $(CMAKE_PROGRESS_1)
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold "Generating dynamic reconfigure files from config/teleop_xbox.config: /home/erik/Documents/ExjobbROV/catkin_ws/devel/include/bluerov/teleop_xboxConfig.h /home/erik/Documents/ExjobbROV/catkin_ws/devel/lib/python2.7/dist-packages/bluerov/cfg/teleop_xboxConfig.py"
+	cd /home/erik/Documents/ExjobbROV/catkin_ws/build/bluerov && ../catkin_generated/env_cached.sh /home/erik/Documents/ExjobbROV/catkin_ws/src/bluerov/config/teleop_xbox.config /opt/ros/indigo/share/dynamic_reconfigure/cmake/.. /home/erik/Documents/ExjobbROV/catkin_ws/devel/share/bluerov /home/erik/Documents/ExjobbROV/catkin_ws/devel/include/bluerov /home/erik/Documents/ExjobbROV/catkin_ws/devel/lib/python2.7/dist-packages/bluerov
 
-/home/erik/Documents/exjobb/catkin_ws/devel/share/bluerov/docs/teleop_xboxConfig.dox: /home/erik/Documents/exjobb/catkin_ws/devel/include/bluerov/teleop_xboxConfig.h
+/home/erik/Documents/ExjobbROV/catkin_ws/devel/share/bluerov/docs/teleop_xboxConfig.dox: /home/erik/Documents/ExjobbROV/catkin_ws/devel/include/bluerov/teleop_xboxConfig.h
 
-/home/erik/Documents/exjobb/catkin_ws/devel/share/bluerov/docs/teleop_xboxConfig-usage.dox: /home/erik/Documents/exjobb/catkin_ws/devel/include/bluerov/teleop_xboxConfig.h
+/home/erik/Documents/ExjobbROV/catkin_ws/devel/share/bluerov/docs/teleop_xboxConfig-usage.dox: /home/erik/Documents/ExjobbROV/catkin_ws/devel/include/bluerov/teleop_xboxConfig.h
 
-/home/erik/Documents/exjobb/catkin_ws/devel/lib/python2.7/dist-packages/bluerov/cfg/teleop_xboxConfig.py: /home/erik/Documents/exjobb/catkin_ws/devel/include/bluerov/teleop_xboxConfig.h
+/home/erik/Documents/ExjobbROV/catkin_ws/devel/lib/python2.7/dist-packages/bluerov/cfg/teleop_xboxConfig.py: /home/erik/Documents/ExjobbROV/catkin_ws/devel/include/bluerov/teleop_xboxConfig.h
 
-/home/erik/Documents/exjobb/catkin_ws/devel/share/bluerov/docs/teleop_xboxConfig.wikidoc: /home/erik/Documents/exjobb/catkin_ws/devel/include/bluerov/teleop_xboxConfig.h
+/home/erik/Documents/ExjobbROV/catkin_ws/devel/share/bluerov/docs/teleop_xboxConfig.wikidoc: /home/erik/Documents/ExjobbROV/catkin_ws/devel/include/bluerov/teleop_xboxConfig.h
 
-/home/erik/Documents/exjobb/catkin_ws/devel/include/bluerov/simple_pilotConfig.h: /home/erik/Documents/exjobb/catkin_ws/src/bluerov/config/simple_pilot.config
-/home/erik/Documents/exjobb/catkin_ws/devel/include/bluerov/simple_pilotConfig.h: /opt/ros/indigo/share/dynamic_reconfigure/cmake/../templates/ConfigType.py.template
-/home/erik/Documents/exjobb/catkin_ws/devel/include/bluerov/simple_pilotConfig.h: /opt/ros/indigo/share/dynamic_reconfigure/cmake/../templates/ConfigType.h.template
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/erik/Documents/exjobb/catkin_ws/build/CMakeFiles $(CMAKE_PROGRESS_2)
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold "Generating dynamic reconfigure files from config/simple_pilot.config: /home/erik/Documents/exjobb/catkin_ws/devel/include/bluerov/simple_pilotConfig.h /home/erik/Documents/exjobb/catkin_ws/devel/lib/python2.7/dist-packages/bluerov/cfg/simple_pilotConfig.py"
-	cd /home/erik/Documents/exjobb/catkin_ws/build/bluerov && ../catkin_generated/env_cached.sh /home/erik/Documents/exjobb/catkin_ws/src/bluerov/config/simple_pilot.config /opt/ros/indigo/share/dynamic_reconfigure/cmake/.. /home/erik/Documents/exjobb/catkin_ws/devel/share/bluerov /home/erik/Documents/exjobb/catkin_ws/devel/include/bluerov /home/erik/Documents/exjobb/catkin_ws/devel/lib/python2.7/dist-packages/bluerov
+/home/erik/Documents/ExjobbROV/catkin_ws/devel/include/bluerov/simple_pilotConfig.h: /home/erik/Documents/ExjobbROV/catkin_ws/src/bluerov/config/simple_pilot.config
+/home/erik/Documents/ExjobbROV/catkin_ws/devel/include/bluerov/simple_pilotConfig.h: /opt/ros/indigo/share/dynamic_reconfigure/cmake/../templates/ConfigType.py.template
+/home/erik/Documents/ExjobbROV/catkin_ws/devel/include/bluerov/simple_pilotConfig.h: /opt/ros/indigo/share/dynamic_reconfigure/cmake/../templates/ConfigType.h.template
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/erik/Documents/ExjobbROV/catkin_ws/build/CMakeFiles $(CMAKE_PROGRESS_2)
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold "Generating dynamic reconfigure files from config/simple_pilot.config: /home/erik/Documents/ExjobbROV/catkin_ws/devel/include/bluerov/simple_pilotConfig.h /home/erik/Documents/ExjobbROV/catkin_ws/devel/lib/python2.7/dist-packages/bluerov/cfg/simple_pilotConfig.py"
+	cd /home/erik/Documents/ExjobbROV/catkin_ws/build/bluerov && ../catkin_generated/env_cached.sh /home/erik/Documents/ExjobbROV/catkin_ws/src/bluerov/config/simple_pilot.config /opt/ros/indigo/share/dynamic_reconfigure/cmake/.. /home/erik/Documents/ExjobbROV/catkin_ws/devel/share/bluerov /home/erik/Documents/ExjobbROV/catkin_ws/devel/include/bluerov /home/erik/Documents/ExjobbROV/catkin_ws/devel/lib/python2.7/dist-packages/bluerov
 
-/home/erik/Documents/exjobb/catkin_ws/devel/share/bluerov/docs/simple_pilotConfig.dox: /home/erik/Documents/exjobb/catkin_ws/devel/include/bluerov/simple_pilotConfig.h
+/home/erik/Documents/ExjobbROV/catkin_ws/devel/share/bluerov/docs/simple_pilotConfig.dox: /home/erik/Documents/ExjobbROV/catkin_ws/devel/include/bluerov/simple_pilotConfig.h
 
-/home/erik/Documents/exjobb/catkin_ws/devel/share/bluerov/docs/simple_pilotConfig-usage.dox: /home/erik/Documents/exjobb/catkin_ws/devel/include/bluerov/simple_pilotConfig.h
+/home/erik/Documents/ExjobbROV/catkin_ws/devel/share/bluerov/docs/simple_pilotConfig-usage.dox: /home/erik/Documents/ExjobbROV/catkin_ws/devel/include/bluerov/simple_pilotConfig.h
 
-/home/erik/Documents/exjobb/catkin_ws/devel/lib/python2.7/dist-packages/bluerov/cfg/simple_pilotConfig.py: /home/erik/Documents/exjobb/catkin_ws/devel/include/bluerov/simple_pilotConfig.h
+/home/erik/Documents/ExjobbROV/catkin_ws/devel/lib/python2.7/dist-packages/bluerov/cfg/simple_pilotConfig.py: /home/erik/Documents/ExjobbROV/catkin_ws/devel/include/bluerov/simple_pilotConfig.h
 
-/home/erik/Documents/exjobb/catkin_ws/devel/share/bluerov/docs/simple_pilotConfig.wikidoc: /home/erik/Documents/exjobb/catkin_ws/devel/include/bluerov/simple_pilotConfig.h
+/home/erik/Documents/ExjobbROV/catkin_ws/devel/share/bluerov/docs/simple_pilotConfig.wikidoc: /home/erik/Documents/ExjobbROV/catkin_ws/devel/include/bluerov/simple_pilotConfig.h
 
 bluerov_gencfg: bluerov/CMakeFiles/bluerov_gencfg
-bluerov_gencfg: /home/erik/Documents/exjobb/catkin_ws/devel/include/bluerov/teleop_xboxConfig.h
-bluerov_gencfg: /home/erik/Documents/exjobb/catkin_ws/devel/share/bluerov/docs/teleop_xboxConfig.dox
-bluerov_gencfg: /home/erik/Documents/exjobb/catkin_ws/devel/share/bluerov/docs/teleop_xboxConfig-usage.dox
-bluerov_gencfg: /home/erik/Documents/exjobb/catkin_ws/devel/lib/python2.7/dist-packages/bluerov/cfg/teleop_xboxConfig.py
-bluerov_gencfg: /home/erik/Documents/exjobb/catkin_ws/devel/share/bluerov/docs/teleop_xboxConfig.wikidoc
-bluerov_gencfg: /home/erik/Documents/exjobb/catkin_ws/devel/include/bluerov/simple_pilotConfig.h
-bluerov_gencfg: /home/erik/Documents/exjobb/catkin_ws/devel/share/bluerov/docs/simple_pilotConfig.dox
-bluerov_gencfg: /home/erik/Documents/exjobb/catkin_ws/devel/share/bluerov/docs/simple_pilotConfig-usage.dox
-bluerov_gencfg: /home/erik/Documents/exjobb/catkin_ws/devel/lib/python2.7/dist-packages/bluerov/cfg/simple_pilotConfig.py
-bluerov_gencfg: /home/erik/Documents/exjobb/catkin_ws/devel/share/bluerov/docs/simple_pilotConfig.wikidoc
+bluerov_gencfg: /home/erik/Documents/ExjobbROV/catkin_ws/devel/include/bluerov/teleop_xboxConfig.h
+bluerov_gencfg: /home/erik/Documents/ExjobbROV/catkin_ws/devel/share/bluerov/docs/teleop_xboxConfig.dox
+bluerov_gencfg: /home/erik/Documents/ExjobbROV/catkin_ws/devel/share/bluerov/docs/teleop_xboxConfig-usage.dox
+bluerov_gencfg: /home/erik/Documents/ExjobbROV/catkin_ws/devel/lib/python2.7/dist-packages/bluerov/cfg/teleop_xboxConfig.py
+bluerov_gencfg: /home/erik/Documents/ExjobbROV/catkin_ws/devel/share/bluerov/docs/teleop_xboxConfig.wikidoc
+bluerov_gencfg: /home/erik/Documents/ExjobbROV/catkin_ws/devel/include/bluerov/simple_pilotConfig.h
+bluerov_gencfg: /home/erik/Documents/ExjobbROV/catkin_ws/devel/share/bluerov/docs/simple_pilotConfig.dox
+bluerov_gencfg: /home/erik/Documents/ExjobbROV/catkin_ws/devel/share/bluerov/docs/simple_pilotConfig-usage.dox
+bluerov_gencfg: /home/erik/Documents/ExjobbROV/catkin_ws/devel/lib/python2.7/dist-packages/bluerov/cfg/simple_pilotConfig.py
+bluerov_gencfg: /home/erik/Documents/ExjobbROV/catkin_ws/devel/share/bluerov/docs/simple_pilotConfig.wikidoc
 bluerov_gencfg: bluerov/CMakeFiles/bluerov_gencfg.dir/build.make
 .PHONY : bluerov_gencfg
 
@@ -99,10 +99,10 @@ bluerov/CMakeFiles/bluerov_gencfg.dir/build: bluerov_gencfg
 .PHONY : bluerov/CMakeFiles/bluerov_gencfg.dir/build
 
 bluerov/CMakeFiles/bluerov_gencfg.dir/clean:
-	cd /home/erik/Documents/exjobb/catkin_ws/build/bluerov && $(CMAKE_COMMAND) -P CMakeFiles/bluerov_gencfg.dir/cmake_clean.cmake
+	cd /home/erik/Documents/ExjobbROV/catkin_ws/build/bluerov && $(CMAKE_COMMAND) -P CMakeFiles/bluerov_gencfg.dir/cmake_clean.cmake
 .PHONY : bluerov/CMakeFiles/bluerov_gencfg.dir/clean
 
 bluerov/CMakeFiles/bluerov_gencfg.dir/depend:
-	cd /home/erik/Documents/exjobb/catkin_ws/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/erik/Documents/exjobb/catkin_ws/src /home/erik/Documents/exjobb/catkin_ws/src/bluerov /home/erik/Documents/exjobb/catkin_ws/build /home/erik/Documents/exjobb/catkin_ws/build/bluerov /home/erik/Documents/exjobb/catkin_ws/build/bluerov/CMakeFiles/bluerov_gencfg.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/erik/Documents/ExjobbROV/catkin_ws/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/erik/Documents/ExjobbROV/catkin_ws/src /home/erik/Documents/ExjobbROV/catkin_ws/src/bluerov /home/erik/Documents/ExjobbROV/catkin_ws/build /home/erik/Documents/ExjobbROV/catkin_ws/build/bluerov /home/erik/Documents/ExjobbROV/catkin_ws/build/bluerov/CMakeFiles/bluerov_gencfg.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : bluerov/CMakeFiles/bluerov_gencfg.dir/depend
 

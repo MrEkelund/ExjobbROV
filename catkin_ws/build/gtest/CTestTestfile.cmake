@@ -1,6 +1,6 @@
 # CMake generated Testfile for 
 # Source directory: /usr/src/gtest
-# Build directory: /home/erik/Documents/exjobb/catkin_ws/build/gtest
+# Build directory: /home/erik/Documents/ExjobbROV/catkin_ws/build/gtest
 # 
 # This file includes the relevant testing commands required for 
 # testing this directory and lists subdirectories to be tested as well.

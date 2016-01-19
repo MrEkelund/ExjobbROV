@@ -35,10 +35,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/erik/Documents/exjobb/catkin_ws/src
+CMAKE_SOURCE_DIR = /home/erik/Documents/ExjobbROV/catkin_ws/src
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/erik/Documents/exjobb/catkin_ws/build
+CMAKE_BINARY_DIR = /home/erik/Documents/ExjobbROV/catkin_ws/build
 
 # Utility rule file for bluerov_genpy.
 
@@ -56,10 +56,10 @@ bluerov/CMakeFiles/bluerov_genpy.dir/build: bluerov_genpy
 .PHONY : bluerov/CMakeFiles/bluerov_genpy.dir/build
 
 bluerov/CMakeFiles/bluerov_genpy.dir/clean:
-	cd /home/erik/Documents/exjobb/catkin_ws/build/bluerov && $(CMAKE_COMMAND) -P CMakeFiles/bluerov_genpy.dir/cmake_clean.cmake
+	cd /home/erik/Documents/ExjobbROV/catkin_ws/build/bluerov && $(CMAKE_COMMAND) -P CMakeFiles/bluerov_genpy.dir/cmake_clean.cmake
 .PHONY : bluerov/CMakeFiles/bluerov_genpy.dir/clean
 
 bluerov/CMakeFiles/bluerov_genpy.dir/depend:
-	cd /home/erik/Documents/exjobb/catkin_ws/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/erik/Documents/exjobb/catkin_ws/src /home/erik/Documents/exjobb/catkin_ws/src/bluerov /home/erik/Documents/exjobb/catkin_ws/build /home/erik/Documents/exjobb/catkin_ws/build/bluerov /home/erik/Documents/exjobb/catkin_ws/build/bluerov/CMakeFiles/bluerov_genpy.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/erik/Documents/ExjobbROV/catkin_ws/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/erik/Documents/ExjobbROV/catkin_ws/src /home/erik/Documents/ExjobbROV/catkin_ws/src/bluerov /home/erik/Documents/ExjobbROV/catkin_ws/build /home/erik/Documents/ExjobbROV/catkin_ws/build/bluerov /home/erik/Documents/ExjobbROV/catkin_ws/build/bluerov/CMakeFiles/bluerov_genpy.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : bluerov/CMakeFiles/bluerov_genpy.dir/depend
 

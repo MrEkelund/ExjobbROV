@@ -35,10 +35,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/erik/Documents/exjobb/catkin_ws/src
+CMAKE_SOURCE_DIR = /home/erik/Documents/ExjobbROV/catkin_ws/src
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/erik/Documents/exjobb/catkin_ws/build
+CMAKE_BINARY_DIR = /home/erik/Documents/ExjobbROV/catkin_ws/build
 
 # Include any dependencies generated for this target.
 include bluerov/CMakeFiles/controller.dir/depend.make
@@ -50,18 +50,18 @@ include bluerov/CMakeFiles/controller.dir/progress.make
 include bluerov/CMakeFiles/controller.dir/flags.make
 
 bluerov/CMakeFiles/controller.dir/src/controller.cpp.o: bluerov/CMakeFiles/controller.dir/flags.make
-bluerov/CMakeFiles/controller.dir/src/controller.cpp.o: /home/erik/Documents/exjobb/catkin_ws/src/bluerov/src/controller.cpp
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/erik/Documents/exjobb/catkin_ws/build/CMakeFiles $(CMAKE_PROGRESS_1)
+bluerov/CMakeFiles/controller.dir/src/controller.cpp.o: /home/erik/Documents/ExjobbROV/catkin_ws/src/bluerov/src/controller.cpp
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/erik/Documents/ExjobbROV/catkin_ws/build/CMakeFiles $(CMAKE_PROGRESS_1)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object bluerov/CMakeFiles/controller.dir/src/controller.cpp.o"
-	cd /home/erik/Documents/exjobb/catkin_ws/build/bluerov && /usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/controller.dir/src/controller.cpp.o -c /home/erik/Documents/exjobb/catkin_ws/src/bluerov/src/controller.cpp
+	cd /home/erik/Documents/ExjobbROV/catkin_ws/build/bluerov && /usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/controller.dir/src/controller.cpp.o -c /home/erik/Documents/ExjobbROV/catkin_ws/src/bluerov/src/controller.cpp
 
 bluerov/CMakeFiles/controller.dir/src/controller.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/controller.dir/src/controller.cpp.i"
-	cd /home/erik/Documents/exjobb/catkin_ws/build/bluerov && /usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -E /home/erik/Documents/exjobb/catkin_ws/src/bluerov/src/controller.cpp > CMakeFiles/controller.dir/src/controller.cpp.i
+	cd /home/erik/Documents/ExjobbROV/catkin_ws/build/bluerov && /usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -E /home/erik/Documents/ExjobbROV/catkin_ws/src/bluerov/src/controller.cpp > CMakeFiles/controller.dir/src/controller.cpp.i
 
 bluerov/CMakeFiles/controller.dir/src/controller.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/controller.dir/src/controller.cpp.s"
-	cd /home/erik/Documents/exjobb/catkin_ws/build/bluerov && /usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -S /home/erik/Documents/exjobb/catkin_ws/src/bluerov/src/controller.cpp -o CMakeFiles/controller.dir/src/controller.cpp.s
+	cd /home/erik/Documents/ExjobbROV/catkin_ws/build/bluerov && /usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -S /home/erik/Documents/ExjobbROV/catkin_ws/src/bluerov/src/controller.cpp -o CMakeFiles/controller.dir/src/controller.cpp.s
 
 bluerov/CMakeFiles/controller.dir/src/controller.cpp.o.requires:
 .PHONY : bluerov/CMakeFiles/controller.dir/src/controller.cpp.o.requires
@@ -79,56 +79,56 @@ controller_OBJECTS = \
 # External object files for target controller
 controller_EXTERNAL_OBJECTS =
 
-/home/erik/Documents/exjobb/catkin_ws/devel/lib/bluerov/controller: bluerov/CMakeFiles/controller.dir/src/controller.cpp.o
-/home/erik/Documents/exjobb/catkin_ws/devel/lib/bluerov/controller: bluerov/CMakeFiles/controller.dir/build.make
-/home/erik/Documents/exjobb/catkin_ws/devel/lib/bluerov/controller: /opt/ros/indigo/lib/libtf.so
-/home/erik/Documents/exjobb/catkin_ws/devel/lib/bluerov/controller: /opt/ros/indigo/lib/libmavros.so
-/home/erik/Documents/exjobb/catkin_ws/devel/lib/bluerov/controller: /usr/lib/x86_64-linux-gnu/libtinyxml.so
-/home/erik/Documents/exjobb/catkin_ws/devel/lib/bluerov/controller: /opt/ros/indigo/lib/libclass_loader.so
-/home/erik/Documents/exjobb/catkin_ws/devel/lib/bluerov/controller: /usr/lib/libPocoFoundation.so
-/home/erik/Documents/exjobb/catkin_ws/devel/lib/bluerov/controller: /usr/lib/x86_64-linux-gnu/libdl.so
-/home/erik/Documents/exjobb/catkin_ws/devel/lib/bluerov/controller: /opt/ros/indigo/lib/libroslib.so
-/home/erik/Documents/exjobb/catkin_ws/devel/lib/bluerov/controller: /opt/ros/indigo/lib/libtf2_ros.so
-/home/erik/Documents/exjobb/catkin_ws/devel/lib/bluerov/controller: /opt/ros/indigo/lib/libactionlib.so
-/home/erik/Documents/exjobb/catkin_ws/devel/lib/bluerov/controller: /opt/ros/indigo/lib/libmessage_filters.so
-/home/erik/Documents/exjobb/catkin_ws/devel/lib/bluerov/controller: /opt/ros/indigo/lib/libroscpp.so
-/home/erik/Documents/exjobb/catkin_ws/devel/lib/bluerov/controller: /usr/lib/x86_64-linux-gnu/libboost_signals.so
-/home/erik/Documents/exjobb/catkin_ws/devel/lib/bluerov/controller: /usr/lib/x86_64-linux-gnu/libboost_filesystem.so
-/home/erik/Documents/exjobb/catkin_ws/devel/lib/bluerov/controller: /opt/ros/indigo/lib/librosconsole.so
-/home/erik/Documents/exjobb/catkin_ws/devel/lib/bluerov/controller: /opt/ros/indigo/lib/librosconsole_log4cxx.so
-/home/erik/Documents/exjobb/catkin_ws/devel/lib/bluerov/controller: /opt/ros/indigo/lib/librosconsole_backend_interface.so
-/home/erik/Documents/exjobb/catkin_ws/devel/lib/bluerov/controller: /usr/lib/liblog4cxx.so
-/home/erik/Documents/exjobb/catkin_ws/devel/lib/bluerov/controller: /usr/lib/x86_64-linux-gnu/libboost_regex.so
-/home/erik/Documents/exjobb/catkin_ws/devel/lib/bluerov/controller: /opt/ros/indigo/lib/libxmlrpcpp.so
-/home/erik/Documents/exjobb/catkin_ws/devel/lib/bluerov/controller: /opt/ros/indigo/lib/libtf2.so
-/home/erik/Documents/exjobb/catkin_ws/devel/lib/bluerov/controller: /opt/ros/indigo/lib/libmavconn.so
-/home/erik/Documents/exjobb/catkin_ws/devel/lib/bluerov/controller: /opt/ros/indigo/lib/libeigen_conversions.so
-/home/erik/Documents/exjobb/catkin_ws/devel/lib/bluerov/controller: /opt/ros/indigo/lib/liborocos-kdl.so.1.3.0
-/home/erik/Documents/exjobb/catkin_ws/devel/lib/bluerov/controller: /opt/ros/indigo/lib/libdynamic_reconfigure_config_init_mutex.so
-/home/erik/Documents/exjobb/catkin_ws/devel/lib/bluerov/controller: /opt/ros/indigo/lib/libroscpp_serialization.so
-/home/erik/Documents/exjobb/catkin_ws/devel/lib/bluerov/controller: /opt/ros/indigo/lib/librostime.so
-/home/erik/Documents/exjobb/catkin_ws/devel/lib/bluerov/controller: /usr/lib/x86_64-linux-gnu/libboost_date_time.so
-/home/erik/Documents/exjobb/catkin_ws/devel/lib/bluerov/controller: /opt/ros/indigo/lib/libcpp_common.so
-/home/erik/Documents/exjobb/catkin_ws/devel/lib/bluerov/controller: /usr/lib/x86_64-linux-gnu/libboost_system.so
-/home/erik/Documents/exjobb/catkin_ws/devel/lib/bluerov/controller: /usr/lib/x86_64-linux-gnu/libboost_thread.so
-/home/erik/Documents/exjobb/catkin_ws/devel/lib/bluerov/controller: /usr/lib/x86_64-linux-gnu/libpthread.so
-/home/erik/Documents/exjobb/catkin_ws/devel/lib/bluerov/controller: /usr/lib/x86_64-linux-gnu/libconsole_bridge.so
-/home/erik/Documents/exjobb/catkin_ws/devel/lib/bluerov/controller: bluerov/CMakeFiles/controller.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --red --bold "Linking CXX executable /home/erik/Documents/exjobb/catkin_ws/devel/lib/bluerov/controller"
-	cd /home/erik/Documents/exjobb/catkin_ws/build/bluerov && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/controller.dir/link.txt --verbose=$(VERBOSE)
+/home/erik/Documents/ExjobbROV/catkin_ws/devel/lib/bluerov/controller: bluerov/CMakeFiles/controller.dir/src/controller.cpp.o
+/home/erik/Documents/ExjobbROV/catkin_ws/devel/lib/bluerov/controller: bluerov/CMakeFiles/controller.dir/build.make
+/home/erik/Documents/ExjobbROV/catkin_ws/devel/lib/bluerov/controller: /opt/ros/indigo/lib/libtf.so
+/home/erik/Documents/ExjobbROV/catkin_ws/devel/lib/bluerov/controller: /opt/ros/indigo/lib/libmavros.so
+/home/erik/Documents/ExjobbROV/catkin_ws/devel/lib/bluerov/controller: /usr/lib/x86_64-linux-gnu/libtinyxml.so
+/home/erik/Documents/ExjobbROV/catkin_ws/devel/lib/bluerov/controller: /opt/ros/indigo/lib/libclass_loader.so
+/home/erik/Documents/ExjobbROV/catkin_ws/devel/lib/bluerov/controller: /usr/lib/libPocoFoundation.so
+/home/erik/Documents/ExjobbROV/catkin_ws/devel/lib/bluerov/controller: /usr/lib/x86_64-linux-gnu/libdl.so
+/home/erik/Documents/ExjobbROV/catkin_ws/devel/lib/bluerov/controller: /opt/ros/indigo/lib/libroslib.so
+/home/erik/Documents/ExjobbROV/catkin_ws/devel/lib/bluerov/controller: /opt/ros/indigo/lib/libtf2_ros.so
+/home/erik/Documents/ExjobbROV/catkin_ws/devel/lib/bluerov/controller: /opt/ros/indigo/lib/libactionlib.so
+/home/erik/Documents/ExjobbROV/catkin_ws/devel/lib/bluerov/controller: /opt/ros/indigo/lib/libmessage_filters.so
+/home/erik/Documents/ExjobbROV/catkin_ws/devel/lib/bluerov/controller: /opt/ros/indigo/lib/libroscpp.so
+/home/erik/Documents/ExjobbROV/catkin_ws/devel/lib/bluerov/controller: /usr/lib/x86_64-linux-gnu/libboost_signals.so
+/home/erik/Documents/ExjobbROV/catkin_ws/devel/lib/bluerov/controller: /usr/lib/x86_64-linux-gnu/libboost_filesystem.so
+/home/erik/Documents/ExjobbROV/catkin_ws/devel/lib/bluerov/controller: /opt/ros/indigo/lib/librosconsole.so
+/home/erik/Documents/ExjobbROV/catkin_ws/devel/lib/bluerov/controller: /opt/ros/indigo/lib/librosconsole_log4cxx.so
+/home/erik/Documents/ExjobbROV/catkin_ws/devel/lib/bluerov/controller: /opt/ros/indigo/lib/librosconsole_backend_interface.so
+/home/erik/Documents/ExjobbROV/catkin_ws/devel/lib/bluerov/controller: /usr/lib/liblog4cxx.so
+/home/erik/Documents/ExjobbROV/catkin_ws/devel/lib/bluerov/controller: /usr/lib/x86_64-linux-gnu/libboost_regex.so
+/home/erik/Documents/ExjobbROV/catkin_ws/devel/lib/bluerov/controller: /opt/ros/indigo/lib/libxmlrpcpp.so
+/home/erik/Documents/ExjobbROV/catkin_ws/devel/lib/bluerov/controller: /opt/ros/indigo/lib/libtf2.so
+/home/erik/Documents/ExjobbROV/catkin_ws/devel/lib/bluerov/controller: /opt/ros/indigo/lib/libmavconn.so
+/home/erik/Documents/ExjobbROV/catkin_ws/devel/lib/bluerov/controller: /opt/ros/indigo/lib/libeigen_conversions.so
+/home/erik/Documents/ExjobbROV/catkin_ws/devel/lib/bluerov/controller: /opt/ros/indigo/lib/liborocos-kdl.so.1.3.0
+/home/erik/Documents/ExjobbROV/catkin_ws/devel/lib/bluerov/controller: /opt/ros/indigo/lib/libdynamic_reconfigure_config_init_mutex.so
+/home/erik/Documents/ExjobbROV/catkin_ws/devel/lib/bluerov/controller: /opt/ros/indigo/lib/libroscpp_serialization.so
+/home/erik/Documents/ExjobbROV/catkin_ws/devel/lib/bluerov/controller: /opt/ros/indigo/lib/librostime.so
+/home/erik/Documents/ExjobbROV/catkin_ws/devel/lib/bluerov/controller: /usr/lib/x86_64-linux-gnu/libboost_date_time.so
+/home/erik/Documents/ExjobbROV/catkin_ws/devel/lib/bluerov/controller: /opt/ros/indigo/lib/libcpp_common.so
+/home/erik/Documents/ExjobbROV/catkin_ws/devel/lib/bluerov/controller: /usr/lib/x86_64-linux-gnu/libboost_system.so
+/home/erik/Documents/ExjobbROV/catkin_ws/devel/lib/bluerov/controller: /usr/lib/x86_64-linux-gnu/libboost_thread.so
+/home/erik/Documents/ExjobbROV/catkin_ws/devel/lib/bluerov/controller: /usr/lib/x86_64-linux-gnu/libpthread.so
+/home/erik/Documents/ExjobbROV/catkin_ws/devel/lib/bluerov/controller: /usr/lib/x86_64-linux-gnu/libconsole_bridge.so
+/home/erik/Documents/ExjobbROV/catkin_ws/devel/lib/bluerov/controller: bluerov/CMakeFiles/controller.dir/link.txt
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --red --bold "Linking CXX executable /home/erik/Documents/ExjobbROV/catkin_ws/devel/lib/bluerov/controller"
+	cd /home/erik/Documents/ExjobbROV/catkin_ws/build/bluerov && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/controller.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
-bluerov/CMakeFiles/controller.dir/build: /home/erik/Documents/exjobb/catkin_ws/devel/lib/bluerov/controller
+bluerov/CMakeFiles/controller.dir/build: /home/erik/Documents/ExjobbROV/catkin_ws/devel/lib/bluerov/controller
 .PHONY : bluerov/CMakeFiles/controller.dir/build
 
 bluerov/CMakeFiles/controller.dir/requires: bluerov/CMakeFiles/controller.dir/src/controller.cpp.o.requires
 .PHONY : bluerov/CMakeFiles/controller.dir/requires
 
 bluerov/CMakeFiles/controller.dir/clean:
-	cd /home/erik/Documents/exjobb/catkin_ws/build/bluerov && $(CMAKE_COMMAND) -P CMakeFiles/controller.dir/cmake_clean.cmake
+	cd /home/erik/Documents/ExjobbROV/catkin_ws/build/bluerov && $(CMAKE_COMMAND) -P CMakeFiles/controller.dir/cmake_clean.cmake
 .PHONY : bluerov/CMakeFiles/controller.dir/clean
 
 bluerov/CMakeFiles/controller.dir/depend:
-	cd /home/erik/Documents/exjobb/catkin_ws/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/erik/Documents/exjobb/catkin_ws/src /home/erik/Documents/exjobb/catkin_ws/src/bluerov /home/erik/Documents/exjobb/catkin_ws/build /home/erik/Documents/exjobb/catkin_ws/build/bluerov /home/erik/Documents/exjobb/catkin_ws/build/bluerov/CMakeFiles/controller.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/erik/Documents/ExjobbROV/catkin_ws/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/erik/Documents/ExjobbROV/catkin_ws/src /home/erik/Documents/ExjobbROV/catkin_ws/src/bluerov /home/erik/Documents/ExjobbROV/catkin_ws/build /home/erik/Documents/ExjobbROV/catkin_ws/build/bluerov /home/erik/Documents/ExjobbROV/catkin_ws/build/bluerov/CMakeFiles/controller.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : bluerov/CMakeFiles/controller.dir/depend
 

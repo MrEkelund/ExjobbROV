@@ -35,10 +35,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/erik/Documents/exjobb/catkin_ws/src
+CMAKE_SOURCE_DIR = /home/erik/Documents/ExjobbROV/catkin_ws/src
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/erik/Documents/exjobb/catkin_ws/build
+CMAKE_BINARY_DIR = /home/erik/Documents/ExjobbROV/catkin_ws/build
 
 # Utility rule file for diagnostic_msgs_generate_messages_py.
 
@@ -56,10 +56,10 @@ bluerov/CMakeFiles/diagnostic_msgs_generate_messages_py.dir/build: diagnostic_ms
 .PHONY : bluerov/CMakeFiles/diagnostic_msgs_generate_messages_py.dir/build
 
 bluerov/CMakeFiles/diagnostic_msgs_generate_messages_py.dir/clean:
-	cd /home/erik/Documents/exjobb/catkin_ws/build/bluerov && $(CMAKE_COMMAND) -P CMakeFiles/diagnostic_msgs_generate_messages_py.dir/cmake_clean.cmake
+	cd /home/erik/Documents/ExjobbROV/catkin_ws/build/bluerov && $(CMAKE_COMMAND) -P CMakeFiles/diagnostic_msgs_generate_messages_py.dir/cmake_clean.cmake
 .PHONY : bluerov/CMakeFiles/diagnostic_msgs_generate_messages_py.dir/clean
 
 bluerov/CMakeFiles/diagnostic_msgs_generate_messages_py.dir/depend:
-	cd /home/erik/Documents/exjobb/catkin_ws/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/erik/Documents/exjobb/catkin_ws/src /home/erik/Documents/exjobb/catkin_ws/src/bluerov /home/erik/Documents/exjobb/catkin_ws/build /home/erik/Documents/exjobb/catkin_ws/build/bluerov /home/erik/Documents/exjobb/catkin_ws/build/bluerov/CMakeFiles/diagnostic_msgs_generate_messages_py.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/erik/Documents/ExjobbROV/catkin_ws/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/erik/Documents/ExjobbROV/catkin_ws/src /home/erik/Documents/ExjobbROV/catkin_ws/src/bluerov /home/erik/Documents/ExjobbROV/catkin_ws/build /home/erik/Documents/ExjobbROV/catkin_ws/build/bluerov /home/erik/Documents/ExjobbROV/catkin_ws/build/bluerov/CMakeFiles/diagnostic_msgs_generate_messages_py.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : bluerov/CMakeFiles/diagnostic_msgs_generate_messages_py.dir/depend
 

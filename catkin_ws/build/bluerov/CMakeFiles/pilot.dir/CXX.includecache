@@ -6,7 +6,7 @@
 
 #IncludeRegexTransform: 
 
-/home/erik/Documents/exjobb/catkin_ws/src/bluerov/src/pilot.cpp
+/home/erik/Documents/ExjobbROV/catkin_ws/src/bluerov/src/pilot.cpp
 math.h
 -
 ros/ros.h

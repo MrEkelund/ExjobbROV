@@ -1,7 +1,7 @@
 FILE(REMOVE_RECURSE
   "CMakeFiles/bluerov_generate_messages_lisp"
-  "/home/erik/Documents/exjobb/catkin_ws/devel/share/common-lisp/ros/bluerov/msg/Health.lisp"
-  "/home/erik/Documents/exjobb/catkin_ws/devel/share/common-lisp/ros/bluerov/msg/Thruster.lisp"
+  "/home/erik/Documents/ExjobbROV/catkin_ws/devel/share/common-lisp/ros/bluerov/msg/Health.lisp"
+  "/home/erik/Documents/ExjobbROV/catkin_ws/devel/share/common-lisp/ros/bluerov/msg/Thruster.lisp"
 )
 
 # Per-language clean rules from dependency scanning.
