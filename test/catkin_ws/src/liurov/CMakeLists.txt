@@ -28,6 +28,7 @@ generate_messages(DEPENDENCIES
 ## Add dynamic reconfigure api
 generate_dynamic_reconfigure_options(
   config/teleop_xbox.config
+  config/controller.config
 )
 
 ## Declare a catkin package

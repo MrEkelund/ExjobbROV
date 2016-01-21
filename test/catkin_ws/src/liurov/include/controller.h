@@ -9,9 +9,10 @@
  #include <ros/ros.h>
  #include <ros/console.h>
  #include <geometry_msgs/Twist.h>
- #include <vector>
  #include <std_msgs/Bool.h>
  #include <dynamic_reconfigure/server.h>
+ #include <liurov/controllerConfig.h>
+ #include <iostream>
 
  class Controller {
    public:
@@ -22,6 +23,12 @@
      ros::NodeHandle nh;
      ros::Subscriber cmd_vel_sub;
      double reference[6];
+     double states[13];
+
+     dynamic_reconfigure::Server<liurov::controllerConfig> server;
+     liurov::controllerConfig config;
 
      void cmdVelCallback(const geometry_msgs::Twist::ConstPtr& new_reference);
+     void configCallback(liurov::controllerConfig &update, uint32_t level);
+     void statesCallback(const geometry_msgs::Twist::ConstPtr& );
 };
