@@ -1,2 +1,4 @@
 catkin_ws/devel/
 catkin_ws/build/
+test/catkin_ws/devel/
+test/catkin_ws/build/
