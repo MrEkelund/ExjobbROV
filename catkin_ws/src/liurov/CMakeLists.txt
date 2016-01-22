@@ -29,6 +29,7 @@ generate_messages(DEPENDENCIES
 generate_dynamic_reconfigure_options(
   config/teleop_xbox.config
   config/controller.config
+  config/fusion.config
 )
 
 ## Declare a catkin package
@@ -49,3 +50,7 @@ add_dependencies(teleop_xbox ${catkin_EXPORTED_TARGETS})
 add_executable(controller src/controller.cpp)
 target_link_libraries(controller ${catkin_LIBRARIES})
 add_dependencies(controller ${catkin_EXPORTED_TARGETS})
+
+add_executable(fusion src/fusion.cpp)
+target_link_libraries(fusion ${catkin_LIBRARIES})
+add_dependencies(fusion ${catkin_EXPORTED_TARGETS})

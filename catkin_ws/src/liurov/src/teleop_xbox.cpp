@@ -37,7 +37,7 @@ void TeleopXbox::spin() {
 }
 
 void TeleopXbox::configCallback(liurov::teleop_xboxConfig &update, uint32_t level) {
-  ROS_INFO("reconfigure request received");
+  ROS_INFO("Reconfigure request received in Teleop Node");
   config = update;
 }
 

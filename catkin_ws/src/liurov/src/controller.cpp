@@ -1,3 +1,9 @@
+/*
+ * File: liurov/src/controller.cpp
+ * Author: Erik Ekelund
+ * Date: Jan 2016
+ * Description: Calculates the voltages that the I/O module should output to the thrusters.
+ */
 #include <controller.h>
 
 Controller::Controller() {
@@ -15,14 +21,13 @@ Controller::Controller() {
 };
 
 void Controller::spin() {
-  ros::Rate loop(config.pub_rate);
+  ros::Rate rate(config.pub_rate);
 
   while(ros::ok()) {
     // call all waiting callbacks
     ros::spinOnce();
-
     // enforce a max publish rate
-    loop.sleep();
+    rate.sleep();
   }
 }
 void Controller::cmdVelCallback(const geometry_msgs::Twist::ConstPtr& new_reference)
@@ -44,7 +49,7 @@ void Controller::statesCallback(const geometry_msgs::Twist::ConstPtr& ){
 }
 
 void Controller::configCallback(liurov::controllerConfig &update, uint32_t level) {
-  ROS_INFO("reconfigure request received");
+  ROS_INFO("Reconfigure request received in Controller Node");
   config = update;
 }
 
