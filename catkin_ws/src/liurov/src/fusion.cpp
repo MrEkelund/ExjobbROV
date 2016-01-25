@@ -172,6 +172,17 @@ void Fusion::configCallback(liurov::fusionConfig &update, uint32_t level) {
   config = update;
 };
 void Fusion::sensorDataCallback(const std_msgs::Float64MultiArray::ConstPtr& new_sensor_data){
+  setAccelerationMeasurementX(new_sensor_data->data[0]);
+  setAccelerationMeasurementY(new_sensor_data->data[1]);
+  setAccelerationMeasurementZ(new_sensor_data->data[2]);
+
+  setAngularRateMeasurementX(new_sensor_data->data[3]);
+  setAngularRateMeasurementY(new_sensor_data->data[4]);
+  setAngularRateMeasurementZ(new_sensor_data->data[5]);
+
+
+
+
 
 };
 void Fusion::spin() {

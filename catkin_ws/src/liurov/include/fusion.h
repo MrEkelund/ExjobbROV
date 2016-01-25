@@ -96,6 +96,7 @@ class Fusion {
 
     //Dynamic reconfigure and reconfigure callback
     dynamic_reconfigure::Server<liurov::fusionConfig> server;
+    //config file for dynamic_reconfigure
     liurov::fusionConfig config;
     void configCallback(liurov::fusionConfig &update, uint32_t level);
 
