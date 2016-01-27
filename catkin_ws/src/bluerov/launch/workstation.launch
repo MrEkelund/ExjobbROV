@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+
+<launch>
+  <!-- roscore automatically started by roslaunch -->
+
+   <!-- start teleop -->
+  <include file="$(find bluerov)/launch/teleop_xbox.launch" />
+
+  <!-- start rqt -->
+  <include file="$(find bluerov)/launch/rqt.launch" />
+
+</launch>
+
