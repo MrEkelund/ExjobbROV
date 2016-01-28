@@ -122,7 +122,8 @@ double TeleopXbox::computeAxisValue(const sensor_msgs::Joy::ConstPtr& joy, int i
   }
 
   // apply exponential scaling
-  return expo * pow(value, 5) + (1.0 - expo) * value;
+  //return expo * pow(value, 5) + (1.0 - expo) * value;
+  return value;
 }
 
 int main(int argc, char** argv) {
