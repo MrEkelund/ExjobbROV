@@ -73,7 +73,7 @@ void Pilot::configCallback(bluerov::simple_pilotConfig &update, uint32_t level) 
   config = update;
 }
 
-void Pilot::bogusCallback(bluerov::matlab_controllerCOnfig &update, unint32_t level) {
+void Pilot::bogusCallback(bluerov::matlab_controllerConfig &update, unint32_t level) {
   ROS_INFO("Reconfigure request matlab_controller");
 }
 
