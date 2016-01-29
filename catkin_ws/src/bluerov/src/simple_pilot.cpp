@@ -30,12 +30,14 @@ class Pilot {
     dynamic_reconfigure::Server<bluerov::simple_pilotConfig> server;
     bluerov::simple_pilotConfig config;
 
-    dynamic_reconfigure::Server<bluerov::matlab_controllerConfig> server;
+    dynamic_reconfigure::Server<bluerov::matlab_controllerConfig> matlabserver;
   //bluerov::simple_pilotConfig config;
+  
 
     bool hazards_enabled;
-
+  
     void configCallback(bluerov::simple_pilotConfig &update, uint32_t level);
+    void bogusCallback(bluerov::matlab_controllerConfig &update, uint32_t level);
     void setServo(int index, float pulse_width);
     void velCallback(const geometry_msgs::Twist::ConstPtr& cmd_vel);
     void hazardCallback(const std_msgs::Bool::ConstPtr& msg);
@@ -47,9 +49,9 @@ Pilot::Pilot() {
   f = boost::bind(&Pilot::configCallback, this, _1, _2);
   server.setCallback(f);
 
-  dynamic_reconfigure::Server<bluerov::matlab_controllerConfig>::CallbackType f;
-  f = boost::bind(&Pilot::bogusCallback, this, _1, _2);
-  server.setCallback(f);
+  dynamic_reconfigure::Server<bluerov::matlab_controllerConfig>::CallbackType h;
+  h = boost::bind(&Pilot::bogusCallback, this, _1, _2);
+  matlabserver.setCallback(h);
 
   // connects subs and pubs
   command_client = nh.serviceClient<mavros_msgs::CommandLong>("/mavros/cmd/command");
@@ -76,7 +78,7 @@ void Pilot::configCallback(bluerov::simple_pilotConfig &update, uint32_t level) 
   config = update;
 }
 
-void Pilot::bogusCallback(bluerov::matlab_controllerConfig &update, unint32_t level) {
+void Pilot::bogusCallback(bluerov::matlab_controllerConfig &update, uint32_t level) {
   ROS_INFO("Reconfigure request matlab_controller");
 }
 
