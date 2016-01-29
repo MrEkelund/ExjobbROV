@@ -56,3 +56,7 @@ add_dependencies(simple_pilot ${catkin_EXPORTED_TARGETS})
 add_executable(teleop_xbox src/teleop_xbox.cpp)
 target_link_libraries(teleop_xbox ${catkin_LIBRARIES})
 add_dependencies(teleop_xbox ${catkin_EXPORTED_TARGETS})
+
+add_executable(matlab_controller src/matlab_controller.cpp)
+target_link_libraries(matlab_controller ${catkin_LIBRARIES})
+add_dependencies(matlab_controller ${catkin_EXPORTED_TARGETS})
