@@ -30,6 +30,9 @@ class Pilot {
     dynamic_reconfigure::Server<bluerov::simple_pilotConfig> server;
     bluerov::simple_pilotConfig config;
 
+    dynamic_reconfigure::Server<bluerov::matlab_controllerConfig> server;
+  //bluerov::simple_pilotConfig config;
+
     bool hazards_enabled;
 
     void configCallback(bluerov::simple_pilotConfig &update, uint32_t level);
