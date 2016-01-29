@@ -13,6 +13,7 @@
 #include <std_msgs/Bool.h>
 #include <dynamic_reconfigure/server.h>
 #include <bluerov/simple_pilotConfig.h>
+#include <bluerov/matlab_controllerConfig.h>
 
 class Pilot {
   public:
@@ -43,6 +44,10 @@ Pilot::Pilot() {
   f = boost::bind(&Pilot::configCallback, this, _1, _2);
   server.setCallback(f);
 
+  dynamic_reconfigure::Server<bluerov::matlab_controllerConfig>::CallbackType f;
+  f = boost::bind(&Pilot::bogusCallback, this, _1, _2);
+  server.setCallback(f);
+
   // connects subs and pubs
   command_client = nh.serviceClient<mavros_msgs::CommandLong>("/mavros/cmd/command");
   cmd_vel_sub = nh.subscribe<geometry_msgs::Twist>("cmd_vel", 1, &Pilot::velCallback, this);
@@ -66,6 +71,10 @@ void Pilot::spin() {
 void Pilot::configCallback(bluerov::simple_pilotConfig &update, uint32_t level) {
   ROS_INFO("reconfigure request received");
   config = update;
+}
+
+void Pilot::bogusCallback(bluerov::matlab_controllerCOnfig &update, unint32_t level) {
+  ROS_INFO("Reconfigure request matlab_controller");
 }
 
 void Pilot::setServo(int index, float value) {
