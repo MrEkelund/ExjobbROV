@@ -18,7 +18,7 @@
   <include file="$(find bluerov)/launch/simple_pilot.launch" />
 
   <!-- start matlab dynamic reconfigure -->
-  <include file="$(find bluerov)/launch/matlab_controller" />
+  <include file="$(find bluerov)/launch/matlab_controller.launch" />
 
   <!-- start camera -->
   <include file="$(find bluerov)/launch/camera.launch" />
