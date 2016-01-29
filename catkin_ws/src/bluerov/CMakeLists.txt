@@ -30,6 +30,7 @@ generate_messages(DEPENDENCIES
 generate_dynamic_reconfigure_options(
   config/teleop_xbox.config
   config/simple_pilot.config
+  config/matlab_controller.config
 )
 
 ## Declare a catkin package
