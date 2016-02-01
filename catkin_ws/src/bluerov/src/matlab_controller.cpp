@@ -51,7 +51,7 @@ void MatlabController::spin() {
 
 void MatlabController::configCallback(bluerov::matlab_controllerConfig &update, uint32_t level) {
   ROS_INFO("CONTROLLER reconfigure request received");
-  config.groups.controller.state = true;
+//  config.groups.controller.state = true;
   config = update;
 }
 
