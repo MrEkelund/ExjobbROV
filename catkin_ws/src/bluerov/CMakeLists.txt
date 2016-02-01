@@ -29,9 +29,8 @@ generate_messages(DEPENDENCIES
 ## Add dynamic reconfigure api
 generate_dynamic_reconfigure_options(
   config/teleop_xbox.config
-  config/simple_pilot.config
   config/matlab_controller.config
-  config/pid_parameters.config
+  ##config/pid_parameters.config
 )
 
 ## Declare a catkin package
@@ -45,14 +44,6 @@ include_directories(include ${catkin_INCLUDE_DIRS})
 add_executable(controller src/controller.cpp)
 target_link_libraries(controller ${catkin_LIBRARIES})
 add_dependencies(controller ${catkin_EXPORTED_TARGETS})
-
-add_executable(pilot src/pilot.cpp)
-target_link_libraries(pilot ${catkin_LIBRARIES})
-add_dependencies(pilot ${catkin_EXPORTED_TARGETS})
-
-add_executable(simple_pilot src/simple_pilot.cpp)
-target_link_libraries(simple_pilot ${catkin_LIBRARIES})
-add_dependencies(simple_pilot ${catkin_EXPORTED_TARGETS})
 
 add_executable(teleop_xbox src/teleop_xbox.cpp)
 target_link_libraries(teleop_xbox ${catkin_LIBRARIES})
