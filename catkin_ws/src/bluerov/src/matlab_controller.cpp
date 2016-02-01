@@ -21,6 +21,7 @@ class MatlabController {
     dynamic_reconfigure::Server<bluerov::matlab_controllerConfig> server;
     dynamic_reconfigure::Server<bluerov::pid_parametersConfig> pidserver;
     bluerov::matlab_controllerConfig config;
+    bluerov::matlab_controllerConfig pidconfig;
 
     void configCallback(bluerov::matlab_controllerConfig &update, uint32_t level);
     void pidCallback(bluerov::pid_parametersConfig &update, uint32_t level);
@@ -55,6 +56,7 @@ void MatlabController::configCallback(bluerov::matlab_controllerConfig &update, 
 
 void MatlabController::pidCallback(bluerov::pid_parametersConfig &update, uint32_t level) {
   ROS_INFO("PID reconfigure request received");
+  pidconfig = update;
 }
 
 int main(int argc, char** argv) {
