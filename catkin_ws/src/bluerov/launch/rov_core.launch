@@ -14,9 +14,6 @@
   <!-- start mavlink -->
   <include file="$(find bluerov)/launch/apm.launch" />
 
-  <!-- start pilot -->
-  <include file="$(find bluerov)/launch/simple_pilot.launch" />
-
   <!-- start matlab dynamic reconfigure -->
   <include file="$(find bluerov)/launch/matlab_controller.launch" />
 
