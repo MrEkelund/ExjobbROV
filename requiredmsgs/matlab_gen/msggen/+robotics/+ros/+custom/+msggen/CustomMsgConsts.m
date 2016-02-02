@@ -7,6 +7,9 @@ classdef CustomMsgConsts
     
     properties (Constant)
         mavros_msgs_ActuatorControl = 'mavros_msgs/ActuatorControl'
+        mavros_msgs_CommandLong = 'mavros_msgs/CommandLong'
+        mavros_msgs_CommandLongRequest = 'mavros_msgs/CommandLongRequest'
+        mavros_msgs_CommandLongResponse = 'mavros_msgs/CommandLongResponse'
     end
     
     methods (Static, Hidden)
@@ -16,8 +19,11 @@ classdef CustomMsgConsts
             
             persistent msgList
             if isempty(msgList)
-                msgList = cell(1, 1);
+                msgList = cell(4, 1);
                 msgList{1} = 'mavros_msgs/ActuatorControl';
+                msgList{2} = 'mavros_msgs/CommandLong';
+                msgList{3} = 'mavros_msgs/CommandLongRequest';
+                msgList{4} = 'mavros_msgs/CommandLongResponse';
             end
             
             messageList = msgList;
@@ -29,7 +35,8 @@ classdef CustomMsgConsts
             
             persistent svcList
             if isempty(svcList)
-                svcList = cell(0, 1);
+                svcList = cell(1, 1);
+                svcList{1} = 'mavros_msgs/CommandLong';
             end
             
             % The message list was already sorted, so don't need to sort
