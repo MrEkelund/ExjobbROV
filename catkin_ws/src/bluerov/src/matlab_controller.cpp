@@ -8,7 +8,6 @@
 #include <ros/ros.h>
 #include <dynamic_reconfigure/server.h>
 #include <bluerov/matlab_controllerConfig.h>
-//#include <bluerov/pid_parametersConfig.h>
 
 class MatlabController {
   public:
