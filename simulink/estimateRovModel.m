@@ -1,8 +1,8 @@
-%%
-% Initialise the rov estimation.
+%% Initialise the parameters of the ROV estimation.
 % Some constants
-m = ;       % ROV mass[kg];   
-g = ;       % Gravity[m/s^2]
+Ts = ;      % Sample time [s].                                                     
+m = ;       % ROV mass[kg];       
+g = 9.82;   % Gravity[m/s^2]
 rho = 1000; % water density [kg/m^3]
 V = ;       % Discplaced water volume [m^3]
 % Thruster placement from CO [m]
@@ -39,20 +39,21 @@ Ix_init = ;
 Iy_init = ;
 Iz_init = ;
 
+% Initial states
 u_init = ;
 v_init = ;
 w_init = ;
-
 p_init = ;
 q_init = ;
 r_init = ;
-
 fi_init = ;
 theta_init = ;
 
 parameter_strings = {'m';'g';'rho';'V';'lx1';'ly1';'ly2';'lx2';'ly3';'lx4';'ly5';'lz6';'zb';'Xu';'Xu_dot';'Xu_abs_u';'Yv';'Yv_dot';'Yv_abs_w';'Zw';'Zw_dot';'Zw_abs_w'; 'Kp';'Kp_dot'; 'Kp_abs_p'; 'Mq';'Mq_dot'; 'Mq_abs_q'; 'Nr';'Nr_dot';'Nr_abs_r';'Ix';'Iy';'Iz'};
 state_strings = {'u';'v';'w'; 'p'; 'q'; 'r';'fi';'theta'};
-enumParamters('= parameters(', ')',parameters)
+state_units = {'m/s'; 'm/s'; 'm/s';'m/s'; 'm/s'; 'm/s';'rad';'rad'};
+
+%% Set up the nglr object
 
 FileName      = 'rovMotionModel';                                       % File describing the model structure.
 
@@ -69,60 +70,47 @@ Parameters    = [m; g; rho; V; lx1; ly1; ly2; lx2; ly3; lx4; ly5; ...   % Initia
 InitialStates = [u_init; v_init; w_init; p_init; q_init; r_init;    ... % Initial initial states.
                 fi_init; theta_init];                          
             
-Ts            = ;                                                       % Time-discrete system.
+
 
 nlgr = idnlgrey(FileName, Order, Parameters, InitialStates, Ts, ...
-                'Name', 'Rov Model', 'TimeUnit', 's');
-        nlgr.InputName =  {'Thruster1';                           ...   % u(1).
-                         'Thruster2';                             ...   % u(2).
-                         'Thruster3';                             ...   % u(3).
-                         'Thurster4';                             ...   % u(4).
-                         'Thruster5';                             ...   % u(5).
-                         'Thruster6'};                            ...   % u(6).
-                         
-          nlgr.InputUnit =  {'%'; '%'; '%'; '%'; '%'};
-      
-          nlgr.OutputName = state_strings;
-          nlgr.OutputUnit = {''; ''; ''};
+                    'Name', 'Rov Model', 'TimeUnit', 's');
 
-      
-      
-%%
-% The names and the units of the (initial) states and the model parameters
-% are specified via SETINIT. We also use this command to specify that the
-% first initial state (the longitudinal velocity) ought to be strictly
-% positive for the model to be valid and to specify that all model
-% parameters should be strictly positive. These constraints will
-% subsequently be honored when performing initial state and/or model
-% parameter estimation.
-nlgr = setinit(nlgr, 'Name', {'Longitudinal vehicle velocity'        ... % x(1).
-                       'Lateral vehicle velocity'             ... % x(2).
-                       'Yaw rate'});                          ... % x(3).
-nlgr = setinit(nlgr, 'Unit', {'m/s'; 'm/s'; 'rad/s'});
-nlgr.InitialStates(1).Minimum = eps(0);   % Longitudinal velocity > 0 for the model to be valid.
-nlgr = setpar(nlgr, 'Name', {'Vehicle mass';                         ... % m.
-                      'Distance from front axle to COG';      ... % a
-                      'Distance from rear axle to COG';       ... % b.
-                      'Longitudinal tire stiffness';          ... % Cx.
-                      'Lateral tire stiffness';               ... % Cy.
-                      'Air resistance coefficient'});         ... % CA.
-nlgr = setpar(nlgr, 'Unit', {'kg'; 'm'; 'm'; 'N'; 'N/rad'; '1/m'});
-nlgr = setpar(nlgr, 'Minimum', num2cell(eps(0)*ones(6, 1)));   % All parameters > 0!
+nlgr.InputName =  {'Thruster1'; 'Thruster2'; 'Thruster3'; ...
+                   'Thurster4'; 'Thruster5'; 'Thruster6'};
 
-%%
-% Four of the six parameters of this model structure can readily be
-% obtained through the data sheet of the vehicle in question:
-%
-%    m  = 1700 kg
-%    a  = 1.5 m
-%    b  = 1.5 m
-%    CA = 0.5 or 0.7 1/m (see below)
-%
-% Hence we will not estimate these parameters:
-nlgr.Parameters(1).Fixed = true;
-nlgr.Parameters(2).Fixed = true;
-nlgr.Parameters(3).Fixed = true;
-nlgr.Parameters(6).Fixed = true;
+              nlgr.InputUnit =  {'%'; '%'; '%'; '%'; '%','%'};
+
+              nlgr.OutputName = state_strings;
+              nlgr.OutputUnit = state_units;
+
+
+
+% Names on initial states
+nlgr = setinit(nlgr, 'Name', state_strings);
+
+
+nlgr = setinit(nlgr, 'Unit', state_units);
+
+% Demands on the initial states
+%nlgr.InitialStates(1).Minimum = eps(0);   % Longitudinal velocity > 0 for the model to be valid.
+
+% Set the parameter names
+nlgr = setpar(nlgr, 'Name', parameter_strings);
+
+% Set the parameter units 
+%nlgr = setpar(nlgr, 'Unit', {'kg'; 'm'; 'm'; 'N'; 'N/rad'; '1/m'}); 
+
+% Set minimum of the parameters
+%nlgr = setpar(nlgr, 'Minimum', num2cell(eps(0)*ones(6, 1)));   % All parameters > 0!
+
+% Set that some of the parameters are known the other parameters is to 
+% be estimated
+
+fixed_parameters = [1:7];  % Stores the index of the parameters that is fixed
+for i = 1:size(fixed_parameters,2)
+ nlgr.Parameters(fixed_parameters(i)).Fixed = true;
+end
+
 
 %%
 % With this, a textual summary of the entered IDNLGREY model structure is

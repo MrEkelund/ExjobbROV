@@ -15,9 +15,6 @@ ly5= parameters(11)
 lz6= parameters(12)
 zb= parameters(13)
 
-
-
-
 %******* Inputs
 u1 = control(1);
 u2 = control(2);
