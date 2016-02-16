@@ -4,7 +4,7 @@ Export-Package: mavros_msgs;version="0.16.5";uses:="org.ros.internal.m
 Bundle-Version: 0.16.5
 Tool: Bnd-2.1.0.20130426-122213
 Bundle-Name: mavros_msgs
-Bnd-LastModified: 1454664871000
+Bnd-LastModified: 1455622675000
 Created-By: 1.7.0_60 (Oracle Corporation)
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.ros.rosjava_messages.mavros_msgs

@@ -103,7 +103,14 @@ for i = 1:size(P,2)
         else
             tecken = num2str(P(i));
         end
-        new_string = tecken; 
+        new_string = tecken;
+    elseif exponent ==1
+        if P(i) > 0
+         tecken = strcat('+',num2str(P(i)));
+        else
+            tecken = num2str(P(i));
+        end
+        new_string = strcat(tecken,'*u');
     else
         if P(i) >= 0
             tecken = strcat('+',num2str(P(i)));
@@ -118,10 +125,10 @@ legend('Measured',polystring ,'location','NorthWest')
 %print -f1 -depsc2 thrusterplot.eps
 %print -f1 -dpdf thrusterplot.pdf
 
-%%
-latex_map = [];
-for i = 1:size(map,1)
-    temp = strcat(num2str(map(i,1)), ' & ', num2str(map(i,2)), ' \\');
-    disp(temp)
-    latex_map{i} = temp;  
-end
+
+% latex_map = [];
+% for i = 1:size(map,1)
+%     temp = strcat(num2str(map(i,1)), ' & ', num2str(map(i,2)), ' \\');
+%     disp(temp)
+%     latex_map{i} = temp;  
+% end
