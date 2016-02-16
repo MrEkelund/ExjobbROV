@@ -8,13 +8,14 @@ g = 9.82;   % Gravity[m/s^2]
 rho = 1000; % water density [kg/m^3]
 V = 1;       % Discplaced water volume [m^3]
 % Thruster placement from CO [m]
+
 lx1 = 1;
 ly1 = 1;
 ly2 = 1;
 lx2 = 1;
 ly3 = 1;
-lx4 = 1;
-ly5 = 1;
+lx5 = 1;
+ly4 = 1;
 lz6 = 1;
 zb = 1;
 
@@ -51,7 +52,7 @@ r_init = ang_vel_data(1,3);
 fi_init = ori_data(1,1);
 theta_init = ori_data(1,2);
 
-parameter_strings = {'m';'g';'rho';'V';'lx1';'ly1';'ly2';'lx2';'ly3';'lx4';'ly5';'lz6';'zb';'Xu';'Xu_dot';'Xu_abs_u';'Yv';'Yv_dot';'Yv_abs_w';'Zw';'Zw_dot';'Zw_abs_w'; 'Kp';'Kp_dot'; 'Kp_abs_p'; 'Mq';'Mq_dot'; 'Mq_abs_q'; 'Nr';'Nr_dot';'Nr_abs_r';'Ix';'Iy';'Iz'};
+parameter_strings = {'m';'g';'rho';'V';'lx1';'ly1';'ly2';'lx2';'ly3';'lx5';'ly4';'lz6';'zb';'Xu';'Xu_dot';'Xu_abs_u';'Yv';'Yv_dot';'Yv_abs_w';'Zw';'Zw_dot';'Zw_abs_w'; 'Kp';'Kp_dot'; 'Kp_abs_p'; 'Mq';'Mq_dot'; 'Mq_abs_q'; 'Nr';'Nr_dot';'Nr_abs_r';'Ix';'Iy';'Iz'};
 state_strings = {'u';'v';'w'; 'p'; 'q'; 'r';'fi';'theta'};
 state_units = {'m/s'; 'm/s'; 'm/s';'rad/s'; 'rad/s'; 'rad/s';'rad';'rad'};
 
@@ -61,7 +62,7 @@ FileName      = 'rovMotionModel';                                       % File d
 
 Order         = [8 6 8];                                                % Model orders [ny nu nx].
 
-Parameters    = [m; g; rho; V; lx1; ly1; ly2; lx2; ly3; lx4; ly5; ...   % Initial parameters.
+Parameters    = [m; g; rho; V; lx1; ly1; ly2; lx2; ly3; lx5; ly4; ...   % Initial parameters.
                 lz6; zb; Xu_init; Xu_dot_init; Xu_abs_u_init;     ...
                 Yv_init; Yv_dot_init; Yv_abs_w_init; Zw_init;     ...
                 Zw_dot_init; Zw_abs_w_init; Kp_init; Kp_dot_init; ...
