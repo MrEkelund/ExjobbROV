@@ -11,8 +11,8 @@ ly1 = ;
 ly2 = ;
 lx2 = ;
 ly3 = ;
-lx4 = ;
-ly5 = ;
+lx5 = ;
+ly4 = ;
 lz6 = ;
 zb = ;
 
@@ -49,7 +49,7 @@ r_init = ;
 fi_init = ;
 theta_init = ;
 
-parameter_strings = {'m';'g';'rho';'V';'lx1';'ly1';'ly2';'lx2';'ly3';'lx4';'ly5';'lz6';'zb';'Xu';'Xu_dot';'Xu_abs_u';'Yv';'Yv_dot';'Yv_abs_w';'Zw';'Zw_dot';'Zw_abs_w'; 'Kp';'Kp_dot'; 'Kp_abs_p'; 'Mq';'Mq_dot'; 'Mq_abs_q'; 'Nr';'Nr_dot';'Nr_abs_r';'Ix';'Iy';'Iz'};
+parameter_strings = {'m';'g';'rho';'V';'lx1';'ly1';'ly2';'lx2';'ly3';'lx5';'ly4';'lz6';'zb';'Xu';'Xu_dot';'Xu_abs_u';'Yv';'Yv_dot';'Yv_abs_w';'Zw';'Zw_dot';'Zw_abs_w'; 'Kp';'Kp_dot'; 'Kp_abs_p'; 'Mq';'Mq_dot'; 'Mq_abs_q'; 'Nr';'Nr_dot';'Nr_abs_r';'Ix';'Iy';'Iz'};
 state_strings = {'u';'v';'w'; 'p'; 'q'; 'r';'fi';'theta'};
 state_units = {'m/s'; 'm/s'; 'm/s';'m/s'; 'm/s'; 'm/s';'rad';'rad'};
 
@@ -59,7 +59,7 @@ FileName      = 'rovMotionModel';                                       % File d
 
 Order         = [8 8 6];                                                % Model orders [ny nx nu].
 
-Parameters    = [m; g; rho; V; lx1; ly1; ly2; lx2; ly3; lx4; ly5; ...   % Initial parameters.
+Parameters    = [m; g; rho; V; lx1; ly1; ly2; lx2; ly3; lx5; ly4; ...   % Initial parameters.
                 lz6; zb; Xu_init; Xu_dot_init; Xu_abs_u_init;     ...
                 Yv_init; Yv_dot_init; Yv_abs_w_init; Zw_init;     ...
                 Zw_dot_init; Zw_abs_w_init; Kp_init; Kp_dot_init; ...
