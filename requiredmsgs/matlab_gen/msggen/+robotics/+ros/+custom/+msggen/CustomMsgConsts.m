@@ -10,6 +10,7 @@ classdef CustomMsgConsts
         mavros_msgs_CommandLong = 'mavros_msgs/CommandLong'
         mavros_msgs_CommandLongRequest = 'mavros_msgs/CommandLongRequest'
         mavros_msgs_CommandLongResponse = 'mavros_msgs/CommandLongResponse'
+        mavros_msgs_RCOut = 'mavros_msgs/RCOut'
     end
     
     methods (Static, Hidden)
@@ -19,11 +20,12 @@ classdef CustomMsgConsts
             
             persistent msgList
             if isempty(msgList)
-                msgList = cell(4, 1);
+                msgList = cell(5, 1);
                 msgList{1} = 'mavros_msgs/ActuatorControl';
                 msgList{2} = 'mavros_msgs/CommandLong';
                 msgList{3} = 'mavros_msgs/CommandLongRequest';
                 msgList{4} = 'mavros_msgs/CommandLongResponse';
+                msgList{5} = 'mavros_msgs/RCOut';
             end
             
             messageList = msgList;

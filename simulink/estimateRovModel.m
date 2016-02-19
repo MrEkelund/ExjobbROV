@@ -1,63 +1,67 @@
 %% Initialise the parameters of the ROV estimation.
+% 
+[lin_acc_data, ang_vel_data, ori_data,time_vector, rc_data ,rc_time] = retriveImuData('../bag/super_2016-02-16-09-13-35.bag',0);
+
 % Some constants
-Ts = ;      % Sample time [s].                                                     
-m = ;       % ROV mass[kg];       
+Ts = 0;      % Sample time [s].                                                     
+m = 5;       % ROV mass[kg];       
 g = 9.82;   % Gravity[m/s^2]
 rho = 1000; % water density [kg/m^3]
-V = ;       % Discplaced water volume [m^3]
+V = 1;       % Discplaced water volume [m^3]
 % Thruster placement from CO [m]
-lx1 = ;
-ly1 = ;
-ly2 = ;
-lx2 = ;
-ly3 = ;
-lx5 = ;
-ly4 = ;
-lz6 = ;
-zb = ;
+
+lx1 = 1;
+ly1 = 1;
+ly2 = 1;
+lx2 = 1;
+ly3 = 1;
+lx5 = 1;
+ly4 = 1;
+lz6 = 1;
+zb = 1;
 
 % Parameters that will be estimated
-Xu_init = ;
-Xu_dot_init = ;
-Xu_abs_u_init = ;
-Yv_init = ;
-Yv_dot_init = ;
-Yv_abs_w_init = ;
-Zw_init = ;
-Zw_dot_init = ;
-Zw_abs_w_init =;
-Kp_init = ;
-Kp_dot_init = ;
-Kp_abs_p_init = ;
-Mq_init = ;
-Mq_dot_init = ;
-Mq_abs_q_init = ;
-Nr_init = ;
-Nr_dot_init = ;
-Nr_abs_r_init = ;
-Ix_init = ;
-Iy_init = ;
-Iz_init = ;
+Xu_init = 1;
+Xu_dot_init = 1;
+Xu_abs_u_init = 1;
+Yv_init = 1;
+Yv_dot_init = 1;
+Yv_abs_w_init = 1;
+Zw_init = 1;
+Zw_dot_init = 1;
+Zw_abs_w_init = 1;
+Kp_init = 1;
+Kp_dot_init = 1;
+Kp_abs_p_init = 1;
+Mq_init = 1;
+Mq_dot_init = 1;
+Mq_abs_q_init = 1;
+Nr_init = 1;
+Nr_dot_init = 1;
+Nr_abs_r_init = 1;
+Ix_init = 1;
+Iy_init = 1;
+Iz_init = 1;
 
 % Initial states
-u_init = ;
-v_init = ;
-w_init = ;
-p_init = ;
-q_init = ;
-r_init = ;
-fi_init = ;
-theta_init = ;
+u_init = 0;
+v_init = 0;
+w_init = 0;
+p_init = ang_vel_data(1,1);
+q_init = ang_vel_data(1,2);
+r_init = ang_vel_data(1,3);
+fi_init = ori_data(1,1);
+theta_init = ori_data(1,2);
 
 parameter_strings = {'m';'g';'rho';'V';'lx1';'ly1';'ly2';'lx2';'ly3';'lx5';'ly4';'lz6';'zb';'Xu';'Xu_dot';'Xu_abs_u';'Yv';'Yv_dot';'Yv_abs_w';'Zw';'Zw_dot';'Zw_abs_w'; 'Kp';'Kp_dot'; 'Kp_abs_p'; 'Mq';'Mq_dot'; 'Mq_abs_q'; 'Nr';'Nr_dot';'Nr_abs_r';'Ix';'Iy';'Iz'};
 state_strings = {'u';'v';'w'; 'p'; 'q'; 'r';'fi';'theta'};
-state_units = {'m/s'; 'm/s'; 'm/s';'m/s'; 'm/s'; 'm/s';'rad';'rad'};
+state_units = {'m/s'; 'm/s'; 'm/s';'rad/s'; 'rad/s'; 'rad/s';'rad';'rad'};
 
 %% Set up the nglr object
 
 FileName      = 'rovMotionModel';                                       % File describing the model structure.
 
-Order         = [8 8 6];                                                % Model orders [ny nx nu].
+Order         = [8 6 8];                                                % Model orders [ny nu nx].
 
 Parameters    = [m; g; rho; V; lx1; ly1; ly2; lx2; ly3; lx5; ly4; ...   % Initial parameters.
                 lz6; zb; Xu_init; Xu_dot_init; Xu_abs_u_init;     ...
@@ -78,7 +82,7 @@ nlgr = idnlgrey(FileName, Order, Parameters, InitialStates, Ts, ...
 nlgr.InputName =  {'Thruster1'; 'Thruster2'; 'Thruster3'; ...
                    'Thurster4'; 'Thruster5'; 'Thruster6'};
 
-              nlgr.InputUnit =  {'%'; '%'; '%'; '%'; '%','%'};
+              nlgr.InputUnit =  {'%'; '%'; '%'; '%'; '%';'%'};
 
               nlgr.OutputName = state_strings;
               nlgr.OutputUnit = state_units;
@@ -140,7 +144,7 @@ load(fullfile(matlabroot, 'toolbox', 'ident', 'iddemos', 'data', 'vehicledata'))
 % vehicle so much in the lateral direction.
 nlgr1 = nlgr;
 nlgr1.Name = 'Bicycle vehicle model with high tire stiffness';
-z1 = iddata(y1, u1, 0.1, 'Name', 'Simulated high tire stiffness vehicle data');
+z1 = iddata([], rc_data, , 'Name', 'Simulated high tire stiffness vehicle data');
 z1.InputName = nlgr1.InputName;
 z1.InputUnit = nlgr1.InputUnit;
 z1.OutputName = nlgr1.OutputName;
