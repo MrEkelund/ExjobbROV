@@ -1,4 +1,5 @@
 %% Initialise the parameters of the ROV estimation.
+% 
 [lin_acc_data, ang_vel_data, ori_data,time_vector, rc_data ,rc_time] = retriveImuData('../bag/super_2016-02-16-09-13-35.bag',0);
 
 % Some constants
@@ -143,7 +144,7 @@ load(fullfile(matlabroot, 'toolbox', 'ident', 'iddemos', 'data', 'vehicledata'))
 % vehicle so much in the lateral direction.
 nlgr1 = nlgr;
 nlgr1.Name = 'Bicycle vehicle model with high tire stiffness';
-z1 = iddata(y1, u1, 0.1, 'Name', 'Simulated high tire stiffness vehicle data');
+z1 = iddata([], rc_data, , 'Name', 'Simulated high tire stiffness vehicle data');
 z1.InputName = nlgr1.InputName;
 z1.InputUnit = nlgr1.InputUnit;
 z1.OutputName = nlgr1.OutputName;
