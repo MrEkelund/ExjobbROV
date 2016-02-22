@@ -14,4 +14,8 @@
 #define THRUSTERMAX 1900
 #define THRUSTERMIN 1100
 
+// Defines for the water pressure sensor
+#define FLUIDDENSITY 1000 // Kanske redundant
+
+
 #endif //_ROV_DEFINES_H_
