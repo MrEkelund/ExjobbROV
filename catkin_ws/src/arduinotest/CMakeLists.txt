@@ -99,7 +99,7 @@ catkin_package(
 )
 
 rosserial_generate_ros_lib(
-  PACKAGE rosserial_arduino
+  PACKAGE rosserial_arduino ros
   SCRIPT make_libraries.py
 )
 

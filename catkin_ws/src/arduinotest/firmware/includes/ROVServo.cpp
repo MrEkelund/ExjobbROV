@@ -21,7 +21,7 @@ void ROVServo::initROVServo() {
 }
 
 // Check if the pwm signals are higher/lower then allowed.
-void ROVServo::pwmSanityCheck(int* thruster_pwm_array) {
+void ROVServo::pwmSanityCheck(uint16_t* thruster_pwm_array) {
   for (int i = 0; i < 6; i++) {
     if (thruster_pwm_array[i] < THRUSTERMIN) {
       thruster_pwm_array[i] = THRUSTERMIN;
@@ -33,7 +33,7 @@ void ROVServo::pwmSanityCheck(int* thruster_pwm_array) {
 }
 
 // Set the thrusters output in microseconds.
-void ROVServo::setThrusters(int* thruster_pwm_array) {
+void ROVServo::setThrusters(uint16_t* thruster_pwm_array) {
   pwmSanityCheck(thruster_pwm_array);
 
   for (int i = 0; i < 6; i++) {
