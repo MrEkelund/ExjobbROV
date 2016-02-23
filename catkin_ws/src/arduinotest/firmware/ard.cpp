@@ -1,6 +1,7 @@
 #include "defines.h"
 #include "ROVServo.h"
 #include "MS5837.h"
+#include "MS5611.h"
 
 //#define USE_USBCON
 #include <ros.h>
@@ -30,6 +31,7 @@ ros::Publisher sensor_publisher("rovio/sensors", &sensor_message);
 // Internal objects
 ROVServo rov_servo;
 MS5837 water_pressure_sensor;
+MS5611 air_pressure_sensor;
 
 // Internal variables
 uint16_t pwm_array[6];
@@ -38,7 +40,6 @@ uint16_t pwm_array[6];
 *       Functions                                                             *
 *******************************************************************************/
 void sendSensors() {
-  water_pressure_sensor.read();
   //Serial.print("Pressure: /t");
   //Serial.println(water_pressure_sensor.pressure, DEC);
   // char temp[10];
@@ -56,13 +57,15 @@ void sendSensors() {
 
   //water_pressure_sensor.readTestCase();
   sensor_message.data[0] = water_pressure_sensor.pressure();
-  sensor_message.data[1] = water_pressure_sensor.altitude();
+  sensor_message.data[1] = air_pressure_sensor.pressure();
+  sensor_message.data[2] = air_pressure_sensor.temperature();
   sensor_publisher.publish(&sensor_message);
 }
 
 void spin() {
   nh.spinOnce();
   water_pressure_sensor.read();
+  air_pressure_sensor.read();
 
   sendSensors();
 }
@@ -71,7 +74,7 @@ void spin() {
 void setup() {
   nh.loginfo("Setting up");
 
-  sensor_message.data_length = 2;
+  sensor_message.data_length = 3;
   sensor_message.layout.dim[0].size = sensor_message.data_length;
   sensor_message.layout.dim[0].stride = 1*sensor_message.data_length;
   sensor_message.layout.dim[0].label = "Sensors";
@@ -82,12 +85,14 @@ void setup() {
   }
 
   Wire.begin();
-  SPI.begin();
   water_pressure_sensor.init();
   water_pressure_sensor.setFluidDensity(997);
 
   nh.initNode();
   nh.advertise(sensor_publisher);
+
+  SPI.begin();
+  air_pressure_sensor.init(40, nh);
 }
 
 void loop() {
