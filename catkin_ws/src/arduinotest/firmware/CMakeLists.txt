@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-include_directories(${ROS_LIB_DIR} includes)
+file(GLOB_RECURSE INCLUDES includes/EigenArduino)
+include_directories(${ROS_LIB_DIR} includes includes/EigenArduino)
 
 # Remove this if using an Arduino without native USB (eg, other than Leonardo)
 add_definitions(-DUSB_CON)
