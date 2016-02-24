@@ -34,7 +34,7 @@ ros::Publisher sensor_publisher("rovio/sensors", &sensor_message);
 ROVServo rov_servo;
 MS5837 water_pressure_sensor;
 MS5611 air_pressure_sensor;
-MPU6000 imu(0,1);
+MPU6000 imu(false,1, 40);
 
 // Internal variables
 uint16_t pwm_array[6];
@@ -63,7 +63,7 @@ void sendSensors() {
   // sensor_message.data[1] = air_pressure_sensor.pressure();
   // sensor_message.data[2] = air_pressure_sensor.temperature();
   float x,y,z;
-  accel(x,y,z);
+  imu.accel(x,y,z);
   sensor_message.data[0] = x;
   sensor_message.data[1] = y;
   sensor_message.data[2] = z;

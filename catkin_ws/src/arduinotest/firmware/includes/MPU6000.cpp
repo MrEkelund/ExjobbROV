@@ -1,4 +1,4 @@
-#include "AP_InertialSensor_MPU6000.h"
+#include "MPU6000.h"
 
 
 // MPU6000 accelerometer scaling
@@ -170,6 +170,8 @@
 #define MPU6000_REV_D8                          0x58    // 0101			1000
 #define MPU6000_REV_D9                          0x59    // 0101			1001
 
+#define CMD_READ 0x00
+
 #define MPU6000_SAMPLE_SIZE 14
 #define MPU6000_MAX_FIFO_SAMPLES 3
 #define MAX_DATA_READ (MPU6000_MAX_FIFO_SAMPLES * MPU6000_SAMPLE_SIZE)
@@ -191,10 +193,10 @@ static const float GYRO_SCALE = (0.0174532f / 16.4f);
  *  variants however
  */
 
-MPU6000::MPU6000(bool use_fifo, uint8_t read_flag)
+MPU6000::MPU6000(bool use_fifo, uint8_t read_flag, uint8_t chipSelect)
     : _read_flag(read_flag)
     , _use_fifo(use_fifo)
-    , _temp_filter(1000, 1)
+    , _MPU6000ChipSelect(chipSelect)
 {
 }
 
@@ -209,13 +211,13 @@ void MPU6000::init(ros::NodeHandle& nh) {
 }
 
 void MPU6000::fifoReset() {
-    register_write(MPUREG_USER_CTRL, 0);
-    register_write(MPUREG_USER_CTRL, BIT_USER_CTRL_FIFO_RESET);
-    register_write(MPUREG_USER_CTRL, BIT_USER_CTRL_FIFO_EN);
+    registerWrite(MPUREG_USER_CTRL, 0);
+    registerWrite(MPUREG_USER_CTRL, BIT_USER_CTRL_FIFO_RESET);
+    registerWrite(MPUREG_USER_CTRL, BIT_USER_CTRL_FIFO_EN);
 }
 
 void MPU6000::fifoEnable() {
-    register_write(MPUREG_FIFO_EN, BIT_XG_FIFO_EN | BIT_YG_FIFO_EN |
+    registerWrite(MPUREG_FIFO_EN, BIT_XG_FIFO_EN | BIT_YG_FIFO_EN |
                     BIT_ZG_FIFO_EN | BIT_ACCEL_FIFO_EN | BIT_TEMP_FIFO_EN);
     fifoReset();
     delay(1);
@@ -229,12 +231,13 @@ bool AP_InertialSensor_MPU6000::_has_auxiliary_bus()
 
 void MPU6000::start() {
 
+    uint8_t product_id;
     // only used for wake-up in accelerometer only low power mode
     registerWrite(MPUREG_PWR_MGMT_2, 0x00);
     delay(1);
 
     if (_use_fifo) {
-        fifo_enable();
+        fifoEnable();
     }
 
     // disable sensor filtering
@@ -253,15 +256,15 @@ void MPU6000::start() {
     delay(1);
 
     // read the product ID rev c has 1/2 the sensitivity of rev d
-    _product_id = registerRead(MPUREG_PRODUCT_ID);
+    product_id = registerRead(MPUREG_PRODUCT_ID);
     //Serial.printf("Product_ID= 0x%x\n", (unsigned) _mpu6000_product_id);
 
     // TODO: should be changed to 16G once we have a way to override the
     // previous offsets
-    if ((_product_id == MPU6000ES_REV_C4) ||
-        (_product_id == MPU6000ES_REV_C5) ||
-        (_product_id == MPU6000_REV_C4)   ||
-        (_product_id == MPU6000_REV_C5)) {
+    if ((product_id == MPU6000ES_REV_C4) ||
+        (product_id == MPU6000ES_REV_C5) ||
+        (product_id == MPU6000_REV_C4)   ||
+        (product_id == MPU6000_REV_C5)) {
         // Accel scale 8g (4096 LSB/g)
         // Rev C has different scaling than rev D
         registerWrite(MPUREG_ACCEL_CONFIG,1<<3);
@@ -283,18 +286,20 @@ void MPU6000::start() {
 /*
   process any
  */
-bool AP_InertialSensor_MPU6000::update()
-{
-    update_accel(_accel_instance);
-    update_gyro(_gyro_instance);
+ // TODO
 
-    _publish_temperature(_accel_instance, _temp_filtered);
-
-    /* give the temperature to the control loop in order to keep it constant*/
-    hal.util->set_imu_temp(_temp_filtered);
-
-    return true;
-}
+// bool AP_InertialSensor_MPU6000::update()
+// {
+//     update_accel(_accel_instance);
+//     update_gyro(_gyro_instance);
+//
+//     _publish_temperature(_accel_instance, _temp_filtered);
+//
+//     /* give the temperature to the control loop in order to keep it constant*/
+//     hal.util->set_imu_temp(_temp_filtered);
+//
+//     return true;
+// }
 
 /*
 AuxiliaryBus *AP_InertialSensor_MPU6000::get_auxiliary_bus()
@@ -316,7 +321,7 @@ AuxiliaryBus *AP_InertialSensor_MPU6000::get_auxiliary_bus()
  * We use the data ready pin if it is available.  Otherwise, read the
  * status register.
  */
-bool AP_InertialSensor_MPU6000::_data_ready() {
+bool MPU6000::dataReady() {
     uint8_t status = registerRead(MPUREG_INT_STATUS);
     return (status & BIT_RAW_RDY_INT) != 0;
 }
@@ -405,7 +410,7 @@ void MPU6000::readFifo()
         return;
     }
 
-    block_read(MPUREG_FIFO_R_W, rx, n_samples * MPU6000_SAMPLE_SIZE);
+    blockRead(MPUREG_FIFO_R_W, rx, n_samples * MPU6000_SAMPLE_SIZE);
 
     accumulate(rx, n_samples);
 }
@@ -423,8 +428,7 @@ void MPU6000::readSample()
     accumulate(rx.d, 1);
 }
 
-void MPU6000::blockRead(uint8_t reg, uint8_t *buf,
-                                            uint32_t size) {
+void MPU6000::blockRead(uint8_t reg, uint8_t *buf, uint32_t size) {
   uint8_t return_value;
   reg |= _read_flag;
   digitalWrite(_MPU6000ChipSelect, LOW);
@@ -432,13 +436,11 @@ void MPU6000::blockRead(uint8_t reg, uint8_t *buf,
   for (uint32_t i = 0; i < size; i++) {
     buf[i] = SPI.transfer(CMD_READ);
   }
-  digitalWrite(ChipSelPin,HIGH);
+  digitalWrite(_MPU6000ChipSelect,HIGH);
 
-  return(return_value);
 }
 
-uint8_t MPU6000::registerRead(uint8_t reg)
-{
+uint8_t MPU6000::registerRead(uint8_t reg) {
     uint8_t val = 0;
 
     reg |= _read_flag;
@@ -454,18 +456,16 @@ uint8_t MPU6000::registerRead(uint8_t reg)
 }
 
 void MPU6000::registerWrite(uint8_t reg, uint8_t val) {
-  uint8_t dump;
-  digitalWrite(_MPU6000_chip_select, LOW);
-  dump=SPI.transfer(reg);
-  dump=SPI.transfer(data);
-  digitalWrite(_MPU6000_chip_select, HIGH);
+  digitalWrite(_MPU6000ChipSelect, LOW);
+  SPI.transfer(reg);
+  SPI.transfer(val);
+  digitalWrite(_MPU6000ChipSelect, HIGH);
 }
 
 /*
   set the DLPF filter frequency.
  */
-void MPU6000::setFilterRegister(uint16_t filter_hz)
-{
+void MPU6000::setFilterRegister(uint16_t filter_hz) {
     uint8_t filter;
     // choose filtering frequency
     if (filter_hz == 0) {
@@ -483,7 +483,7 @@ void MPU6000::setFilterRegister(uint16_t filter_hz)
     } else {
         filter = BITS_DLPF_CFG_256HZ_NOLPF2;
     }
-    register_write(MPUREG_CONFIG, filter);
+    registerWrite(MPUREG_CONFIG, filter);
 }
 
 
@@ -532,17 +532,17 @@ void MPU6000::hardwareInit() {
     }
 }
 
-void accel(float& x, float& y, float& z) {
+void MPU6000::accel(float& x, float& y, float& z) {
   x = _accel[0];
   y = _accel[1];
   z = _accel[2];
 }
-void gyro(float& x, float& y, float& z) {
-  x = _gyrp[0];
+void MPU6000::gyro(float& x, float& y, float& z) {
+  x = _gyro[0];
   y = _gyro[1];
   z = _gyro[2];
 }
-float temp() {
+float MPU6000::temp() {
   return _temp;
 }
 
