@@ -69,7 +69,9 @@ T = [...
     0, 0, ly3, -ly4, 0, 0];
 
 
-p = [-1.3536   -0.4257    2.5444    0.8196    0.9102    0.0111];
+% old p = [-1.3536   -0.4257    2.5444    0.8196    0.9102    0.0111];
+% is this right? Should it take kgf as input?
+% why not controllsignal
 thrusterforce = [...
         g*f1;
         g*f2;
@@ -80,4 +82,4 @@ thrusterforce = [...
 
 tau = T*thrusterforce;
 
-nu_dot = inv(M)*(tau-C-D-g)
+nu_dot = inv(M)*(tau-C-D-gn)

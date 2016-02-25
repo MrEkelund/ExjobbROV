@@ -1,4 +1,8 @@
 function [force] = PWMtoForce(pwm_in)
+%OBS! This is for t100 thruster. We have the t200 thruster.
+
+
+
 %Converts PWM signal in us to force in newtons
 % several doifferent sets of coefficients are supplied
 % Data used for poyfit comes from BlueROV extra folder.

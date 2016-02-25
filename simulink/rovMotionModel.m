@@ -43,92 +43,92 @@ sf = sind(fi);
 
 B = rho*g*V;
 W = m*g;
-% look-up table
+% look-up table for t200.
 lookup =[...
-   -1.7682   -1.0000
-   -1.6409   -0.9750
-   -1.5773   -0.9500
-   -1.5273   -0.9250
-   -1.4409   -0.9000
-   -1.4000   -0.8750
-   -1.3227   -0.8500
-   -1.2591   -0.8250
-   -1.2091   -0.8000
-   -1.1636   -0.7750
-   -1.1045   -0.7500
-   -1.0409   -0.7250
-   -0.9909   -0.7000
-   -0.9273   -0.6750
-   -0.8545   -0.6500
-   -0.7909   -0.6250
-   -0.7545   -0.6000
-   -0.7045   -0.5750
-   -0.6682   -0.5500
-   -0.6227   -0.5250
-   -0.5818   -0.5000
-   -0.5318   -0.4750
-   -0.4727   -0.4500
-   -0.4273   -0.4250
-   -0.4000   -0.4000
-   -0.3682   -0.3750
-   -0.3273   -0.3500
-   -0.2727   -0.3250
-   -0.2318   -0.3000
-   -0.2000   -0.2750
-   -0.1682   -0.2500
-   -0.1409   -0.2250
-   -0.1045   -0.2000
-   -0.0727   -0.1750
-   -0.0500   -0.1500
-   -0.0318   -0.1250
-   -0.0136   -0.1000
-   -0.0091   -0.0750
+   -4.0823   -1.0000
+   -4.0823   -0.9750
+   -4.0869   -0.9500
+   -3.8283   -0.9250
+   -3.7331   -0.9000
+   -3.6197   -0.8750
+   -3.4428   -0.8500
+   -3.3022   -0.8250
+   -3.1842   -0.8000
+   -3.0572   -0.7750
+   -2.9075   -0.7500
+   -2.8168   -0.7250
+   -2.7079   -0.7000
+   -2.5265   -0.6750
+   -2.3632   -0.6500
+   -2.2589   -0.6250
+   -2.1772   -0.6000
+   -1.9913   -0.5750
+   -1.8824   -0.5500
+   -1.7690   -0.5250
+   -1.6420   -0.5000
+   -1.4923   -0.4750
+   -1.3336   -0.4500
+   -1.2428   -0.4250
+   -1.1204   -0.4000
+   -1.0251   -0.3750
+   -0.9072   -0.3500
+   -0.7893   -0.3250
+   -0.6940   -0.3000
+   -0.6169   -0.2750
+   -0.5216   -0.2500
+   -0.4354   -0.2250
+   -0.3538   -0.2000
+   -0.2767   -0.1750
+   -0.1905   -0.1500
+   -0.1134   -0.1250
+   -0.0544   -0.1000
+   -0.0272   -0.0750
          0   -0.0500
+         0   -0.0250
          0         0
          0    0.0250
          0    0.0500
-    0.0091    0.0750
-    0.0364    0.1000
-    0.0636    0.1250
-    0.1045    0.1500
-    0.1455    0.1750
-    0.1955    0.2000
-    0.2545    0.2250
-    0.3091    0.2500
-    0.3682    0.2750
-    0.4318    0.3000
-    0.4818    0.3250
-    0.5455    0.3500
-    0.6136    0.3750
-    0.6864    0.4000
-    0.7364    0.4250
-    0.8045    0.4500
-    0.8818    0.4750
-    0.9636    0.5000
-    1.0591    0.5250
-    1.1318    0.5500
-    1.1864    0.5750
-    1.2545    0.6000
-    1.3045    0.6250
-    1.3864    0.6500
-    1.4909    0.6750
-    1.5773    0.7000
-    1.6545    0.7250
-    1.7273    0.7500
-    1.8227    0.7750
-    1.9591    0.8000
-    2.0455    0.8250
-    2.1000    0.8500
-    2.1818    0.8750
-    2.2636    0.9000
-    2.3227    0.9250
-    2.4182    0.9500
-    2.4864    0.9750
-    2.5182    1.0000];
+    0.0590    0.0750
+    0.1134    0.1000
+    0.1860    0.1250
+    0.2631    0.1500
+    0.3493    0.1750
+    0.4173    0.2000
+    0.5216    0.2250
+    0.6350    0.2500
+    0.7167    0.2750
+    0.8437    0.3000
+    0.9435    0.3250
+    1.1022    0.3500
+    1.2474    0.3750
+    1.3925    0.4000
+    1.5286    0.4250
+    1.6783    0.4500
+    1.8053    0.4750
+    1.9595    0.5000
+    2.0956    0.5250
+    2.2181    0.5500
+    2.4131    0.5750
+    2.5220    0.6000
+    2.6943    0.6250
+    2.8259    0.6500
+    3.0209    0.6750
+    3.1933    0.7000
+    3.3521    0.7250
+    3.4473    0.7500
+    3.4927    0.7750
+    3.7784    0.8000
+    3.9417    0.8250
+    4.0052    0.8500
+    4.1957    0.8750
+    4.3772    0.9000
+    4.5677    0.9250
+    4.8035    0.9500
+    4.8988    0.9750
+    5.0938    1.0000];
 
 
-% old polynomial for polyeval p = [-1.3536   -0.4257    2.5444    0.8196    0.9102    0.0111];
-%Thrusterforce
+%Thrusterforce in newtons. lookup table returns in kgf
 f1 = g*interp1(lookup(:,2),lookup(:,1),u1);
 f2 = g*interp1(lookup(:,2),lookup(:,1),u2);
 f3 = g*interp1(lookup(:,2),lookup(:,1),u3);
@@ -141,7 +141,7 @@ Xu_dot= parameters(15)
 Xu_abs_u= parameters(16)
 Yv= parameters(17)
 Yv_dot= parameters(18)
-Yv_abs_w= parameters(19)
+Yv_abs_v= parameters(19)
 Zw= parameters(20)
 Zw_dot= parameters(21)
 Zw_abs_w= parameters(22)
@@ -162,14 +162,16 @@ Iz= parameters(34)
 
 
 
-u_dot  = (u*(Xu + Xu_abs_u*abs(u)) - g + f3*g + f4*g - m*(q*w - r*v) - Yv_dot*r*v + Zw_dot*q*w)/(Xu_dot + m)
-v_dot  = -(g - v*(Yv + Yv_abs_v*abs(v)) + f6*g - m*(p*w - r*u) - Xu_dot*r*u + Zw_dot*p*w)/(Yv_dot + m)
-w_dot  = -(g - w*(Zw + Zw_abs_w*abs(w)) + f1*g + f2*g + f5*g + m*(p*v - q*u) + Xu_dot*q*u - Yv_dot*p*v)/(Zw_dot + m)
-p_dot  = -(g - p*(Kp + Kp_abs_p*abs(p)) + q*r*(Iy - Iz) - f1*g*ly1 + f2*g*ly2 - f6*g*lz6 + q*r*(Mq_dot - Nr_dot) + v*w*(Yv_dot - Zw_dot))/(Ix + Kp_dot)
-q_dot  = (q*(Mq + Mq_abs_q*abs(q)) - g + p*r*(Ix - Iz) + f1*g*lx1 + f2*g*lx2 - f5*g*lx5 + p*r*(Kp_dot - Nr_dot) + u*w*(Xu_dot - Zw_dot))/(Iy + Mq_dot)
-r_dot  = -(g - r*(Nr + Nr_abs_r*abs(r)) + p*q*(Ix - Iy) + p*q*(Kp_dot - Mq_dot) - f3*g*ly3 + f4*g*ly4 + u*v*(Xu_dot - Yv_dot))/(Iz + Nr_dot)
  
 
+u_dot  = (u*(Xu + Xu_abs_u*abs(u)) + st*(B - W) + f3*g + f4*g - m*(q*w - r*v) - Yv_dot*r*v + Zw_dot*q*w)/(Xu_dot + m);
+v_dot  = (v*(Yv + Yv_abs_v*abs(v)) - f6*g + m*(p*w - r*u) - ct*sf*(B - W) + Xu_dot*r*u - Zw_dot*p*w)/(Yv_dot + m);
+w_dot  = -(f1*g - w*(Zw + Zw_abs_w*abs(w)) + f2*g + f5*g + m*(p*v - q*u) + ct*sf*(B - W) + Xu_dot*q*u - Yv_dot*p*v)/(Zw_dot + m);
+p_dot  = (p*(Kp + Kp_abs_p*abs(p)) - q*r*(Iy - Iz) + f1*g*ly1 - f2*g*ly2 + f6*g*lz6 - q*r*(Mq_dot - Nr_dot) - v*w*(Yv_dot - Zw_dot) + B*ct*sf*zb)/(Ix + Kp_dot);
+q_dot  = (q*(Mq + Mq_abs_q*abs(q)) + B*st*zb + p*r*(Ix - Iz) + f1*g*lx1 + f2*g*lx2 - f5*g*lx5 + p*r*(Kp_dot - Nr_dot) + u*w*(Xu_dot - Zw_dot))/(Iy + Mq_dot);
+r_dot  = -(p*q*(Ix - Iy) - r*(Nr + Nr_abs_r*abs(r)) + p*q*(Kp_dot - Mq_dot) - f3*g*ly3 + f4*g*ly4 + u*v*(Xu_dot - Yv_dot))/(Iz + Nr_dot);
+
+% old models 
 % u_dot = (u*(Xu + Xu_abs_u*abs(u)) - g + f3*g + f5*g - m*(q*w - r*v) - Yv_dot*r*v + Zw_dot*q*w)/(Xu_dot + m)
 % v_dot = -(g - v*(Yv + Yv_abs_v*abs(v)) + f6*g - m*(p*w - r*u) - Xu_dot*r*u + Zw_dot*p*w)/(Yv_dot + m)
 % w_dot = -(g - w*(Zw + Zw_abs_w*abs(w)) + f1*g + f2*g + f4*g + m*(p*v - q*u) + Xu_dot*q*u - Yv_dot*p*v)/(Zw_dot + m)
@@ -177,8 +179,15 @@ r_dot  = -(g - r*(Nr + Nr_abs_r*abs(r)) + p*q*(Ix - Iy) + p*q*(Kp_dot - Mq_dot) 
 % q_dot = (q*(Mq + Mq_abs_q*abs(q)) - g + p*r*(Ix - Iz) - f1*g*lx1 + f2*g*lx2 - f4*g*lx5 + p*r*(Kp_dot - Nr_dot) + u*w*(Xu_dot - Zw_dot))/(Iy + Mq_dot)
 % r_dot = -(g - r*(Nr + Nr_abs_r*abs(r)) + p*q*(Ix - Iy) + p*q*(Kp_dot - Mq_dot) - f3*g*ly3 + f5*g*ly4 + u*v*(Xu_dot - Yv_dot))/(Iz + Nr_dot)
  
+% u_dot  = (u*(Xu + Xu_abs_u*abs(u)) - g + f3*g + f4*g - m*(q*w - r*v) - Yv_dot*r*v + Zw_dot*q*w)/(Xu_dot + m)
+% v_dot  = -(g - v*(Yv + Yv_abs_v*abs(v)) + f6*g - m*(p*w - r*u) - Xu_dot*r*u + Zw_dot*p*w)/(Yv_dot + m)
+% w_dot  = -(g - w*(Zw + Zw_abs_w*abs(w)) + f1*g + f2*g + f5*g + m*(p*v - q*u) + Xu_dot*q*u - Yv_dot*p*v)/(Zw_dot + m)
+% p_dot  = -(g - p*(Kp + Kp_abs_p*abs(p)) + q*r*(Iy - Iz) - f1*g*ly1 + f2*g*ly2 - f6*g*lz6 + q*r*(Mq_dot - Nr_dot) + v*w*(Yv_dot - Zw_dot))/(Ix + Kp_dot)
+% q_dot  = (q*(Mq + Mq_abs_q*abs(q)) - g + p*r*(Ix - Iz) + f1*g*lx1 + f2*g*lx2 - f5*g*lx5 + p*r*(Kp_dot - Nr_dot) + u*w*(Xu_dot - Zw_dot))/(Iy + Mq_dot)
+% r_dot  = -(g - r*(Nr + Nr_abs_r*abs(r)) + p*q*(Ix - Iy) + p*q*(Kp_dot - Mq_dot) - f3*g*ly3 + f4*g*ly4 + u*v*(Xu_dot - Yv_dot))/(Iz + Nr_dot)
+
  
- 
+%should use predetermined cos(fi) sin fi etc.
 fi_dot = p + q*sin(fi)*tan(theta) + r*cos(fi)*tan(theta);
 theta_dot = q*cos(fi) - r*sin(fi);
  
