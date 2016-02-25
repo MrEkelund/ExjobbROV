@@ -54,10 +54,10 @@ acc_bias = [acc_bias_x;acc_bias_y;acc_bias_z];
 %     0, 0, 0;    %z acc bias
 %     0, 0, 0];   %D pos aka depth
 
-motion_model=[(eye(4) + 1/2*Sw*T)*q;gyro_bias;acc_bias;d];
 
 
-%acceleration in body frame
+ %% H matrix 
+ %acceleration in body frame
 acc_ned = [acc_n; acc_e; acc_d];
 % measurement equation for acceleration
 acc_meas = transpose(Q)*([0; 0; g] + acc_bias); % fråga Manon + acc_ned
@@ -67,8 +67,9 @@ mag_meas = transpose(Q)*mag_global;
 
 % measurement equation pressure sensor
  pressure_meas =  rho*g*(d+[0,0,1]*Q*[x_offset;0;0]) - pressure_atm;
- %% H matrix 
+ 
  measurement_eqs = [acc_meas;mag_meas;pressure_meas];
+ 
  states = [transpose(q),transpose(gyro_bias),transpose(acc_bias),d];
  %derivatives for acc meas eq
  nr_meas_eqs = length(measurement_eqs);
@@ -76,22 +77,25 @@ mag_meas = transpose(Q)*mag_global;
 
 for i=1:nr_meas_eqs
     for j=1:nr_states
-        h(i,j) = diff(measurement_eqs(i),states(j));
+        H(i,j) = diff(measurement_eqs(i),states(j));
     end
 end
 
  %% F matrix
- 
+ motion_model=[(eye(4) + 1/2*Sw*T)*q;gyro_bias;acc_bias;d];
  for n=1:nr_states 
     for m=1:nr_states
        F(n,m) = diff(motion_model(n,1),states(m));
     end
  end
     
-%% Gv matrix aka noise effect on state
-% this is not computed via derivatives.
+%% Gv matrix aka noise effect on states
+% Use result from lab 2 sensor fusion for noise relations between
+% quaternions. I asume that noise enters directly on measurements for the
+% other states.
+% this should but is not computed via derivatives.
 
-Gv=  blkdiag(T/2*Sq, eye(7));
+Gv =  blkdiag(T/2*Sq, eye(7));
  
  
  

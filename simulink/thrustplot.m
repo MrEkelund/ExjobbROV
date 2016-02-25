@@ -1,4 +1,4 @@
-%
+% This file is obsolete! This is for t100 thruster. We have t200
 %Thrust (kgf)	Pulse Width (us)
 %X Y
 map = [
