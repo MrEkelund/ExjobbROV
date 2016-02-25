@@ -2,6 +2,8 @@
 #include "ROVServo.h"
 #include "MS5837.h"
 #include "MS5611.h"
+#include "MPU6000.h"
+
 
 //#define USE_USBCON
 #include <ros.h>
@@ -32,6 +34,7 @@ ros::Publisher sensor_publisher("rovio/sensors", &sensor_message);
 ROVServo rov_servo;
 MS5837 water_pressure_sensor;
 MS5611 air_pressure_sensor;
+MPU6000 imu(false,1, 40);
 
 // Internal variables
 uint16_t pwm_array[6];
@@ -56,9 +59,14 @@ void sendSensors() {
   // nh.loginfo(temp);
 
   //water_pressure_sensor.readTestCase();
-  sensor_message.data[0] = water_pressure_sensor.pressure();
-  sensor_message.data[1] = air_pressure_sensor.pressure();
-  sensor_message.data[2] = air_pressure_sensor.temperature();
+  // sensor_message.data[0] = water_pressure_sensor.pressure();
+  // sensor_message.data[1] = air_pressure_sensor.pressure();
+  // sensor_message.data[2] = air_pressure_sensor.temperature();
+  float x,y,z;
+  imu.accel(x,y,z);
+  sensor_message.data[0] = x;
+  sensor_message.data[1] = y;
+  sensor_message.data[2] = z;
   sensor_publisher.publish(&sensor_message);
 }
 
@@ -93,6 +101,8 @@ void setup() {
 
   SPI.begin();
   air_pressure_sensor.init(40, nh);
+  imu.init(nh);
+  imu.start();
 }
 
 void loop() {

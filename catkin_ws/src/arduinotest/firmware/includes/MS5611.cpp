@@ -203,23 +203,11 @@ void MS5611::calculate() {
   // we do the calculations using floating point allows us to take advantage
   // of the averaging of D1 and D1 over multiple samples, giving us more
   // precision
+  dT = _D2-(((uint32_t)_c5)<<8);
+  TEMP = (dT * _c6)/8388608;
+  OFF = _c2 * 65536.0f + (_c4 * dT) / 128;
+  SENS = _c1 * 32768.0f + (_c3 * dT) / 256;
 
-  // AP
-  // dT = _D2-(((uint32_t)_c5)<<8);
-  // TEMP = (dT * _c6)/8388608;
-  // OFF = _c2 * 65536.0f + (_c4 * dT) / 128;
-  // SENS = _c1 * 32768.0f + (_c3 * dT) / 256;
-
-
-  // KOD
-  // dT = _D2 - _c5*256;
-  // OFF = _c2*131072 + dT*_c4/64;
-  // SENS = _c1*65536 + dT*_c3/128;
-
-// DATABLAD
-  SENS = _c1 * 32768 + (_c3 * dT )/ 256;
-  OFF = _c2 * 65536 + (_c4 * dT )/ 128;
-  TEMP = 10;
 
   if (TEMP < 0) {
     // second order temperature compensation when under 20 degrees C
@@ -231,12 +219,9 @@ void MS5611::calculate() {
     OFF = OFF - OFF2;
     SENS = SENS - SENS2;
   }
-  _temperature = (2000+(dT*_c6)/8388608)/100;
- _pressure=(((_D1*SENS)/2097152 - OFF)/32768)/100;
 
-// AP
-  // _pressure = (_D1*SENS/2097152 - OFF)/32768;
-  // _temperature = (TEMP + 2000) * 0.01f;
+  _pressure = (_D1*SENS/2097152 - OFF)/32768;
+  _temperature = (TEMP + 2000) * 0.01f;
 }
 
 float MS5611::pressure() {
