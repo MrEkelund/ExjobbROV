@@ -12,7 +12,9 @@ MS5837::MS5837() {
 	fluidDensity = 1029;
 }
 
-void MS5837::init() {
+void MS5837::init(ros::NodeHandle& nh) {
+	_nh = nh;
+	_nh.loginfo("MS5837: Initializing");
 	// Reset the MS5837, per datasheet
 	Wire.beginTransmission(MS5837_ADDR);
 	Wire.write(MS5837_RESET);
@@ -37,7 +39,9 @@ void MS5837::init() {
 
 	if ( crcCalculated == crcRead ) {
 		// Success
+		_nh.loginfo("MS5837: CRC success");
 	} else {
+		_nh.logwarn("MS5837: CRC failed");
 		// Failure - try again?
 	}
 }
@@ -80,8 +84,6 @@ void MS5837::read() {
 	D2 = Wire.read();
 	D2 = (D2 << 8) | Wire.read();
 	D2 = (D2 << 8) | Wire.read();
-
-	//Serial.println("----");
 
 	calculate();
 }

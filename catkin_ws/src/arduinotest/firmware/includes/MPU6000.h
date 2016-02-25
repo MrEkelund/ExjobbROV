@@ -16,7 +16,7 @@ class MPU6000 {
   //friend AP_MPU6000_AuxiliaryBusSlave;
 
 public:
-  MPU6000(bool use_fifo, uint8_t read_flag, uint8_t chipSelect);
+  MPU6000(bool use_fifo, uint8_t read_flag);
 
   /* update accel and gyro state */
   bool update();
@@ -28,11 +28,14 @@ public:
 
   void start();
 
-  void init(ros::NodeHandle& nh);
+  void init(uint8_t chipSelect, ros::NodeHandle& nh);
 
-  void accel(float& x, float& y, float& z);
-  void gyro(float& x, float& y, float& z);
-  float temp();
+  /* Poll for new data */
+  void pollData();
+
+  void accel(double& x, double& y, double& z);
+  void gyro(double& x, double& y, double& z);
+  double temp();
 
 private:
   /* Initialize sensor*/
@@ -53,8 +56,7 @@ private:
   /* Check if there's data available by reading register */
   bool dataReady();
 
-  /* Poll for new data */
-  void pollData();
+
 
   /* Read and write functions taking the differences between buses into
   * account */
@@ -71,7 +73,7 @@ private:
 
   const uint8_t _read_flag;
   const bool _use_fifo;
-  const uint8_t _MPU6000ChipSelect;
+  uint8_t _MPU6000ChipSelect;
 
   ros::NodeHandle _nh;
   //AP_MPU6000_AuxiliaryBus *_auxiliary_bus;
