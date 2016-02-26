@@ -17,8 +17,8 @@ find_package(catkin REQUIRED COMPONENTS
 
 ## Declare ROS messages and services
 add_message_files(FILES
-  Thruster.msg
-  Health.msg
+  States.msg
+  Sensors.msg
 )
 
 ## Generate added messages and services
@@ -40,10 +40,6 @@ catkin_package(CATKIN_DEPENDS
 
 ## Specify additional locations of header files
 include_directories(include ${catkin_INCLUDE_DIRS} ${dynamic_reconfigure_PACKAGE_PATH}/cmake/cfgbuild.cmake)
-
-add_executable(controller src/controller.cpp)
-target_link_libraries(controller ${catkin_LIBRARIES})
-add_dependencies(controller ${catkin_EXPORTED_TARGETS})
 
 add_executable(teleop_xbox src/teleop_xbox.cpp)
 target_link_libraries(teleop_xbox ${catkin_LIBRARIES})

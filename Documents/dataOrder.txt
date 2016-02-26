@@ -1,6 +1,0 @@
-acceleration_measurements [3] x y z     units?????
-angular_rate_measurements [3] x y z
-magnetic_measurements no.1 [3] x y z
-magnetic_measurements no.2 [3] x y z
-internal_pressure_measurement [1]
-external_pressure_measurement [1]
