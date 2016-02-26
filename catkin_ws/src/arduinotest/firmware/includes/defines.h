@@ -5,6 +5,14 @@
 #define YELLOW_LED_PIN  26
 #define BLUE_LED_PIN    25
 
+#define RED_LED_ON digitalWrite(RED_LED_PIN,LOW);
+#define RED_LED_OFF digitalWrite(RED_LED_PIN,HIGH);
+#define YELLOW_LED_ON digitalWrite(YELLOW_LED_PIN,LOW);
+#define YELLOW_LED_OFF digitalWrite(YELLOW_LED_PIN,HIGH);
+#define BLUE_LED_ON digitalWrite(BLUE_LED_PIN,LOW);
+#define BLUE_LED_OFF digitalWrite(BLUE_LED_PIN,HIGH);
+
+
 // Defines for thrusters
 #define SERVO1 12
 #define SERVO2 11

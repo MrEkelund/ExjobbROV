@@ -547,12 +547,12 @@ void MPU6000::hardwareInit() {
     }
 }
 
-void MPU6000::accel(double& x, double& y, double& z) {
+void MPU6000::accel(float& x, float& y, float& z) {
   x = _accel[0];
   y = _accel[1];
   z = _accel[2];
 }
-void MPU6000::gyro(double& x, double& y, double& z) {
+void MPU6000::gyro(float& x, float& y, float& z) {
   x = _gyro[0];
   y = _gyro[1];
   z = _gyro[2];

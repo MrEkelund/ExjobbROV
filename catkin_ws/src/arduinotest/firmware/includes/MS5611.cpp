@@ -192,10 +192,10 @@ void MS5611::read() {
 
 // Calculate Temperature and compensated Pressure in real units (Celsius degrees*100, mbar*100).
 void MS5611::calculate() {
-  double dT;
-  double TEMP;
-  double OFF;
-  double SENS;
+  float dT;
+  float TEMP;
+  float OFF;
+  float SENS;
 
   // Formulas from manufacturer datasheet
   // sub -15c temperature compensation is not included

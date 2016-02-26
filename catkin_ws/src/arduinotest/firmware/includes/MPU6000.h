@@ -33,8 +33,8 @@ public:
   /* Poll for new data */
   void pollData();
 
-  void accel(double& x, double& y, double& z);
-  void gyro(double& x, double& y, double& z);
+  void accel(float& x, float& y, float& z);
+  void gyro(float& x, float& y, float& z);
   double temp();
 
 private:
