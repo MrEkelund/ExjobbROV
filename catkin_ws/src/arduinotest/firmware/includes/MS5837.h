@@ -1,10 +1,10 @@
 /* Blue Robotics Arduino MS5837-30BA Pressure/Temperature Sensor Library
 ------------------------------------------------------------
- 
+
 Title: Blue Robotics Arduino MS5837-30BA Pressure/Temperature Sensor Library
 
 Description: This library provides utilities to communicate with and to
-read data from the Measurement Specialties MS5837-30BA pressure/temperature 
+read data from the Measurement Specialties MS5837-30BA pressure/temperature
 sensor.
 
 Authors: Rustom Jehangir, Blue Robotics Inc.
@@ -32,12 +32,13 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
--------------------------------*/ 
+-------------------------------*/
 
 #ifndef MS5837_H_BLUEROBOTICS
 #define MS5837_H_BLUEROBOTICS
 
 #include "Arduino.h"
+#include <ros.h>
 
 class MS5837 {
 public:
@@ -47,9 +48,9 @@ public:
 
 	MS5837();
 
-	void init();
+	void init(ros::NodeHandle& nh);
 
-	/** Provide the density of the working fluid in kg/m^3. Default is for 
+	/** Provide the density of the working fluid in kg/m^3. Default is for
 	 * seawater. Should be 997 for freshwater.
 	 */
 	void setFluidDensity(float density);
@@ -66,7 +67,7 @@ public:
 
 	/** Pressure returned in mbar or mbar*conversion rate.
 	 */
-	float pressure(float conversion = 1.0f);
+	float pressure(float conversion = 100.0f);
 
 	/** Temperature returned in deg C.
 	 */
@@ -81,11 +82,14 @@ public:
 	 */
 	float altitude();
 
+	void readProm();
+
 private:
 	uint16_t C[8];
 	uint32_t D1, D2;
 	int32_t TEMP;
 	int32_t P;
+  ros::NodeHandle _nh;
 
 	float fluidDensity;
 

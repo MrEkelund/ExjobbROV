@@ -193,11 +193,10 @@ static const float GYRO_SCALE = (0.0174532f / 16.4f);
  *  variants however
  */
 
-MPU6000::MPU6000(bool use_fifo, uint8_t read_flag, uint8_t chipSelect)
+MPU6000::MPU6000(bool use_fifo, uint8_t read_flag)
     : _read_flag(read_flag)
-    , _use_fifo(use_fifo)
-    , _MPU6000ChipSelect(chipSelect)
-{
+    , _use_fifo(use_fifo) {
+
 }
 
 /*AP_InertialSensor_MPU6000::~AP_InertialSensor_MPU6000() {
@@ -205,8 +204,12 @@ MPU6000::MPU6000(bool use_fifo, uint8_t read_flag, uint8_t chipSelect)
 }*/
 
 
-void MPU6000::init(ros::NodeHandle& nh) {
+void MPU6000::init(uint8_t chipSelect, ros::NodeHandle& nh) {
     _nh = nh;
+    _nh.loginfo("MPU6000: Initializing");
+    _MPU6000ChipSelect = chipSelect;
+    pinMode(_MPU6000ChipSelect, OUTPUT);
+
     hardwareInit();
 }
 
@@ -337,16 +340,21 @@ void MPU6000::pollData() {
     }
 }
 
-void MPU6000::accumulate(uint8_t *samples, uint8_t n_samples)
-{
+void MPU6000::accumulate(uint8_t *samples, uint8_t n_samples) {
+  char temp_char[20];
+
+  Vector3f temp_accel, temp_gyro;
+  temp_accel = Vector3f(0,0,0);
+  temp_gyro = Vector3f(0,0,0);
+  float temp_temp = 0;
     for (uint8_t i = 0; i < n_samples; i++) {
         uint8_t *data = samples + MPU6000_SAMPLE_SIZE * i;
         Vector3f accel, gyro;
         float temp;
-
         accel = Vector3f(int16_val(data, 1),
                          int16_val(data, 0),
                          -int16_val(data, 2));
+
         accel *= MPU6000_ACCEL_SCALE_1G;
 
         gyro = Vector3f(int16_val(data, 5),
@@ -358,9 +366,9 @@ void MPU6000::accumulate(uint8_t *samples, uint8_t n_samples)
         /* scaling/offset values from the datasheet */
         temp = temp/340 + 36.53;
 
-        _accel += accel/n_samples;
-        _gyro += gyro/n_samples;
-        _temp += temp/n_samples;
+        temp_accel += accel/n_samples;
+        temp_gyro += gyro/n_samples;
+        temp_temp += temp/n_samples;
 /*
 #if CONFIG_HAL_BOARD_SUBTYPE == HAL_BOARD_SUBTYPE_LINUX_PXF
         accel.rotate(ROTATION_PITCH_180_YAW_90);
@@ -381,6 +389,9 @@ void MPU6000::accumulate(uint8_t *samples, uint8_t n_samples)
 
         _temp_filtered = _temp_filter.apply(temp);*/
     }
+    _accel = temp_accel;
+    _gyro = temp_gyro;
+    _temp = temp_temp;
 }
 
 void MPU6000::readFifo()
@@ -389,8 +400,8 @@ void MPU6000::readFifo()
     uint16_t bytes_read;
     uint8_t rx[MAX_DATA_READ];
 
-    if(MAX_DATA_READ <= 100) {
-      _nh.logwarn("MPU6000: FIFO Too big to keep on stack");
+    if(MAX_DATA_READ >= 100) {
+      _nh.logwarn("MPU6000: FIFO too big to keep on stack");
     }
 
     blockRead(MPUREG_FIFO_COUNTH, rx, 2);
@@ -404,7 +415,7 @@ void MPU6000::readFifo()
     }
 
     if (n_samples > MPU6000_MAX_FIFO_SAMPLES) {
-      _nh.logwarn("MPU6000: Too many samples, drooping samples");
+      _nh.logwarn("MPU6000: Too many samples, dropping samples");
         /* Too many samples, do a FIFO RESET */
         fifoReset();
         return;
@@ -415,29 +426,31 @@ void MPU6000::readFifo()
     accumulate(rx, n_samples);
 }
 
-void MPU6000::readSample()
-{
-    /* one register address followed by seven 2-byte registers */
-    struct PACKED {
-        uint8_t int_status;
-        uint8_t d[14];
-    } rx;
+void MPU6000::readSample() {
+  uint8_t rx[MPU6000_SAMPLE_SIZE];
 
-    blockRead(MPUREG_INT_STATUS, (uint8_t *) &rx, sizeof(rx));
+  blockRead(MPUREG_ACCEL_XOUT_H , rx, MPU6000_SAMPLE_SIZE);
 
-    accumulate(rx.d, 1);
+  accumulate(rx, 1);
 }
 
 void MPU6000::blockRead(uint8_t reg, uint8_t *buf, uint32_t size) {
-  uint8_t return_value;
-  reg |= _read_flag;
-  digitalWrite(_MPU6000ChipSelect, LOW);
-  SPI.transfer(reg);
-  for (uint32_t i = 0; i < size; i++) {
-    buf[i] = SPI.transfer(CMD_READ);
-  }
-  digitalWrite(_MPU6000ChipSelect,HIGH);
 
+  if(reg != MPUREG_FIFO_R_W) {
+
+    for (uint32_t i = 0; i < size; i++) {
+      buf[i] = registerRead(reg+i);
+    }
+  } else { // Read from the fifo queue
+    reg |= _read_flag;
+    SPI.transfer(reg);
+    for (uint32_t i = 0; i < size; i++) {
+      digitalWrite(_MPU6000ChipSelect, LOW);
+      buf[i] = SPI.transfer(CMD_READ);
+      // take the chip select high to de-select:
+      digitalWrite(_MPU6000ChipSelect, HIGH);
+    }
+  }
 }
 
 uint8_t MPU6000::registerRead(uint8_t reg) {
@@ -457,6 +470,7 @@ uint8_t MPU6000::registerRead(uint8_t reg) {
 
 void MPU6000::registerWrite(uint8_t reg, uint8_t val) {
   digitalWrite(_MPU6000ChipSelect, LOW);
+  delay(10);
   SPI.transfer(reg);
   SPI.transfer(val);
   digitalWrite(_MPU6000ChipSelect, HIGH);
@@ -486,7 +500,6 @@ void MPU6000::setFilterRegister(uint16_t filter_hz) {
     registerWrite(MPUREG_CONFIG, filter);
 }
 
-
 void MPU6000::hardwareInit() {
 
     // Chip reset
@@ -504,17 +517,17 @@ void MPU6000::hardwareInit() {
 
         /* reset device */
         registerWrite(MPUREG_PWR_MGMT_1, BIT_PWR_MGMT_1_DEVICE_RESET);
-        delay(100);
-
-
-        registerWrite(MPUREG_USER_CTRL, BIT_USER_CTRL_I2C_IF_DIS);
+        delay(150);
 
 
         // Wake up device and select GyroZ clock. Note that the
         // MPU6000 starts up in sleep mode, and it can take some time
         // for it to come out of sleep
         registerWrite(MPUREG_PWR_MGMT_1, BIT_PWR_MGMT_1_CLK_ZGYRO);
-        delay(5);
+        delay(150);
+
+        registerWrite(MPUREG_USER_CTRL, BIT_USER_CTRL_I2C_IF_DIS);
+        delay(150);
 
         // check it has woken up
         if (registerRead(MPUREG_PWR_MGMT_1) == BIT_PWR_MGMT_1_CLK_ZGYRO) {
@@ -528,21 +541,23 @@ void MPU6000::hardwareInit() {
     }
 
     if (tries == 5) {
-        _nh.logwarn("MPU6000: Failed to boot 5 times");
+        _nh.logerror("MPU6000: Failed to boot 5 times");
+    } else {
+      _nh.loginfo("MPU6000: Hardware Initialized");
     }
 }
 
-void MPU6000::accel(float& x, float& y, float& z) {
+void MPU6000::accel(double& x, double& y, double& z) {
   x = _accel[0];
   y = _accel[1];
   z = _accel[2];
 }
-void MPU6000::gyro(float& x, float& y, float& z) {
+void MPU6000::gyro(double& x, double& y, double& z) {
   x = _gyro[0];
   y = _gyro[1];
   z = _gyro[2];
 }
-float MPU6000::temp() {
+double MPU6000::temp() {
   return _temp;
 }
 
