@@ -66,47 +66,50 @@ _mag_z_accum(0),
 _accum_count(0),
 _last_accum_time(0) {}
 
-// readRegister - read a register value
-bool HMC5883L::readRegister(uint8_t address, uint8_t& value) {
-  uint32_t count = 0;
-  Wire.requestFrom(HMC5883L_I2C_ADDR,1);
-
-  while(Wire.available()) {
-    count++;
-    value = Wire.read();
-  }
-  if (count < 2) {
-    return true;
-  } else { // We received more than we asked for
-    _nh.logwarn("HMC5883L: Recived more bytes than asked for");
-    _retry_time = _nh.now().toSec() + 1;
-    return false;
-  }
-}
+// // readRegister - read a register value
+// bool HMC5883L::readRegister(uint8_t address, uint8_t& value) {
+//   uint32_t count = 0;
+//   Wire.beginTransmission(HMC5883L_I2C_ADDR);
+//   Wire.write(address);
+//   Wire.endTransmission();
+//
+//   Wire.beginTransmission(HMC5883L_I2C_ADDR);
+//   Wire.requestFrom(HMC5883L_I2C_ADDR,1);
+//
+//   while(Wire.available()) {
+//     count++;
+//     value = Wire.read();
+//   }
+//
+//   Wire.endTransmission();
+//   if (count == 1) {
+//     return true;
+//   } else { // We received more/less than we asked for
+//     _nh.logwarn("HMC5883L: Recived more/less bytes than asked for");
+//     _retry_time = _nh.now().toSec() + 1;
+//     return false;
+//   }
+// }
 
 // readBlock - read a block
-bool HMC5883L::readBlock(uint8_t address, uint8_t *value, uint32_t size) {
-  uint32_t count = 0;
-
-  Wire.requestFrom(HMC5883L_I2C_ADDR, size);
+bool HMC5883L::readBlock(uint8_t address, uint8_t* value, uint32_t size) {
 
   Wire.beginTransmission(HMC5883L_I2C_ADDR);
   Wire.write(address);
   Wire.endTransmission();
 
-  while(Wire.available()) {
-    if ( count < size) {
-      value[count] = Wire.read();
+  Wire.beginTransmission(HMC5883L_I2C_ADDR);
+  Wire.requestFrom(HMC5883L_I2C_ADDR, size);
+
+  if ( Wire.available() == size) {
+    for (uint8_t i = 0; i < size; i++) {
+      value[i] = Wire.read();
     }
-    count++;
+      return true;
   }
-  if (count == size) {
-    return true;
-  } else { // We received more than we asked for
-    _retry_time = _nh.now().toSec() + 1;
-    _nh.logwarn("HMC5883L: Recived more/less bytes than asked for");
-    return false;
-  }
+  _retry_time = _nh.now().toSec() + 1;
+  _nh.logwarn("HMC5883L: Recived more/less bytes than asked for");
+  return false;
 }
 
 // writeRegister - update a register value
@@ -198,9 +201,9 @@ bool HMC5883L::reInitialise() {
 
   uint8_t reg1, reg2, reg3;
   bool status;
-  status = readRegister(CONFIG_REG_A, reg1);
-  status = readRegister(CONFIG_REG_B, reg2);
-  status = readRegister(MODE_REGISTER, reg3);
+  status = readBlock(CONFIG_REG_A, &reg1, 1);
+  status = readBlock(CONFIG_REG_B, &reg2, 1);
+  status = readBlock(MODE_REGISTER, &reg3, 1);
 
   if(reg1 != MAG_BASE_CONFIG | reg2 != MAG_GAIN | reg3 != CONTINUOUS_CONVERSION) {
     return false;
@@ -265,30 +268,45 @@ bool HMC5883L::calibrate(uint8_t calibration_gain,
     uint8_t reg1, reg2;
     bool read_status;
 
-    while (success == 0 && numAttempts < 25 && good_count < 5)
-    {
+// TODO Remove char
+    char temp[10];
+
+
+
+    while (success == 0 && numAttempts < 25 && good_count < 5) {
       numAttempts++;
 
       // force positiveBias (compass should return 715 for all channels)
       writeRegister(CONFIG_REG_A, POSITIVE_BIAS_CONFIG);
-      read_status = readRegister(CONFIG_REG_A, reg1);
-      if (reg1 != POSITIVE_BIAS_CONFIG)
-      continue;   // compass not responding on the bus
+      read_status = readBlock(CONFIG_REG_A, &reg1, 1);
+      if (read_status) {
+        _nh.logwarn("good read");
+      }
+
+      if (reg1 != POSITIVE_BIAS_CONFIG) {
+        _nh.logwarn("positiveBias");
+        continue;   // compass not responding on the bus
+      }
+
 
       delay(50);
 
       // set gains
       writeRegister(CONFIG_REG_B, CALIBRATION_GAIN);
-      read_status = readRegister(CONFIG_REG_B, reg1);
-      writeRegister(CONFIG_REG_B, CALIBRATION_GAIN);
-      read_status = readRegister(MODE_REGISTER, reg2);
-      if (reg1 != CALIBRATION_GAIN || reg2 != SINGLE_CONVERSION)
+      read_status = readBlock(CONFIG_REG_B, &reg1, 1);
+      writeRegister(MODE_REGISTER, SINGLE_CONVERSION);
+      read_status = readBlock(MODE_REGISTER, &reg2, 1);
+      if (reg1 != CALIBRATION_GAIN || reg2 != SINGLE_CONVERSION) {
+        _nh.logwarn("CAlib");
       continue;
+    }
 
       // read values from the compass
       delay(50);
-      if (!readRaw())
+      if (!readRaw()){
+        _nh.logwarn("readraw");
       continue;      // we didn't read valid values
+    }
 
       delay(10);
 
@@ -321,8 +339,15 @@ bool HMC5883L::calibrate(uint8_t calibration_gain,
       }
 
       #undef IS_CALIBRATION_VALUE_VALID
-
+      dtostrf(cal[0],1,2,temp);
+      _nh.logwarn(temp);
+      dtostrf(cal[1],1,2,temp);
+      _nh.logwarn(temp);
+      dtostrf(cal[2],1,2,temp);
+      _nh.logwarn(temp);
     }
+    dtostrf(good_count,1,2,temp);
+    _nh.logwarn(temp);
 
     if (good_count >= 5) {
       _scaling[0] = _scaling[0] / good_count;

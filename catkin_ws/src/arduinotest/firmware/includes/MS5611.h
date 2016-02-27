@@ -7,8 +7,8 @@
 class MS5611
 {
 public:
-  MS5611();
-  void init(int chipSelect, const ros::NodeHandle& nh);
+  MS5611(uint8_t chipSelect);
+  bool init();
   void read();
   float pressure();
   float temperature();
@@ -25,12 +25,10 @@ private:
 
   // Internal calibration registers
   uint16_t                 _c1,_c2,_c3,_c4,_c5,_c6;
-  float                    _D1, _D2;
+  uint32_t                 _D1, _D2;
   float                    _temperature, _pressure;
 
-  int _MS5611ChipSelect;
-  // NodeHandel for debugging
-  ros::NodeHandle _nh;
+  const uint8_t _MS5611ChipSelect;
 };
 
 #endif //_MS5611_H_

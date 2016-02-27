@@ -17,7 +17,6 @@ set(ROS_DIR_CPP
 
 set(OWN_CPP
   includes/ROVServo.cpp
-  includes/ROVIO.cpp
   includes/MS5837.cpp
   includes/MPU6000.cpp
   includes/MS5611.cpp

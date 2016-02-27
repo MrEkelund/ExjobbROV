@@ -13,9 +13,9 @@
 #include "vector2.h"
 #include "vector3.h"
 #include "matrix3.h"
-#include "quaternion.h"
+//#include "quaternion.h"
 //#include "polygon.h"
-#include "edc.h"
+//#include "edc.h"
 #include "float.h"
 //#include <AP_Param/AP_Param.h>
 
@@ -237,7 +237,7 @@ static inline float pythagorous3(float a, float b, float c) {
 }
 
 #ifdef radians
-#undef radians //#error "Build is including Arduino base headers"
+//#error "Build is including Arduino base headers"
 #endif
 
 template<typename A, typename B>

@@ -32,8 +32,8 @@ ros::Publisher sensor_publisher("rovio/sensors", &sensor_message);
 // Internal objects
 ROVServo rov_servo;
 MS5837 water_pressure_sensor;
-MS5611 air_pressure_sensor;
-MPU6000 imu(false, 0x80);
+MS5611 air_pressure_sensor(40);
+MPU6000 imu(false, 53);
 HMC5883L magnetometer;
 
 
@@ -58,7 +58,6 @@ void sendSensors() {
   // nh.loginfo("Temp");
   // nh.loginfo(temp);
 
-  //water_pressure_sensor.readTestCase();
   sensor_message.data[0] = water_pressure_sensor.pressure();
   sensor_message.data[1] = air_pressure_sensor.pressure();
   // sensor_message.data[2] = air_pressure_sensor.temperature();
@@ -91,7 +90,6 @@ void spin() {
 
 
 void setup() {
-
   pinMode(BLUE_LED_PIN, OUTPUT);
   pinMode(YELLOW_LED_PIN, OUTPUT);
   pinMode(RED_LED_PIN, OUTPUT);
@@ -105,27 +103,28 @@ void setup() {
   sensor_message.layout.dim[0].label = "Sensors";
   sensor_message.data = (float*)malloc(sizeof(float)*sensor_message.data_length);
 
-  for(int i = 0; i < sensor_message.data_length; i++) {
-    sensor_message.data[i] = 0;
-  }
-
   nh.initNode();
   nh.advertise(sensor_publisher);
 
   Wire.begin();
-  water_pressure_sensor.init(nh);
-  //magnetometer.init(nh);
+  if (!water_pressure_sensor.init()) {
+    nh.logerror("MS5837: Initialise fail");
+  }
+  magnetometer.init(nh);
+
   SPI.begin();
-
   SPI.setClockDivider(SPI_CLOCK_DIV16);
-
   SPI.setBitOrder(MSBFIRST);
   SPI.setDataMode(SPI_MODE0);
   delay(100);
 
-  air_pressure_sensor.init(40, nh);
+  if (!air_pressure_sensor.init()) {
+    nh.logerror("MS5611: Initialise fail");
+  }
 
-  imu.init(53, nh);
+  if (!imu.init()) {
+    nh.logerror("MPU6000: Initialise fail");
+  }
   imu.start();
 
   RED_LED_OFF;

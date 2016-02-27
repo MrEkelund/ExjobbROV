@@ -19,7 +19,6 @@
 #pragma GCC optimize("O3")
 
 #include <AP_Math.h>
-//#include <AP_HAL/AP_HAL.h>
 #include <stdio.h>
 #include <stdlib.h>
 
