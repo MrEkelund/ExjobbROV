@@ -58,8 +58,11 @@ void sendSensors() {
   // nh.loginfo("Temp");
   // nh.loginfo(temp);
 
-  sensor_message.data[0] = water_pressure_sensor.pressure();
-  sensor_message.data[1] = air_pressure_sensor.pressure();
+  float x,y,z;
+  magnetometer.magneticField(x,y,z);
+  sensor_message.data[0] = x;
+  sensor_message.data[1] = y;
+  sensor_message.data[2] = z;
   // sensor_message.data[2] = air_pressure_sensor.temperature();
   // double x,y,z,temp;
   // imu.gyro(x,y,z);
@@ -83,6 +86,7 @@ void spin() {
   water_pressure_sensor.read();
   air_pressure_sensor.read();
   imu.pollData();
+  magnetometer.read();
 
   sendSensors();
   BLUE_LED_OFF;
@@ -97,7 +101,7 @@ void setup() {
   BLUE_LED_OFF;
   RED_LED_ON;
 
-  sensor_message.data_length = 2;
+  sensor_message.data_length = 3;
   sensor_message.layout.dim[0].size = sensor_message.data_length;
   sensor_message.layout.dim[0].stride = 1*sensor_message.data_length;
   sensor_message.layout.dim[0].label = "Sensors";
@@ -110,7 +114,10 @@ void setup() {
   if (!water_pressure_sensor.init()) {
     nh.logerror("MS5837: Initialise fail");
   }
-  magnetometer.init(nh);
+  if (!magnetometer.init()) {
+    nh.logerror("HMC5883L: Initialise fail");
+  }
+
 
   SPI.begin();
   SPI.setClockDivider(SPI_CLOCK_DIV16);

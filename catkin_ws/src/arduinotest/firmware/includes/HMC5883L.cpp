@@ -51,45 +51,14 @@
 #define LOCK  0x02
 #define RDY   0x01
 
-#define CALIBRATION_GAIN MAG_GAIN660
 #define MAG_GAIN         MAG_GAIN1090
 #define MAG_BASE_CONFIG (SAMPLE_AVERAGING_8 | DATA_OUTPUT_RATE_75HZ | NORMAL_OPERATION)
 
 HMC5883L::HMC5883L():
-_retry_time(0),
+_IO_fail(false),
 _mag_x(0),
 _mag_y(0),
-_mag_z(0),
-_mag_x_accum(0),
-_mag_y_accum(0),
-_mag_z_accum(0),
-_accum_count(0),
-_last_accum_time(0) {}
-
-// // readRegister - read a register value
-// bool HMC5883L::readRegister(uint8_t address, uint8_t& value) {
-//   uint32_t count = 0;
-//   Wire.beginTransmission(HMC5883L_I2C_ADDR);
-//   Wire.write(address);
-//   Wire.endTransmission();
-//
-//   Wire.beginTransmission(HMC5883L_I2C_ADDR);
-//   Wire.requestFrom(HMC5883L_I2C_ADDR,1);
-//
-//   while(Wire.available()) {
-//     count++;
-//     value = Wire.read();
-//   }
-//
-//   Wire.endTransmission();
-//   if (count == 1) {
-//     return true;
-//   } else { // We received more/less than we asked for
-//     _nh.logwarn("HMC5883L: Recived more/less bytes than asked for");
-//     _retry_time = _nh.now().toSec() + 1;
-//     return false;
-//   }
-// }
+_mag_z(0) {}
 
 // readBlock - read a block
 bool HMC5883L::readBlock(uint8_t address, uint8_t* value, uint32_t size) {
@@ -107,8 +76,8 @@ bool HMC5883L::readBlock(uint8_t address, uint8_t* value, uint32_t size) {
     }
       return true;
   }
-  _retry_time = _nh.now().toSec() + 1;
-  _nh.logwarn("HMC5883L: Recived more/less bytes than asked for");
+
+  _IO_fail = true;
   return false;
 }
 
@@ -125,7 +94,7 @@ bool HMC5883L::readRaw() {
   uint8_t rv[6]; // 2 register per axis
 
   if (!readBlock(DATA_OUTPUT_XH, rv, sizeof(rv))) {
-    _retry_time = _nh.now().toSec() + 1;
+    _IO_fail = true;
   }
 
   int16_t rx, ry, rz;
@@ -145,56 +114,11 @@ bool HMC5883L::readRaw() {
   return true;
 }
 
-
-// accumulate a reading from the magnetometer
-void HMC5883L::accumulate( ) {
-  uint32_t tnow = _nh.now().toSec();
-  if (_accum_count != 0 && (tnow - _last_accum_time) < 13333) {
-    // the compass gets new data at 75Hz
-    return;
-  }
-
-  if (readRaw()) {
-    // the _mag_N values are in the range -2048 to 2047, so we can
-    // accumulate up to 15 of them in an int16_t. Let's make it 14
-    // for ease of calculation. We expect to do reads at 10Hz, and
-    // we get new data at most 75Hz, so we don't expect to
-    // accumulate more than 8 before a read
-    // get raw_field - sensor frame, uncorrected
-    Vector3f raw_field = Vector3f(_mag_x, _mag_y, _mag_z);
-    raw_field *= _gain_multiple;
-
-    // rotate raw_field from sensor frame to body frame
-    //  rotate_field(raw_field, _compass_instance);
-    //
-    //  // publish raw_field (uncorrected point sample) for calibration use
-    //  publish_raw_field(raw_field, tnow, _compass_instance);
-    //
-    //  // correct raw_field for known errors
-    //  correct_field(raw_field, _compass_instance);
-    //
-    //  // publish raw_field (corrected point sample) for EKF use
-    //  publish_unfiltered_field(raw_field, tnow, _compass_instance);
-
-    _mag_x_accum += raw_field.x;
-    _mag_y_accum += raw_field.y;
-    _mag_z_accum += raw_field.z;
-    _accum_count++;
-    if (_accum_count == 14) {
-      _mag_x_accum /= 2;
-      _mag_y_accum /= 2;
-      _mag_z_accum /= 2;
-      _accum_count = 7;
-    }
-  }
-}
-
-
 /*
 *  re-initialise after a IO error
 */
 bool HMC5883L::reInitialise() {
-
+  _IO_fail = false;
   writeRegister(CONFIG_REG_A, MAG_BASE_CONFIG);
   writeRegister(CONFIG_REG_B, MAG_GAIN);
   writeRegister(MODE_REGISTER, CONTINUOUS_CONVERSION);
@@ -212,14 +136,15 @@ bool HMC5883L::reInitialise() {
 }
 
 // Public Methods //////////////////////////////////////////////////////////////
-void HMC5883L::init(ros::NodeHandle& nh) {
+bool HMC5883L::init() {
 
-  _nh = nh;
-  _nh.loginfo("HMC5883L: Initializing");
-  uint16_t expected_x = 766;
-  uint16_t expected_yz = 713;
+  uint16_t expected_xy = 0;
+  uint16_t expected_z = 0;
+  uint8_t calibration_gain = 0;
+  uint8_t gain = 0;
+  bool success = false;
 
-  switch (CALIBRATION_GAIN) {
+  switch (MAG_GAIN) {
     case MAG_GAIN1370:
     _gain_multiple = (1.0f / 1370) * 1000;
     break;
@@ -246,45 +171,83 @@ void HMC5883L::init(ros::NodeHandle& nh) {
     break;
   }
 
-  if (!calibrate(CALIBRATION_GAIN, expected_x, expected_yz)) {
-    _nh.logwarn("HMC5883L: Couldn't configure sensor");
+  do {
+    gain++;
+    switch (gain) {
+      case 1:
+      calibration_gain = MAG_GAIN1370;
+      expected_xy = 1.16*1370;
+      expected_z = 1.08*1370;
+      break;
+      case 2:
+      calibration_gain = MAG_GAIN1090;
+      expected_xy = 1.16*1090;
+      expected_z = 1.08*1090;
+      break;
+      case 3:
+      calibration_gain = MAG_GAIN820;
+      expected_xy = 1.16*820;
+      expected_z = 1.08*820;
+      break;
+      case 4:
+      calibration_gain = MAG_GAIN660;
+      expected_xy = 1.16*660;
+      expected_z = 1.08*660;
+      break;
+      case 5:
+      calibration_gain = MAG_GAIN440;
+      expected_xy = 1.16*440;
+      expected_z = 1.08*440;
+      break;
+      case 6:
+      calibration_gain = MAG_GAIN390;
+      expected_xy = 1.16*390;
+      expected_z = 1.08*390;
+      break;
+      case 7:
+      calibration_gain = MAG_GAIN330;
+      expected_xy = 1.16*330;
+      expected_z = 1.08*330;
+      break;
+      case 8:
+      calibration_gain = MAG_GAIN230;
+      expected_xy = 1.16*230;
+      expected_z = 1.08*230;
+      break;
+    }
+    success = calibrate(calibration_gain, expected_xy, expected_z);
   }
+  while(!success && gain < 8);
 
   // leave test mode
   if (!reInitialise()) {
-    _nh.logerror("HMC5883L: Couldn't reinitialise sensor");
+    success = false;
+    _IO_fail = true;
   }
 
   // perform an initial read
   read();
+
+  return success;
 }
 
 bool HMC5883L::calibrate(uint8_t calibration_gain,
-  uint16_t expected_x,
-  uint16_t expected_yz) {
+  uint16_t expected_xy,
+  uint16_t expected_z) {
 
     int numAttempts = 0, good_count = 0;
     bool success = false;
     uint8_t reg1, reg2;
     bool read_status;
 
-// TODO Remove char
-    char temp[10];
-
-
-
-    while (success == 0 && numAttempts < 25 && good_count < 5) {
+    while (!success && numAttempts < 25 && good_count < 5) {
       numAttempts++;
 
       // force positiveBias (compass should return 715 for all channels)
       writeRegister(CONFIG_REG_A, POSITIVE_BIAS_CONFIG);
       read_status = readBlock(CONFIG_REG_A, &reg1, 1);
-      if (read_status) {
-        _nh.logwarn("good read");
-      }
 
       if (reg1 != POSITIVE_BIAS_CONFIG) {
-        _nh.logwarn("positiveBias");
         continue;   // compass not responding on the bus
       }
 
@@ -292,29 +255,27 @@ bool HMC5883L::calibrate(uint8_t calibration_gain,
       delay(50);
 
       // set gains
-      writeRegister(CONFIG_REG_B, CALIBRATION_GAIN);
+      writeRegister(CONFIG_REG_B, calibration_gain);
       read_status = readBlock(CONFIG_REG_B, &reg1, 1);
-      writeRegister(MODE_REGISTER, SINGLE_CONVERSION);
+      writeRegister(MODE_REGISTER, CONTINUOUS_CONVERSION);
       read_status = readBlock(MODE_REGISTER, &reg2, 1);
-      if (reg1 != CALIBRATION_GAIN || reg2 != SINGLE_CONVERSION) {
-        _nh.logwarn("CAlib");
-      continue;
+      if (reg1 != calibration_gain || reg2 != CONTINUOUS_CONVERSION) {
+        continue;
     }
 
       // read values from the compass
       delay(50);
       if (!readRaw()){
-        _nh.logwarn("readraw");
-      continue;      // we didn't read valid values
+        continue;      // we didn't read valid values
     }
 
       delay(10);
 
       float cal[3];
 
-      cal[0] = fabsf(expected_x / (float)_mag_x);
-      cal[1] = fabsf(expected_yz / (float)_mag_y);
-      cal[2] = fabsf(expected_yz / (float)_mag_z);
+      cal[0] = fabsf(expected_xy / (float)_mag_x);
+      cal[1] = fabsf(expected_xy / (float)_mag_y);
+      cal[2] = fabsf(expected_z / (float)_mag_z);
 
       // we throw away the first two samples as the compass may
       // still be changing its state from the application of the
@@ -339,15 +300,7 @@ bool HMC5883L::calibrate(uint8_t calibration_gain,
       }
 
       #undef IS_CALIBRATION_VALUE_VALID
-      dtostrf(cal[0],1,2,temp);
-      _nh.logwarn(temp);
-      dtostrf(cal[1],1,2,temp);
-      _nh.logwarn(temp);
-      dtostrf(cal[2],1,2,temp);
-      _nh.logwarn(temp);
     }
-    dtostrf(good_count,1,2,temp);
-    _nh.logwarn(temp);
 
     if (good_count >= 5) {
       _scaling[0] = _scaling[0] / good_count;
@@ -362,102 +315,30 @@ bool HMC5883L::calibrate(uint8_t calibration_gain,
     }
 
     return success;
-  }
+}
 
 // Read Sensor data
 void HMC5883L::read() {
 
-  if (_retry_time != 0) {
-    if (_nh.now().toSec() < _retry_time) {
-      return;
-    }
+  if (_IO_fail) {
+    delay(10);
     if (!reInitialise()) {
-      _retry_time = _nh.now().toSec() + 1;
+      _IO_fail = true;
       return;
     }
   }
 
-  if (_accum_count == 0) {
-    accumulate();
-    if (_retry_time != 0) {
-      return;
-    }
+  if (readRaw()) {
+    // get raw_field - sensor frame, uncorrected
+    _field = Vector3f(_mag_x * _scaling[0], _mag_y * _scaling[1], _mag_z * _scaling[2]);
+    _field *= _gain_multiple;
+    _field.rotate(ROTATION_YAW_90);
   }
+}
 
-  Vector3f field(_mag_x_accum * _scaling[0],
-    _mag_y_accum * _scaling[1],
-    _mag_z_accum * _scaling[2]);
-    field /= _accum_count;
-
-    _accum_count = 0;
-    _mag_x_accum = _mag_y_accum = _mag_z_accum = 0;
-
-    field.rotate(ROTATION_YAW_90);
-
-    // publish_filtered_field(field, _compass_instance);
-    _retry_time = 0;
-  }
-
-//
-// /* MPU6000 implementation of the HMC5843 */
-// AP_HMC5843_SerialBus_MPU6000::AP_HMC5843_SerialBus_MPU6000(AP_InertialSensor &ins,
-//                                                            uint8_t addr)
-// {
-//     // Only initialize members. Fails are handled by configure or while
-//     // getting the semaphore
-//     _bus = ins.get_auxiliary_bus(HAL_INS_MPU60XX_SPI);
-//     if (!_bus)
-//         return;
-//     _slave = _bus->request_next_slave(addr);
-// }
-//
-// AP_HMC5843_SerialBus_MPU6000::~AP_HMC5843_SerialBus_MPU6000()
-// {
-//     /* After started it's owned by AuxiliaryBus */
-//     if (!_started)
-//         delete _slave;
-// }
-//
-// bool AP_HMC5843_SerialBus_MPU6000::configure()
-// {
-//     if (!_bus || !_slave)
-//         return false;
-//     return true;
-// }
-//
-// void AP_HMC5843_SerialBus_MPU6000::set_high_speed(bool val)
-// {
-// }
-//
-// uint8_t AP_HMC5843_SerialBus_MPU6000::register_read(uint8_t reg, uint8_t *buf, uint8_t size)
-// {
-//     return _slave->passthrough_read(reg, buf, size) == size ? 0 : 1;
-// }
-//
-// uint8_t AP_HMC5843_SerialBus_MPU6000::register_write(uint8_t reg, uint8_t val)
-// {
-//     return _slave->passthrough_write(reg, val) >= 0 ? 0 : 1;
-// }
-//
-// AP_HAL::Semaphore* AP_HMC5843_SerialBus_MPU6000::get_semaphore()
-// {
-//     return _bus ? _bus->get_semaphore() : nullptr;
-// }
-//
-// uint8_t AP_HMC5843_SerialBus_MPU6000::read_raw(struct raw_value *rv)
-// {
-//     if (_started)
-//         return _slave->read((uint8_t*)rv) >= 0 ? 0 : 1;
-//
-//     return _slave->passthrough_read(0x03, (uint8_t*)rv, sizeof(*rv)) >= 0 ? 0 : 1;
-// }
-//
-// bool AP_HMC5843_SerialBus_MPU6000::start_measurements()
-// {
-//     if (_bus->register_periodic_read(_slave, 0x03, sizeof(struct raw_value)) < 0)
-//         return false;
-//
-//     _started = true;
-//
-//     return true;
-// }
+// Read Sensor data
+void HMC5883L::magneticField(float& x, float& y, float& z) {
+  x = _field[0];
+  y = _field[1];
+  z = _field[2];
+}

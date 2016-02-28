@@ -11,13 +11,12 @@ class HMC5883L {
 public:
     HMC5883L();
 
-    void        init(ros::NodeHandle& nh);
+    bool        init();
     void        read();
-    void        accumulate();
+    void        magneticField(float& x, float& y, float& z);
 private:
 
     float               _scaling[3] = {0};
-    bool                _initialised;
     bool                readRaw();
     bool                reInitialise();
     bool                readRegister(uint8_t address, uint8_t& value);
@@ -31,19 +30,13 @@ private:
                                    uint16_t expected_x,
                                    uint16_t expected_yz);
 
-    uint32_t            _retry_time;
-
+    bool            _IO_fail;
     int16_t			    _mag_x;
     int16_t			    _mag_y;
     int16_t			    _mag_z;
-    int16_t             _mag_x_accum;
-    int16_t             _mag_y_accum;
-    int16_t             _mag_z_accum;
-    uint8_t			    _accum_count;
-    uint32_t            _last_accum_time;
+    Vector3f        _field;
 
     float               _gain_multiple;
-    ros::NodeHandle     _nh;
 };
 
 #endif // _HMC5883L_H_
