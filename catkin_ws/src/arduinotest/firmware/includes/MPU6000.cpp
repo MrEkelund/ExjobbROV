@@ -43,6 +43,13 @@
 #       define BITS_GYRO_YGYRO_SELFTEST             0x40
 #       define BITS_GYRO_XGYRO_SELFTEST             0x80
 #define MPUREG_ACCEL_CONFIG                     0x1C
+#       define BITS_ACCEL_2G                        0x00
+#       define BITS_ACCEL_4G                        0x08
+#       define BITS_ACCEL_8G                        0x10
+#       define BITS_ACCEL_16G                       0x18
+#       define BITS_ACCEL_ZACCEL_SELFTEST           0x20
+#       define BITS_ACCEL_YACCEL_SELFTEST           0x40
+#       define BITS_ACCEL_XACCEL_SELFTEST           0x80
 #define MPUREG_MOT_THR                          0x1F    // detection threshold for Motion interrupt generation.  Motion is detected when the absolute value of any of the accelerometer measurements exceeds this
 #define MPUREG_MOT_DUR                          0x20    // duration counter threshold for Motion interrupt generation. The duration counter ticks at 1 kHz, therefore MOT_DUR has a unit of 1 LSB = 1 ms
 #define MPUREG_ZRMOT_THR                        0x21    // detection threshold for Zero Motion interrupt generation.
@@ -155,6 +162,18 @@
 #define BITS_DLPF_CFG_2100HZ_NOLPF              0x07
 #define BITS_DLPF_CFG_MASK                          0x07
 
+// Self test high bits for accel all bits for gyro
+#define X_TEST 0x0D
+#define Y_TEST 0x0E
+#define Z_TEST 0x0F
+#   define A42_TEST_MASK 0xE0
+#   define G_TEST_MASK 0x1F
+// Low bits for accel
+#define TEST_01 0x10
+#   define XA10_TEST_MASK 0x30
+#   define YA10_TEST_MASK 0x0C
+#   define ZA10_TEST_MASK 0x03
+
 // Product ID Description for MPU6000
 // high 4 bits  low 4 bits
 // Product Name	Product Revision
@@ -205,9 +224,19 @@ MPU6000::MPU6000(bool use_fifo, uint8_t chipSelect)
 
 
 //void MPU6000::init(uint8_t chipSelect, ros::NodeHandle& nh) {
-bool MPU6000::init() {
+bool MPU6000::init(ros::NodeHandle& nh) {
+  _nh = nh;
   if (!hardwareInit()) {
     return false;
+  }
+  start();
+
+  if (!calibrateGyroSensitivity()) {
+    return false;
+  }
+
+  if (!calibrateAccelerometerSensitivity()) {
+   return false;
   }
   return true;
 }
@@ -225,11 +254,6 @@ void MPU6000::fifoEnable() {
     delay(1);
 }
 
-/*
-bool AP_InertialSensor_MPU6000::_has_auxiliary_bus()
-{
-    return _bus_type != BUS_TYPE_I2C;
-}*/
 
 void MPU6000::start() {
 
@@ -259,7 +283,6 @@ void MPU6000::start() {
 
     // read the product ID rev c has 1/2 the sensitivity of rev d
     product_id = registerRead(MPUREG_PRODUCT_ID);
-    //Serial.printf("Product_ID= 0x%x\n", (unsigned) _mpu6000_product_id);
 
     // TODO: should be changed to 16G once we have a way to override the
     // previous offsets
@@ -275,14 +298,144 @@ void MPU6000::start() {
         registerWrite(MPUREG_ACCEL_CONFIG,2<<3);
     }
     delay(1);
+}
 
-    // configure interrupt to fire when new data arrives
-    // registerWrite(MPUREG_INT_ENABLE, BIT_RAW_RDY_EN);
-    // delay(1);
+bool MPU6000::calibrateGyroSensitivity() {
+  float factory_trim[3] = {0,0,0};
+  float cal = 0;
+  uint8_t val;
+  uint16_t num_of_meas = 20;
+  uint8_t good_count = 0;
+  uint8_t base_config = registerRead(MPUREG_GYRO_CONFIG);
 
-    // clear interrupt on any read, and hold the data ready pin high
-    // until we clear the interrupt
-    // registerWrite(MPUREG_INT_PIN_CFG, BIT_INT_RD_CLEAR | BIT_LATCH_INT_EN);
+  for(uint8_t i = 0; i < 3; i++) { // Get factory trim
+    registerWrite(MPUREG_GYRO_CONFIG, BITS_GYRO_FS_250DPS | (BITS_GYRO_XGYRO_SELFTEST >> i));
+    delay(5);
+    for (uint16_t g = 0; g < num_of_meas; g++) {
+      val = registerRead(X_TEST+i);
+      val = (val & G_TEST_MASK);
+
+      if (val != 0) {
+        cal = static_cast<float>(val) - 1;
+        factory_trim[i] += 25 * 131* pow(1.046,cal)/num_of_meas;
+      } else {
+        factory_trim[i] += 0/num_of_meas;
+      }
+    }
+    registerWrite(MPUREG_GYRO_CONFIG, BITS_GYRO_FS_250DPS);
+    delay(5);
+  }
+
+  factory_trim[2] = -factory_trim[2];
+
+  float temp;
+  for(uint8_t i = 0; i < 3; i++) { // Set scaling
+    registerWrite(MPUREG_GYRO_CONFIG, BITS_GYRO_FS_250DPS | (BITS_GYRO_XGYRO_SELFTEST >> i));
+    delay(5);
+    good_count = 0;
+    cal = 0;
+
+    for (uint16_t g = 0; g < num_of_meas && good_count < 10; g++) {
+      val = registerRead(X_TEST+i);
+      val = (val & G_TEST_MASK);
+      temp = fabsf((static_cast<float>(val)-factory_trim[i])/factory_trim[i]);
+
+      #define IS_CALIBRATION_VALUE_VALID(value) (value > 0.86f && value < 1.14f)
+      if(IS_CALIBRATION_VALUE_VALID(temp)) {
+        cal += temp;
+        good_count++;
+      }
+      #undef IS_CALIBRATION_VALUE_VALID
+    }
+
+    if (good_count >= 5) {
+      _gyro_scaling[i] = cal/good_count;
+    } else {
+      registerWrite(MPUREG_GYRO_CONFIG, base_config);
+      return false;
+    }
+    registerWrite(MPUREG_GYRO_CONFIG, BITS_GYRO_FS_250DPS);
+    delay(5);
+  }
+
+  registerWrite(MPUREG_GYRO_CONFIG, base_config);
+  return true;
+}
+
+bool MPU6000::calibrateAccelerometerSensitivity() {
+  float factory_trim[3]={0,0,0};
+  uint8_t val_high, val_low, val;
+  uint16_t num_of_meas = 20;
+  uint8_t good_count = 0;
+  float cal = 0;
+  uint8_t base_config = registerRead(MPUREG_ACCEL_CONFIG);
+
+  for(uint8_t i = 0; i < 3; i++) { // Get factory trim
+    registerWrite(MPUREG_ACCEL_CONFIG, BITS_ACCEL_8G | (BITS_ACCEL_XACCEL_SELFTEST >> i));
+    delay(5);
+    for (uint16_t g = 0; g < num_of_meas; g++) {
+      val_high = (registerRead(X_TEST+i) & A42_TEST_MASK);
+      val_high = val_high >> 3;
+      val_low = (registerRead(TEST_01) & (XA10_TEST_MASK >> (2*i))); // Get the correct low bits
+      if ( i < 2) {
+        val_low = val_low >> (4/(i+1)); // shift bits into position
+      }
+
+      val = val_high | val_low;
+
+
+      if (val != 0) {
+         cal = (static_cast<float>(val) - 1)/(pow(2,5)-2);
+         float temp_base = 0.92/0.34;
+         factory_trim[i] += 4096 * 0.34 * pow(temp_base,cal)/num_of_meas;
+      } else {
+        factory_trim[i] += 0/num_of_meas;
+      }
+    }
+    registerWrite(MPUREG_ACCEL_CONFIG, BITS_ACCEL_8G);
+    delay(5);
+  }
+
+  float temp;
+  for(uint8_t i = 0; i < 3; i++) { // Set scaling
+    registerWrite(MPUREG_ACCEL_CONFIG, BITS_ACCEL_8G | (BITS_ACCEL_XACCEL_SELFTEST >> i));
+    delay(5);
+    good_count = 0;
+    cal = 0;
+
+    for (uint16_t g = 0; g < num_of_meas && good_count < 10; g++) {
+      val_high = (registerRead(X_TEST+i) & A42_TEST_MASK);
+      val_high = val_high >> 3;
+      val_low = (registerRead(TEST_01) & (XA10_TEST_MASK >> (2*i))); // Get the correct low bits
+      if ( i < 2) {
+        val_low = val_low >> (4/(i+1)); // shift bits into position
+      }
+
+      val = val_high | val_low;
+
+      temp = fabsf((static_cast<float>(val)-factory_trim[i])/factory_trim[i]);
+
+      #define IS_CALIBRATION_VALUE_VALID(value) (value > 0.86f && value < 1.14f)
+      if(IS_CALIBRATION_VALUE_VALID(temp)) {
+        cal += temp;
+        good_count++;
+      }
+      #undef IS_CALIBRATION_VALUE_VALID
+    }
+
+    if (good_count >= 5) {
+      _accel_scaling[i] = cal/good_count;
+    } else {
+      registerWrite(MPUREG_ACCEL_CONFIG, base_config);
+      return false;
+    }
+
+    registerWrite(MPUREG_ACCEL_CONFIG, BITS_ACCEL_8G);
+    delay(5);
+  }
+
+  registerWrite(MPUREG_ACCEL_CONFIG, base_config);
+  return true;
 }
 
 /*
@@ -303,19 +456,6 @@ void MPU6000::start() {
 //     return true;
 // }
 
-/*
-AuxiliaryBus *AP_InertialSensor_MPU6000::get_auxiliary_bus()
-{
-    if (_auxiliary_bus) {
-        return _auxiliary_bus;
-    }
-
-    if (_has_auxiliary_bus()) {
-        _auxiliary_bus = new AP_MPU6000_AuxiliaryBus(*this);
-    }
-
-    return _auxiliary_bus;
-}*/
 
 /*
  * Return true if the MPU6000 has new data available for reading.
@@ -329,9 +469,9 @@ bool MPU6000::dataReady() {
 }
 
 /*
- * Timer process to poll for new data from the MPU6000.
+ * Timer process to read for new data from the MPU6000.
  */
-void MPU6000::pollData() {
+void MPU6000::read() {
     if (_use_fifo) {
         readFifo();
     } else if (dataReady()) {
@@ -439,7 +579,7 @@ void MPU6000::blockRead(uint8_t reg, uint8_t *buf, uint16_t size) {
     for (uint16_t i = 0; i < size; i++) {
       buf[i] = registerRead(reg+i);
     }
-  } else { // Read from the fifo queue
+  } else { // TODO Read from the fifo queue
     reg |= BIT_READ_FLAG;
     SPI.transfer(reg);
     for (uint32_t i = 0; i < size; i++) {
