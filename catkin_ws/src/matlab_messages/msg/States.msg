@@ -1,0 +1,11 @@
+float64 Q0
+float64 Q1
+float64 Q2
+float64 Q3
+float64 GyroBiasX
+float64 GyroBiasY
+float64 GyroBiasZ
+float64 AccBiasX
+float64 AccBiasY
+float64 AccBiasZ
+float64 Depth

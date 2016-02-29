@@ -10,16 +10,15 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   tf
   joy
-  mavros
   message_generation
   dynamic_reconfigure
+  matlab_messages
 )
 
 ## Declare ROS messages and services
-add_message_files(FILES
-  States.msg
-  Sensors.msg
-)
+##add_message_files(FILES
+##
+##)
 
 ## Generate added messages and services
 generate_messages(DEPENDENCIES
