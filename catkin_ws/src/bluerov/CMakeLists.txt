@@ -16,9 +16,16 @@ find_package(catkin REQUIRED COMPONENTS
 )
 
 ## Declare ROS messages and services
+<<<<<<< HEAD
 ##add_message_files(FILES
 ##
 ##)
+=======
+#add_message_files(FILES
+#  States.msg
+#  Sensors.msg
+#)
+>>>>>>> 773a760d814c4bca1418ef9f9ba032543aca655b
 
 ## Generate added messages and services
 generate_messages(DEPENDENCIES

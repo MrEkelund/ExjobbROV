@@ -44,18 +44,19 @@ static const uint8_t CMD_TEMPERATURE_OSR = CMD_ADC_1024;
 /*
 constructor
 */
-MS5611::MS5611() {}
+MS5611::MS5611(uint8_t chipSelect): _MS5611ChipSelect(chipSelect) {
+    pinMode(_MS5611ChipSelect, OUTPUT);
+}
 
-void MS5611::init(int chipSelect, const ros::NodeHandle& nh) {
-  _MS5611ChipSelect = chipSelect;
-  _nh = nh;
-  pinMode(_MS5611ChipSelect, OUTPUT);
+bool MS5611::init() {
 
   reset();
 
   uint16_t prom[8];
-  if (!readProm(prom)) {
-    _nh.logwarn("MS5611: Can't read prom");
+  uint8_t tries = 0;
+  while (!readProm(prom) && tries < 10) {
+    tries++;
+    delay(100);
   }
 
   // Save factory calibration coefficients
@@ -68,6 +69,10 @@ void MS5611::init(int chipSelect, const ros::NodeHandle& nh) {
 
   _D1 = readADC(CMD_ADC_D1+CMD_PRESSURE_OSR);
   _D2 = readADC(CMD_ADC_D2+CMD_TEMPERATURE_OSR);
+  if (tries < 10) {
+    return true;
+  }
+  return true;
 }
 
 void MS5611::reset() {
@@ -138,7 +143,7 @@ uint32_t MS5611::readADC(uint8_t cmd) {
     case CMD_ADC_1024: delay(4); break;
     case CMD_ADC_2048: delay(6); break;
     case CMD_ADC_4096: delay(10); break;
-    default : _nh.logwarn("MS5611: Unknown conversion command"); break;
+    default : break;
   }
   digitalWrite(_MS5611ChipSelect, HIGH);
   digitalWrite(_MS5611ChipSelect, LOW);
@@ -192,10 +197,10 @@ void MS5611::read() {
 
 // Calculate Temperature and compensated Pressure in real units (Celsius degrees*100, mbar*100).
 void MS5611::calculate() {
-  double dT;
-  double TEMP;
-  double OFF;
-  double SENS;
+  float dT;
+  float TEMP;
+  float OFF;
+  float SENS;
 
   // Formulas from manufacturer datasheet
   // sub -15c temperature compensation is not included

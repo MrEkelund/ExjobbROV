@@ -8,13 +8,10 @@
 #define MS5837_CONVERT_D1_8192    0x4A
 #define MS5837_CONVERT_D2_8192    0x5A
 
-MS5837::MS5837() {
-	fluidDensity = 1029;
-}
+MS5837::MS5837() {}
 
-void MS5837::init(ros::NodeHandle& nh) {
-	_nh = nh;
-	_nh.loginfo("MS5837: Initializing");
+bool MS5837::init() {
+
 	// Reset the MS5837, per datasheet
 	Wire.beginTransmission(MS5837_ADDR);
 	Wire.write(MS5837_RESET);
@@ -23,8 +20,22 @@ void MS5837::init(ros::NodeHandle& nh) {
 	// Wait for reset to complete
 	delay(10);
 
+	uint8_t tries = 0;
+
+	// Try to read prom 10 times
+	while (!readProm() && (tries < 10)) {
+		tries++;
+		delay(100);
+	}
+	if(tries < 10) {
+		return true;
+	}
+	return false;
+}
+
+bool MS5837::readProm() {
 	// Read calibration values and CRC
-	for ( uint8_t i = 0 ; i < 8 ; i++ ) {
+	for (uint8_t i = 0 ; i < 8 ; i++) {
 		Wire.beginTransmission(MS5837_ADDR);
 		Wire.write(MS5837_PROM_READ+i*2);
 		Wire.endTransmission();
@@ -37,17 +48,12 @@ void MS5837::init(ros::NodeHandle& nh) {
 	uint8_t crcRead = C[0] >> 12;
 	uint8_t crcCalculated = crc4(C);
 
-	if ( crcCalculated == crcRead ) {
-		// Success
-		_nh.loginfo("MS5837: CRC success");
-	} else {
-		_nh.logwarn("MS5837: CRC failed");
-		// Failure - try again?
+	if (crcCalculated == crcRead) {
+		// succses
+		return true;
 	}
-}
-
-void MS5837::setFluidDensity(float density) {
-	fluidDensity = density;
+	// Fail
+	return false;
 }
 
 void MS5837::read() {
@@ -88,21 +94,6 @@ void MS5837::read() {
 	calculate();
 }
 
-void MS5837::readTestCase() {
-	C[0] = 0;
-	C[1] = 34982;
-	C[2] = 36352;
-	C[3] = 20328;
-	C[4] = 22354;
-	C[5] = 26646;
-	C[6] = 26146;
-	C[7] = 0;
-
-	D1 = 4958179;
-	D2 = 6815414;
-
-	calculate();
-}
 
 void MS5837::calculate() {
 	// Given C1-C6 and D1, D2, calculated TEMP and P
@@ -157,15 +148,6 @@ float MS5837::pressure(float conversion) {
 float MS5837::temperature() {
 	return TEMP/100.0f;
 }
-
-float MS5837::depth() {
-	return (pressure(MS5837::Pa)-101300)/(fluidDensity*9.80665);
-}
-
-float MS5837::altitude() {
-	return (1-pow((pressure()/1013.25),.190284))*145366.45*.3048;
-}
-
 
 uint8_t MS5837::crc4(uint16_t n_prom[]) {
 	uint16_t n_rem = 0;

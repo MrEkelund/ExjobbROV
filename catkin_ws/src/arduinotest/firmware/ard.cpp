@@ -3,28 +3,27 @@
 #include "MS5837.h"
 #include "MS5611.h"
 #include "MPU6000.h"
+#include "HMC5883L.h"
 
 
 //#define USE_USBCON
 #include <ros.h>
 #include <std_msgs/MultiArrayLayout.h>
 #include <std_msgs/MultiArrayDimension.h>
-#include <std_msgs/Float64MultiArray.h>
+#include <std_msgs/Float32MultiArray.h>
 #include <std_msgs/UInt16MultiArray.h>
-
 
 #include <Arduino.h>
 #include <Servo.h>
 #include <Wire.h>
 #include <SPI.h>
 
-// ROVIO rov_io;
 
 // Node handle
 ros::NodeHandle nh;
 
 // Publishers
-std_msgs::Float64MultiArray sensor_message;
+std_msgs::Float32MultiArray sensor_message;
 ros::Publisher sensor_publisher("rovio/sensors", &sensor_message);
 
 // Subscribers
@@ -33,8 +32,9 @@ ros::Publisher sensor_publisher("rovio/sensors", &sensor_message);
 // Internal objects
 ROVServo rov_servo;
 MS5837 water_pressure_sensor;
-MS5611 air_pressure_sensor;
-MPU6000 imu(false, 0x80);
+MS5611 air_pressure_sensor(40);
+MPU6000 imu(false, 53);
+HMC5883L magnetometer;
 
 
 
@@ -58,9 +58,11 @@ void sendSensors() {
   // nh.loginfo("Temp");
   // nh.loginfo(temp);
 
-  //water_pressure_sensor.readTestCase();
-  sensor_message.data[0] = water_pressure_sensor.pressure();
-  sensor_message.data[1] = air_pressure_sensor.pressure();
+  float x,y,z;
+  magnetometer.magneticField(x,y,z);
+  sensor_message.data[0] = x;
+  sensor_message.data[1] = y;
+  sensor_message.data[2] = z;
   // sensor_message.data[2] = air_pressure_sensor.temperature();
   // double x,y,z,temp;
   // imu.gyro(x,y,z);
@@ -78,60 +80,61 @@ void sendSensors() {
 }
 
 void spin() {
+
   nh.spinOnce();
-  //water_pressure_sensor.readProm();
-  //delay(10);
+  BLUE_LED_ON;
   water_pressure_sensor.read();
   air_pressure_sensor.read();
   imu.pollData();
+  magnetometer.read();
 
   sendSensors();
+  BLUE_LED_OFF;
 }
 
 
 void setup() {
-  nh.loginfo("Setting up");
   pinMode(BLUE_LED_PIN, OUTPUT);
-  //pinMode(YELLOW_LED_PIN, OUTPUT);
-  //pinMode(RED_LED_PIN, OUTPUT);
-  digitalWrite(BLUE_LED_PIN,LOW);
-  //digitalWrite(YELLOW_LED_PIN,LOW);
-  //digitalWrite(RED_LED_PIN,HIGH);
+  pinMode(YELLOW_LED_PIN, OUTPUT);
+  pinMode(RED_LED_PIN, OUTPUT);
+  YELLOW_LED_OFF;
+  BLUE_LED_OFF;
+  RED_LED_ON;
 
-  sensor_message.data_length = 2;
+  sensor_message.data_length = 3;
   sensor_message.layout.dim[0].size = sensor_message.data_length;
   sensor_message.layout.dim[0].stride = 1*sensor_message.data_length;
   sensor_message.layout.dim[0].label = "Sensors";
   sensor_message.data = (float*)malloc(sizeof(float)*sensor_message.data_length);
 
-  for(int i = 0; i < sensor_message.data_length; i++) {
-    sensor_message.data[i] = 0;
-  }
-
-  nh.loginfo("Starting sensors");
-  Wire.begin();
-  water_pressure_sensor.init(nh);
-  water_pressure_sensor.setFluidDensity(997);
-
   nh.initNode();
   nh.advertise(sensor_publisher);
 
+  Wire.begin();
+  if (!water_pressure_sensor.init()) {
+    nh.logerror("MS5837: Initialise fail");
+  }
+  if (!magnetometer.init()) {
+    nh.logerror("HMC5883L: Initialise fail");
+  }
+
+
   SPI.begin();
-
   SPI.setClockDivider(SPI_CLOCK_DIV16);
-
   SPI.setBitOrder(MSBFIRST);
   SPI.setDataMode(SPI_MODE0);
   delay(100);
 
-  air_pressure_sensor.init(40, nh);
+  if (!air_pressure_sensor.init()) {
+    nh.logerror("MS5611: Initialise fail");
+  }
 
-  imu.init(53, nh);
+  if (!imu.init()) {
+    nh.logerror("MPU6000: Initialise fail");
+  }
   imu.start();
-  digitalWrite(BLUE_LED_PIN, HIGH);
-  //digitalWrite(YELLOW_LED_PIN, LOW);
-  //digitalWrite(RED_LED_PIN, LOW);
 
+  RED_LED_OFF;
 }
 
 void loop() {

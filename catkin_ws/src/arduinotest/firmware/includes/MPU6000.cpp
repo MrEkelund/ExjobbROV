@@ -193,10 +193,10 @@ static const float GYRO_SCALE = (0.0174532f / 16.4f);
  *  variants however
  */
 
-MPU6000::MPU6000(bool use_fifo, uint8_t read_flag)
-    : _read_flag(read_flag)
-    , _use_fifo(use_fifo) {
-
+MPU6000::MPU6000(bool use_fifo, uint8_t chipSelect)
+    : _use_fifo(use_fifo)
+    , _MPU6000ChipSelect(chipSelect) {
+  pinMode(_MPU6000ChipSelect, OUTPUT);
 }
 
 /*AP_InertialSensor_MPU6000::~AP_InertialSensor_MPU6000() {
@@ -204,13 +204,12 @@ MPU6000::MPU6000(bool use_fifo, uint8_t read_flag)
 }*/
 
 
-void MPU6000::init(uint8_t chipSelect, ros::NodeHandle& nh) {
-    _nh = nh;
-    _nh.loginfo("MPU6000: Initializing");
-    _MPU6000ChipSelect = chipSelect;
-    pinMode(_MPU6000ChipSelect, OUTPUT);
-
-    hardwareInit();
+//void MPU6000::init(uint8_t chipSelect, ros::NodeHandle& nh) {
+bool MPU6000::init() {
+  if (!hardwareInit()) {
+    return false;
+  }
+  return true;
 }
 
 void MPU6000::fifoReset() {
@@ -341,7 +340,6 @@ void MPU6000::pollData() {
 }
 
 void MPU6000::accumulate(uint8_t *samples, uint8_t n_samples) {
-  char temp_char[20];
 
   Vector3f temp_accel, temp_gyro;
   temp_accel = Vector3f(0,0,0);
@@ -401,7 +399,7 @@ void MPU6000::readFifo()
     uint8_t rx[MAX_DATA_READ];
 
     if(MAX_DATA_READ >= 100) {
-      _nh.logwarn("MPU6000: FIFO too big to keep on stack");
+      //_nh.logwarn("MPU6000: FIFO too big to keep on stack");
     }
 
     blockRead(MPUREG_FIFO_COUNTH, rx, 2);
@@ -410,12 +408,12 @@ void MPU6000::readFifo()
     n_samples = bytes_read / MPU6000_SAMPLE_SIZE;
 
     if (n_samples == 0) {
-        _nh.logwarn("MPU6000: No data in FIFO");
+        //_nh.logwarn("MPU6000: No data in FIFO");
         return;
     }
 
     if (n_samples > MPU6000_MAX_FIFO_SAMPLES) {
-      _nh.logwarn("MPU6000: Too many samples, dropping samples");
+      //_nh.logwarn("MPU6000: Too many samples, dropping samples");
         /* Too many samples, do a FIFO RESET */
         fifoReset();
         return;
@@ -434,15 +432,15 @@ void MPU6000::readSample() {
   accumulate(rx, 1);
 }
 
-void MPU6000::blockRead(uint8_t reg, uint8_t *buf, uint32_t size) {
+void MPU6000::blockRead(uint8_t reg, uint8_t *buf, uint16_t size) {
 
   if(reg != MPUREG_FIFO_R_W) {
 
-    for (uint32_t i = 0; i < size; i++) {
+    for (uint16_t i = 0; i < size; i++) {
       buf[i] = registerRead(reg+i);
     }
   } else { // Read from the fifo queue
-    reg |= _read_flag;
+    reg |= BIT_READ_FLAG;
     SPI.transfer(reg);
     for (uint32_t i = 0; i < size; i++) {
       digitalWrite(_MPU6000ChipSelect, LOW);
@@ -456,7 +454,7 @@ void MPU6000::blockRead(uint8_t reg, uint8_t *buf, uint32_t size) {
 uint8_t MPU6000::registerRead(uint8_t reg) {
     uint8_t val = 0;
 
-    reg |= _read_flag;
+    reg |= BIT_READ_FLAG;
 
     // take the chip select low to select
     digitalWrite(_MPU6000ChipSelect, LOW);
@@ -500,7 +498,7 @@ void MPU6000::setFilterRegister(uint16_t filter_hz) {
     registerWrite(MPUREG_CONFIG, filter);
 }
 
-void MPU6000::hardwareInit() {
+bool MPU6000::hardwareInit() {
 
     // Chip reset
     uint8_t tries;
@@ -541,18 +539,18 @@ void MPU6000::hardwareInit() {
     }
 
     if (tries == 5) {
-        _nh.logerror("MPU6000: Failed to boot 5 times");
+        return false;
     } else {
-      _nh.loginfo("MPU6000: Hardware Initialized");
+      return true;
     }
 }
 
-void MPU6000::accel(double& x, double& y, double& z) {
+void MPU6000::accel(float& x, float& y, float& z) {
   x = _accel[0];
   y = _accel[1];
   z = _accel[2];
 }
-void MPU6000::gyro(double& x, double& y, double& z) {
+void MPU6000::gyro(float& x, float& y, float& z) {
   x = _gyro[0];
   y = _gyro[1];
   z = _gyro[2];
