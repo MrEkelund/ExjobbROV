@@ -469,32 +469,101 @@ void MPU6000::calibrateGyroOffsets() {
   writeEEPROMInt16(EEPROM_GYRO_OFFSET_Z, _gyro_offset[2]);
 }
 
-void MPU6000::calibrateAccelerometerOffsets() {
+bool MPU6000::calibrateAccelerometerOffsetsSanity(uint8_t test) {
+  uint8_t tries = 0;
+  int16_t high = 4300;
+  int16_t low = 3900;
+  uint8_t rx[MPU6000_SAMPLE_SIZE];
+  Vector3f accel = {0,0,0};
+  while (tries < 20) {
+    delay(50);
+    blockRead(MPUREG_ACCEL_XOUT_H , rx, MPU6000_SAMPLE_SIZE);
+    accel = Vector3f(int16_val(rx, 0),
+                     int16_val(rx, 1),
+                     int16_val(rx, 2));
+
+    switch (test) {
+      case 0: // Right side up
+      if (accel[0] < high && accel[0] > low) {
+        return true;
+      }
+      break;
+      case 1: // Left side up
+      if (accel[0] > -high && accel[0] < -low) {
+        return true;
+      }
+      break;
+      case 2: // Front side up
+      if (accel[1] < high && accel[1] > low) {
+        return true;
+      }
+      break;
+      case 3: // Down side up
+      if (accel[1] > -high && accel[1] < -low) {
+        return true;
+      }
+      break;
+      case 4: // Up side up
+      if (accel[2] < high && accel[2] > low) {
+        return true;
+      }
+      break;
+      case 5: // Down side up
+      if (accel[2] > -high && accel[2] < -low) {
+        return true;
+      }
+      break;
+    }
+    tries++;
+  }
+  return false;
+}
+
+bool MPU6000::calibrateAccelerometerOffsets(uint8_t test) {
   uint8_t rx[MPU6000_SAMPLE_SIZE];
   uint8_t num_of_meas = 10;
-  uint8_t* data = rx;
-    char temp[10];
 
   Vector3f accel = {0,0,0};
-  Vector3f accel_temp = {0,0,0};
-  while (!calibrateAccelerometerOffsetsSanity(test)) {
-    for (uint8_t i = 0; i < num_of_meas;i++) {
-      blockRead(MPUREG_ACCEL_XOUT_H , rx, MPU6000_SAMPLE_SIZE);
-      accel_temp += Vector3f(int16_val(, 1),
-      int16_val(data, 2),
-      int16_val(data, 3));
-      accel_temp /= num_of_meas;
-      delay(10);
+
+  if (test == 0) {
+    for (uint8_t i = 0; i < 5; i++) {
+      _accel_offset_measurement[i] = 0; // reset measurements
     }
   }
 
-  _accel_offset[0] = accel[0];
-  _accel_offset[1] = accel[1];
-  _accel_offset[2] = accel[2];
+  if (calibrateAccelerometerOffsetsSanity(test)) {
 
-  writeEEPROMInt16(EEPROM_ACCELOMETER_OFFSET_X, _accel_offset[0]);
-  writeEEPROMInt16(EEPROM_ACCELOMETER_OFFSET_Y, _accel_offset[1]);
-  writeEEPROMInt16(EEPROM_ACCELOMETER_OFFSET_Z, _accel_offset[2]);
+    for (uint8_t g = 0; g < num_of_meas; g++) {
+      blockRead(MPUREG_ACCEL_XOUT_H , rx, MPU6000_SAMPLE_SIZE);
+      accel += Vector3f(int16_val(rx, 0),
+                             int16_val(rx, 1),
+                             int16_val(rx, 2));
+      accel /= num_of_meas;
+      delay(10);
+    }
+
+    if (test <= 1) {
+      _accel_offset_measurement[test] = accel[0];
+    } else if ( test <= 3) {
+      _accel_offset_measurement[test] = accel[1];
+    } else {
+      _accel_offset_measurement[test] = accel[2];
+    }
+
+  } else {
+    return false;
+  }
+
+  if (test == 5) {
+    _accel_offset[0] = (_accel_offset_measurement[0] + _accel_offset_measurement[1])/2;
+    _accel_offset[1] = (_accel_offset_measurement[2] + _accel_offset_measurement[3])/2;
+    _accel_offset[2] = (_accel_offset_measurement[4] + _accel_offset_measurement[5])/2;
+
+    writeEEPROMInt16(EEPROM_ACCELOMETER_OFFSET_X, _accel_offset[0]);
+    writeEEPROMInt16(EEPROM_ACCELOMETER_OFFSET_Y, _accel_offset[1]);
+    writeEEPROMInt16(EEPROM_ACCELOMETER_OFFSET_Z, _accel_offset[2]);
+  }
+  return true;
 }
 
 /*
@@ -548,11 +617,14 @@ void MPU6000::accumulate(uint8_t *samples, uint8_t n_samples) {
         uint8_t *data = samples + MPU6000_SAMPLE_SIZE * i;
         Vector3f accel, gyro;
         float temp;
-        accel = Vector3f(int16_val(data, 1),
-                         int16_val(data, 0),
-                         -int16_val(data, 2));
+        // accel = Vector3f(int16_val(data, 1),
+        //                  int16_val(data, 0),
+        //                  -int16_val(data, 2));
+        accel = Vector3f(int16_val(data, 0),
+                         int16_val(data, 1),
+                         int16_val(data, 2));
 
-        accel *= MPU6000_ACCEL_SCALE_1G;
+        //accel *= MPU6000_ACCEL_SCALE_1G;
 
         gyro = Vector3f(int16_val(data, 5),
                         int16_val(data, 4),

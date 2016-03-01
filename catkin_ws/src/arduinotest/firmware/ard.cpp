@@ -32,8 +32,9 @@ ros::Publisher sensor_publisher("rovio/sensors", &sensor_message);
  // Forward declaration
 void enableThrustersCallback(const std_msgs::Bool& message);
 void thrustersCallback(const std_msgs::UInt16MultiArray& message);
-void calibrateMagnetometerOffsetsCallback(const std_msgs::Bool& control_msg);
+void calibrateMagnetometerOffsetsCallback(const std_msgs::Bool& message);
 void calibrateGyroOffsetsCallback(const std_msgs::Bool& control_msg);
+void calibrateAccelerometerOffsetsCallback(const std_msgs::Bool& message);
 
 ros::Subscriber<std_msgs::Bool>
                 enable_thrusters_subscriber("rovio/enable_thrusters",
@@ -47,6 +48,9 @@ ros::Subscriber<std_msgs::Bool>
 ros::Subscriber<std_msgs::Bool>
                 calibrate_gyro_offsets_subscriber("rovio/gyro/calibrate_offsets",
                                               &calibrateGyroOffsetsCallback);
+ros::Subscriber<std_msgs::Bool>
+                calibrate_accelerometer_offsets_subscriber("rovio/accelerometer/calibrate_offsets",
+                                              &calibrateAccelerometerOffsetsCallback);
 
 
 // Internal objects
@@ -55,7 +59,6 @@ MS5837 water_pressure_sensor;
 MS5611 air_pressure_sensor(40);
 MPU6000 imu(false, 53);
 HMC5883L magnetometer;
-
 
 /******************************************************************************
 *       Functions                                                             *
@@ -145,7 +148,7 @@ void thrustersCallback(const std_msgs::UInt16MultiArray& message) {
   YELLOW_LED_OFF;
 }
 
-void calibrateMagnetometerOffsetsCallback(const std_msgs::Bool& control_msg) {
+void calibrateMagnetometerOffsetsCallback(const std_msgs::Bool& message) {
   YELLOW_LED_ON;
   RED_LED_ON;
   BLUE_LED_ON;
@@ -158,11 +161,12 @@ void calibrateMagnetometerOffsetsCallback(const std_msgs::Bool& control_msg) {
   BLUE_LED_OFF;
 }
 
-void calibrateGyroOffsetsCallback(const std_msgs::Bool& control_msg) {
+void calibrateGyroOffsetsCallback(const std_msgs::Bool& message) {
   YELLOW_LED_ON;
   RED_LED_ON;
   BLUE_LED_ON;
   char log_msg[24];
+  char str_temp[6];
   int16_t val;
   nh.loginfo("Hold gyro still");
   delay(5000);
@@ -170,19 +174,146 @@ void calibrateGyroOffsetsCallback(const std_msgs::Bool& control_msg) {
   nh.loginfo("Calculated offset in sensor frame");
 
   val = readEEPROMInt16(EEPROM_GYRO_OFFSET_X);
-  sprintf(log_msg, "x offset: %i", val);
+  dtostrf(val, 4, 2, str_temp);
+  sprintf(log_msg,"x offset: %s", str_temp);
   nh.loginfo(log_msg);
   val = readEEPROMInt16(EEPROM_GYRO_OFFSET_Y);
-  sprintf(log_msg, "y offset: %i", val);
+  dtostrf(val, 4, 2, str_temp);
+  sprintf(log_msg,"y offset: %s", str_temp);
   nh.loginfo(log_msg);
   val = readEEPROMInt16(EEPROM_GYRO_OFFSET_Z);
-  sprintf(log_msg, "z offset: %" PRId16, val);
+  dtostrf(val, 4, 2, str_temp);
+  sprintf(log_msg,"z offset: %s", str_temp);
   nh.loginfo(log_msg);
   YELLOW_LED_OFF;
   RED_LED_OFF;
   BLUE_LED_OFF;
 }
 
+bool cp=false;
+void calibrateAccelerometerOffsetsCallback(const std_msgs::Bool& message) {
+  cp = true;
+  // YELLOW_LED_ON;
+  // RED_LED_ON;
+  // BLUE_LED_ON;
+  // char log_msg[24];
+  // char str_temp[6];
+  // int16_t val;
+  //
+  // for (uint8_t i = 0; i < 5; i++) {
+  //   switch (i) {
+  //     case 0: // Right side up
+  //     nh.logwarn("Hold right side up");
+  //     break;
+  //     case 1: // Left side up
+  //     nh.logwarn("Hold left side up");
+  //     break;
+  //     case 2: // Front side up
+  //     nh.logwarn("Hold forward side up");
+  //     break;
+  //     case 3: // Down side up
+  //     nh.logwarn("Hold backward side up");
+  //     break;
+  //     case 4: // Up side up
+  //     nh.logwarn("Hold up side up");
+  //     break;
+  //     case 5: // Down side up
+  //     nh.logwarn("Hold down side up");
+  //     break;
+  //   }
+  //   delay(1500);
+  //   bool status = imu.calibrateAccelerometerOffsets(i);
+  //   if (status) {
+  //   nh.loginfo("Good axis");
+  //   } else {
+  //   nh.loginfo("Bad axis");
+  //   break;
+  //   }
+  // }
+  // // nh.loginfo("Left side up");
+  // // nh.loginfo("Right side up");
+  // //delay(500);
+  //
+  // // nh.loginfo("Calculated offset in sensor frame");
+  // //
+  // // val = readEEPROMInt16(EEPROM_ACCELOMETER_OFFSET_X);
+  // // dtostrf(val, 4, 2, str_temp);
+  // // sprintf(log_msg,"x offset: %s", str_temp);
+  // // nh.loginfo(log_msg);
+  // // //val = readEEPROMInt16(EEPROM_ACCELOMETER_OFFSET_Y);
+  // // dtostrf(val, 4, 2, str_temp);
+  // // sprintf(log_msg,"y offset: %s", str_temp);
+  // // nh.loginfo(log_msg);
+  // // //val = readEEPROMInt16(EEPROM_ACCELOMETER_OFFSET_Z);
+  // // dtostrf(val, 4, 2, str_temp);
+  // // sprintf(log_msg,"z offset: %s", str_temp);
+  // // nh.loginfo(log_msg);
+  // YELLOW_LED_OFF;
+  // RED_LED_OFF;
+  // BLUE_LED_OFF;
+}
+
+void cpw() {
+  cp = false;
+  YELLOW_LED_ON;
+  RED_LED_ON;
+  BLUE_LED_ON;
+  char log_msg[24];
+  char str_temp[6];
+  int16_t val;
+
+  for (uint8_t i = 0; i < 6; i++) {
+    switch (i) {
+      case 0: // Right side up
+      nh.logwarn("Hold right side up");
+      break;
+      case 1: // Left side up
+      nh.logwarn("Hold left side up");
+      break;
+      case 2: // Front side up
+      nh.logwarn("Hold forward side up");
+      break;
+      case 3: // Down side up
+      nh.logwarn("Hold backward side up");
+      break;
+      case 4: // Up side up
+      nh.logwarn("Hold up side up");
+      break;
+      case 5: // Down side up
+      nh.logwarn("Hold down side up");
+      break;
+    }
+    delay(1500);
+    bool status = imu.calibrateAccelerometerOffsets(i);
+    if (status) {
+    nh.loginfo("Good axis");
+    } else {
+    nh.loginfo("Bad axis");
+    break;
+    }
+  }
+  // nh.loginfo("Left side up");
+  // nh.loginfo("Right side up");
+  //delay(500);
+
+  // nh.loginfo("Calculated offset in sensor frame");
+  //
+  // val = readEEPROMInt16(EEPROM_ACCELOMETER_OFFSET_X);
+  // dtostrf(val, 4, 2, str_temp);
+  // sprintf(log_msg,"x offset: %s", str_temp);
+  // nh.loginfo(log_msg);
+  // //val = readEEPROMInt16(EEPROM_ACCELOMETER_OFFSET_Y);
+  // dtostrf(val, 4, 2, str_temp);
+  // sprintf(log_msg,"y offset: %s", str_temp);
+  // nh.loginfo(log_msg);
+  // //val = readEEPROMInt16(EEPROM_ACCELOMETER_OFFSET_Z);
+  // dtostrf(val, 4, 2, str_temp);
+  // sprintf(log_msg,"z offset: %s", str_temp);
+  // nh.loginfo(log_msg);
+  YELLOW_LED_OFF;
+  RED_LED_OFF;
+  BLUE_LED_OFF;
+}
 /******************************************************************************
 *       Setup and loop                                                        *
 *******************************************************************************/
@@ -207,6 +338,7 @@ void setup() {
   nh.subscribe(thrusters_subscriber);
   nh.subscribe(calibrate_magnetometer_offsets_subscriber);
   nh.subscribe(calibrate_gyro_offsets_subscriber);
+  nh.subscribe(calibrate_accelerometer_offsets_subscriber);
 
   Wire.begin();
   if (!water_pressure_sensor.init()) {
@@ -236,6 +368,8 @@ void setup() {
 
 void loop() {
   spin();
+  if(cp)
+  cpw();
 
-  delay(5000);
+  delay(100);
 }

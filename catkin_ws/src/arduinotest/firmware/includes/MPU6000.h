@@ -25,7 +25,7 @@ public:
   void gyro(float& x, float& y, float& z);
   double temp();
   void calibrateGyroOffsets();
-  void calibrateAccelerometreOffsets();
+  bool calibrateAccelerometerOffsets(uint8_t test);
 
 private:
   /* Initialize sensor*/
@@ -33,6 +33,7 @@ private:
   bool hardwareInit();
   bool calibrateGyroSensitivity();
   bool calibrateAccelerometerSensitivity();
+  bool calibrateAccelerometerOffsetsSanity(uint8_t test);
 
   void start();
 
@@ -71,6 +72,7 @@ private:
 
   int16_t _gyro_offset[3] = {0,0,0};
   int16_t _accel_offset[3] = {0,0,0};
+  int16_t _accel_offset_measurement[6] = {0,0,0,0,0,0};
 
   const bool _use_fifo;
   const uint8_t _MPU6000ChipSelect;
