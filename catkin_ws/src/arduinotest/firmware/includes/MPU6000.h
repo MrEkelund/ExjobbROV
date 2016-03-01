@@ -5,6 +5,8 @@
 #include "AP_Math.h"
 #include <SPI.h>
 #include <math.h>
+#include <EEPROM.h>
+#include "defines.h"
 
 class MPU6000 {
 
@@ -22,6 +24,8 @@ public:
   void accel(float& x, float& y, float& z);
   void gyro(float& x, float& y, float& z);
   double temp();
+  void calibrateGyroOffsets();
+  void calibrateAccelerometreOffsets();
 
 private:
   /* Initialize sensor*/
@@ -29,6 +33,7 @@ private:
   bool hardwareInit();
   bool calibrateGyroSensitivity();
   bool calibrateAccelerometerSensitivity();
+
   void start();
 
   void setFilterRegister(uint16_t filter_hz);
@@ -55,12 +60,17 @@ private:
 
   void accumulate(uint8_t *samples, uint8_t n_samples);
 
+  void writeEEPROMInt16(uint16_t address, int16_t value);
+  int16_t readEEPROMInt16(uint16_t address);
   // instance numbers of accel and gyro data
   Vector3f _gyro;
   Vector3f _accel;
   float _temp;
   float _gyro_scaling[3] = {0,0,0};
   float _accel_scaling[3] = {0,0,0};
+
+  int16_t _gyro_offset[3] = {0,0,0};
+  int16_t _accel_offset[3] = {0,0,0};
 
   const bool _use_fifo;
   const uint8_t _MPU6000ChipSelect;

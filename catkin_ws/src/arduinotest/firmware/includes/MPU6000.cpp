@@ -238,6 +238,14 @@ bool MPU6000::init(ros::NodeHandle& nh) {
   if (!calibrateAccelerometerSensitivity()) {
    return false;
   }
+
+  _gyro_offset[0] = readEEPROMInt16(EEPROM_GYRO_OFFSET_X);
+  _gyro_offset[1] = readEEPROMInt16(EEPROM_GYRO_OFFSET_Y);
+  _gyro_offset[2] = readEEPROMInt16(EEPROM_GYRO_OFFSET_Z);
+  _accel_offset[0] = readEEPROMInt16(EEPROM_ACCELOMETER_OFFSET_X);
+  _accel_offset[1] = readEEPROMInt16(EEPROM_ACCELOMETER_OFFSET_Y);
+  _accel_offset[2] = readEEPROMInt16(EEPROM_ACCELOMETER_OFFSET_Z);
+
   return true;
 }
 
@@ -436,6 +444,57 @@ bool MPU6000::calibrateAccelerometerSensitivity() {
 
   registerWrite(MPUREG_ACCEL_CONFIG, base_config);
   return true;
+}
+
+void MPU6000::calibrateGyroOffsets() {
+  uint8_t rx[MPU6000_SAMPLE_SIZE];
+  uint8_t num_of_meas = 10;
+
+  Vector3f gyro = {0,0,0};
+  for (uint8_t i = 0; i < num_of_meas;i++) {
+    blockRead(MPUREG_ACCEL_XOUT_H , rx, MPU6000_SAMPLE_SIZE);
+    gyro += Vector3f(int16_val(rx, 4),
+    int16_val(rx, 5),
+    int16_val(rx, 6));
+    gyro /= num_of_meas;
+    delay(10);
+  }
+
+  _gyro_offset[0] = gyro[0];
+  _gyro_offset[1] = gyro[1];
+  _gyro_offset[2] = gyro[2];
+
+  writeEEPROMInt16(EEPROM_GYRO_OFFSET_X, _gyro_offset[0]);
+  writeEEPROMInt16(EEPROM_GYRO_OFFSET_Y, _gyro_offset[1]);
+  writeEEPROMInt16(EEPROM_GYRO_OFFSET_Z, _gyro_offset[2]);
+}
+
+void MPU6000::calibrateAccelerometerOffsets() {
+  uint8_t rx[MPU6000_SAMPLE_SIZE];
+  uint8_t num_of_meas = 10;
+  uint8_t* data = rx;
+    char temp[10];
+
+  Vector3f accel = {0,0,0};
+  Vector3f accel_temp = {0,0,0};
+  while (!calibrateAccelerometerOffsetsSanity(test)) {
+    for (uint8_t i = 0; i < num_of_meas;i++) {
+      blockRead(MPUREG_ACCEL_XOUT_H , rx, MPU6000_SAMPLE_SIZE);
+      accel_temp += Vector3f(int16_val(, 1),
+      int16_val(data, 2),
+      int16_val(data, 3));
+      accel_temp /= num_of_meas;
+      delay(10);
+    }
+  }
+
+  _accel_offset[0] = accel[0];
+  _accel_offset[1] = accel[1];
+  _accel_offset[2] = accel[2];
+
+  writeEEPROMInt16(EEPROM_ACCELOMETER_OFFSET_X, _accel_offset[0]);
+  writeEEPROMInt16(EEPROM_ACCELOMETER_OFFSET_Y, _accel_offset[1]);
+  writeEEPROMInt16(EEPROM_ACCELOMETER_OFFSET_Z, _accel_offset[2]);
 }
 
 /*
@@ -699,159 +758,19 @@ double MPU6000::temp() {
   return _temp;
 }
 
-//
-// AP_MPU6000_AuxiliaryBusSlave::AP_MPU6000_AuxiliaryBusSlave(AuxiliaryBus &bus, uint8_t addr,
-//                                                          uint8_t instance)
-//     : AuxiliaryBusSlave(bus, addr, instance)
-//     , _mpu6000_addr(MPUREG_I2C_SLV0_ADDR + _instance * 3)
-//     , _mpu6000_reg(_mpu6000_addr + 1)
-//     , _mpu6000_ctrl(_mpu6000_addr + 2)
-//     , _mpu6000_do(MPUREG_I2C_SLV0_DO + _instance)
-// {
-// }
-//
-// int AP_MPU6000_AuxiliaryBusSlave::_set_passthrough(uint8_t reg, uint8_t size,
-//                                                   uint8_t *out)
-// {
-//     auto &backend = AP_InertialSensor_MPU6000::from(_bus.get_backend());
-//     uint8_t addr;
-//
-//     /* Ensure the slave read/write is disabled before changing the registers */
-//     backend._register_write(_mpu6000_ctrl, 0);
-//
-//     if (out) {
-//         backend._register_write(_mpu6000_do, *out);
-//         addr = _addr;
-//     } else {
-//         addr = _addr | BIT_READ_FLAG;
-//     }
-//
-//     backend._register_write(_mpu6000_addr, addr);
-//     backend._register_write(_mpu6000_reg, reg);
-//     backend._register_write(_mpu6000_ctrl, BIT_I2C_SLVX_EN | size);
-//
-//     return 0;
-// }
-//
-// int AP_MPU6000_AuxiliaryBusSlave::passthrough_read(uint8_t reg, uint8_t *buf,
-//                                                    uint8_t size)
-// {
-//     assert(buf);
-//
-//     if (_registered) {
-//         hal.console->println("Error: can't passthrough when slave is already configured");
-//         return -1;
-//     }
-//
-//     int r = _set_passthrough(reg, size);
-//     if (r < 0) {
-//         return r;
-//     }
-//
-//     /* wait the value to be read from the slave and read it back */
-//     hal.scheduler->delay(10);
-//
-//     auto &backend = AP_InertialSensor_MPU6000::from(_bus.get_backend());
-//     backend._block_read(MPUREG_EXT_SENS_DATA_00 + _ext_sens_data, buf, size);
-//
-//     /* disable new reads */
-//     backend._register_write(_mpu6000_ctrl, 0);
-//
-//     return size;
-// }
-//
-// int AP_MPU6000_AuxiliaryBusSlave::passthrough_write(uint8_t reg, uint8_t val)
-// {
-//     if (_registered) {
-//         hal.console->println("Error: can't passthrough when slave is already configured");
-//         return -1;
-//     }
-//
-//     int r = _set_passthrough(reg, 1, &val);
-//     if (r < 0) {
-//         return r;
-//     }
-//
-//     /* wait the value to be written to the slave */
-//     hal.scheduler->delay(10);
-//
-//     auto &backend = AP_InertialSensor_MPU6000::from(_bus.get_backend());
-//
-//     /* disable new writes */
-//     backend._register_write(_mpu6000_ctrl, 0);
-//
-//     return 0;
-// }
-//
-// int AP_MPU6000_AuxiliaryBusSlave::read(uint8_t *buf)
-// {
-//     if (!_registered) {
-//         hal.console->println("Error: can't read before configuring slave");
-//         return -1;
-//     }
-//
-//     auto &backend = AP_InertialSensor_MPU6000::from(_bus.get_backend());
-//     backend._block_read(MPUREG_EXT_SENS_DATA_00 + _ext_sens_data, buf, _sample_size);
-//
-//     return 0;
-// }
-//
-// /* MPU6000 provides up to 5 slave devices, but the 5th is way too different to
-//  * configure and is seldom used */
-// AP_MPU6000_AuxiliaryBus::AP_MPU6000_AuxiliaryBus(AP_InertialSensor_MPU6000 &backend)
-//     : AuxiliaryBus(backend, 4)
-// {
-// }
-//
-// AP_HAL::Semaphore *AP_MPU6000_AuxiliaryBus::get_semaphore()
-// {
-//     return static_cast<AP_InertialSensor_MPU6000&>(_ins_backend)._dev->get_semaphore();
-// }
-//
-// AuxiliaryBusSlave *AP_MPU6000_AuxiliaryBus::_instantiate_slave(uint8_t addr, uint8_t instance)
-// {
-//     /* Enable slaves on MPU6000 if this is the first time */
-//     if (_ext_sens_data == 0) {
-//         _configure_slaves();
-//     }
-//
-//     return new AP_MPU6000_AuxiliaryBusSlave(*this, addr, instance);
-// }
-//
-// void AP_MPU6000_AuxiliaryBus::_configure_slaves()
-// {
-//     auto &backend = AP_InertialSensor_MPU6000::from(_ins_backend);
-//
-//     /* Enable the I2C master to slaves on the auxiliary I2C bus*/
-//     uint8_t user_ctrl = backend._register_read(MPUREG_USER_CTRL);
-//     backend._register_write(MPUREG_USER_CTRL, user_ctrl | BIT_USER_CTRL_I2C_MST_EN);
-//
-//     /* stop condition between reads; clock at 400kHz */
-//     backend._register_write(MPUREG_I2C_MST_CTRL,
-//                             BIT_I2C_MST_P_NSR | BIT_I2C_MST_CLK_400KHZ);
-//
-//     /* Hard-code divider for internal sample rate, 1 kHz, resulting in a
-//      * sample rate of 100Hz */
-//     backend._register_write(MPUREG_I2C_SLV4_CTRL, 9);
-//
-//     /* All slaves are subject to the sample rate */
-//     backend._register_write(MPUREG_I2C_MST_DELAY_CTRL,
-//                             BIT_I2C_SLV0_DLY_EN | BIT_I2C_SLV1_DLY_EN |
-//                             BIT_I2C_SLV2_DLY_EN | BIT_I2C_SLV3_DLY_EN);
-// }
-//
-// int AP_MPU6000_AuxiliaryBus::_configure_periodic_read(AuxiliaryBusSlave *slave,
-//                                                      uint8_t reg, uint8_t size)
-// {
-//     if (_ext_sens_data + size > MAX_EXT_SENS_DATA) {
-//         return -1;
-//     }
-//
-//     AP_MPU6000_AuxiliaryBusSlave *mpu_slave =
-//         static_cast<AP_MPU6000_AuxiliaryBusSlave*>(slave);
-//     mpu_slave->_set_passthrough(reg, size);
-//     mpu_slave->_ext_sens_data = _ext_sens_data;
-//     _ext_sens_data += size;
-//
-//     return 0;
-// }
+int16_t MPU6000::readEEPROMInt16(uint16_t address) {
+  uint8_t high = 0;
+  uint8_t low = 0;
+  high = EEPROM.read(address); // high bits
+  low = EEPROM.read(address+1);
+
+  return (high << 8) | low;
+}
+
+void MPU6000::writeEEPROMInt16(uint16_t address, int16_t value) {
+  uint8_t high = highByte(value);
+  uint8_t low = lowByte(value);
+
+  EEPROM.write(address, high); // high bits
+  EEPROM.write(address + 1, low); // low bits
+}

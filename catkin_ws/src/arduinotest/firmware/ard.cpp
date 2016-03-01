@@ -32,7 +32,8 @@ ros::Publisher sensor_publisher("rovio/sensors", &sensor_message);
  // Forward declaration
 void enableThrustersCallback(const std_msgs::Bool& message);
 void thrustersCallback(const std_msgs::UInt16MultiArray& message);
-void calibrateOffsetsCallback(const std_msgs::Bool& control_msg);
+void calibrateMagnetometerOffsetsCallback(const std_msgs::Bool& control_msg);
+void calibrateGyroOffsetsCallback(const std_msgs::Bool& control_msg);
 
 ros::Subscriber<std_msgs::Bool>
                 enable_thrusters_subscriber("rovio/enable_thrusters",
@@ -41,8 +42,12 @@ ros::Subscriber<std_msgs::UInt16MultiArray>
                 thrusters_subscriber("rovio/thrusters",
                                     &thrustersCallback);
 ros::Subscriber<std_msgs::Bool>
-                calibrate_offsets_subscriber("rovio/calibrate_offsets",
-                                              &calibrateOffsetsCallback);
+                calibrate_magnetometer_offsets_subscriber("rovio/magnetometer/calibrate_offsets",
+                                              &calibrateMagnetometerOffsetsCallback);
+ros::Subscriber<std_msgs::Bool>
+                calibrate_gyro_offsets_subscriber("rovio/gyro/calibrate_offsets",
+                                              &calibrateGyroOffsetsCallback);
+
 
 // Internal objects
 ROVServo rov_servo;
@@ -65,13 +70,22 @@ void sendSensors() {
   // dtostrf(water_pressure_sensor.altitude(),1,2,temp);
   // nh.loginfo("altitude");
   // nh.loginfo(temp);
-  // dtostrf(water_pressure_sensor.temperature(),1,2,temp);
-  // nh.loginfo("Temp");
+  // int16_t val;
+  // EEPROM.get(EEPROM_MAGNETOMETER_OFFSET_X,val);
+  // dtostrf(val,1,2,temp);
+  // nh.loginfo("NEW");
+  // nh.loginfo(temp);
+  // EEPROM.get(EEPROM_MAGNETOMETER_OFFSET_X,val);
+  // dtostrf(val,1,2,temp);
+  //
+  // nh.loginfo(temp);
+  // EEPROM.get(EEPROM_MAGNETOMETER_OFFSET_X,val);
+  // dtostrf(val,1,2,temp);
   // nh.loginfo(temp);
 
   float x,y,z;
   magnetometer.magneticField(x,y,z);
-  imu.gyro(x,y,z);
+  imu.accel(x,y,z);
   sensor_message.data[0] = x;
   sensor_message.data[1] = y;
   sensor_message.data[2] = z;
@@ -104,6 +118,15 @@ void spin() {
   BLUE_LED_OFF;
 }
 
+int16_t readEEPROMInt16(uint16_t address) {
+  uint8_t high = 0;
+  uint8_t low = 0;
+  high = EEPROM.read(address); // high bits
+  low = EEPROM.read(address+1);
+
+  return (high << 8) | low;
+}
+
 /******************************************************************************
 *       Callbacks                                                             *
 *******************************************************************************/
@@ -122,13 +145,39 @@ void thrustersCallback(const std_msgs::UInt16MultiArray& message) {
   YELLOW_LED_OFF;
 }
 
-void calibrateOffsetsCallback(const std_msgs::Bool& control_msg) {
+void calibrateMagnetometerOffsetsCallback(const std_msgs::Bool& control_msg) {
   YELLOW_LED_ON;
   RED_LED_ON;
   BLUE_LED_ON;
   nh.loginfo("Move the magnetometer in circles while rotating it for 30s");
+  delay(5000);
   magnetometer.calibrateOffsets();
   nh.loginfo("Magnetometer calibrated");
+  YELLOW_LED_OFF;
+  RED_LED_OFF;
+  BLUE_LED_OFF;
+}
+
+void calibrateGyroOffsetsCallback(const std_msgs::Bool& control_msg) {
+  YELLOW_LED_ON;
+  RED_LED_ON;
+  BLUE_LED_ON;
+  char log_msg[24];
+  int16_t val;
+  nh.loginfo("Hold gyro still");
+  delay(5000);
+  imu.calibrateGyroOffsets();
+  nh.loginfo("Calculated offset in sensor frame");
+
+  val = readEEPROMInt16(EEPROM_GYRO_OFFSET_X);
+  sprintf(log_msg, "x offset: %i", val);
+  nh.loginfo(log_msg);
+  val = readEEPROMInt16(EEPROM_GYRO_OFFSET_Y);
+  sprintf(log_msg, "y offset: %i", val);
+  nh.loginfo(log_msg);
+  val = readEEPROMInt16(EEPROM_GYRO_OFFSET_Z);
+  sprintf(log_msg, "z offset: %" PRId16, val);
+  nh.loginfo(log_msg);
   YELLOW_LED_OFF;
   RED_LED_OFF;
   BLUE_LED_OFF;
@@ -156,13 +205,14 @@ void setup() {
   nh.advertise(sensor_publisher);
   nh.subscribe(enable_thrusters_subscriber);
   nh.subscribe(thrusters_subscriber);
-  nh.subscribe(calibrate_offsets_subscriber);
+  nh.subscribe(calibrate_magnetometer_offsets_subscriber);
+  nh.subscribe(calibrate_gyro_offsets_subscriber);
 
   Wire.begin();
   if (!water_pressure_sensor.init()) {
     nh.logerror("MS5837: Initialise fail");
   }
-  if (!magnetometer.init(0)) {
+  if (!magnetometer.init()) {
     nh.logerror("HMC5883L: Initialise fail");
   }
 
@@ -187,5 +237,5 @@ void setup() {
 void loop() {
   spin();
 
-  delay(2000);
+  delay(5000);
 }
