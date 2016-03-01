@@ -12,7 +12,7 @@ classdef States < robotics.ros.Message
     end
     
     properties (Constant, Hidden)
-        MD5Checksum = 'ad0707f7628cf52ea423e2e29a95fdbb' % The MD5 Checksum of the message definition
+        MD5Checksum = '4443ee1cf948041cf2e0207db661e18e' % The MD5 Checksum of the message definition
     end
     
     properties (Access = protected)
@@ -24,18 +24,12 @@ classdef States < robotics.ros.Message
         Q1
         Q2
         Q3
-        GyroBiasX
-        GyroBiasY
-        GyroBiasZ
-        AccBiasX
-        AccBiasY
-        AccBiasZ
         Depth
     end
     
     properties (Constant, Hidden)
-        PropertyList = {'AccBiasX', 'AccBiasY', 'AccBiasZ', 'Depth', 'GyroBiasX', 'GyroBiasY', 'GyroBiasZ', 'Q0', 'Q1', 'Q2', 'Q3'} % List of non-constant message properties
-        ROSPropertyList = {'AccBiasX', 'AccBiasY', 'AccBiasZ', 'Depth', 'GyroBiasX', 'GyroBiasY', 'GyroBiasZ', 'Q0', 'Q1', 'Q2', 'Q3'} % List of non-constant ROS message properties
+        PropertyList = {'Depth', 'Q0', 'Q1', 'Q2', 'Q3'} % List of non-constant message properties
+        ROSPropertyList = {'Depth', 'Q0', 'Q1', 'Q2', 'Q3'} % List of non-constant ROS message properties
     end
     
     methods
@@ -132,78 +126,6 @@ classdef States < robotics.ros.Message
             obj.JavaMessage.setQ3(q3);
         end
         
-        function gyrobiasx = get.GyroBiasX(obj)
-            %get.GyroBiasX Get the value for property GyroBiasX
-            gyrobiasx = double(obj.JavaMessage.getGyroBiasX);
-        end
-        
-        function set.GyroBiasX(obj, gyrobiasx)
-            %set.GyroBiasX Set the value for property GyroBiasX
-            validateattributes(gyrobiasx, {'numeric'}, {'nonempty', 'scalar'}, 'States', 'gyrobiasx');
-            
-            obj.JavaMessage.setGyroBiasX(gyrobiasx);
-        end
-        
-        function gyrobiasy = get.GyroBiasY(obj)
-            %get.GyroBiasY Get the value for property GyroBiasY
-            gyrobiasy = double(obj.JavaMessage.getGyroBiasY);
-        end
-        
-        function set.GyroBiasY(obj, gyrobiasy)
-            %set.GyroBiasY Set the value for property GyroBiasY
-            validateattributes(gyrobiasy, {'numeric'}, {'nonempty', 'scalar'}, 'States', 'gyrobiasy');
-            
-            obj.JavaMessage.setGyroBiasY(gyrobiasy);
-        end
-        
-        function gyrobiasz = get.GyroBiasZ(obj)
-            %get.GyroBiasZ Get the value for property GyroBiasZ
-            gyrobiasz = double(obj.JavaMessage.getGyroBiasZ);
-        end
-        
-        function set.GyroBiasZ(obj, gyrobiasz)
-            %set.GyroBiasZ Set the value for property GyroBiasZ
-            validateattributes(gyrobiasz, {'numeric'}, {'nonempty', 'scalar'}, 'States', 'gyrobiasz');
-            
-            obj.JavaMessage.setGyroBiasZ(gyrobiasz);
-        end
-        
-        function accbiasx = get.AccBiasX(obj)
-            %get.AccBiasX Get the value for property AccBiasX
-            accbiasx = double(obj.JavaMessage.getAccBiasX);
-        end
-        
-        function set.AccBiasX(obj, accbiasx)
-            %set.AccBiasX Set the value for property AccBiasX
-            validateattributes(accbiasx, {'numeric'}, {'nonempty', 'scalar'}, 'States', 'accbiasx');
-            
-            obj.JavaMessage.setAccBiasX(accbiasx);
-        end
-        
-        function accbiasy = get.AccBiasY(obj)
-            %get.AccBiasY Get the value for property AccBiasY
-            accbiasy = double(obj.JavaMessage.getAccBiasY);
-        end
-        
-        function set.AccBiasY(obj, accbiasy)
-            %set.AccBiasY Set the value for property AccBiasY
-            validateattributes(accbiasy, {'numeric'}, {'nonempty', 'scalar'}, 'States', 'accbiasy');
-            
-            obj.JavaMessage.setAccBiasY(accbiasy);
-        end
-        
-        function accbiasz = get.AccBiasZ(obj)
-            %get.AccBiasZ Get the value for property AccBiasZ
-            accbiasz = double(obj.JavaMessage.getAccBiasZ);
-        end
-        
-        function set.AccBiasZ(obj, accbiasz)
-            %set.AccBiasZ Set the value for property AccBiasZ
-            validateattributes(accbiasz, {'numeric'}, {'nonempty', 'scalar'}, 'States', 'accbiasz');
-            
-            obj.JavaMessage.setAccBiasZ(accbiasz);
-        end
-        
         function depth = get.Depth(obj)
             %get.Depth Get the value for property Depth
             depth = double(obj.JavaMessage.getDepth);
@@ -232,12 +154,6 @@ classdef States < robotics.ros.Message
             cpObj.Q1 = obj.Q1;
             cpObj.Q2 = obj.Q2;
             cpObj.Q3 = obj.Q3;
-            cpObj.GyroBiasX = obj.GyroBiasX;
-            cpObj.GyroBiasY = obj.GyroBiasY;
-            cpObj.GyroBiasZ = obj.GyroBiasZ;
-            cpObj.AccBiasX = obj.AccBiasX;
-            cpObj.AccBiasY = obj.AccBiasY;
-            cpObj.AccBiasZ = obj.AccBiasZ;
             cpObj.Depth = obj.Depth;
         end
         
@@ -247,12 +163,6 @@ classdef States < robotics.ros.Message
             obj.Q1 = strObj.Q1;
             obj.Q2 = strObj.Q2;
             obj.Q3 = strObj.Q3;
-            obj.GyroBiasX = strObj.GyroBiasX;
-            obj.GyroBiasY = strObj.GyroBiasY;
-            obj.GyroBiasZ = strObj.GyroBiasZ;
-            obj.AccBiasX = strObj.AccBiasX;
-            obj.AccBiasY = strObj.AccBiasY;
-            obj.AccBiasZ = strObj.AccBiasZ;
             obj.Depth = strObj.Depth;
         end
     end
@@ -271,12 +181,6 @@ classdef States < robotics.ros.Message
             strObj.Q1 = obj.Q1;
             strObj.Q2 = obj.Q2;
             strObj.Q3 = obj.Q3;
-            strObj.GyroBiasX = obj.GyroBiasX;
-            strObj.GyroBiasY = obj.GyroBiasY;
-            strObj.GyroBiasZ = obj.GyroBiasZ;
-            strObj.AccBiasX = obj.AccBiasX;
-            strObj.AccBiasY = obj.AccBiasY;
-            strObj.AccBiasZ = obj.AccBiasZ;
             strObj.Depth = obj.Depth;
         end
     end

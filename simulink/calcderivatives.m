@@ -9,8 +9,6 @@ syms yaw pitch roll...
     acc_bias...
     F T motion_model...
     rho g x_offset d pressure_atm...
-    gyro_bias gyro_bias_x gyro_bias_y gyro_bias_z...
-    acc_bias acc_bias_x acc_bias_y acc_bias_z...
     Gv
 
 % define som matrixes
@@ -30,15 +28,10 @@ Sq = [-q1, -q2, -q3;
 
  
 
-Sw = [0, -(wx +gyro_bias_x), -(wy +gyro_bias_y), -(wz +gyro_bias_z); % wk = gyro_meas - bias
-    (wx +gyro_bias_x), 0, (wz +gyro_bias_z), -(wy +gyro_bias_y);
-    (wy +gyro_bias_y), -(wz +gyro_bias_z), 0, (wx +gyro_bias_x),;
-    (wz +gyro_bias_z), (wy +gyro_bias_y), -(wx +gyro_bias_x), 0];
-
-gyro_bias = [gyro_bias_x;gyro_bias_y;gyro_bias_z];
-acc_bias = [acc_bias_x;acc_bias_y;acc_bias_z];
-
-
+Sw = [0, -(wx ), -(wy ), -(wz ); % wk = gyro_meas - bias
+    (wx ), 0, (wz ), -(wy );
+    (wy ), -(wz ), 0, (wx );
+    (wz ), (wy ), -(wx ), 0];
 
 % qk+1 = Aq + Bu  u = w  With bias added as states.
 
@@ -46,12 +39,6 @@ acc_bias = [acc_bias_x;acc_bias_y;acc_bias_z];
 % 
 % A = blkdiag(eye(4) + 1/2*Sw*T,eye(7));
 % B = [T/2*Sq;    %quaternions
-%     0, 0, 0;    %x gyro bias
-%     0, 0, 0;    %y gyro bias
-%     0, 0, 0;    %z gyro bias
-%     0, 0, 0;    %x acc bias
-%     0, 0, 0;    %y acc bias
-%     0, 0, 0;    %z acc bias
 %     0, 0, 0];   %D pos aka depth
 
 
@@ -60,17 +47,17 @@ acc_bias = [acc_bias_x;acc_bias_y;acc_bias_z];
  %acceleration in body frame
 acc_ned = [acc_n; acc_e; acc_d];
 % measurement equation for acceleration
-acc_meas = transpose(Q)*([0; 0; g] + acc_bias); % fråga Manon + acc_ned
+acc_meas = transpose(Q)*([0; 0; g]); % fråga Manon + acc_ned
 % measurement equation for magnetometer 
 mag_global=[sqrt(mag_n^2 + mag_e^2);0;mag_d]; % could change to mx 0 mz and use bjord =mz bjord sin(θdip)dˆ+ bjord cos(θdip)nˆ
 mag_meas = transpose(Q)*mag_global;
 
 % measurement equation pressure sensor
- pressure_meas =  rho*g*(d+[0,0,1]*Q*[x_offset;0;0]) - pressure_atm;
+ pressure_meas =  rho*g*(d+[0,0,1]*Q*[x_offset;0;0]);
  
  measurement_eqs = [acc_meas;mag_meas;pressure_meas];
  
- states = [transpose(q),transpose(gyro_bias),transpose(acc_bias),d];
+ states = [transpose(q),d];
  %derivatives for acc meas eq
  nr_meas_eqs = length(measurement_eqs);
  nr_states = length(states);
@@ -82,7 +69,7 @@ for i=1:nr_meas_eqs
 end
 
  %% F matrix
- motion_model=[(eye(4) + 1/2*Sw*T)*q;gyro_bias;acc_bias;d];
+ motion_model=[(eye(4) + 1/2*Sw*T)*q;d];
  for n=1:nr_states 
     for m=1:nr_states
        F(n,m) = diff(motion_model(n,1),states(m));
@@ -95,7 +82,7 @@ end
 % other states.
 % this should but is not computed via derivatives.
 
-Gv =  blkdiag(T/2*Sq, eye(7));
+Gv =  blkdiag(T/2*Sq, eye(1));
  
  
  
