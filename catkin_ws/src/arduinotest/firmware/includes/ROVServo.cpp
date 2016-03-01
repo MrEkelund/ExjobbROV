@@ -1,6 +1,6 @@
 #include "ROVServo.h"
 // ROVServo constructor
-ROVServo::ROVServo() {
+ROVServo::ROVServo(): _thrusters_enabled(false) {
 }
 
 // Initialize the ROV thrusters.
@@ -13,7 +13,7 @@ void ROVServo::initROVServo() {
   _servo[4].attach(SERVO5);
   _servo[5].attach(SERVO6);
 
- // Initialize the ESC:s. The will sound in the correct order.
+  // Initialize the ESC:s. The will sound in the correct order.
   for (int i = 0; i < 6; i++) {
     _servo[i].writeMicroseconds(THRUSTERSTOP);
     delay(500);
@@ -36,7 +36,14 @@ void ROVServo::pwmSanityCheck(uint16_t* thruster_pwm_array) {
 void ROVServo::setThrusters(uint16_t* thruster_pwm_array) {
   pwmSanityCheck(thruster_pwm_array);
 
-  for (int i = 0; i < 6; i++) {
-    _servo[i].writeMicroseconds(thruster_pwm_array[i]);
+  if (_thrusters_enabled) {
+    for (int i = 0; i < 6; i++) {
+      _servo[i].writeMicroseconds(thruster_pwm_array[i]);
     }
+  }
+}
+
+// Enable or disable the thrusters
+void ROVServo::enableThrusters(bool enabled) {
+  _thrusters_enabled = enabled;
 }

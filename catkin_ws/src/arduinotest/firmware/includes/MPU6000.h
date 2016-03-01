@@ -4,16 +4,9 @@
 #include <ros.h>
 #include "AP_Math.h"
 #include <SPI.h>
-//#include "AuxiliaryBus.h"
-
-// enable debug to see a register dump on startup
-
-//class AP_MPU6000_AuxiliaryBus;
-//class AP_MPU6000_AuxiliaryBusSlave;
+#include <math.h>
 
 class MPU6000 {
-  //friend AP_MPU6000_AuxiliaryBus;
-  //friend AP_MPU6000_AuxiliaryBusSlave;
 
 public:
   MPU6000(bool use_fifo, uint8_t chipSelect);
@@ -21,17 +14,10 @@ public:
   /* update accel and gyro state */
   bool update();
 
-  /*
-  * Return an AuxiliaryBus if the bus driver allows it
-  */
-  //  AuxiliaryBus *get_auxiliary_bus() override;
-
-  void start();
-
-  bool init();
+  bool init(ros::NodeHandle& nh);
 
   /* Poll for new data */
-  void pollData();
+  void read();
 
   void accel(float& x, float& y, float& z);
   void gyro(float& x, float& y, float& z);
@@ -41,6 +27,9 @@ private:
   /* Initialize sensor*/
 
   bool hardwareInit();
+  bool calibrateGyroSensitivity();
+  bool calibrateAccelerometerSensitivity();
+  void start();
 
   void setFilterRegister(uint16_t filter_hz);
   void fifoReset();
@@ -70,55 +59,13 @@ private:
   Vector3f _gyro;
   Vector3f _accel;
   float _temp;
+  float _gyro_scaling[3] = {0,0,0};
+  float _accel_scaling[3] = {0,0,0};
 
   const bool _use_fifo;
   const uint8_t _MPU6000ChipSelect;
-  
-  //AP_MPU6000_AuxiliaryBus *_auxiliary_bus;
+  ros::NodeHandle _nh;
+
 };
 
-/*
-class AP_MPU6000_AuxiliaryBusSlave : public AuxiliaryBusSlave
-{
-friend class AP_MPU6000_AuxiliaryBus;
-
-public:
-int passthrough_read(uint8_t reg, uint8_t *buf, uint8_t size) override;
-int passthrough_write(uint8_t reg, uint8_t val) override;
-
-int read(uint8_t *buf) override;
-_MPU6000_H_
-protected:
-AP_MPU6000_AuxiliaryBusSlave(AuxiliaryBus &bus, uint8_t addr, uint8_t instance);
-int _set_passthrough(uint8_t reg, uint8_t size, uint8_t *out = nullptr);
-
-private:
-const uint8_t _mpu6000_addr;
-const uint8_t _mpu6000_reg;
-const uint8_t _mpu6000_ctrl;
-const uint8_t _mpu6000_do;
-
-uint8_t _ext_sens_data = 0;
-};
-
-class AP_MPU6000_AuxiliaryBus : public AuxiliaryBus
-{
-friend class AP_InertialSensor_MPU6000;
-
-public:
-AP_HAL::Semaphore *get_semaphore() override;
-
-protected:
-AP_MPU6000_AuxiliaryBus(AP_InertialSensor_MPU6000 &backend);
-
-AuxiliaryBusSlave *_instantiate_slave(uint8_t addr, uint8_t instance) override;
-int _configure_periodic_read(AuxiliaryBusSlave *slave, uint8_t reg,
-uint8_t size) override;
-
-private:
-void _configure_slaves();
-
-static const uint8_t MAX_EXT_SENS_DATA = 24;
-uint8_t _ext_sens_data = 0;
-};*/
 #endif // _MPU6000_H_

@@ -107,9 +107,9 @@ bool HMC5883L::readRaw() {
     return false;
   }
 
-  _mag_x = -rx;
-  _mag_y =  ry;
-  _mag_z = -rz;
+  _mag_x = rx;
+  _mag_y = ry;
+  _mag_z = rz;
 
   return true;
 }
@@ -136,8 +136,9 @@ bool HMC5883L::reInitialise() {
 }
 
 // Public Methods //////////////////////////////////////////////////////////////
-bool HMC5883L::init() {
+bool HMC5883L::init(uint16_t address) {
 
+  _address = address;
   uint16_t expected_xy = 0;
   uint16_t expected_z = 0;
   uint8_t calibration_gain = 0;
@@ -215,7 +216,7 @@ bool HMC5883L::init() {
       expected_z = 1.08*230;
       break;
     }
-    success = calibrate(calibration_gain, expected_xy, expected_z);
+    success = calibrateSensitivity(calibration_gain, expected_xy, expected_z);
   }
   while(!success && gain < 8);
 
@@ -225,13 +226,17 @@ bool HMC5883L::init() {
     _IO_fail = true;
   }
 
+  _mag_x_offset = EEPROM.read(_address);
+  _mag_y_offset = EEPROM.read(_address);
+  _mag_z_offset = EEPROM.read(_address);
+
   // perform an initial read
   read();
 
   return success;
 }
 
-bool HMC5883L::calibrate(uint8_t calibration_gain,
+bool HMC5883L::calibrateSensitivity(uint8_t calibration_gain,
   uint16_t expected_xy,
   uint16_t expected_z) {
 
@@ -317,6 +322,45 @@ bool HMC5883L::calibrate(uint8_t calibration_gain,
     return success;
 }
 
+bool HMC5883L::calibrateOffsets() {
+  float x_max = -4000, y_max = -4000, z_max = -4000;
+  float x_min = 4000, y_min = 4000, z_min = 4000;
+  bool status;
+
+  for(uint8_t i = 0; i < 10; i++) { // ignore first samples
+    status = readRaw();
+  }
+
+  uint32_t time = millis();
+  while (millis() - time < 30000) {
+    if (!readRaw()) {
+      delay(10);
+      continue;
+    }
+    x_max = max(x_max,_mag_x);
+    x_min = min(x_min,_mag_x);
+    y_max = max(y_max,_mag_y);
+    y_min = min(y_min,_mag_y);
+    z_max = max(z_max,_mag_z);
+    z_min = min(z_min,_mag_z);
+    delay(10);
+  }
+
+  if ( x_max <= -4000 || x_min >= 4000 || y_max <= -4000 || y_min >= 4000 ||
+       z_max <= -4000 || z_min >= 4000) {
+         return false;
+       }
+
+  _mag_x_offset = (x_max - x_min)/2;
+  _mag_y_offset = (y_max - y_min)/2;
+  _mag_z_offset = (z_max - z_min)/2;
+
+  EEPROM.write(_address, _mag_x_offset);
+  EEPROM.write(_address + 1, _mag_y_offset);
+  EEPROM.write(_address + 2, _mag_z_offset);
+  return true;
+}
+
 // Read Sensor data
 void HMC5883L::read() {
 
@@ -330,15 +374,17 @@ void HMC5883L::read() {
 
   if (readRaw()) {
     // get raw_field - sensor frame, uncorrected
-    _field = Vector3f(_mag_x * _scaling[0], _mag_y * _scaling[1], _mag_z * _scaling[2]);
+    _field = Vector3f((_mag_x - _mag_x_offset)*_scaling[0]
+                    , (_mag_y - _mag_y_offset)*_scaling[1]
+                    , (_mag_z - _mag_y_offset)*_scaling[2]);
     _field *= _gain_multiple;
-    _field.rotate(ROTATION_YAW_90);
   }
 }
 
 // Read Sensor data
 void HMC5883L::magneticField(float& x, float& y, float& z) {
-  x = _field[0];
-  y = _field[1];
-  z = _field[2];
+  _field.rotate(ROTATION_ROLL_180_YAW_270);
+  x = _field[0]/10; // Convert to micro testla
+  y = _field[1]/10; // Convert to micro testla
+  z = _field[2]/10; // Convert to micro testla
 }

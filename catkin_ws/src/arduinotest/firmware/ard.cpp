@@ -12,11 +12,13 @@
 #include <std_msgs/MultiArrayDimension.h>
 #include <std_msgs/Float32MultiArray.h>
 #include <std_msgs/UInt16MultiArray.h>
+#include <std_msgs/Bool.h>
 
 #include <Arduino.h>
 #include <Servo.h>
 #include <Wire.h>
 #include <SPI.h>
+#include <EEPROM.h>
 
 
 // Node handle
@@ -27,7 +29,20 @@ std_msgs::Float32MultiArray sensor_message;
 ros::Publisher sensor_publisher("rovio/sensors", &sensor_message);
 
 // Subscribers
-//ros::Subscriber _thruster_subscriber;
+ // Forward declaration
+void enableThrustersCallback(const std_msgs::Bool& message);
+void thrustersCallback(const std_msgs::UInt16MultiArray& message);
+void calibrateOffsetsCallback(const std_msgs::Bool& control_msg);
+
+ros::Subscriber<std_msgs::Bool>
+                enable_thrusters_subscriber("rovio/enable_thrusters",
+                                            &enableThrustersCallback);
+ros::Subscriber<std_msgs::UInt16MultiArray>
+                thrusters_subscriber("rovio/thrusters",
+                                    &thrustersCallback);
+ros::Subscriber<std_msgs::Bool>
+                calibrate_offsets_subscriber("rovio/calibrate_offsets",
+                                              &calibrateOffsetsCallback);
 
 // Internal objects
 ROVServo rov_servo;
@@ -36,10 +51,6 @@ MS5611 air_pressure_sensor(40);
 MPU6000 imu(false, 53);
 HMC5883L magnetometer;
 
-
-
-// Internal variables
-uint16_t pwm_array[6];
 
 /******************************************************************************
 *       Functions                                                             *
@@ -60,6 +71,7 @@ void sendSensors() {
 
   float x,y,z;
   magnetometer.magneticField(x,y,z);
+  imu.gyro(x,y,z);
   sensor_message.data[0] = x;
   sensor_message.data[1] = y;
   sensor_message.data[2] = z;
@@ -85,13 +97,46 @@ void spin() {
   BLUE_LED_ON;
   water_pressure_sensor.read();
   air_pressure_sensor.read();
-  imu.pollData();
+  imu.read();
   magnetometer.read();
 
   sendSensors();
   BLUE_LED_OFF;
 }
 
+/******************************************************************************
+*       Callbacks                                                             *
+*******************************************************************************/
+void enableThrustersCallback(const std_msgs::Bool& message) {
+  if (message.data) {
+    RED_LED_OFF;
+  } else {
+    RED_LED_ON;
+  }
+  rov_servo.enableThrusters(message.data);
+}
+
+void thrustersCallback(const std_msgs::UInt16MultiArray& message) {
+  YELLOW_LED_ON;
+  rov_servo.setThrusters(message.data);
+  YELLOW_LED_OFF;
+}
+
+void calibrateOffsetsCallback(const std_msgs::Bool& control_msg) {
+  YELLOW_LED_ON;
+  RED_LED_ON;
+  BLUE_LED_ON;
+  nh.loginfo("Move the magnetometer in circles while rotating it for 30s");
+  magnetometer.calibrateOffsets();
+  nh.loginfo("Magnetometer calibrated");
+  YELLOW_LED_OFF;
+  RED_LED_OFF;
+  BLUE_LED_OFF;
+}
+
+/******************************************************************************
+*       Setup and loop                                                        *
+*******************************************************************************/
 
 void setup() {
   pinMode(BLUE_LED_PIN, OUTPUT);
@@ -109,12 +154,15 @@ void setup() {
 
   nh.initNode();
   nh.advertise(sensor_publisher);
+  nh.subscribe(enable_thrusters_subscriber);
+  nh.subscribe(thrusters_subscriber);
+  nh.subscribe(calibrate_offsets_subscriber);
 
   Wire.begin();
   if (!water_pressure_sensor.init()) {
     nh.logerror("MS5837: Initialise fail");
   }
-  if (!magnetometer.init()) {
+  if (!magnetometer.init(0)) {
     nh.logerror("HMC5883L: Initialise fail");
   }
 
@@ -129,10 +177,9 @@ void setup() {
     nh.logerror("MS5611: Initialise fail");
   }
 
-  if (!imu.init()) {
+  if (!imu.init(nh)) {
     nh.logerror("MPU6000: Initialise fail");
   }
-  imu.start();
 
   RED_LED_OFF;
 }
