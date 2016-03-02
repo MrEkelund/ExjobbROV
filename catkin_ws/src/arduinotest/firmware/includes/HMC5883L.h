@@ -5,13 +5,14 @@
 #include <Arduino.h>
 #include <Wire.h>
 #include <EEPROM.h>
+#include "defines.h"
 
 
 class HMC5883L {
 public:
     HMC5883L();
 
-    bool        init(uint16_t address);
+    bool        init();
     void        read();
     void        magneticField(float& x, float& y, float& z);
     bool        calibrateOffsets();
@@ -26,11 +27,12 @@ private:
                                   uint32_t size);
 
     void                writeRegister(uint8_t address, uint8_t value);
-
+    bool                dataReady();
     bool                calibrateSensitivity(uint8_t calibration_gain,
                                              uint16_t expected_x,
                                              uint16_t expected_yz);
-
+    int16_t             readEEPROMInt16(uint16_t address);
+    void                writeEEPROMInt16(uint16_t address, int16_t value);
 
     bool            _IO_fail;
     int16_t			    _mag_x;

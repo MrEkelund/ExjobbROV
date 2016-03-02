@@ -48,8 +48,9 @@
 #define DATA_OUTPUT_YL 0x08
 
 // Status register
-#define LOCK  0x02
-#define RDY   0x01
+#define STATUS_REGISTER 0x09
+  #define LOCK  0x02
+  #define RDY   0x01
 
 #define MAG_GAIN         MAG_GAIN1090
 #define MAG_BASE_CONFIG (SAMPLE_AVERAGING_8 | DATA_OUTPUT_RATE_75HZ | NORMAL_OPERATION)
@@ -136,9 +137,8 @@ bool HMC5883L::reInitialise() {
 }
 
 // Public Methods //////////////////////////////////////////////////////////////
-bool HMC5883L::init(uint16_t address) {
+bool HMC5883L::init() {
 
-  _address = address;
   uint16_t expected_xy = 0;
   uint16_t expected_z = 0;
   uint8_t calibration_gain = 0;
@@ -226,14 +226,31 @@ bool HMC5883L::init(uint16_t address) {
     _IO_fail = true;
   }
 
-  _mag_x_offset = EEPROM.read(_address);
-  _mag_y_offset = EEPROM.read(_address);
-  _mag_z_offset = EEPROM.read(_address);
+  _mag_x_offset = readEEPROMInt16(EEPROM_MAGNETOMETER_OFFSET_X);
+  _mag_y_offset = readEEPROMInt16(EEPROM_MAGNETOMETER_OFFSET_Y);
+  _mag_z_offset = readEEPROMInt16(EEPROM_MAGNETOMETER_OFFSET_Z);
 
   // perform an initial read
   read();
 
   return success;
+}
+
+int16_t HMC5883L::readEEPROMInt16(uint16_t address) {
+  uint8_t high = 0;
+  uint8_t low = 0;
+  high = EEPROM.read(address); // high bits
+  low = EEPROM.read(address+1);
+
+  return (high << 8) | low;
+}
+
+void HMC5883L::writeEEPROMInt16(uint16_t address, int16_t value) {
+  uint8_t high = highByte(value);
+  uint8_t low = lowByte(value);
+
+  EEPROM.write(address, high); // high bits
+  EEPROM.write(address + 1, low); // low bits
 }
 
 bool HMC5883L::calibrateSensitivity(uint8_t calibration_gain,
@@ -355,9 +372,9 @@ bool HMC5883L::calibrateOffsets() {
   _mag_y_offset = (y_max - y_min)/2;
   _mag_z_offset = (z_max - z_min)/2;
 
-  EEPROM.write(_address, _mag_x_offset);
-  EEPROM.write(_address + 1, _mag_y_offset);
-  EEPROM.write(_address + 2, _mag_z_offset);
+  writeEEPROMInt16(EEPROM_MAGNETOMETER_OFFSET_X, _mag_x_offset);
+  writeEEPROMInt16(EEPROM_MAGNETOMETER_OFFSET_Y, _mag_y_offset);
+  writeEEPROMInt16(EEPROM_MAGNETOMETER_OFFSET_Z, _mag_z_offset);
   return true;
 }
 
@@ -375,9 +392,10 @@ void HMC5883L::read() {
   if (readRaw()) {
     // get raw_field - sensor frame, uncorrected
     _field = Vector3f((_mag_x - _mag_x_offset)*_scaling[0]
-                    , (_mag_y - _mag_y_offset)*_scaling[1]
-                    , (_mag_z - _mag_y_offset)*_scaling[2]);
+    , (_mag_y - _mag_y_offset)*_scaling[1]
+    , (_mag_z - _mag_y_offset)*_scaling[2]);
     _field *= _gain_multiple;
+
   }
 }
 

@@ -1,8 +1,7 @@
 #include "MPU6000.h"
 
 
-// MPU6000 accelerometer scaling
-#define MPU6000_ACCEL_SCALE_1G    (GRAVITY_MSS / 4096.0f)
+
 
 // MPU 6000 registers
 #define MPUREG_XG_OFFS_TC                       0x00
@@ -211,21 +210,18 @@ static const float GYRO_SCALE = (0.0174532f / 16.4f);
  *  See note below about accel scaling of engineering sample MPU6k
  *  variants however
  */
+ // MPU6000 accelerometer scaling
+static const float MPU6000_ACCEL_SCALE_1G = (GRAVITY_MSS / 4096.0f);
 
-MPU6000::MPU6000(bool use_fifo, uint8_t chipSelect)
-    : _use_fifo(use_fifo)
-    , _MPU6000ChipSelect(chipSelect) {
+MPU6000::MPU6000(uint8_t chipSelect)
+: _MPU6000ChipSelect(chipSelect) {
   pinMode(_MPU6000ChipSelect, OUTPUT);
 }
 
-/*AP_InertialSensor_MPU6000::~AP_InertialSensor_MPU6000() {
-    delete _auxiliary_bus;
-}*/
 
 
-//void MPU6000::init(uint8_t chipSelect, ros::NodeHandle& nh) {
-bool MPU6000::init(ros::NodeHandle& nh) {
-  _nh = nh;
+bool MPU6000::init() {
+
   if (!hardwareInit()) {
     return false;
   }
@@ -236,70 +232,63 @@ bool MPU6000::init(ros::NodeHandle& nh) {
   }
 
   if (!calibrateAccelerometerSensitivity()) {
-   return false;
+    return false;
   }
+
+  // Get the offsets from memory
+  _gyro_offset[0] = readEEPROMInt16(EEPROM_GYRO_OFFSET_X);
+  _gyro_offset[1] = readEEPROMInt16(EEPROM_GYRO_OFFSET_Y);
+  _gyro_offset[2] = readEEPROMInt16(EEPROM_GYRO_OFFSET_Z);
+  _accel_offset[0] = readEEPROMInt16(EEPROM_ACCELOMETER_OFFSET_X);
+  _accel_offset[1] = readEEPROMInt16(EEPROM_ACCELOMETER_OFFSET_Y);
+  _accel_offset[2] = readEEPROMInt16(EEPROM_ACCELOMETER_OFFSET_Z);
+
   return true;
-}
-
-void MPU6000::fifoReset() {
-    registerWrite(MPUREG_USER_CTRL, 0);
-    registerWrite(MPUREG_USER_CTRL, BIT_USER_CTRL_FIFO_RESET);
-    registerWrite(MPUREG_USER_CTRL, BIT_USER_CTRL_FIFO_EN);
-}
-
-void MPU6000::fifoEnable() {
-    registerWrite(MPUREG_FIFO_EN, BIT_XG_FIFO_EN | BIT_YG_FIFO_EN |
-                    BIT_ZG_FIFO_EN | BIT_ACCEL_FIFO_EN | BIT_TEMP_FIFO_EN);
-    fifoReset();
-    delay(1);
 }
 
 
 void MPU6000::start() {
 
-    uint8_t product_id;
-    // only used for wake-up in accelerometer only low power mode
-    registerWrite(MPUREG_PWR_MGMT_2, 0x00);
-    delay(1);
+  uint8_t product_id;
+  // only used for wake-up in accelerometer only low power mode
+  registerWrite(MPUREG_PWR_MGMT_2, 0x00);
+  delay(1);
 
-    if (_use_fifo) {
-        fifoEnable();
-    }
+  // disable sensor filtering
+  setFilterRegister(256);
 
-    // disable sensor filtering
-    setFilterRegister(256);
+  // set sample rate to 1000Hz and apply a software filter
+  // In this configuration, the gyro sample rate is 8kHz
+  // Therefore the sample rate value is 8kHz/(SMPLRT_DIV + 1)
+  // So we have to set it to 7 to have a 1kHz sampling
+  // rate on the gyro
+  registerWrite(MPUREG_SMPLRT_DIV, 7);
+  delay(1);
 
-    // set sample rate to 1000Hz and apply a software filter
-    // In this configuration, the gyro sample rate is 8kHz
-    // Therefore the sample rate value is 8kHz/(SMPLRT_DIV + 1)
-    // So we have to set it to 7 to have a 1kHz sampling
-    // rate on the gyro
-    registerWrite(MPUREG_SMPLRT_DIV, 7);
-    delay(1);
+  // Gyro scale 2000º/s
+  registerWrite(MPUREG_GYRO_CONFIG, BITS_GYRO_FS_2000DPS);
+  delay(1);
 
-    // Gyro scale 2000º/s
-    registerWrite(MPUREG_GYRO_CONFIG, BITS_GYRO_FS_2000DPS);
-    delay(1);
+  // read the product ID rev c has 1/2 the sensitivity of rev d
+  product_id = registerRead(MPUREG_PRODUCT_ID);
 
-    // read the product ID rev c has 1/2 the sensitivity of rev d
-    product_id = registerRead(MPUREG_PRODUCT_ID);
-
-    // TODO: should be changed to 16G once we have a way to override the
-    // previous offsets
-    if ((product_id == MPU6000ES_REV_C4) ||
-        (product_id == MPU6000ES_REV_C5) ||
-        (product_id == MPU6000_REV_C4)   ||
-        (product_id == MPU6000_REV_C5)) {
-        // Accel scale 8g (4096 LSB/g)
-        // Rev C has different scaling than rev D
-        registerWrite(MPUREG_ACCEL_CONFIG,1<<3);
-    } else {
-        // Accel scale 8g (4096 LSB/g)
-        registerWrite(MPUREG_ACCEL_CONFIG,2<<3);
-    }
-    delay(1);
+  // TODO: should be changed to 16G once we have a way to override the
+  // previous offsets
+  if ((product_id == MPU6000ES_REV_C4) ||
+  (product_id == MPU6000ES_REV_C5) ||
+  (product_id == MPU6000_REV_C4)   ||
+  (product_id == MPU6000_REV_C5)) {
+    // Accel scale 8g (4096 LSB/g)
+    // Rev C has different scaling than rev D
+    registerWrite(MPUREG_ACCEL_CONFIG,1<<3);
+  } else {
+    // Accel scale 8g (4096 LSB/g)
+    registerWrite(MPUREG_ACCEL_CONFIG,2<<3);
+  }
+  delay(1);
 }
 
+// calibrates the gyro scaling
 bool MPU6000::calibrateGyroSensitivity() {
   float factory_trim[3] = {0,0,0};
   float cal = 0;
@@ -308,6 +297,7 @@ bool MPU6000::calibrateGyroSensitivity() {
   uint8_t good_count = 0;
   uint8_t base_config = registerRead(MPUREG_GYRO_CONFIG);
 
+  // Get the factory trim values
   for(uint8_t i = 0; i < 3; i++) { // Get factory trim
     registerWrite(MPUREG_GYRO_CONFIG, BITS_GYRO_FS_250DPS | (BITS_GYRO_XGYRO_SELFTEST >> i));
     delay(5);
@@ -328,6 +318,7 @@ bool MPU6000::calibrateGyroSensitivity() {
 
   factory_trim[2] = -factory_trim[2];
 
+  // Compare factory trim against measured
   float temp;
   for(uint8_t i = 0; i < 3; i++) { // Set scaling
     registerWrite(MPUREG_GYRO_CONFIG, BITS_GYRO_FS_250DPS | (BITS_GYRO_XGYRO_SELFTEST >> i));
@@ -340,6 +331,7 @@ bool MPU6000::calibrateGyroSensitivity() {
       val = (val & G_TEST_MASK);
       temp = fabsf((static_cast<float>(val)-factory_trim[i])/factory_trim[i]);
 
+      // Values must be +-14%
       #define IS_CALIBRATION_VALUE_VALID(value) (value > 0.86f && value < 1.14f)
       if(IS_CALIBRATION_VALUE_VALID(temp)) {
         cal += temp;
@@ -362,6 +354,7 @@ bool MPU6000::calibrateGyroSensitivity() {
   return true;
 }
 
+// Calibrates the scaling
 bool MPU6000::calibrateAccelerometerSensitivity() {
   float factory_trim[3]={0,0,0};
   uint8_t val_high, val_low, val;
@@ -370,6 +363,7 @@ bool MPU6000::calibrateAccelerometerSensitivity() {
   float cal = 0;
   uint8_t base_config = registerRead(MPUREG_ACCEL_CONFIG);
 
+  // Get the factory trim values
   for(uint8_t i = 0; i < 3; i++) { // Get factory trim
     registerWrite(MPUREG_ACCEL_CONFIG, BITS_ACCEL_8G | (BITS_ACCEL_XACCEL_SELFTEST >> i));
     delay(5);
@@ -385,9 +379,9 @@ bool MPU6000::calibrateAccelerometerSensitivity() {
 
 
       if (val != 0) {
-         cal = (static_cast<float>(val) - 1)/(pow(2,5)-2);
-         float temp_base = 0.92/0.34;
-         factory_trim[i] += 4096 * 0.34 * pow(temp_base,cal)/num_of_meas;
+        cal = (static_cast<float>(val) - 1)/(pow(2,5)-2);
+        float temp_base = 0.92/0.34;
+        factory_trim[i] += 4096 * 0.34 * pow(temp_base,cal)/num_of_meas;
       } else {
         factory_trim[i] += 0/num_of_meas;
       }
@@ -396,6 +390,7 @@ bool MPU6000::calibrateAccelerometerSensitivity() {
     delay(5);
   }
 
+  // Compaer the factory trim values against the measured
   float temp;
   for(uint8_t i = 0; i < 3; i++) { // Set scaling
     registerWrite(MPUREG_ACCEL_CONFIG, BITS_ACCEL_8G | (BITS_ACCEL_XACCEL_SELFTEST >> i));
@@ -415,6 +410,7 @@ bool MPU6000::calibrateAccelerometerSensitivity() {
 
       temp = fabsf((static_cast<float>(val)-factory_trim[i])/factory_trim[i]);
 
+      // values must be +-14%
       #define IS_CALIBRATION_VALUE_VALID(value) (value > 0.86f && value < 1.14f)
       if(IS_CALIBRATION_VALUE_VALID(temp)) {
         cal += temp;
@@ -438,174 +434,217 @@ bool MPU6000::calibrateAccelerometerSensitivity() {
   return true;
 }
 
-/*
-  process any
- */
- // TODO
-
-// bool AP_InertialSensor_MPU6000::update()
-// {
-//     update_accel(_accel_instance);
-//     update_gyro(_gyro_instance);
-//
-//     _publish_temperature(_accel_instance, _temp_filtered);
-//
-//     /* give the temperature to the control loop in order to keep it constant*/
-//     hal.util->set_imu_temp(_temp_filtered);
-//
-//     return true;
-// }
-
-
-/*
- * Return true if the MPU6000 has new data available for reading.
- *
- * We use the data ready pin if it is available.  Otherwise, read the
- * status register.
- */
-bool MPU6000::dataReady() {
-    uint8_t status = registerRead(MPUREG_INT_STATUS);
-    return (status & BIT_RAW_RDY_INT) != 0;
-}
-
-/*
- * Timer process to read for new data from the MPU6000.
- */
-void MPU6000::read() {
-    if (_use_fifo) {
-        readFifo();
-    } else if (dataReady()) {
-        readSample();
-    }
-}
-
-void MPU6000::accumulate(uint8_t *samples, uint8_t n_samples) {
-
-  Vector3f temp_accel, temp_gyro;
-  temp_accel = Vector3f(0,0,0);
-  temp_gyro = Vector3f(0,0,0);
-  float temp_temp = 0;
-    for (uint8_t i = 0; i < n_samples; i++) {
-        uint8_t *data = samples + MPU6000_SAMPLE_SIZE * i;
-        Vector3f accel, gyro;
-        float temp;
-        accel = Vector3f(int16_val(data, 1),
-                         int16_val(data, 0),
-                         -int16_val(data, 2));
-
-        accel *= MPU6000_ACCEL_SCALE_1G;
-
-        gyro = Vector3f(int16_val(data, 5),
-                        int16_val(data, 4),
-                        -int16_val(data, 6));
-        gyro *= GYRO_SCALE;
-
-        temp = int16_val(data, 3);
-        /* scaling/offset values from the datasheet */
-        temp = temp/340 + 36.53;
-
-        temp_accel += accel/n_samples;
-        temp_gyro += gyro/n_samples;
-        temp_temp += temp/n_samples;
-/*
-#if CONFIG_HAL_BOARD_SUBTYPE == HAL_BOARD_SUBTYPE_LINUX_PXF
-        accel.rotate(ROTATION_PITCH_180_YAW_90);
-        gyro.rotate(ROTATION_PITCH_180_YAW_90);
-#elif CONFIG_HAL_BOARD_SUBTYPE == HAL_BOARD_SUBTYPE_LINUX_BEBOP
-        accel.rotate(ROTATION_YAW_270);
-        gyro.rotate(ROTATION_YAW_270);
-#elif CONFIG_HAL_BOARD_SUBTYPE == HAL_BOARD_SUBTYPE_LINUX_MINLURE
-        accel.rotate(ROTATION_YAW_90);
-        gyro.rotate(ROTATION_YAW_90);
-#endif
-
-        _rotate_and_correct_accel(_accel_instance, accel);
-        _rotate_and_correct_gyro(_gyro_instance, gyro);
-
-        _notify_new_accel_raw_sample(_accel_instance, accel);
-        _notify_new_gyro_raw_sample(_gyro_instance, gyro);
-
-        _temp_filtered = _temp_filter.apply(temp);*/
-    }
-    _accel = temp_accel;
-    _gyro = temp_gyro;
-    _temp = temp_temp;
-}
-
-void MPU6000::readFifo()
-{
-    uint8_t n_samples;
-    uint16_t bytes_read;
-    uint8_t rx[MAX_DATA_READ];
-
-    if(MAX_DATA_READ >= 100) {
-      //_nh.logwarn("MPU6000: FIFO too big to keep on stack");
-    }
-
-    blockRead(MPUREG_FIFO_COUNTH, rx, 2);
-
-    bytes_read = uint16_val(rx, 0);
-    n_samples = bytes_read / MPU6000_SAMPLE_SIZE;
-
-    if (n_samples == 0) {
-        //_nh.logwarn("MPU6000: No data in FIFO");
-        return;
-    }
-
-    if (n_samples > MPU6000_MAX_FIFO_SAMPLES) {
-      //_nh.logwarn("MPU6000: Too many samples, dropping samples");
-        /* Too many samples, do a FIFO RESET */
-        fifoReset();
-        return;
-    }
-
-    blockRead(MPUREG_FIFO_R_W, rx, n_samples * MPU6000_SAMPLE_SIZE);
-
-    accumulate(rx, n_samples);
-}
-
-void MPU6000::readSample() {
+// calibrates the gyro oofsets
+void MPU6000::calibrateGyroOffsets() {
   uint8_t rx[MPU6000_SAMPLE_SIZE];
+  uint8_t num_of_meas = 10;
 
-  blockRead(MPUREG_ACCEL_XOUT_H , rx, MPU6000_SAMPLE_SIZE);
+  Vector3f gyro = {0,0,0};
+  for (uint8_t i = 0; i < num_of_meas;i++) {
+    blockRead(MPUREG_ACCEL_XOUT_H , rx, MPU6000_SAMPLE_SIZE);
+    gyro += Vector3f(int16_val(rx, 4),
+    int16_val(rx, 5),
+    int16_val(rx, 6));
+    gyro /= num_of_meas;
+    delay(10);
+  }
 
-  accumulate(rx, 1);
+  _gyro_offset[0] = gyro[0];
+  _gyro_offset[1] = gyro[1];
+  _gyro_offset[2] = gyro[2];
+
+  writeEEPROMInt16(EEPROM_GYRO_OFFSET_X, _gyro_offset[0]);
+  writeEEPROMInt16(EEPROM_GYRO_OFFSET_Y, _gyro_offset[1]);
+  writeEEPROMInt16(EEPROM_GYRO_OFFSET_Z, _gyro_offset[2]);
 }
 
-void MPU6000::blockRead(uint8_t reg, uint8_t *buf, uint16_t size) {
+// checks that the correct axis is up
+bool MPU6000::calibrateAccelerometerOffsetsSanity(uint8_t test) {
+  uint8_t tries = 0;
+  int16_t high = 12;
+  int16_t low = 7;
+  uint8_t rx[MPU6000_SAMPLE_SIZE];
+  Vector3f accel = {0,0,0};
+  while (tries < 20) {
+    delay(50);
+    blockRead(MPUREG_ACCEL_XOUT_H , rx, MPU6000_SAMPLE_SIZE);
+    accel = Vector3f(int16_val(rx, 0),
+    int16_val(rx, 1),
+    int16_val(rx, 2));
+    accel *= MPU6000_ACCEL_SCALE_1G;
 
-  if(reg != MPUREG_FIFO_R_W) {
+    switch (test) {
+      case 0: // Right side up
+      if (accel[0] < high && accel[0] > low) {
+        return true;
+      }
+      break;
+      case 1: // Left side up
+      if (accel[0] > -high && accel[0] < -low) {
+        return true;
+      }
+      break;
+      case 2: // Front side up
+      if (accel[1] < high && accel[1] > low) {
+        return true;
+      }
+      break;
+      case 3: // Down side up
+      if (accel[1] > -high && accel[1] < -low) {
+        return true;
+      }
+      break;
+      case 4: // Up side up
+      if (accel[2] < high && accel[2] > low) {
+        return true;
+      }
+      break;
+      case 5: // Down side up
+      if (accel[2] > -high && accel[2] < -low) {
+        return true;
+      }
+      break;
+    }
+    tries++;
+  }
+  return false;
+}
 
-    for (uint16_t i = 0; i < size; i++) {
-      buf[i] = registerRead(reg+i);
+// calibrates the accelerometer offsets
+bool MPU6000::calibrateAccelerometerOffsets(uint8_t test) {
+  uint8_t rx[MPU6000_SAMPLE_SIZE];
+  uint8_t num_of_meas = 10;
+
+  Vector3f accel = {0,0,0};
+
+  if (test == 0) {
+    for (uint8_t i = 0; i < 5; i++) {
+      _accel_offset_measurement[i] = 0; // reset measurements
     }
-  } else { // TODO Read from the fifo queue
-    reg |= BIT_READ_FLAG;
-    SPI.transfer(reg);
-    for (uint32_t i = 0; i < size; i++) {
-      digitalWrite(_MPU6000ChipSelect, LOW);
-      buf[i] = SPI.transfer(CMD_READ);
-      // take the chip select high to de-select:
-      digitalWrite(_MPU6000ChipSelect, HIGH);
+  }
+
+  // Check if the correct axis is up
+  if (calibrateAccelerometerOffsetsSanity(test)) {
+
+    // Take a couple of values
+    for (uint8_t g = 0; g < num_of_meas; g++) {
+      blockRead(MPUREG_ACCEL_XOUT_H , rx, MPU6000_SAMPLE_SIZE);
+      accel += Vector3f(int16_val(rx, 0),
+      int16_val(rx, 1),
+      int16_val(rx, 2));
+      accel /= num_of_meas;
+      delay(10);
     }
+
+    if (test <= 1) {
+      _accel_offset_measurement[test] = accel[0];
+    } else if ( test <= 3) {
+      _accel_offset_measurement[test] = accel[1];
+    } else {
+      _accel_offset_measurement[test] = accel[2];
+    }
+
+  } else {
+    return false;
+  }
+
+  // Save the values in the prom
+  if (test == 5) {
+    _accel_offset[0] = (_accel_offset_measurement[0] + _accel_offset_measurement[1])/2;
+    _accel_offset[1] = (_accel_offset_measurement[2] + _accel_offset_measurement[3])/2;
+    _accel_offset[2] = (_accel_offset_measurement[4] + _accel_offset_measurement[5])/2;
+
+    writeEEPROMInt16(EEPROM_ACCELOMETER_OFFSET_X, _accel_offset[0]);
+    writeEEPROMInt16(EEPROM_ACCELOMETER_OFFSET_Y, _accel_offset[1]);
+    writeEEPROMInt16(EEPROM_ACCELOMETER_OFFSET_Z, _accel_offset[2]);
+  }
+  return true;
+}
+
+// Return the accelerometer scaling used in the offsets
+float MPU6000::getAccelerometerScaling() {
+  return (GRAVITY_MSS / 4096.0f); // scaling for offsets
+}
+
+// Return the gyroscaling used in the offsets
+float MPU6000::getGyroScaling() {
+  return (0.0174532f / 131.0f); // scaling for offsets
+}
+
+/*
+* Return true if the MPU6000 has new data available for reading.
+*
+* We use the data ready pin if it is available.  Otherwise, read the
+* status register.
+*/
+bool MPU6000::dataReady() {
+  uint8_t status = registerRead(MPUREG_INT_STATUS);
+  return (status & BIT_RAW_RDY_INT) != 0;
+}
+
+/*
+* Read new data from the MPU6000.
+*/
+void MPU6000::read() {
+  if (dataReady()) {
+    // Read a sample
+    uint8_t rx[MPU6000_SAMPLE_SIZE];
+    blockRead(MPUREG_ACCEL_XOUT_H , rx, MPU6000_SAMPLE_SIZE);
+    calculate(rx);
   }
 }
 
-uint8_t MPU6000::registerRead(uint8_t reg) {
-    uint8_t val = 0;
+// Calculate the values and rotate the coordinate systems
+void MPU6000::calculate(uint8_t* data) {
+  Vector3f accel, gyro;
+  float temp;
 
-    reg |= BIT_READ_FLAG;
+  accel = Vector3f(_accel_scaling[0]*(int16_val(data, 0) - _accel_offset[0]),
+  _accel_scaling[1]*(int16_val(data, 1) - _accel_offset[1]),
+  _accel_scaling[2]*(int16_val(data, 2) - _accel_offset[2]));
 
-    // take the chip select low to select
-    digitalWrite(_MPU6000ChipSelect, LOW);
-    SPI.transfer(reg);
-    val = SPI.transfer(CMD_READ);
-    // take the chip select high to de-select:
-    digitalWrite(_MPU6000ChipSelect, HIGH);
+  gyro = Vector3f(_gyro_scaling[0]*(int16_val(data, 4) - _gyro_offset[0]),
+  _gyro_scaling[1]*(int16_val(data, 5) - _gyro_offset[1]),
+  _gyro_scaling[0]*(int16_val(data, 6) - _gyro_offset[2]));
 
-    return val;
+  accel *= MPU6000_ACCEL_SCALE_1G;
+  gyro *= GYRO_SCALE;
+  temp = int16_val(data, 3);
+  /* scaling/offset values from the datasheet */
+  temp = temp/340 + 36.53;
+
+  accel.rotate(ROTATION_ROLL_180_YAW_90);
+  gyro.rotate(ROTATION_ROLL_180_YAW_90);
+
+  _accel = accel;
+  _gyro = gyro;
+  _temp = temp;
 }
 
+// Read from a block in memory
+void MPU6000::blockRead(uint8_t reg, uint8_t *buf, uint16_t size) {
+  for (uint16_t i = 0; i < size; i++) {
+    buf[i] = registerRead(reg+i);
+  }
+}
+
+// Read from a register
+uint8_t MPU6000::registerRead(uint8_t reg) {
+  uint8_t val = 0;
+
+  reg |= BIT_READ_FLAG;
+
+  // take the chip select low to select
+  digitalWrite(_MPU6000ChipSelect, LOW);
+  SPI.transfer(reg);
+  val = SPI.transfer(CMD_READ);
+  // take the chip select high to de-select:
+  digitalWrite(_MPU6000ChipSelect, HIGH);
+
+  return val;
+}
+
+// Write to a register
 void MPU6000::registerWrite(uint8_t reg, uint8_t val) {
   digitalWrite(_MPU6000ChipSelect, LOW);
   delay(10);
@@ -615,74 +654,74 @@ void MPU6000::registerWrite(uint8_t reg, uint8_t val) {
 }
 
 /*
-  set the DLPF filter frequency.
- */
+set the DLPF filter frequency.
+*/
 void MPU6000::setFilterRegister(uint16_t filter_hz) {
-    uint8_t filter;
-    // choose filtering frequency
-    if (filter_hz == 0) {
-        filter = BITS_DLPF_CFG_256HZ_NOLPF2;
-    } else if (filter_hz <= 5) {
-        filter = BITS_DLPF_CFG_5HZ;
-    } else if (filter_hz <= 10) {
-        filter = BITS_DLPF_CFG_10HZ;
-    } else if (filter_hz <= 20) {
-        filter = BITS_DLPF_CFG_20HZ;
-    } else if (filter_hz <= 42) {
-        filter = BITS_DLPF_CFG_42HZ;
-    } else if (filter_hz <= 98) {
-        filter = BITS_DLPF_CFG_98HZ;
-    } else {
-        filter = BITS_DLPF_CFG_256HZ_NOLPF2;
-    }
-    registerWrite(MPUREG_CONFIG, filter);
+  uint8_t filter;
+  // choose filtering frequency
+  if (filter_hz == 0) {
+    filter = BITS_DLPF_CFG_256HZ_NOLPF2;
+  } else if (filter_hz <= 5) {
+    filter = BITS_DLPF_CFG_5HZ;
+  } else if (filter_hz <= 10) {
+    filter = BITS_DLPF_CFG_10HZ;
+  } else if (filter_hz <= 20) {
+    filter = BITS_DLPF_CFG_20HZ;
+  } else if (filter_hz <= 42) {
+    filter = BITS_DLPF_CFG_42HZ;
+  } else if (filter_hz <= 98) {
+    filter = BITS_DLPF_CFG_98HZ;
+  } else {
+    filter = BITS_DLPF_CFG_256HZ_NOLPF2;
+  }
+  registerWrite(MPUREG_CONFIG, filter);
 }
 
 bool MPU6000::hardwareInit() {
 
-    // Chip reset
-    uint8_t tries;
-    for (tries = 0; tries < 5; tries++) {
-        uint8_t user_ctrl = registerRead(MPUREG_USER_CTRL);
+  // Chip reset
+  uint8_t tries;
+  for (tries = 0; tries < 5; tries++) {
+    uint8_t user_ctrl = registerRead(MPUREG_USER_CTRL);
 
-        /* First disable the master I2C to avoid hanging the slaves on the
-         * aulixiliar I2C bus - it will be enabled again if the AuxiliaryBus
-         * is used */
-        if (user_ctrl & BIT_USER_CTRL_I2C_MST_EN) {
-            registerWrite(MPUREG_USER_CTRL, user_ctrl & ~BIT_USER_CTRL_I2C_MST_EN);
-            delay(10);
-        }
-
-        /* reset device */
-        registerWrite(MPUREG_PWR_MGMT_1, BIT_PWR_MGMT_1_DEVICE_RESET);
-        delay(150);
-
-
-        // Wake up device and select GyroZ clock. Note that the
-        // MPU6000 starts up in sleep mode, and it can take some time
-        // for it to come out of sleep
-        registerWrite(MPUREG_PWR_MGMT_1, BIT_PWR_MGMT_1_CLK_ZGYRO);
-        delay(150);
-
-        registerWrite(MPUREG_USER_CTRL, BIT_USER_CTRL_I2C_IF_DIS);
-        delay(150);
-
-        // check it has woken up
-        if (registerRead(MPUREG_PWR_MGMT_1) == BIT_PWR_MGMT_1_CLK_ZGYRO) {
-            break;
-        }
-
-        delay(10);
-        if (dataReady()) {
-            break;
-        }
+    /* First disable the master I2C to avoid hanging the slaves on the
+    * aulixiliar I2C bus - it will be enabled again if the AuxiliaryBus
+    * is used */
+    if (user_ctrl & BIT_USER_CTRL_I2C_MST_EN) {
+      registerWrite(MPUREG_USER_CTRL, user_ctrl & ~BIT_USER_CTRL_I2C_MST_EN);
+      delay(10);
     }
 
-    if (tries == 5) {
-        return false;
-    } else {
-      return true;
+    /* reset device */
+    registerWrite(MPUREG_PWR_MGMT_1, BIT_PWR_MGMT_1_DEVICE_RESET);
+    delay(150);
+
+
+    // Wake up device and select GyroZ clock. Note that the
+    // MPU6000 starts up in sleep mode, and it can take some time
+    // for it to come out of sleep
+    registerWrite(MPUREG_PWR_MGMT_1, BIT_PWR_MGMT_1_CLK_ZGYRO);
+    delay(150);
+
+    registerWrite(MPUREG_USER_CTRL, BIT_USER_CTRL_I2C_IF_DIS);
+    delay(150);
+
+    // check it has woken up
+    if (registerRead(MPUREG_PWR_MGMT_1) == BIT_PWR_MGMT_1_CLK_ZGYRO) {
+      break;
     }
+
+    delay(10);
+    if (dataReady()) {
+      break;
+    }
+  }
+
+  if (tries == 5) {
+    return false;
+  } else {
+    return true;
+  }
 }
 
 void MPU6000::accel(float& x, float& y, float& z) {
@@ -690,168 +729,30 @@ void MPU6000::accel(float& x, float& y, float& z) {
   y = _accel[1];
   z = _accel[2];
 }
+
 void MPU6000::gyro(float& x, float& y, float& z) {
   x = _gyro[0];
   y = _gyro[1];
   z = _gyro[2];
 }
-double MPU6000::temp() {
+
+float MPU6000::temp() {
   return _temp;
 }
 
-//
-// AP_MPU6000_AuxiliaryBusSlave::AP_MPU6000_AuxiliaryBusSlave(AuxiliaryBus &bus, uint8_t addr,
-//                                                          uint8_t instance)
-//     : AuxiliaryBusSlave(bus, addr, instance)
-//     , _mpu6000_addr(MPUREG_I2C_SLV0_ADDR + _instance * 3)
-//     , _mpu6000_reg(_mpu6000_addr + 1)
-//     , _mpu6000_ctrl(_mpu6000_addr + 2)
-//     , _mpu6000_do(MPUREG_I2C_SLV0_DO + _instance)
-// {
-// }
-//
-// int AP_MPU6000_AuxiliaryBusSlave::_set_passthrough(uint8_t reg, uint8_t size,
-//                                                   uint8_t *out)
-// {
-//     auto &backend = AP_InertialSensor_MPU6000::from(_bus.get_backend());
-//     uint8_t addr;
-//
-//     /* Ensure the slave read/write is disabled before changing the registers */
-//     backend._register_write(_mpu6000_ctrl, 0);
-//
-//     if (out) {
-//         backend._register_write(_mpu6000_do, *out);
-//         addr = _addr;
-//     } else {
-//         addr = _addr | BIT_READ_FLAG;
-//     }
-//
-//     backend._register_write(_mpu6000_addr, addr);
-//     backend._register_write(_mpu6000_reg, reg);
-//     backend._register_write(_mpu6000_ctrl, BIT_I2C_SLVX_EN | size);
-//
-//     return 0;
-// }
-//
-// int AP_MPU6000_AuxiliaryBusSlave::passthrough_read(uint8_t reg, uint8_t *buf,
-//                                                    uint8_t size)
-// {
-//     assert(buf);
-//
-//     if (_registered) {
-//         hal.console->println("Error: can't passthrough when slave is already configured");
-//         return -1;
-//     }
-//
-//     int r = _set_passthrough(reg, size);
-//     if (r < 0) {
-//         return r;
-//     }
-//
-//     /* wait the value to be read from the slave and read it back */
-//     hal.scheduler->delay(10);
-//
-//     auto &backend = AP_InertialSensor_MPU6000::from(_bus.get_backend());
-//     backend._block_read(MPUREG_EXT_SENS_DATA_00 + _ext_sens_data, buf, size);
-//
-//     /* disable new reads */
-//     backend._register_write(_mpu6000_ctrl, 0);
-//
-//     return size;
-// }
-//
-// int AP_MPU6000_AuxiliaryBusSlave::passthrough_write(uint8_t reg, uint8_t val)
-// {
-//     if (_registered) {
-//         hal.console->println("Error: can't passthrough when slave is already configured");
-//         return -1;
-//     }
-//
-//     int r = _set_passthrough(reg, 1, &val);
-//     if (r < 0) {
-//         return r;
-//     }
-//
-//     /* wait the value to be written to the slave */
-//     hal.scheduler->delay(10);
-//
-//     auto &backend = AP_InertialSensor_MPU6000::from(_bus.get_backend());
-//
-//     /* disable new writes */
-//     backend._register_write(_mpu6000_ctrl, 0);
-//
-//     return 0;
-// }
-//
-// int AP_MPU6000_AuxiliaryBusSlave::read(uint8_t *buf)
-// {
-//     if (!_registered) {
-//         hal.console->println("Error: can't read before configuring slave");
-//         return -1;
-//     }
-//
-//     auto &backend = AP_InertialSensor_MPU6000::from(_bus.get_backend());
-//     backend._block_read(MPUREG_EXT_SENS_DATA_00 + _ext_sens_data, buf, _sample_size);
-//
-//     return 0;
-// }
-//
-// /* MPU6000 provides up to 5 slave devices, but the 5th is way too different to
-//  * configure and is seldom used */
-// AP_MPU6000_AuxiliaryBus::AP_MPU6000_AuxiliaryBus(AP_InertialSensor_MPU6000 &backend)
-//     : AuxiliaryBus(backend, 4)
-// {
-// }
-//
-// AP_HAL::Semaphore *AP_MPU6000_AuxiliaryBus::get_semaphore()
-// {
-//     return static_cast<AP_InertialSensor_MPU6000&>(_ins_backend)._dev->get_semaphore();
-// }
-//
-// AuxiliaryBusSlave *AP_MPU6000_AuxiliaryBus::_instantiate_slave(uint8_t addr, uint8_t instance)
-// {
-//     /* Enable slaves on MPU6000 if this is the first time */
-//     if (_ext_sens_data == 0) {
-//         _configure_slaves();
-//     }
-//
-//     return new AP_MPU6000_AuxiliaryBusSlave(*this, addr, instance);
-// }
-//
-// void AP_MPU6000_AuxiliaryBus::_configure_slaves()
-// {
-//     auto &backend = AP_InertialSensor_MPU6000::from(_ins_backend);
-//
-//     /* Enable the I2C master to slaves on the auxiliary I2C bus*/
-//     uint8_t user_ctrl = backend._register_read(MPUREG_USER_CTRL);
-//     backend._register_write(MPUREG_USER_CTRL, user_ctrl | BIT_USER_CTRL_I2C_MST_EN);
-//
-//     /* stop condition between reads; clock at 400kHz */
-//     backend._register_write(MPUREG_I2C_MST_CTRL,
-//                             BIT_I2C_MST_P_NSR | BIT_I2C_MST_CLK_400KHZ);
-//
-//     /* Hard-code divider for internal sample rate, 1 kHz, resulting in a
-//      * sample rate of 100Hz */
-//     backend._register_write(MPUREG_I2C_SLV4_CTRL, 9);
-//
-//     /* All slaves are subject to the sample rate */
-//     backend._register_write(MPUREG_I2C_MST_DELAY_CTRL,
-//                             BIT_I2C_SLV0_DLY_EN | BIT_I2C_SLV1_DLY_EN |
-//                             BIT_I2C_SLV2_DLY_EN | BIT_I2C_SLV3_DLY_EN);
-// }
-//
-// int AP_MPU6000_AuxiliaryBus::_configure_periodic_read(AuxiliaryBusSlave *slave,
-//                                                      uint8_t reg, uint8_t size)
-// {
-//     if (_ext_sens_data + size > MAX_EXT_SENS_DATA) {
-//         return -1;
-//     }
-//
-//     AP_MPU6000_AuxiliaryBusSlave *mpu_slave =
-//         static_cast<AP_MPU6000_AuxiliaryBusSlave*>(slave);
-//     mpu_slave->_set_passthrough(reg, size);
-//     mpu_slave->_ext_sens_data = _ext_sens_data;
-//     _ext_sens_data += size;
-//
-//     return 0;
-// }
+int16_t MPU6000::readEEPROMInt16(uint16_t address) {
+  uint8_t high = 0;
+  uint8_t low = 0;
+  high = EEPROM.read(address); // high bits
+  low = EEPROM.read(address+1);
+
+  return (high << 8) | low;
+}
+
+void MPU6000::writeEEPROMInt16(uint16_t address, int16_t value) {
+  uint8_t high = highByte(value);
+  uint8_t low = lowByte(value);
+
+  EEPROM.write(address, high); // high bits
+  EEPROM.write(address + 1, low); // low bits
+}

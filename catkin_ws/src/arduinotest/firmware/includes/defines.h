@@ -29,5 +29,16 @@
 // Defines for the water pressure sensor
 #define FLUIDDENSITY 1000 // Kanske redundant
 
+// Defines for the EEPROM address
+#define EEPROM_MAGNETOMETER_OFFSET_X 0x00 // These are int16_t so 2x8 = 2 rows in memory
+#define EEPROM_MAGNETOMETER_OFFSET_Y 0x02
+#define EEPROM_MAGNETOMETER_OFFSET_Z 0x04
+#define EEPROM_GYRO_OFFSET_X         0x06
+#define EEPROM_GYRO_OFFSET_Y         0x08
+#define EEPROM_GYRO_OFFSET_Z         0x0A
+#define EEPROM_ACCELOMETER_OFFSET_X  0x0C
+#define EEPROM_ACCELOMETER_OFFSET_Y  0x0E
+#define EEPROM_ACCELOMETER_OFFSET_Z  0x10
+
 
 #endif //_ROV_DEFINES_H_
