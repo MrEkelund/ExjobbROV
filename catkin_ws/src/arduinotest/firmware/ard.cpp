@@ -173,7 +173,11 @@ void enableThrustersCallback(const std_msgs::Bool& message) {
 
 void thrustersCallback(const std_msgs::UInt16MultiArray& message) {
   YELLOW_LED_ON;
-  rov_servo.setThrusters(message.data);
+  uint16_t pwm_array[6];
+  for (uint8_t i = 0; i < 8; i++) {
+    pwm_array[i] = message.data[i];
+  }
+  rov_servo.setThrusters(pwm_array);
   YELLOW_LED_OFF;
 }
 
