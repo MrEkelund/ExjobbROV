@@ -172,15 +172,7 @@ void enableThrustersCallback(const std_msgs::Bool& message) {
 }
 
 void thrustersCallback(const std_msgs::UInt16MultiArray& message) {
-  char log_msg[24];
-  char str_temp[9];
   uint16_t pwm_array[6];
-  for(uint8_t i = 0; i < 6; i++) {
-    snprintf(str_temp, sizeof(str_temp), "%" PRIu16, message.data[i]);
-    sprintf(log_msg,"Thruster %i: %s", i, str_temp);
-
-    nh.loginfo(log_msg);
-  }
   YELLOW_LED_ON;
   rov_servo.setThrusters(pwm_array);
   YELLOW_LED_OFF;
