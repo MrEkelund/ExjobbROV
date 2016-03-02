@@ -9,7 +9,7 @@ syms yaw pitch roll...
     acc_bias...
     F T motion_model...
     rho g x_offset d pressure_atm...
-    Gv
+    Gv Euler
 
 % define som matrixes
 %rotation matrix from body/sensor frame to global frame
@@ -28,7 +28,7 @@ Sq = [-q1, -q2, -q3;
 
  
 
-Sw = [0, -(wx ), -(wy ), -(wz ); % wk = gyro_meas - bias
+Sw = [0, -(wx ), -(wy ), -(wz ); % wk = gyro_meas + bias bias is subtracted in ard
     (wx ), 0, (wz ), -(wy );
     (wy ), -(wz ), 0, (wx );
     (wz ), (wy ), -(wx ), 0];
@@ -47,7 +47,7 @@ Sw = [0, -(wx ), -(wy ), -(wz ); % wk = gyro_meas - bias
  %acceleration in body frame
 acc_ned = [acc_n; acc_e; acc_d];
 % measurement equation for acceleration
-acc_meas = transpose(Q)*([0; 0; g]); % fråga Manon + acc_ned
+acc_meas = transpose(Q)*([0; 0; -g]); % fråga Manon + acc_ned
 % measurement equation for magnetometer 
 mag_global=[sqrt(mag_n^2 + mag_e^2);0;mag_d]; % could change to mx 0 mz and use bjord =mz bjord sin(θdip)dˆ+ bjord cos(θdip)nˆ
 mag_meas = transpose(Q)*mag_global;
@@ -84,23 +84,29 @@ end
 
 Gv =  blkdiag(T/2*Sq, eye(1));
  
+%%  y = f(x) 
+% py = gradf*Px*gradF' For calculation of standard deviation in yaw pitch roll depth
  
+
  
+ Transform(1,1) = -atan2(2*(q1*q2 - q0*q3),...
+     1-2*(q2^2 + q3^2));
+
+
+%Pitch
+Transform(2,1) = -atan2(2*(q2*q3 - q0*q1),...
+    1-2*(q1^2 + q2^2));
+%Roll
+Transform(3,1) = asin(2*(q1*q3 + q0*q2));
+Transform(4,1) =  d;
  
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
+for k=1:length(Transform)
+    for l=1:nr_states
+    gradTransform(k,l) = diff(Transform(k,1),states(l));
+    end
+end
+
+
  
  
  
