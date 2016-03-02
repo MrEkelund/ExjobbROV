@@ -27,7 +27,7 @@ private:
                                   uint32_t size);
 
     void                writeRegister(uint8_t address, uint8_t value);
-
+    bool                dataReady();
     bool                calibrateSensitivity(uint8_t calibration_gain,
                                              uint16_t expected_x,
                                              uint16_t expected_yz);

@@ -48,8 +48,9 @@
 #define DATA_OUTPUT_YL 0x08
 
 // Status register
-#define LOCK  0x02
-#define RDY   0x01
+#define STATUS_REGISTER 0x09
+  #define LOCK  0x02
+  #define RDY   0x01
 
 #define MAG_GAIN         MAG_GAIN1090
 #define MAG_BASE_CONFIG (SAMPLE_AVERAGING_8 | DATA_OUTPUT_RATE_75HZ | NORMAL_OPERATION)
@@ -391,9 +392,10 @@ void HMC5883L::read() {
   if (readRaw()) {
     // get raw_field - sensor frame, uncorrected
     _field = Vector3f((_mag_x - _mag_x_offset)*_scaling[0]
-                    , (_mag_y - _mag_y_offset)*_scaling[1]
-                    , (_mag_z - _mag_y_offset)*_scaling[2]);
+    , (_mag_y - _mag_y_offset)*_scaling[1]
+    , (_mag_z - _mag_y_offset)*_scaling[2]);
     _field *= _gain_multiple;
+
   }
 }
 

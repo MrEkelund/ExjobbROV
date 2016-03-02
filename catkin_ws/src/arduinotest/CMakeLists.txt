@@ -8,6 +8,7 @@ find_package(catkin REQUIRED COMPONENTS
   dynamic_reconfigure
   rosserial_arduino
   rosserial_client
+  matlab_messages
 )
 
 ################################################
@@ -99,7 +100,7 @@ catkin_package(
 )
 
 rosserial_generate_ros_lib(
-  PACKAGE rosserial_arduino ros
+  PACKAGE rosserial_arduino ros matlab_messages
   SCRIPT make_libraries.py
 )
 

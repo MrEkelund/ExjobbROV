@@ -18,12 +18,20 @@ add_message_files(FILES
 ## Generate added messages and services
 generate_messages(DEPENDENCIES
   std_msgs
+#  Sensors.msg
+#  States.msg 
 )
-
 
 ## Declare a catkin package
 catkin_package(CATKIN_DEPENDS
-  message_runtime
+  message_runtime std_msgs
 )
+
+include_directories(
+  ${catkin_INCLUDE_DIRS}
+)
+
+
+
 
 ## Specify additional locations of header files
