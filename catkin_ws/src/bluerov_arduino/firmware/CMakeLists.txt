@@ -34,5 +34,5 @@ set(PROJECT_SRC
 generate_arduino_firmware(rovio
   SRCS ard.cpp ${PROJECT_SRC}
   BOARD mega2560
-  PORT /dev/ttyACM0
+  PORT /dev/ttyBLUEROV
 )
