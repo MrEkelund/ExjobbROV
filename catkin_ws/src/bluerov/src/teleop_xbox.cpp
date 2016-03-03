@@ -8,6 +8,7 @@
 #include <math.h>
 #include <ros/ros.h>
 #include <ros/console.h>
+#include <ros/time.h>
 #include <geometry_msgs/Twist.h>
 #include <sensor_msgs/Joy.h>
 #include <std_msgs/Bool.h>
@@ -30,6 +31,8 @@ class TeleopXbox {
 
     bool initLT;
     bool initRT;
+    ros::Time enablePressed;
+    ros::Time disablePressed;
 
     void configCallback(bluerov::teleop_xboxConfig &update, uint32_t level);
     void joyCallback(const sensor_msgs::Joy::ConstPtr& joy);
@@ -44,12 +47,14 @@ TeleopXbox::TeleopXbox() {
 
   // connects subs and pubs
   cmd_vel_pub = nh.advertise<geometry_msgs::Twist>("cmd_vel", 1);
-  hazard_enable_pub = nh.advertise<std_msgs::Bool>("hazard_enable", 1);
+  hazard_enable_pub = nh.advertise<std_msgs::Bool>("rovio/enable_thrusters", 1);
   joy_sub = nh.subscribe<sensor_msgs::Joy>("joy", 1, &TeleopXbox::joyCallback, this);
 
   // set initial values
   initLT = false;
   initRT = false;
+  enablePressed = ros::Time::now();
+  disablePressed = ros::Time::now();
 }
 
 void TeleopXbox::spin() {
@@ -81,13 +86,15 @@ void TeleopXbox::joyCallback(const sensor_msgs::Joy::ConstPtr& joy) {
   cmd_vel_pub.publish(msg);
 
   // send hazards enable message
-  if(joy->buttons[config.disable_button] > 0) {
+  if(joy->buttons[config.disable_button] > 0 && (disablePressed < ros::Time::now())) {
+    disablePressed = ros::Time::now() + ros::Duration(0.1);
     std_msgs::Bool hmsg;
     hmsg.data = false;
     hazard_enable_pub.publish(hmsg);
     // ROS_INFO("Hazards disablesd.");
   }
-  else if(joy->buttons[config.enable_button] > 0) {
+  else if(joy->buttons[config.enable_button] > 0 && (enablePressed  < ros::Time::now())) {
+    enablePressed = ros::Time::now() + ros::Duration(0.1);
     std_msgs::Bool hmsg;
     hmsg.data = true;
     hazard_enable_pub.publish(hmsg);

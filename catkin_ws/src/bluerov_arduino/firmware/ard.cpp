@@ -245,7 +245,7 @@ void calibrateAccelerometerOffsetsCallback(const std_msgs::Bool& message) {
     sprintf(log_msg,"z offset: %s", str_temp);
     nh.loginfo(log_msg);
   }
-  YELLOW_LED_OFF;
+  YELLOW_LED_OFF;	ros::NodeHandle _nh;
   RED_LED_OFF;
   BLUE_LED_OFF;
 }
@@ -316,6 +316,7 @@ void setup() {
     pressure_offset = 101300;
   }
 
+  rov_servo.init();
   last_call = millis();
   RED_LED_OFF;
 }
