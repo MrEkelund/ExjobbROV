@@ -12,7 +12,7 @@
   <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" /> -->
 
   <!-- start mavlink -->
-  <include file="$(find bluerov)/launch/apm.launch" />
+  <include file="$(find bluerov)/launch/bluerov_arduino.launch" />
 
   <!-- start matlab dynamic reconfigure -->
   <include file="$(find bluerov)/launch/matlab_controller.launch" />

@@ -1,0 +1,6 @@
+<launch>
+  <node pkg="rosserial_python" type="serial_node.py" name="bluerov_arduino">
+    <param name="port" value="/dev/ttyBLUEROV"/>
+    <param name="baud" value="57600"/>
+  </node>
+</launch>
