@@ -73,43 +73,6 @@ float sample_time = 1;
 *       Functions                                                             *
 *******************************************************************************/
 void sendSensors() {
-  // char temp[10];
-
-  // dtostrf(water_pressure_sensor.pressure(),1,2,temp);
-  //
-  // nh.loginfo("Pressure");
-  // nh.loginfo(temp);
-  // dtostrf(water_pressure_sensor.altitude(),1,2,temp);
-  // nh.loginfo("altitude");
-  // nh.loginfo(temp);
-  // int16_t val;
-  // EEPROM.get(EEPROM_MAGNETOMETER_OFFSET_X,val);
-  // dtostrf(val,1,2,temp);
-  // nh.loginfo("NEW");
-  // nh.loginfo(temp);
-  // EEPROM.get(EEPROM_MAGNETOMETER_OFFSET_X,val);
-  // dtostrf(val,1,2,temp);
-  //
-  // nh.loginfo(temp);
-  // EEPROM.get(EEPROM_MAGNETOMETER_OFFSET_X,val);
-  // dtostrf(val,1,2,temp);
-  // nh.loginfo(temp);
-
-  // float x,y,z;
-  // imu.gyro(x,y,z);
-  // sensor_message.OmegaX = x;
-  // sensor_message.OmegaY = y;
-  // sensor_message.OmegaZ = z;
-  // imu.accel(x,y,z);
-  // sensor_message.AccX = x;
-  // sensor_message.AccY = y;
-  // sensor_message.AccZ = z;
-  // magnetometer.magneticField(x,y,z);
-  // sensor_message.MagX = x;
-  // sensor_message.MagY = y;
-  // sensor_message.MagZ = z;
-  // sensor_message.Pressure = water_pressure_sensor.pressure() - pressure_offset;
-
   float x,y,z;
   imu.gyro(x,y,z);
   sensor_message.data[0] = x;
@@ -173,7 +136,11 @@ void enableThrustersCallback(const std_msgs::Bool& message) {
 
 void thrustersCallback(const std_msgs::UInt16MultiArray& message) {
   YELLOW_LED_ON;
-  rov_servo.setThrusters(message.data);
+  uint16_t pwm_array[6];
+  for (uint8_t i = 0; i < 6; i++) {
+    pwm_array[i] = message.data[i];
+  }
+  rov_servo.setThrusters(pwm_array);
   YELLOW_LED_OFF;
 }
 
@@ -278,7 +245,7 @@ void calibrateAccelerometerOffsetsCallback(const std_msgs::Bool& message) {
     sprintf(log_msg,"z offset: %s", str_temp);
     nh.loginfo(log_msg);
   }
-  YELLOW_LED_OFF;
+  YELLOW_LED_OFF;	ros::NodeHandle _nh;
   RED_LED_OFF;
   BLUE_LED_OFF;
 }
@@ -349,6 +316,7 @@ void setup() {
     pressure_offset = 101300;
   }
 
+  rov_servo.init();
   last_call = millis();
   RED_LED_OFF;
 }

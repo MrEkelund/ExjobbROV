@@ -4,7 +4,7 @@ ROVServo::ROVServo(): _thrusters_enabled(false) {
 }
 
 // Initialize the ROV thrusters.
-void ROVServo::initROVServo() {
+void ROVServo::init() {
   // Attach the servos to pins
   _servo[0].attach(SERVO1);
   _servo[1].attach(SERVO2);

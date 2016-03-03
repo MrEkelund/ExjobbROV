@@ -69,7 +69,6 @@ private:
 	uint32_t D1, D2;
 	int32_t TEMP;
 	int32_t P;
-
 	/** Performs calculations per the sensor data sheet for conversion and
 	 *  second order compensation.
 	 */

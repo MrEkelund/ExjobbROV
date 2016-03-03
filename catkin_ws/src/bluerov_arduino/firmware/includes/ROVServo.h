@@ -10,7 +10,7 @@ class ROVServo
 {
   public:
     ROVServo();;
-    void initROVServo();
+    void init();
     void setThrusters(uint16_t* thruster_pwm_array);
     void enableThrusters(bool enable);
   private:

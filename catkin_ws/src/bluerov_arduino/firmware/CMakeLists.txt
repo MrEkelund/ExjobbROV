@@ -8,9 +8,6 @@ add_definitions(-DUSB_CON)
 
 file(GLOB AVR_ROS_SRC "avr_ros/*.cpp")
 
-#file(GLOB ROS_DIR_CPP "${ROS_LIB_DIR}/*.cpp")
-
-#file(GLOB OWN_CPP "includes/*.cpp")
 set(ROS_DIR_CPP
   ${ROS_LIB_DIR}/time.cpp
 )
@@ -34,7 +31,7 @@ set(PROJECT_SRC
     ${OWN_CPP}
 )
 
-generate_arduino_firmware(hello
+generate_arduino_firmware(rovio
   SRCS ard.cpp ${PROJECT_SRC}
   BOARD mega2560
   PORT /dev/ttyACM0
