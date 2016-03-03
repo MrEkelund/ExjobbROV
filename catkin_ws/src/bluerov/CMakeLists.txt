@@ -8,7 +8,7 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   sensor_msgs
   std_msgs
-  #tf
+  tf
   joy
   message_generation
   dynamic_reconfigure

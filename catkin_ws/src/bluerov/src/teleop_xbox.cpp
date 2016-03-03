@@ -46,8 +46,8 @@ TeleopXbox::TeleopXbox() {
   server.setCallback(f);
 
   // connects subs and pubs
-  cmd_vel_pub = nh.advertise<geometry_msgs::Twist>("cmd_vel", 1);
-  hazard_enable_pub = nh.advertise<std_msgs::Bool>("rovio/enable_thrusters", 1);
+  cmd_vel_pub = nh.advertise<geometry_msgs::Twist>("cmd_vel", 10);
+  hazard_enable_pub = nh.advertise<std_msgs::Bool>("rovio/enable_thrusters", 10);
   joy_sub = nh.subscribe<sensor_msgs::Joy>("joy", 1, &TeleopXbox::joyCallback, this);
 
   // set initial values

@@ -92,15 +92,13 @@ void sendSensors() {
 }
 
 void spin() {
-  BLUE_LED_ON;
+  //BLUE_LED_ON;
   water_pressure_sensor.read();
   //air_pressure_sensor.read();
   imu.read();
   magnetometer.read();
   sendSensors();
-  BLUE_LED_OFF;
-
-  nh.spinOnce();
+  //BLUE_LED_OFF;
 }
 
 int16_t readEEPROMInt16(uint16_t address) {
@@ -112,14 +110,15 @@ int16_t readEEPROMInt16(uint16_t address) {
   return (high << 8) | low;
 }
 
-void rate() {
+bool rate() {
   uint32_t time_diff = millis() - last_call;
   float period = sample_time*1000;
   if ( time_diff < period) {
-      delay(period - time_diff);
+      return false;
   }
 
   last_call = millis();
+  return true;
 }
 
 /******************************************************************************
@@ -127,21 +126,19 @@ void rate() {
 *******************************************************************************/
 void enableThrustersCallback(const std_msgs::Bool& message) {
   if (message.data) {
-    RED_LED_OFF;
+    YELLOW_LED_OFF;
   } else {
-    RED_LED_ON;
+    YELLOW_LED_ON;
   }
   rov_servo.enableThrusters(message.data);
 }
 
 void thrustersCallback(const std_msgs::UInt16MultiArray& message) {
-  YELLOW_LED_ON;
   uint16_t pwm_array[6];
   for (uint8_t i = 0; i < 6; i++) {
     pwm_array[i] = message.data[i];
   }
   rov_servo.setThrusters(pwm_array);
-  YELLOW_LED_OFF;
 }
 
 void calibrateMagnetometerOffsetsCallback(const std_msgs::Bool& message) {
@@ -245,7 +242,7 @@ void calibrateAccelerometerOffsetsCallback(const std_msgs::Bool& message) {
     sprintf(log_msg,"z offset: %s", str_temp);
     nh.loginfo(log_msg);
   }
-  YELLOW_LED_OFF;	ros::NodeHandle _nh;
+  YELLOW_LED_OFF;
   RED_LED_OFF;
   BLUE_LED_OFF;
 }
@@ -319,10 +316,12 @@ void setup() {
   rov_servo.init();
   last_call = millis();
   RED_LED_OFF;
+  YELLOW_LED_ON;
 }
 
 void loop() {
-  spin();
-
-  rate();
+  if(rate()) {
+    spin();
+  }
+  nh.spinOnce();
 }
