@@ -12,7 +12,6 @@ find_package(catkin REQUIRED COMPONENTS
   joy
   message_generation
   dynamic_reconfigure
-  matlab_messages
 )
 
 ## Declare ROS messages and services
