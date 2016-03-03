@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <package>
-  <name>arduinotest</name>
+  <name>bluerov_arduino</name>
   <version>0.0.0</version>
-  <description>The arduinotest package</description>
+  <description>The bluerov_arduino package</description>
 
-  <!-- One maintainer tag required, multiple allowed, one person per tag --> 
+  <!-- One maintainer tag required, multiple allowed, one person per tag -->
   <!-- Example:  -->
   <!-- <maintainer email="jane.doe@example.com">Jane Doe</maintainer> -->
   <maintainer email="rasrack@todo.todo">rasrack</maintainer>
@@ -40,16 +40,12 @@
   <!-- Use test_depend for packages you need only for testing: -->
   <!--   <test_depend>gtest</test_depend> -->
   <buildtool_depend>catkin</buildtool_depend>
-  <build_depend>dynamic_reconfigure</build_depend>
   <build_depend>rosserial_arduino</build_depend>
   <build_depend>rosserial_client</build_depend>
   <build_depend>std_msgs</build_depend>
-  <build_depend>matlab_messages</build_depend>
-  <run_depend>dynamic_reconfigure</run_depend>
   <run_depend>rosserial_arduino</run_depend>
   <run_depend>rosserial_client</run_depend>
   <run_depend>std_msgs</run_depend>
-  <run_depend>matlab_messages</run_depend>
 
 
   <!-- The export tag contains other, unspecified, tags -->

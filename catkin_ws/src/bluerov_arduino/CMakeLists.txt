@@ -1,14 +1,12 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(arduinotest)
+project(bluerov_arduino)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  dynamic_reconfigure
   rosserial_arduino
   rosserial_client
-  matlab_messages
 )
 
 ################################################
@@ -94,13 +92,13 @@ find_package(catkin REQUIRED COMPONENTS
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES arduinotest
-#  CATKIN_DEPENDS dynamic_reconfigure rosserial_arduino rosserial_client std_msgs
+#  LIBRARIES bluerov_arduino
+#  CATKIN_DEPENDS rosserial_arduino rosserial_client std_msgs
 #  DEPENDS system_lib
 )
 
 rosserial_generate_ros_lib(
-  PACKAGE rosserial_arduino ros matlab_messages
+  PACKAGE rosserial_arduino ros
   SCRIPT make_libraries.py
 )
 
@@ -109,5 +107,5 @@ rosserial_configure_client(
   TOOLCHAIN_FILE ${ROSSERIAL_ARDUINO_TOOLCHAIN}
 )
 
-rosserial_add_client_target(firmware hello ALL)
-rosserial_add_client_target(firmware hello-upload)
+rosserial_add_client_target(firmware rovio ALL)
+rosserial_add_client_target(firmware rovio-upload)
