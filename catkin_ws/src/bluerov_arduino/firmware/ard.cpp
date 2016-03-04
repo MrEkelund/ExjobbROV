@@ -74,19 +74,20 @@ float sample_time = 1;
 *******************************************************************************/
 void sendSensors() {
   float x,y,z;
+  sensor_message.data[0] = millis();
   imu.gyro(x,y,z);
-  sensor_message.data[0] = x;
-  sensor_message.data[1] = y;
-  sensor_message.data[2] = z;
+  sensor_message.data[1] = x;
+  sensor_message.data[2] = y;
+  sensor_message.data[3] = z;
   imu.accel(x,y,z);
-  sensor_message.data[3] = x;
-  sensor_message.data[4] = y;
-  sensor_message.data[5] = z;
+  sensor_message.data[4] = x;
+  sensor_message.data[5] = y;
+  sensor_message.data[6] = z;
   magnetometer.magneticField(x,y,z);
-  sensor_message.data[6] = x;
-  sensor_message.data[7] = y;
-  sensor_message.data[8] = z;
-  sensor_message.data[9] = water_pressure_sensor.pressure() - pressure_offset;
+  sensor_message.data[7] = x;
+  sensor_message.data[8] = y;
+  sensor_message.data[9] = z;
+  sensor_message.data[10] = water_pressure_sensor.pressure() - pressure_offset;
 
   sensor_publisher.publish(&sensor_message);
 }
@@ -121,6 +122,14 @@ bool rate() {
   return true;
 }
 
+void rosDelay(uint32_t sleep_msec) {
+  uint32_t wake_up_time = millis() + sleep_msec;
+
+  while (wake_up_time > millis()) {
+    nh.spinOnce();
+  }
+}
+
 /******************************************************************************
 *       Callbacks                                                             *
 *******************************************************************************/
@@ -130,6 +139,8 @@ void enableThrustersCallback(const std_msgs::Bool& message) {
   } else {
     YELLOW_LED_ON;
   }
+  
+  rov_servo.resetThrusters(); // Reset the thrusters
   rov_servo.enableThrusters(message.data);
 }
 
@@ -146,7 +157,7 @@ void calibrateMagnetometerOffsetsCallback(const std_msgs::Bool& message) {
   RED_LED_ON;
   BLUE_LED_ON;
   nh.loginfo("Move the magnetometer in circles while rotating it for 30s");
-  delay(5000);
+  rosDelay(5000);
   magnetometer.calibrateOffsets();
   nh.loginfo("Magnetometer calibrated");
   YELLOW_LED_OFF;
@@ -162,7 +173,7 @@ void calibrateGyroOffsetsCallback(const std_msgs::Bool& message) {
   char str_temp[9];
   float val;
   nh.logwarn("Hold gyro still");
-  delay(5000);
+  rosDelay(5000);
   imu.calibrateGyroOffsets();
   nh.loginfo("Calculated offset in sensor frame");
 
@@ -215,7 +226,7 @@ void calibrateAccelerometerOffsetsCallback(const std_msgs::Bool& message) {
       nh.logwarn("Hold down side up");
       break;
     }
-    delay(3000);
+    rosDelay(5000);
     bool status = imu.calibrateAccelerometerOffsets(i);
     if (status) {
       success = true;
@@ -263,12 +274,13 @@ void setup() {
   BLUE_LED_OFF;
   RED_LED_ON;
 
-  sensor_message.data_length = 10;
+  sensor_message.data_length = 11;
   sensor_message.layout.dim[0].size = sensor_message.data_length;
   sensor_message.layout.dim[0].stride = 1*sensor_message.data_length;
   sensor_message.layout.dim[0].label = "Sensors";
   sensor_message.data = (float*)malloc(sizeof(float)*sensor_message.data_length);
 
+  nh.getHardware()->setBaud(115200);
   nh.initNode();
   nh.advertise(sensor_publisher);
   nh.subscribe(enable_thrusters_subscriber);
@@ -277,6 +289,10 @@ void setup() {
   nh.subscribe(calibrate_gyro_offsets_subscriber);
   nh.subscribe(calibrate_accelerometer_offsets_subscriber);
   nh.subscribe(sample_time_subscriber);
+
+  while(!nh.connected()){
+    nh.spinOnce();
+  }
 
   Wire.begin();
   if (!water_pressure_sensor.init()) {

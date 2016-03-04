@@ -20,7 +20,7 @@ function [lin_acc_data, ang_vel_data, ori_data,time_vector, rc_data ,rc_time] = 
     %filepath = fullfile('..', 'bag', 'super_2016-02-16-09-13-35.bag');
     bag = rosbag(filepath);
 
-    imu_bag = select(bag,'Topic','/mavros/imu/data');
+    imu_bag = select(bag,'Topic','/rovio/imu/data');
     %imu_msgs = readMessages(imu_bag);
     %% Linear acceleration
     plot_num = 1;
