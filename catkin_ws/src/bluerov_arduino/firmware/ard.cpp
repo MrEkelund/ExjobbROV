@@ -68,7 +68,7 @@ HMC5883L magnetometer;
 uint32_t last_call;
 float pressure_offset;
 float sample_time = 1;
-
+bool calibrating = false;
 /******************************************************************************
 *       Functions                                                             *
 *******************************************************************************/
@@ -139,7 +139,7 @@ void enableThrustersCallback(const std_msgs::Bool& message) {
   } else {
     YELLOW_LED_ON;
   }
-  
+
   rov_servo.resetThrusters(); // Reset the thrusters
   rov_servo.enableThrusters(message.data);
 }
@@ -153,109 +153,143 @@ void thrustersCallback(const std_msgs::UInt16MultiArray& message) {
 }
 
 void calibrateMagnetometerOffsetsCallback(const std_msgs::Bool& message) {
-  YELLOW_LED_ON;
-  RED_LED_ON;
-  BLUE_LED_ON;
-  nh.loginfo("Move the magnetometer in circles while rotating it for 30s");
-  rosDelay(5000);
-  magnetometer.calibrateOffsets();
-  nh.loginfo("Magnetometer calibrated");
-  YELLOW_LED_OFF;
-  RED_LED_OFF;
-  BLUE_LED_OFF;
-}
-
-void calibrateGyroOffsetsCallback(const std_msgs::Bool& message) {
-  YELLOW_LED_ON;
-  RED_LED_ON;
-  BLUE_LED_ON;
-  char log_msg[24];
-  char str_temp[9];
-  float val;
-  nh.logwarn("Hold gyro still");
-  rosDelay(5000);
-  imu.calibrateGyroOffsets();
-  nh.loginfo("Calculated offset in sensor frame");
-
-  float scale = imu.getGyroScaling();
-  val = scale*readEEPROMInt16(EEPROM_GYRO_OFFSET_X);
-  dtostrf(val, 5, 4, str_temp);
-  sprintf(log_msg,"x offset: %s", str_temp);
-  nh.loginfo(log_msg);
-  val = scale*readEEPROMInt16(EEPROM_GYRO_OFFSET_Y);
-  dtostrf(val, 5, 4, str_temp);
-  sprintf(log_msg,"y offset: %s", str_temp);
-  nh.loginfo(log_msg);
-  val = scale*readEEPROMInt16(EEPROM_GYRO_OFFSET_Z);
-  dtostrf(val, 5, 4, str_temp);
-  sprintf(log_msg,"z offset: %s", str_temp);
-  nh.loginfo(log_msg);
-
-  YELLOW_LED_OFF;
-  RED_LED_OFF;
-  BLUE_LED_OFF;
-}
-
-void calibrateAccelerometerOffsetsCallback(const std_msgs::Bool& message) {
-  bool success = false;
-  YELLOW_LED_ON;
-  RED_LED_ON;
-  BLUE_LED_ON;
-  char log_msg[24];
-  char str_temp[9];
-  float val;
-
-  for (uint8_t i = 0; i < 6; i++) {
-    switch (i) {
-      case 0: // Right side up
-      nh.logwarn("Hold right side up");
-      break;
-      case 1: // Left side up
-      nh.logwarn("Hold left side up");
-      break;
-      case 2: // Front side up
-      nh.logwarn("Hold forward side up");
-      break;
-      case 3: // Down side up
-      nh.logwarn("Hold backward side up");
-      break;
-      case 4: // Up side up
-      nh.logwarn("Hold up side up");
-      break;
-      case 5: // Down side up
-      nh.logwarn("Hold down side up");
-      break;
-    }
+  if (!calibrating) {
+    calibrating = true;
+    char log_msg[24];
+    char str_temp[9];
+    YELLOW_LED_ON;
+    RED_LED_ON;
+    BLUE_LED_ON;
+    nh.logwarn("Move the magnetometer in circles while rotating it for 30s");
     rosDelay(5000);
-    bool status = imu.calibrateAccelerometerOffsets(i);
-    if (status) {
-      success = true;
-    } else {
-      nh.logerror("Not correct axis. calibration aborted");
-      success = false;
-      break;
+    float min_max_field[6] = {4000,-4000,4000,-4000,4000,-4000};
+    uint32_t stop_time = millis() + 30000;
+    while (stop_time > millis()) {
+      nh.spinOnce();
+      magnetometer.calibrateOffsets(min_max_field,false);
     }
-  }
-
-  if (success) {
-    nh.loginfo("Calculated offset in sensor frame");
-    float scale = imu.getAccelerometerScaling();
-    val = scale*readEEPROMInt16(EEPROM_ACCELOMETER_OFFSET_X);
+    magnetometer.calibrateOffsets(min_max_field,true);
+    nh.loginfo("Magnetometer calibrated");
+    float val;
+    float scale = magnetometer.getScaling();
+    val = scale*readEEPROMInt16(EEPROM_MAGNETOMETER_OFFSET_X);
     dtostrf(val, 5, 4, str_temp);
     sprintf(log_msg,"x offset: %s", str_temp);
     nh.loginfo(log_msg);
-    val = scale*readEEPROMInt16(EEPROM_ACCELOMETER_OFFSET_Y);
+    val = scale*readEEPROMInt16(EEPROM_MAGNETOMETER_OFFSET_Y);
     dtostrf(val, 5, 4, str_temp);
     sprintf(log_msg,"y offset: %s", str_temp);
     nh.loginfo(log_msg);
-    val = scale*readEEPROMInt16(EEPROM_ACCELOMETER_OFFSET_Z);
+    val = scale*readEEPROMInt16(EEPROM_MAGNETOMETER_OFFSET_Z);
     dtostrf(val, 5, 4, str_temp);
     sprintf(log_msg,"z offset: %s", str_temp);
     nh.loginfo(log_msg);
+    YELLOW_LED_OFF;
+    RED_LED_OFF;
+    BLUE_LED_OFF;
+    calibrating = false;
   }
-  YELLOW_LED_OFF;
-  RED_LED_OFF;
-  BLUE_LED_OFF;
+}
+
+void calibrateGyroOffsetsCallback(const std_msgs::Bool& message) {
+  if (!calibrating) {
+    calibrating = true;
+    YELLOW_LED_ON;
+    RED_LED_ON;
+    BLUE_LED_ON;
+    char log_msg[24];
+    char str_temp[9];
+    float val;
+    nh.logwarn("Hold gyro still");
+    rosDelay(5000);
+    imu.calibrateGyroOffsets();
+    nh.loginfo("Calculated offset in sensor frame");
+
+    float scale = imu.getGyroScaling();
+    val = scale*readEEPROMInt16(EEPROM_GYRO_OFFSET_X);
+    dtostrf(val, 5, 4, str_temp);
+    sprintf(log_msg,"x offset: %s", str_temp);
+    nh.loginfo(log_msg);
+    val = scale*readEEPROMInt16(EEPROM_GYRO_OFFSET_Y);
+    dtostrf(val, 5, 4, str_temp);
+    sprintf(log_msg,"y offset: %s", str_temp);
+    nh.loginfo(log_msg);
+    val = scale*readEEPROMInt16(EEPROM_GYRO_OFFSET_Z);
+    dtostrf(val, 5, 4, str_temp);
+    sprintf(log_msg,"z offset: %s", str_temp);
+    nh.loginfo(log_msg);
+
+    YELLOW_LED_OFF;
+    RED_LED_OFF;
+    BLUE_LED_OFF;
+    calibrating = false;
+  }
+}
+
+void calibrateAccelerometerOffsetsCallback(const std_msgs::Bool& message) {
+  if (!calibrating) {
+    calibrating = true;
+    bool success = false;
+    YELLOW_LED_ON;
+    RED_LED_ON;
+    BLUE_LED_ON;
+    char log_msg[24];
+    char str_temp[9];
+    float val;
+
+    for (uint8_t i = 0; i < 6; i++) {
+      switch (i) {
+        case 0: // Right side up
+        nh.logwarn("Hold right side up");
+        break;
+        case 1: // Left side up
+        nh.logwarn("Hold left side up");
+        break;
+        case 2: // Front side up
+        nh.logwarn("Hold forward side up");
+        break;
+        case 3: // Down side up
+        nh.logwarn("Hold backward side up");
+        break;
+        case 4: // Up side up
+        nh.logwarn("Hold up side up");
+        break;
+        case 5: // Down side up
+        nh.logwarn("Hold down side up");
+        break;
+      }
+      rosDelay(5000);
+      bool status = imu.calibrateAccelerometerOffsets(i);
+      if (status) {
+        success = true;
+      } else {
+        nh.logerror("Not correct axis. calibration aborted");
+        success = false;
+        break;
+      }
+    }
+
+    if (success) {
+      nh.loginfo("Calculated offset in sensor frame");
+      float scale = imu.getAccelerometerScaling();
+      val = scale*readEEPROMInt16(EEPROM_ACCELOMETER_OFFSET_X);
+      dtostrf(val, 5, 4, str_temp);
+      sprintf(log_msg,"x offset: %s", str_temp);
+      nh.loginfo(log_msg);
+      val = scale*readEEPROMInt16(EEPROM_ACCELOMETER_OFFSET_Y);
+      dtostrf(val, 5, 4, str_temp);
+      sprintf(log_msg,"y offset: %s", str_temp);
+      nh.loginfo(log_msg);
+      val = scale*readEEPROMInt16(EEPROM_ACCELOMETER_OFFSET_Z);
+      dtostrf(val, 5, 4, str_temp);
+      sprintf(log_msg,"z offset: %s", str_temp);
+      nh.loginfo(log_msg);
+    }
+    YELLOW_LED_OFF;
+    RED_LED_OFF;
+    BLUE_LED_OFF;
+    calibrating = false;
+  }
 }
 
 void loopRateCallback(const std_msgs::Float32& message) {
@@ -280,7 +314,7 @@ void setup() {
   sensor_message.layout.dim[0].label = "Sensors";
   sensor_message.data = (float*)malloc(sizeof(float)*sensor_message.data_length);
 
-  nh.getHardware()->setBaud(115200);
+  nh.getHardware()->setBaud(115200); //115200
   nh.initNode();
   nh.advertise(sensor_publisher);
   nh.subscribe(enable_thrusters_subscriber);
@@ -330,6 +364,7 @@ void setup() {
   }
 
   rov_servo.init();
+  nh.loginfo("Setup complete");
   last_call = millis();
   RED_LED_OFF;
   YELLOW_LED_ON;

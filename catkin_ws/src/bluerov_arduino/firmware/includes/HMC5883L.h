@@ -15,7 +15,8 @@ public:
     bool        init();
     void        read();
     void        magneticField(float& x, float& y, float& z);
-    bool        calibrateOffsets();
+    bool        calibrateOffsets(float* min_max_array, bool last_test);
+    float       getScaling();
 private:
 
     float               _scaling[3] = {0};

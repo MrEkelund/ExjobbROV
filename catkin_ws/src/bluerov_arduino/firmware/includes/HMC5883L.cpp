@@ -339,21 +339,28 @@ bool HMC5883L::calibrateSensitivity(uint8_t calibration_gain,
     return success;
 }
 
-bool HMC5883L::calibrateOffsets() {
-  float x_max = -4000, y_max = -4000, z_max = -4000;
-  float x_min = 4000, y_min = 4000, z_min = 4000;
-  bool status;
+bool HMC5883L::calibrateOffsets(float* min_max_array, bool last_test) {
+  // float x_max = -4000, y_max = -4000, z_max = -4000;
+  // float x_min = 4000, y_min = 4000, z_min = 4000;
+  float x_max = min_max_array[0], y_max = min_max_array[2], z_max = min_max_array[4];
+  float x_min = min_max_array[1], y_min = min_max_array[3], z_min = min_max_array[5];
 
-  for(uint8_t i = 0; i < 10; i++) { // ignore first samples
-    status = readRaw();
+  uint8_t count = 0;
+  while (count < 2) { // ignore first samples
+    if (readRaw()){
+      count++;
+    }
+    delay(10);
   }
 
-  uint32_t time = millis();
-  while (millis() - time < 30000) {
+  uint8_t num_of_samples;
+  while (num_of_samples < 20) {
     if (!readRaw()) {
       delay(10);
       continue;
     }
+
+    num_of_samples++;
     x_max = max(x_max,_mag_x);
     x_min = min(x_min,_mag_x);
     y_max = max(y_max,_mag_y);
@@ -363,20 +370,30 @@ bool HMC5883L::calibrateOffsets() {
     delay(10);
   }
 
-  if ( x_max <= -4000 || x_min >= 4000 || y_max <= -4000 || y_min >= 4000 ||
-       z_max <= -4000 || z_min >= 4000) {
-         return false;
-       }
+  if (last_test) {
+    if ( x_max <= -4000 || x_min >= 4000 || y_max <= -4000 || y_min >= 4000 ||
+      z_max <= -4000 || z_min >= 4000) {
+        return false;
+      }
 
-  _mag_x_offset = (x_max - x_min)/2;
-  _mag_y_offset = (y_max - y_min)/2;
-  _mag_z_offset = (z_max - z_min)/2;
+      _mag_x_offset = (x_max - x_min)/2;
+      _mag_y_offset = (y_max - y_min)/2;
+      _mag_z_offset = (z_max - z_min)/2;
 
-  writeEEPROMInt16(EEPROM_MAGNETOMETER_OFFSET_X, _mag_x_offset);
-  writeEEPROMInt16(EEPROM_MAGNETOMETER_OFFSET_Y, _mag_y_offset);
-  writeEEPROMInt16(EEPROM_MAGNETOMETER_OFFSET_Z, _mag_z_offset);
-  return true;
-}
+      writeEEPROMInt16(EEPROM_MAGNETOMETER_OFFSET_X, _mag_x_offset);
+      writeEEPROMInt16(EEPROM_MAGNETOMETER_OFFSET_Y, _mag_y_offset);
+      writeEEPROMInt16(EEPROM_MAGNETOMETER_OFFSET_Z, _mag_z_offset);
+    }
+
+    min_max_array[0] = x_max;
+    min_max_array[1] = x_min;
+    min_max_array[2] = y_max;
+    min_max_array[3] = y_min;
+    min_max_array[4] = z_max;
+    min_max_array[5] = z_min;
+
+    return true;
+  }
 
 // Read Sensor data
 void HMC5883L::read() {
@@ -405,4 +422,8 @@ void HMC5883L::magneticField(float& x, float& y, float& z) {
   x = _field[0]/10; // Convert to micro testla
   y = _field[1]/10; // Convert to micro testla
   z = _field[2]/10; // Convert to micro testla
+}
+
+float HMC5883L::getScaling() {
+  return _gain_multiple;
 }
