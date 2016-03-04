@@ -13,6 +13,7 @@ class ROVServo
     void init();
     void setThrusters(uint16_t* thruster_pwm_array);
     void enableThrusters(bool enable);
+    void resetThrusters();
   private:
     void pwmSanityCheck(uint16_t* thruster_pwm_array);
 
