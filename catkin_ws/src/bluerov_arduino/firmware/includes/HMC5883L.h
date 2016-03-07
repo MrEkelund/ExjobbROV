@@ -13,22 +13,25 @@ public:
     HMC5883L();
 
     bool        init();
-    void        read();
+    bool        read();
     void        magneticField(float& x, float& y, float& z);
     bool        calibrateOffsets(float* min_max_array, bool last_test);
     float       getScaling();
-private:
-
-    float               _scaling[3] = {0};
+    bool                dataReady();
     bool                readRaw();
-    bool                reInitialise();
-    bool                readRegister(uint8_t address, uint8_t& value);
     bool                readBlock(uint8_t address,
                                   uint8_t *value,
                                   uint32_t size);
+private:
+
+    float               _scaling[3] = {0};
+
+    bool                reInitialise();
+
+
 
     void                writeRegister(uint8_t address, uint8_t value);
-    bool                dataReady();
+
     bool                calibrateSensitivity(uint8_t calibration_gain,
                                              uint16_t expected_x,
                                              uint16_t expected_yz);

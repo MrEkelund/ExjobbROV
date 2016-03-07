@@ -16,7 +16,7 @@ public:
   bool init();
 
   /* Poll for new data */
-  void read();
+  bool read();
 
   void accel(float& x, float& y, float& z);
   void gyro(float& x, float& y, float& z);

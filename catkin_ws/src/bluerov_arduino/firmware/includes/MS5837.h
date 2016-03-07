@@ -38,7 +38,7 @@ THE SOFTWARE.
 #define MS5837_H_BLUEROBOTICS
 
 #include "Arduino.h"
-#include <ros.h>
+#include <Wire.h>
 
 class MS5837 {
 public:
@@ -52,7 +52,7 @@ public:
 
 	/** The read from I2C takes up for 40 ms, so use sparingly is possible.
 	 */
-	void read();
+	bool read();
 
 	/** Pressure returned in mbar or mbar*conversion rate.
 	 */
@@ -69,6 +69,9 @@ private:
 	uint32_t D1, D2;
 	int32_t TEMP;
 	int32_t P;
+	uint32_t _time_to_read;
+	bool _D1_converted;
+	bool _D2_converted;
 	/** Performs calculations per the sensor data sheet for conversion and
 	 *  second order compensation.
 	 */

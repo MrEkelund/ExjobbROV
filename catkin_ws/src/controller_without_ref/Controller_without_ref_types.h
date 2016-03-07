@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'Controller_without_ref'.
 //
-// Model version                  : 1.144
+// Model version                  : 1.149
 // Simulink Coder version         : 8.9 (R2015b) 13-Aug-2015
-// C/C++ source code generated on : Thu Mar  3 12:17:05 2016
+// C/C++ source code generated on : Mon Mar  7 17:07:29 2016
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Generic->Unspecified (assume 32-bit Generic)
@@ -19,6 +19,17 @@
 #ifndef RTW_HEADER_Controller_without_ref_types_h_
 #define RTW_HEADER_Controller_without_ref_types_h_
 #include "rtwtypes.h"
+#ifndef _DEFINED_TYPEDEF_FOR_SL_Bus_Controller_without_ref_geometry_msgs_Point_
+#define _DEFINED_TYPEDEF_FOR_SL_Bus_Controller_without_ref_geometry_msgs_Point_
+
+typedef struct {
+  real_T X;
+  real_T Y;
+  real_T Z;
+} SL_Bus_Controller_without_ref_geometry_msgs_Point;
+
+#endif
+
 #ifndef _DEFINED_TYPEDEF_FOR_SL_Bus_Controller_without_ref_geometry_msgs_Vector3_
 #define _DEFINED_TYPEDEF_FOR_SL_Bus_Controller_without_ref_geometry_msgs_Vector3_
 
@@ -73,14 +84,14 @@ typedef struct {
 
 #endif
 
-#ifndef _DEFINED_TYPEDEF_FOR_SL_Bus_Controller_without_ref_std_msgs_Int64MultiArray_
-#define _DEFINED_TYPEDEF_FOR_SL_Bus_Controller_without_ref_std_msgs_Int64MultiArray_
+#ifndef _DEFINED_TYPEDEF_FOR_SL_Bus_Controller_without_ref_std_msgs_Float64MultiArray_
+#define _DEFINED_TYPEDEF_FOR_SL_Bus_Controller_without_ref_std_msgs_Float64MultiArray_
 
 typedef struct {
   real_T Data[10];
   SL_Bus_ROSVariableLengthArrayInfo Data_SL_Info;
   SL_Bus_Controller_without_ref_std_msgs_MultiArrayLayout Layout;
-} SL_Bus_Controller_without_ref_std_msgs_Int64MultiArray;
+} SL_Bus_Controller_without_ref_std_msgs_Float64MultiArray;
 
 #endif
 

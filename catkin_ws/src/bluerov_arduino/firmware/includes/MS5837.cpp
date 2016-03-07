@@ -8,7 +8,7 @@
 #define MS5837_CONVERT_D1_8192    0x4A
 #define MS5837_CONVERT_D2_8192    0x5A
 
-MS5837::MS5837() {}
+MS5837::MS5837():_D1_converted(false),_D2_converted(false),_time_to_read(0) {}
 
 bool MS5837::init() {
 
@@ -56,42 +56,49 @@ bool MS5837::readProm() {
 	return false;
 }
 
-void MS5837::read() {
-	// Request D1 conversion
-	Wire.beginTransmission(MS5837_ADDR);
-	Wire.write(MS5837_CONVERT_D1_8192);
-	Wire.endTransmission();
+bool MS5837::read() {
 
-	delay(20); // Max conversion time per datasheet
+	if (!_D1_converted && !_D2_converted) {
+		// Request D1 conversion
+		Wire.beginTransmission(MS5837_ADDR);
+		Wire.write(MS5837_CONVERT_D1_8192);
+		Wire.endTransmission();
+		_time_to_read = millis() + 20;
+		_D1_converted = true;
+		_D2_converted = false;
+	} else if (_D1_converted && !_D2_converted && _time_to_read <= millis()) {
+		Wire.beginTransmission(MS5837_ADDR);
+		Wire.write(MS5837_ADC_READ);
+		Wire.endTransmission();
+		Wire.requestFrom(MS5837_ADDR,3);
+		D1 = 0;
+		D1 = Wire.read();
+		D1 = (D1 << 8) | Wire.read();
+		D1 = (D1 << 8) | Wire.read();
+		// Request D2 conversion
+		Wire.beginTransmission(MS5837_ADDR);
+		Wire.write(MS5837_CONVERT_D2_8192);
+		Wire.endTransmission();
+		_time_to_read = millis() + 20;
+		_D1_converted = false;
+		_D2_converted = true;
+	} else if (_time_to_read <= millis()) {
+		Wire.beginTransmission(MS5837_ADDR);
+		Wire.write(MS5837_ADC_READ);
+		Wire.endTransmission();
 
-	Wire.beginTransmission(MS5837_ADDR);
-	Wire.write(MS5837_ADC_READ);
-	Wire.endTransmission();
+		Wire.requestFrom(MS5837_ADDR,3);
+		D2 = 0;
+		D2 = Wire.read();
+		D2 = (D2 << 8) | Wire.read();
+		D2 = (D2 << 8) | Wire.read();
+		_D1_converted = false;
+		_D2_converted = false;
 
- 	Wire.requestFrom(MS5837_ADDR,3);
-	D1 = 0;
-	D1 = Wire.read();
-	D1 = (D1 << 8) | Wire.read();
-	D1 = (D1 << 8) | Wire.read();
-
-	// Request D2 conversion
-	Wire.beginTransmission(MS5837_ADDR);
-	Wire.write(MS5837_CONVERT_D2_8192);
-	Wire.endTransmission();
-
-	delay(20); // Max conversion time per datasheet
-
-	Wire.beginTransmission(MS5837_ADDR);
-	Wire.write(MS5837_ADC_READ);
-	Wire.endTransmission();
-
-	Wire.requestFrom(MS5837_ADDR,3);
-	D2 = 0;
-	D2 = Wire.read();
-	D2 = (D2 << 8) | Wire.read();
-	D2 = (D2 << 8) | Wire.read();
-
-	calculate();
+		calculate();
+		return true;
+	}
+	return false;
 }
 
 

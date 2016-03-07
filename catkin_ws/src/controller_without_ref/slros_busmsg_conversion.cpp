@@ -33,34 +33,34 @@ void convert_to_bus(SL_Bus_Controller_without_ref_geometry_msgs_Vector3* busPtr,
 }
 
 
-// Conversions between SL_Bus_Controller_without_ref_std_msgs_Int64MultiArray and std_msgs::Int64MultiArray
+// Conversions between SL_Bus_Controller_without_ref_std_msgs_Float64MultiArray and std_msgs::Float64MultiArray
 
-void convert_from_bus(std_msgs::Int64MultiArray* msgPtr, SL_Bus_Controller_without_ref_std_msgs_Int64MultiArray const* busPtr)
+void convert_from_bus(std_msgs::Float64MultiArray* msgPtr, SL_Bus_Controller_without_ref_std_msgs_Float64MultiArray const* busPtr)
 {
   {
     const int numItemsToCopy = busPtr->Data_SL_Info.CurrentLength;
     msgPtr->data.resize(numItemsToCopy);
     for (int i=0; i < numItemsToCopy; i++)
     {
-      msgPtr->data[i] = (int64_t) busPtr->Data[i];
+      msgPtr->data[i] =  busPtr->Data[i];
     }
   }
   convert_from_bus(&msgPtr->layout, &busPtr->Layout);
 }
 
-void convert_to_bus(SL_Bus_Controller_without_ref_std_msgs_Int64MultiArray* busPtr, std_msgs::Int64MultiArray const* msgPtr)
+void convert_to_bus(SL_Bus_Controller_without_ref_std_msgs_Float64MultiArray* busPtr, std_msgs::Float64MultiArray const* msgPtr)
 {
   {
     int numItemsToCopy = msgPtr->data.size();
     if (numItemsToCopy > 10)
     {
-      ROS_WARN_NAMED("Controller_without_ref", "Truncating array '%s' in received message '%s' from %d to %d items", "data", "std_msgs/Int64MultiArray", numItemsToCopy, 10);
+      ROS_WARN_NAMED("Controller_without_ref", "Truncating array '%s' in received message '%s' from %d to %d items", "data", "std_msgs/Float64MultiArray", numItemsToCopy, 10);
       numItemsToCopy = 10;
     }
     busPtr->Data_SL_Info.CurrentLength = static_cast<uint32_T>( numItemsToCopy );
     for (int i=0; i < numItemsToCopy; i++)
     {
-      busPtr->Data[i] = (real_T) msgPtr->data[i];
+      busPtr->Data[i] =  msgPtr->data[i];
     }
   }
   convert_to_bus(&busPtr->Layout, &msgPtr->layout);

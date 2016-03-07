@@ -49,8 +49,8 @@
 
 // Status register
 #define STATUS_REGISTER 0x09
-  #define LOCK  0x02
-  #define RDY   0x01
+  #define STATUS_REGISTER_LOCK  0x02
+  #define STATUS_REGISTER_RDY   0x01
 
 #define MAG_GAIN         MAG_GAIN1090
 #define MAG_BASE_CONFIG (SAMPLE_AVERAGING_8 | DATA_OUTPUT_RATE_75HZ | NORMAL_OPERATION)
@@ -95,7 +95,7 @@ bool HMC5883L::readRaw() {
   uint8_t rv[6]; // 2 register per axis
 
   if (!readBlock(DATA_OUTPUT_XH, rv, sizeof(rv))) {
-    _IO_fail = true;
+    return false;
   }
 
   int16_t rx, ry, rz;
@@ -131,6 +131,7 @@ bool HMC5883L::reInitialise() {
   status = readBlock(MODE_REGISTER, &reg3, 1);
 
   if(reg1 != MAG_BASE_CONFIG | reg2 != MAG_GAIN | reg3 != CONTINUOUS_CONVERSION) {
+    _IO_fail = true;
     return false;
   }
   return true;
@@ -223,7 +224,6 @@ bool HMC5883L::init() {
   // leave test mode
   if (!reInitialise()) {
     success = false;
-    _IO_fail = true;
   }
 
   _mag_x_offset = readEEPROMInt16(EEPROM_MAGNETOMETER_OFFSET_X);
@@ -231,7 +231,7 @@ bool HMC5883L::init() {
   _mag_z_offset = readEEPROMInt16(EEPROM_MAGNETOMETER_OFFSET_Z);
 
   // perform an initial read
-  read();
+  readRaw();
 
   return success;
 }
@@ -347,6 +347,9 @@ bool HMC5883L::calibrateOffsets(float* min_max_array, bool last_test) {
 
   uint8_t count = 0;
   while (count < 2) { // ignore first samples
+    while(!dataReady()) {
+      delay(10);
+    }
     if (readRaw()){
       count++;
     }
@@ -355,6 +358,9 @@ bool HMC5883L::calibrateOffsets(float* min_max_array, bool last_test) {
 
   uint8_t num_of_samples;
   while (num_of_samples < 20) {
+    if (!dataReady()) {
+      continue;
+    }
     if (!readRaw()) {
       delay(10);
       continue;
@@ -395,25 +401,33 @@ bool HMC5883L::calibrateOffsets(float* min_max_array, bool last_test) {
     return true;
   }
 
+bool HMC5883L::dataReady() {
+  uint8_t reg;
+  bool status = readBlock(STATUS_REGISTER, &reg, 1);
+  return ((reg & STATUS_REGISTER_RDY) != 0);
+}
+
+
 // Read Sensor data
-void HMC5883L::read() {
+bool HMC5883L::read() {
 
   if (_IO_fail) {
-    delay(10);
     if (!reInitialise()) {
-      _IO_fail = true;
-      return;
+      return false;
     }
   }
 
-  if (readRaw()) {
-    // get raw_field - sensor frame, uncorrected
-    _field = Vector3f((_mag_x - _mag_x_offset)*_scaling[0]
-    , (_mag_y - _mag_y_offset)*_scaling[1]
-    , (_mag_z - _mag_y_offset)*_scaling[2]);
-    _field *= _gain_multiple;
-
+  if (dataReady()) {
+    if (readRaw()) {
+      // get raw_field - sensor frame, uncorrected
+      _field = Vector3f((_mag_x - _mag_x_offset)*_scaling[0]
+      , (_mag_y - _mag_y_offset)*_scaling[1]
+      , (_mag_z - _mag_y_offset)*_scaling[2]);
+      _field *= _gain_multiple;
+      return true;
+    }
   }
+  return false;
 }
 
 // Read Sensor data
