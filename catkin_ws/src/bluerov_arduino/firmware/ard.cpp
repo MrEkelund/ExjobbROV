@@ -96,8 +96,8 @@ void spin() {
   //BLUE_LED_ON;
   water_pressure_sensor.read();
   //air_pressure_sensor.read();
-  imu.read();
-  magnetometer.read();
+  //imu.read();
+  //magnetometer.read();
   sendSensors();
   //BLUE_LED_OFF;
 }
