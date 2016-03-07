@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'Controller_without_ref'.
 //
-// Model version                  : 1.149
+// Model version                  : 1.150
 // Simulink Coder version         : 8.9 (R2015b) 13-Aug-2015
-// C/C++ source code generated on : Mon Mar  7 20:38:43 2016
+// C/C++ source code generated on : Mon Mar  7 21:18:35 2016
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Generic->Unspecified (assume 32-bit Generic)
@@ -3585,9 +3585,9 @@ void ControllerModelClass::initialize()
       'c', 'o', 'n', 't', 'r', 'o', 'l', 'l', 'e', 'r', '/', 's', 'w', 'i', 't',
       'c', 'h', '_', 'f', 'a', 'c', 't', 'o', 'r', '1' };
 
-    static const char_T tmp_1g[23] = { '/', 'm', 'a', 't', 'l', 'a', 'b', '_',
-      'c', 'o', 'n', 't', 'r', 'o', 'l', 'l', 'e', 'r', '/', 't', 'e', 's', 't'
-    };
+    static const char_T tmp_1g[30] = { '/', 'm', 'a', 't', 'l', 'a', 'b', '_',
+      'c', 'o', 'n', 't', 'r', 'o', 'l', 'l', 'e', 'r', '/', 't', 'e', 's', 't',
+      '_', 'e', 'n', 'a', 'b', 'l', 'e' };
 
     // Start for MATLABSystem: '<Root>/Get test'
     Controller_without_ref_DWork.obj_h2.isInitialized = 0;
@@ -3595,12 +3595,12 @@ void ControllerModelClass::initialize()
     Controller_without_ref_DWork.obj_h2.SampleTime =
       Controller_without_ref_P.Gettest_SampleTime;
     Controller_without_ref_DWork.obj_h2.isInitialized = 1;
-    for (i = 0; i < 23; i++) {
-      Controller_without_ref_B.cv10[i] = tmp_1g[i];
+    for (i = 0; i < 30; i++) {
+      Controller_without_ref_B.cv7[i] = tmp_1g[i];
     }
 
-    Controller_without_ref_B.cv10[23] = '\x00';
-    ParamGet_Controller_without_ref_823.initialize(Controller_without_ref_B.cv10,
+    Controller_without_ref_B.cv7[30] = '\x00';
+    ParamGet_Controller_without_ref_823.initialize(Controller_without_ref_B.cv7,
       Control_ParameterInitialValue_o, 0U, 1U, 2U);
 
     // End of Start for MATLABSystem: '<Root>/Get test'
@@ -3636,11 +3636,11 @@ void ControllerModelClass::initialize()
       Controller_without_ref_P.Swtichingfactor1_SampleTime;
     Controller_without_ref_DWork.obj_fx.isInitialized = 1;
     for (i = 0; i < 29; i++) {
-      Controller_without_ref_B.cv7[i] = tmp_1e[i];
+      Controller_without_ref_B.cv8[i] = tmp_1e[i];
     }
 
-    Controller_without_ref_B.cv7[29] = '\x00';
-    ParamGet_Controller_without_ref_715.initialize(Controller_without_ref_B.cv7,
+    Controller_without_ref_B.cv8[29] = '\x00';
+    ParamGet_Controller_without_ref_715.initialize(Controller_without_ref_B.cv8,
       Contr_ParameterInitialValue_oea, 0U, 1U, 2U);
 
     // End of Start for MATLABSystem: '<S15>/Swtiching factor1'
@@ -3652,11 +3652,11 @@ void ControllerModelClass::initialize()
       Controller_without_ref_P.Swtichingfactor2_SampleTime;
     Controller_without_ref_DWork.obj_d3.isInitialized = 1;
     for (i = 0; i < 29; i++) {
-      Controller_without_ref_B.cv7[i] = tmp_1d[i];
+      Controller_without_ref_B.cv8[i] = tmp_1d[i];
     }
 
-    Controller_without_ref_B.cv7[29] = '\x00';
-    ParamGet_Controller_without_ref_716.initialize(Controller_without_ref_B.cv7,
+    Controller_without_ref_B.cv8[29] = '\x00';
+    ParamGet_Controller_without_ref_716.initialize(Controller_without_ref_B.cv8,
       Contr_ParameterInitialValue_oea, 0U, 1U, 2U);
 
     // End of Start for MATLABSystem: '<S15>/Swtiching factor2'
@@ -3691,11 +3691,11 @@ void ControllerModelClass::initialize()
       Controller_without_ref_P.Swtichingfactor1_SampleTime_i;
     Controller_without_ref_DWork.obj_j5.isInitialized = 1;
     for (i = 0; i < 29; i++) {
-      Controller_without_ref_B.cv7[i] = tmp_1b[i];
+      Controller_without_ref_B.cv8[i] = tmp_1b[i];
     }
 
-    Controller_without_ref_B.cv7[29] = '\x00';
-    ParamGet_Controller_without_ref_725.initialize(Controller_without_ref_B.cv7,
+    Controller_without_ref_B.cv8[29] = '\x00';
+    ParamGet_Controller_without_ref_725.initialize(Controller_without_ref_B.cv8,
       Contr_ParameterInitialValue_oea, 0U, 1U, 2U);
 
     // End of Start for MATLABSystem: '<S16>/Swtiching factor1'
@@ -3707,11 +3707,11 @@ void ControllerModelClass::initialize()
       Controller_without_ref_P.Swtichingfactor2_SampleTime_b;
     Controller_without_ref_DWork.obj_fu.isInitialized = 1;
     for (i = 0; i < 29; i++) {
-      Controller_without_ref_B.cv7[i] = tmp_1a[i];
+      Controller_without_ref_B.cv8[i] = tmp_1a[i];
     }
 
-    Controller_without_ref_B.cv7[29] = '\x00';
-    ParamGet_Controller_without_ref_726.initialize(Controller_without_ref_B.cv7,
+    Controller_without_ref_B.cv8[29] = '\x00';
+    ParamGet_Controller_without_ref_726.initialize(Controller_without_ref_B.cv8,
       Contr_ParameterInitialValue_oea, 0U, 1U, 2U);
 
     // End of Start for MATLABSystem: '<S16>/Swtiching factor2'
@@ -3746,11 +3746,11 @@ void ControllerModelClass::initialize()
       Controller_without_ref_P.Swtichingfactor1_SampleTime_o;
     Controller_without_ref_DWork.obj_f.isInitialized = 1;
     for (i = 0; i < 29; i++) {
-      Controller_without_ref_B.cv7[i] = tmp_18[i];
+      Controller_without_ref_B.cv8[i] = tmp_18[i];
     }
 
-    Controller_without_ref_B.cv7[29] = '\x00';
-    ParamGet_Controller_without_ref_735.initialize(Controller_without_ref_B.cv7,
+    Controller_without_ref_B.cv8[29] = '\x00';
+    ParamGet_Controller_without_ref_735.initialize(Controller_without_ref_B.cv8,
       Contr_ParameterInitialValue_oea, 0U, 1U, 2U);
 
     // End of Start for MATLABSystem: '<S17>/Swtiching factor1'
@@ -3762,11 +3762,11 @@ void ControllerModelClass::initialize()
       Controller_without_ref_P.Swtichingfactor2_SampleTime_o;
     Controller_without_ref_DWork.obj_mb.isInitialized = 1;
     for (i = 0; i < 29; i++) {
-      Controller_without_ref_B.cv7[i] = tmp_17[i];
+      Controller_without_ref_B.cv8[i] = tmp_17[i];
     }
 
-    Controller_without_ref_B.cv7[29] = '\x00';
-    ParamGet_Controller_without_ref_736.initialize(Controller_without_ref_B.cv7,
+    Controller_without_ref_B.cv8[29] = '\x00';
+    ParamGet_Controller_without_ref_736.initialize(Controller_without_ref_B.cv8,
       Contr_ParameterInitialValue_oea, 0U, 1U, 2U);
 
     // End of Start for MATLABSystem: '<S17>/Swtiching factor2'
@@ -3801,11 +3801,11 @@ void ControllerModelClass::initialize()
       Controller_without_ref_P.Swtichingfactor1_SampleTime_j;
     Controller_without_ref_DWork.obj_c2.isInitialized = 1;
     for (i = 0; i < 29; i++) {
-      Controller_without_ref_B.cv7[i] = tmp_15[i];
+      Controller_without_ref_B.cv8[i] = tmp_15[i];
     }
 
-    Controller_without_ref_B.cv7[29] = '\x00';
-    ParamGet_Controller_without_ref_745.initialize(Controller_without_ref_B.cv7,
+    Controller_without_ref_B.cv8[29] = '\x00';
+    ParamGet_Controller_without_ref_745.initialize(Controller_without_ref_B.cv8,
       Contr_ParameterInitialValue_oea, 0U, 1U, 2U);
 
     // End of Start for MATLABSystem: '<S18>/Swtiching factor1'
@@ -3817,11 +3817,11 @@ void ControllerModelClass::initialize()
       Controller_without_ref_P.Swtichingfactor2_SampleTime_e;
     Controller_without_ref_DWork.obj_g0e.isInitialized = 1;
     for (i = 0; i < 29; i++) {
-      Controller_without_ref_B.cv7[i] = tmp_14[i];
+      Controller_without_ref_B.cv8[i] = tmp_14[i];
     }
 
-    Controller_without_ref_B.cv7[29] = '\x00';
-    ParamGet_Controller_without_ref_746.initialize(Controller_without_ref_B.cv7,
+    Controller_without_ref_B.cv8[29] = '\x00';
+    ParamGet_Controller_without_ref_746.initialize(Controller_without_ref_B.cv8,
       Contr_ParameterInitialValue_oea, 0U, 1U, 2U);
 
     // End of Start for MATLABSystem: '<S18>/Swtiching factor2'
@@ -3856,11 +3856,11 @@ void ControllerModelClass::initialize()
       Controller_without_ref_P.Swtichingfactor1_SampleTime_a;
     Controller_without_ref_DWork.obj_hr.isInitialized = 1;
     for (i = 0; i < 29; i++) {
-      Controller_without_ref_B.cv7[i] = tmp_12[i];
+      Controller_without_ref_B.cv8[i] = tmp_12[i];
     }
 
-    Controller_without_ref_B.cv7[29] = '\x00';
-    ParamGet_Controller_without_ref_851.initialize(Controller_without_ref_B.cv7,
+    Controller_without_ref_B.cv8[29] = '\x00';
+    ParamGet_Controller_without_ref_851.initialize(Controller_without_ref_B.cv8,
       Contr_ParameterInitialValue_oea, 0U, 1U, 2U);
 
     // End of Start for MATLABSystem: '<S19>/Swtiching factor1'
@@ -3872,11 +3872,11 @@ void ControllerModelClass::initialize()
       Controller_without_ref_P.Swtichingfactor2_SampleTime_n;
     Controller_without_ref_DWork.obj_dn.isInitialized = 1;
     for (i = 0; i < 29; i++) {
-      Controller_without_ref_B.cv7[i] = tmp_11[i];
+      Controller_without_ref_B.cv8[i] = tmp_11[i];
     }
 
-    Controller_without_ref_B.cv7[29] = '\x00';
-    ParamGet_Controller_without_ref_852.initialize(Controller_without_ref_B.cv7,
+    Controller_without_ref_B.cv8[29] = '\x00';
+    ParamGet_Controller_without_ref_852.initialize(Controller_without_ref_B.cv8,
       Contr_ParameterInitialValue_oea, 0U, 1U, 2U);
 
     // End of Start for MATLABSystem: '<S19>/Swtiching factor2'
@@ -3911,11 +3911,11 @@ void ControllerModelClass::initialize()
       Controller_without_ref_P.Swtichingfactor1_SampleTime_e;
     Controller_without_ref_DWork.obj_cvy.isInitialized = 1;
     for (i = 0; i < 29; i++) {
-      Controller_without_ref_B.cv7[i] = tmp_z[i];
+      Controller_without_ref_B.cv8[i] = tmp_z[i];
     }
 
-    Controller_without_ref_B.cv7[29] = '\x00';
-    ParamGet_Controller_without_ref_765.initialize(Controller_without_ref_B.cv7,
+    Controller_without_ref_B.cv8[29] = '\x00';
+    ParamGet_Controller_without_ref_765.initialize(Controller_without_ref_B.cv8,
       Contr_ParameterInitialValue_oea, 0U, 1U, 2U);
 
     // End of Start for MATLABSystem: '<S20>/Swtiching factor1'
@@ -3927,11 +3927,11 @@ void ControllerModelClass::initialize()
       Controller_without_ref_P.Swtichingfactor2_SampleTime_c;
     Controller_without_ref_DWork.obj_dt.isInitialized = 1;
     for (i = 0; i < 29; i++) {
-      Controller_without_ref_B.cv7[i] = tmp_y[i];
+      Controller_without_ref_B.cv8[i] = tmp_y[i];
     }
 
-    Controller_without_ref_B.cv7[29] = '\x00';
-    ParamGet_Controller_without_ref_766.initialize(Controller_without_ref_B.cv7,
+    Controller_without_ref_B.cv8[29] = '\x00';
+    ParamGet_Controller_without_ref_766.initialize(Controller_without_ref_B.cv8,
       Contr_ParameterInitialValue_oea, 0U, 1U, 2U);
 
     // End of Start for MATLABSystem: '<S20>/Swtiching factor2'
@@ -3982,11 +3982,11 @@ void ControllerModelClass::initialize()
       Controller_without_ref_P.Getcontrollertype_SampleTime;
     Controller_without_ref_DWork.obj_nl.isInitialized = 1;
     for (i = 0; i < 29; i++) {
-      Controller_without_ref_B.cv7[i] = tmp_x[i];
+      Controller_without_ref_B.cv8[i] = tmp_x[i];
     }
 
-    Controller_without_ref_B.cv7[29] = '\x00';
-    ParamGet_Controller_without_ref_106.initialize(Controller_without_ref_B.cv7,
+    Controller_without_ref_B.cv8[29] = '\x00';
+    ParamGet_Controller_without_ref_106.initialize(Controller_without_ref_B.cv8,
       Controlle_ParameterInitialValue, 0U, 1U, 2U);
 
     // End of Start for MATLABSystem: '<Root>/Get controller type'
@@ -4403,11 +4403,11 @@ void ControllerModelClass::initialize()
       Controller_without_ref_P.P_vel_x_SampleTime;
     Controller_without_ref_DWork.obj_ns.isInitialized = 1;
     for (i = 0; i < 26; i++) {
-      Controller_without_ref_B.cv8[i] = tmp_h[i];
+      Controller_without_ref_B.cv9[i] = tmp_h[i];
     }
 
-    Controller_without_ref_B.cv8[26] = '\x00';
-    ParamGet_Controller_without_ref_550.initialize(Controller_without_ref_B.cv8,
+    Controller_without_ref_B.cv9[26] = '\x00';
+    ParamGet_Controller_without_ref_550.initialize(Controller_without_ref_B.cv9,
       Contro_ParameterInitialValue_oe, 0U, 1U, 2U);
 
     // End of Start for MATLABSystem: '<S50>/P_vel_x'
@@ -4419,11 +4419,11 @@ void ControllerModelClass::initialize()
       Controller_without_ref_P.D_vel_x_SampleTime;
     Controller_without_ref_DWork.obj_d.isInitialized = 1;
     for (i = 0; i < 26; i++) {
-      Controller_without_ref_B.cv8[i] = tmp_g[i];
+      Controller_without_ref_B.cv9[i] = tmp_g[i];
     }
 
-    Controller_without_ref_B.cv8[26] = '\x00';
-    ParamGet_Controller_without_ref_547.initialize(Controller_without_ref_B.cv8,
+    Controller_without_ref_B.cv9[26] = '\x00';
+    ParamGet_Controller_without_ref_547.initialize(Controller_without_ref_B.cv9,
       Contro_ParameterInitialValue_oe, 0U, 1U, 2U);
 
     // End of Start for MATLABSystem: '<S50>/D_vel_x'
@@ -4435,11 +4435,11 @@ void ControllerModelClass::initialize()
       Controller_without_ref_P.N_vel_x_SampleTime;
     Controller_without_ref_DWork.obj_a3.isInitialized = 1;
     for (i = 0; i < 26; i++) {
-      Controller_without_ref_B.cv8[i] = tmp_f[i];
+      Controller_without_ref_B.cv9[i] = tmp_f[i];
     }
 
-    Controller_without_ref_B.cv8[26] = '\x00';
-    ParamGet_Controller_without_ref_549.initialize(Controller_without_ref_B.cv8,
+    Controller_without_ref_B.cv9[26] = '\x00';
+    ParamGet_Controller_without_ref_549.initialize(Controller_without_ref_B.cv9,
       Contro_ParameterInitialValue_oe, 0U, 1U, 2U);
 
     // End of Start for MATLABSystem: '<S50>/N_vel_x '
@@ -4451,11 +4451,11 @@ void ControllerModelClass::initialize()
       Controller_without_ref_P.I_vel_x_SampleTime;
     Controller_without_ref_DWork.obj_cv.isInitialized = 1;
     for (i = 0; i < 26; i++) {
-      Controller_without_ref_B.cv8[i] = tmp_e[i];
+      Controller_without_ref_B.cv9[i] = tmp_e[i];
     }
 
-    Controller_without_ref_B.cv8[26] = '\x00';
-    ParamGet_Controller_without_ref_548.initialize(Controller_without_ref_B.cv8,
+    Controller_without_ref_B.cv9[26] = '\x00';
+    ParamGet_Controller_without_ref_548.initialize(Controller_without_ref_B.cv9,
       Contro_ParameterInitialValue_oe, 0U, 1U, 2U);
 
     // End of Start for MATLABSystem: '<S50>/I_vel_x'
@@ -4467,11 +4467,11 @@ void ControllerModelClass::initialize()
       Controller_without_ref_P.P_vel_y_SampleTime;
     Controller_without_ref_DWork.obj_ji.isInitialized = 1;
     for (i = 0; i < 26; i++) {
-      Controller_without_ref_B.cv8[i] = tmp_d[i];
+      Controller_without_ref_B.cv9[i] = tmp_d[i];
     }
 
-    Controller_without_ref_B.cv8[26] = '\x00';
-    ParamGet_Controller_without_ref_564.initialize(Controller_without_ref_B.cv8,
+    Controller_without_ref_B.cv9[26] = '\x00';
+    ParamGet_Controller_without_ref_564.initialize(Controller_without_ref_B.cv9,
       Contro_ParameterInitialValue_oe, 0U, 1U, 2U);
 
     // End of Start for MATLABSystem: '<S53>/P_vel_y'
@@ -4483,11 +4483,11 @@ void ControllerModelClass::initialize()
       Controller_without_ref_P.D_vel_y_SampleTime;
     Controller_without_ref_DWork.obj_n.isInitialized = 1;
     for (i = 0; i < 26; i++) {
-      Controller_without_ref_B.cv8[i] = tmp_c[i];
+      Controller_without_ref_B.cv9[i] = tmp_c[i];
     }
 
-    Controller_without_ref_B.cv8[26] = '\x00';
-    ParamGet_Controller_without_ref_561.initialize(Controller_without_ref_B.cv8,
+    Controller_without_ref_B.cv9[26] = '\x00';
+    ParamGet_Controller_without_ref_561.initialize(Controller_without_ref_B.cv9,
       Contro_ParameterInitialValue_oe, 0U, 1U, 2U);
 
     // End of Start for MATLABSystem: '<S53>/D_vel_y'
@@ -4499,11 +4499,11 @@ void ControllerModelClass::initialize()
       Controller_without_ref_P.N_vel_y_SampleTime;
     Controller_without_ref_DWork.obj_c.isInitialized = 1;
     for (i = 0; i < 26; i++) {
-      Controller_without_ref_B.cv8[i] = tmp_b[i];
+      Controller_without_ref_B.cv9[i] = tmp_b[i];
     }
 
-    Controller_without_ref_B.cv8[26] = '\x00';
-    ParamGet_Controller_without_ref_563.initialize(Controller_without_ref_B.cv8,
+    Controller_without_ref_B.cv9[26] = '\x00';
+    ParamGet_Controller_without_ref_563.initialize(Controller_without_ref_B.cv9,
       Contro_ParameterInitialValue_oe, 0U, 1U, 2U);
 
     // End of Start for MATLABSystem: '<S53>/N_vel_y '
@@ -4515,11 +4515,11 @@ void ControllerModelClass::initialize()
       Controller_without_ref_P.I_vel_y_SampleTime;
     Controller_without_ref_DWork.obj_jx.isInitialized = 1;
     for (i = 0; i < 26; i++) {
-      Controller_without_ref_B.cv8[i] = tmp_a[i];
+      Controller_without_ref_B.cv9[i] = tmp_a[i];
     }
 
-    Controller_without_ref_B.cv8[26] = '\x00';
-    ParamGet_Controller_without_ref_562.initialize(Controller_without_ref_B.cv8,
+    Controller_without_ref_B.cv9[26] = '\x00';
+    ParamGet_Controller_without_ref_562.initialize(Controller_without_ref_B.cv9,
       Contro_ParameterInitialValue_oe, 0U, 1U, 2U);
 
     // End of Start for MATLABSystem: '<S53>/I_vel_y'
@@ -4531,11 +4531,11 @@ void ControllerModelClass::initialize()
       Controller_without_ref_P.P_vel_z_SampleTime;
     Controller_without_ref_DWork.obj.isInitialized = 1;
     for (i = 0; i < 26; i++) {
-      Controller_without_ref_B.cv8[i] = tmp_9[i];
+      Controller_without_ref_B.cv9[i] = tmp_9[i];
     }
 
-    Controller_without_ref_B.cv8[26] = '\x00';
-    ParamGet_Controller_without_ref_578.initialize(Controller_without_ref_B.cv8,
+    Controller_without_ref_B.cv9[26] = '\x00';
+    ParamGet_Controller_without_ref_578.initialize(Controller_without_ref_B.cv9,
       Contro_ParameterInitialValue_oe, 0U, 1U, 2U);
 
     // End of Start for MATLABSystem: '<S56>/P_vel_z'
@@ -4547,11 +4547,11 @@ void ControllerModelClass::initialize()
       Controller_without_ref_P.D_vel_z_SampleTime;
     Controller_without_ref_DWork.obj_a.isInitialized = 1;
     for (i = 0; i < 26; i++) {
-      Controller_without_ref_B.cv8[i] = tmp_8[i];
+      Controller_without_ref_B.cv9[i] = tmp_8[i];
     }
 
-    Controller_without_ref_B.cv8[26] = '\x00';
-    ParamGet_Controller_without_ref_575.initialize(Controller_without_ref_B.cv8,
+    Controller_without_ref_B.cv9[26] = '\x00';
+    ParamGet_Controller_without_ref_575.initialize(Controller_without_ref_B.cv9,
       Contro_ParameterInitialValue_oe, 0U, 1U, 2U);
 
     // End of Start for MATLABSystem: '<S56>/D_vel_z'
@@ -4563,11 +4563,11 @@ void ControllerModelClass::initialize()
       Controller_without_ref_P.N_vel_z_SampleTime;
     Controller_without_ref_DWork.obj_h.isInitialized = 1;
     for (i = 0; i < 26; i++) {
-      Controller_without_ref_B.cv8[i] = tmp_7[i];
+      Controller_without_ref_B.cv9[i] = tmp_7[i];
     }
 
-    Controller_without_ref_B.cv8[26] = '\x00';
-    ParamGet_Controller_without_ref_577.initialize(Controller_without_ref_B.cv8,
+    Controller_without_ref_B.cv9[26] = '\x00';
+    ParamGet_Controller_without_ref_577.initialize(Controller_without_ref_B.cv9,
       Contro_ParameterInitialValue_oe, 0U, 1U, 2U);
 
     // End of Start for MATLABSystem: '<S56>/N_vel_z '
@@ -4579,11 +4579,11 @@ void ControllerModelClass::initialize()
       Controller_without_ref_P.I_vel_z_SampleTime;
     Controller_without_ref_DWork.obj_j.isInitialized = 1;
     for (i = 0; i < 26; i++) {
-      Controller_without_ref_B.cv8[i] = tmp_6[i];
+      Controller_without_ref_B.cv9[i] = tmp_6[i];
     }
 
-    Controller_without_ref_B.cv8[26] = '\x00';
-    ParamGet_Controller_without_ref_576.initialize(Controller_without_ref_B.cv8,
+    Controller_without_ref_B.cv9[26] = '\x00';
+    ParamGet_Controller_without_ref_576.initialize(Controller_without_ref_B.cv9,
       Contro_ParameterInitialValue_oe, 0U, 1U, 2U);
 
     // End of Start for MATLABSystem: '<S56>/I_vel_z'
@@ -4762,11 +4762,11 @@ void ControllerModelClass::initialize()
       Controller_without_ref_P.Getalpha_SampleTime;
     Controller_without_ref_DWork.obj_hx.isInitialized = 1;
     for (i = 0; i < 24; i++) {
-      Controller_without_ref_B.cv9[i] = tmp[i];
+      Controller_without_ref_B.cv10[i] = tmp[i];
     }
 
-    Controller_without_ref_B.cv9[24] = '\x00';
-    ParamGet_Controller_without_ref_687.initialize(Controller_without_ref_B.cv9,
+    Controller_without_ref_B.cv10[24] = '\x00';
+    ParamGet_Controller_without_ref_687.initialize(Controller_without_ref_B.cv10,
       Contro_ParameterInitialValue_oe, 0U, 1U, 2U);
 
     // End of Start for MATLABSystem: '<S7>/Get alpha'
@@ -6699,13 +6699,13 @@ ControllerModelClass::ControllerModelClass()
     0.0,                               // Computed Parameter: velocitesangularxyzlinearxyz_Y0
                                        //  Referenced by: '<S9>/velocites [angular xyz, linear xyz]'
 
-    0.2,                               // Computed Parameter: Integrator_gainval
+    0.1,                               // Computed Parameter: Integrator_gainval
                                        //  Referenced by: '<S40>/Integrator'
 
     0.0,                               // Expression: InitialConditionForIntegrator
                                        //  Referenced by: '<S40>/Integrator'
 
-    0.2,                               // Computed Parameter: Filter_gainval
+    0.1,                               // Computed Parameter: Filter_gainval
                                        //  Referenced by: '<S40>/Filter'
 
     0.0,                               // Expression: InitialConditionForFilter
@@ -6717,13 +6717,13 @@ ControllerModelClass::ControllerModelClass()
     0.0,                               // Expression: 0
                                        //  Referenced by: '<S40>/Constant'
 
-    0.2,                               // Computed Parameter: Integrator_gainval_c
+    0.1,                               // Computed Parameter: Integrator_gainval_c
                                        //  Referenced by: '<S43>/Integrator'
 
     0.0,                               // Expression: InitialConditionForIntegrator
                                        //  Referenced by: '<S43>/Integrator'
 
-    0.2,                               // Computed Parameter: Filter_gainval_i
+    0.1,                               // Computed Parameter: Filter_gainval_i
                                        //  Referenced by: '<S43>/Filter'
 
     0.0,                               // Expression: InitialConditionForFilter
@@ -6735,13 +6735,13 @@ ControllerModelClass::ControllerModelClass()
     0.0,                               // Expression: 0
                                        //  Referenced by: '<S43>/Constant'
 
-    0.2,                               // Computed Parameter: Integrator_gainval_n
+    0.1,                               // Computed Parameter: Integrator_gainval_n
                                        //  Referenced by: '<S46>/Integrator'
 
     0.0,                               // Expression: InitialConditionForIntegrator
                                        //  Referenced by: '<S46>/Integrator'
 
-    0.2,                               // Computed Parameter: Filter_gainval_k
+    0.1,                               // Computed Parameter: Filter_gainval_k
                                        //  Referenced by: '<S46>/Filter'
 
     0.0,                               // Expression: InitialConditionForFilter
@@ -6753,13 +6753,13 @@ ControllerModelClass::ControllerModelClass()
     0.0,                               // Expression: 0
                                        //  Referenced by: '<S46>/Constant'
 
-    0.2,                               // Computed Parameter: Integrator_gainval_j
+    0.1,                               // Computed Parameter: Integrator_gainval_j
                                        //  Referenced by: '<S49>/Integrator'
 
     0.0,                               // Expression: InitialConditionForIntegrator
                                        //  Referenced by: '<S49>/Integrator'
 
-    0.2,                               // Computed Parameter: Filter_gainval_h
+    0.1,                               // Computed Parameter: Filter_gainval_h
                                        //  Referenced by: '<S49>/Filter'
 
     0.0,                               // Expression: InitialConditionForFilter
@@ -6771,13 +6771,13 @@ ControllerModelClass::ControllerModelClass()
     0.0,                               // Expression: 0
                                        //  Referenced by: '<S49>/Constant'
 
-    0.2,                               // Computed Parameter: Integrator_gainval_np
+    0.1,                               // Computed Parameter: Integrator_gainval_np
                                        //  Referenced by: '<S52>/Integrator'
 
     0.0,                               // Expression: InitialConditionForIntegrator
                                        //  Referenced by: '<S52>/Integrator'
 
-    0.2,                               // Computed Parameter: Filter_gainval_h0
+    0.1,                               // Computed Parameter: Filter_gainval_h0
                                        //  Referenced by: '<S52>/Filter'
 
     0.0,                               // Expression: InitialConditionForFilter
@@ -6789,13 +6789,13 @@ ControllerModelClass::ControllerModelClass()
     0.0,                               // Expression: 0
                                        //  Referenced by: '<S52>/Constant'
 
-    0.2,                               // Computed Parameter: Integrator_gainval_m
+    0.1,                               // Computed Parameter: Integrator_gainval_m
                                        //  Referenced by: '<S55>/Integrator'
 
     0.0,                               // Expression: InitialConditionForIntegrator
                                        //  Referenced by: '<S55>/Integrator'
 
-    0.2,                               // Computed Parameter: Filter_gainval_b
+    0.1,                               // Computed Parameter: Filter_gainval_b
                                        //  Referenced by: '<S55>/Filter'
 
     0.0,                               // Expression: InitialConditionForFilter
@@ -6843,19 +6843,19 @@ ControllerModelClass::ControllerModelClass()
     -1.0,                              // Expression: -1
                                        //  Referenced by: '<S12>/Saturation'
 
-    0.2,                               // Computed Parameter: DiscreteTimeIntegrator_gainval
+    0.1,                               // Computed Parameter: DiscreteTimeIntegrator_gainval
                                        //  Referenced by: '<S7>/Discrete-Time Integrator'
 
     0.0,                               // Expression: 0
                                        //  Referenced by: '<S7>/Discrete-Time Integrator'
 
-    0.2,                               // Computed Parameter: DiscreteTimeIntegrator1_gainval
+    0.1,                               // Computed Parameter: DiscreteTimeIntegrator1_gainval
                                        //  Referenced by: '<S7>/Discrete-Time Integrator1'
 
     0.0,                               // Expression: 0
                                        //  Referenced by: '<S7>/Discrete-Time Integrator1'
 
-    0.2,                               // Computed Parameter: DiscreteTimeIntegrator2_gainval
+    0.1,                               // Computed Parameter: DiscreteTimeIntegrator2_gainval
                                        //  Referenced by: '<S7>/Discrete-Time Integrator2'
 
     0.0,                               // Expression: 0

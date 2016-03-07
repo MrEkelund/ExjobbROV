@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'Controller_without_ref'.
 //
-// Model version                  : 1.149
+// Model version                  : 1.150
 // Simulink Coder version         : 8.9 (R2015b) 13-Aug-2015
-// C/C++ source code generated on : Mon Mar  7 20:38:43 2016
+// C/C++ source code generated on : Mon Mar  7 21:18:35 2016
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Generic->Unspecified (assume 32-bit Generic)
@@ -89,11 +89,11 @@ typedef struct {
   char_T cv4[36];
   char_T cv5[35];
   char_T cv6[34];
-  char_T cv7[30];
-  char_T cv8[27];
-  char_T cv9[25];
+  char_T cv7[31];
+  char_T cv8[30];
+  char_T cv9[27];
+  char_T cv10[25];
   real_T acc[3];
-  char_T cv10[24];
   char_T cv11[22];
   char_T cv12[17];
   real_T TmpSignalConversionAtDiscreteFi[2];
