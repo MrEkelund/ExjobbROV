@@ -585,13 +585,15 @@ bool MPU6000::dataReady() {
 /*
 * Read new data from the MPU6000.
 */
-void MPU6000::read() {
+bool MPU6000::read() {
   if (dataReady()) {
     // Read a sample
     uint8_t rx[MPU6000_SAMPLE_SIZE];
     blockRead(MPUREG_ACCEL_XOUT_H , rx, MPU6000_SAMPLE_SIZE);
     calculate(rx);
+    return true;
   }
+  return false;
 }
 
 // Calculate the values and rotate the coordinate systems

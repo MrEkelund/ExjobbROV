@@ -28,7 +28,13 @@ ros::NodeHandle nh;
 
 // Publishers
 std_msgs::Float32MultiArray sensor_message;
+std_msgs::Float32MultiArray water_pressure_message;
+std_msgs::Float32MultiArray magnetometer_message;
+std_msgs::Float32MultiArray imu_message;
 ros::Publisher sensor_publisher("rovio/sensors", &sensor_message);
+ros::Publisher water_pressure_publisher("rovio/water_pressure/data", &water_pressure_message);
+ros::Publisher magnetometer_publisher("rovio/magnetometer/data", &magnetometer_message);
+ros::Publisher imu_publisher("rovio/imu/data", &imu_message);
 
 // Subscribers
  // Forward declaration
@@ -37,7 +43,9 @@ void thrustersCallback(const std_msgs::UInt16MultiArray& message);
 void calibrateMagnetometerOffsetsCallback(const std_msgs::Bool& message);
 void calibrateGyroOffsetsCallback(const std_msgs::Bool& control_msg);
 void calibrateAccelerometerOffsetsCallback(const std_msgs::Bool& message);
-void loopRateCallback(const std_msgs::Float32& message);
+void waterPressureLoopRateCallback(const std_msgs::Float32& message);
+void magnetometerLoopRateCallback(const std_msgs::Float32& message);
+void imuLoopRateCallback(const std_msgs::Float32& message);
 
 ros::Subscriber<std_msgs::Bool>
                 enable_thrusters_subscriber("rovio/enable_thrusters",
@@ -55,8 +63,14 @@ ros::Subscriber<std_msgs::Bool>
                 calibrate_accelerometer_offsets_subscriber("rovio/accelerometer/calibrate_offsets",
                                               &calibrateAccelerometerOffsetsCallback);
 ros::Subscriber<std_msgs::Float32>
-                sample_time_subscriber("sensor_fusion/sample_time",
-                                              &loopRateCallback);
+                water_pressuer_sample_time_subscriber("rovio/water_pressure/sample_time",
+                                              &waterPressureLoopRateCallback);
+ros::Subscriber<std_msgs::Float32>
+                magnetometer_sample_time_subscriber("rovio/magnetometer/sample_time",
+                                              &magnetometerLoopRateCallback);
+ros::Subscriber<std_msgs::Float32>
+                imu_sample_time_subscriber("rovio/imu/sample_time",
+                                              &imuLoopRateCallback);
 
 // Internal objects
 ROVServo rov_servo;
@@ -65,41 +79,79 @@ MS5611 air_pressure_sensor(40);
 MPU6000 imu(53);
 HMC5883L magnetometer;
 
-uint32_t last_call;
+uint32_t water_pressure_last_call;
+uint32_t magnetometer_last_call;
+uint32_t imu_last_call;
 float pressure_offset;
-float sample_time = 1;
+float water_pressure_sample_time = 0.03; // Can handle apporx 20 Hz
+float magnetometer_sample_time = 0.01; // Can handle apporx 130 Hz
+float imu_sample_time = 0.008; // Can handle apporx 200 Hz
 bool calibrating = false;
 /******************************************************************************
 *       Functions                                                             *
 *******************************************************************************/
-void sendSensors() {
-  float x,y,z;
-  sensor_message.data[0] = millis();
-  imu.gyro(x,y,z);
-  sensor_message.data[1] = x;
-  sensor_message.data[2] = y;
-  sensor_message.data[3] = z;
-  imu.accel(x,y,z);
-  sensor_message.data[4] = x;
-  sensor_message.data[5] = y;
-  sensor_message.data[6] = z;
-  magnetometer.magneticField(x,y,z);
-  sensor_message.data[7] = x;
-  sensor_message.data[8] = y;
-  sensor_message.data[9] = z;
-  sensor_message.data[10] = water_pressure_sensor.pressure() - pressure_offset;
+void sendWaterPressure() {
+  water_pressure_message.data[0] = millis();
+  water_pressure_message.data[1] = water_pressure_sensor.pressure() - pressure_offset;
+  water_pressure_publisher.publish(&water_pressure_message);
+}
 
-  sensor_publisher.publish(&sensor_message);
+void sendMagnetometer() {
+  float x,y,z;
+  magnetometer_message.data[0] = millis();
+  magnetometer.magneticField(x,y,z);
+  magnetometer_message.data[1] = x;
+  magnetometer_message.data[2] = y;
+  magnetometer_message.data[3] = z;
+  magnetometer_publisher.publish(&magnetometer_message);
+}
+
+void sendImu() {
+  float x,y,z;
+  imu_message.data[0] = millis();
+  imu.gyro(x,y,z);
+  imu_message.data[1] = x;
+  imu_message.data[2] = y;
+  imu_message.data[3] = z;
+  imu.accel(x,y,z);
+  imu_message.data[4] = x;
+  imu_message.data[5] = y;
+  imu_message.data[6] = z;
+
+  imu_publisher.publish(&imu_message);
+}
+
+bool rate(uint32_t& last_call, const float sample_time) {
+  uint32_t time_diff = millis() - last_call;
+  float period = sample_time*1000;
+  if ( time_diff < period) {
+      return false;
+  }
+
+  last_call = millis();
+  return true;
 }
 
 void spin() {
-  //BLUE_LED_ON;
-  water_pressure_sensor.read();
-  //air_pressure_sensor.read();
-  //imu.read();
-  //magnetometer.read();
-  sendSensors();
-  //BLUE_LED_OFF;
+
+  if (rate(water_pressure_last_call, water_pressure_sample_time)) {
+    if(water_pressure_sensor.read()) {
+      sendWaterPressure();
+    }
+  }
+
+  if (rate(imu_last_call, imu_sample_time)) {
+    if (imu.read()) {
+      sendImu();
+    }
+  }
+
+  if (rate(magnetometer_last_call, magnetometer_sample_time)) {
+    if (magnetometer.read()){
+      sendMagnetometer();
+    }
+  }
+
 }
 
 int16_t readEEPROMInt16(uint16_t address) {
@@ -111,16 +163,6 @@ int16_t readEEPROMInt16(uint16_t address) {
   return (high << 8) | low;
 }
 
-bool rate() {
-  uint32_t time_diff = millis() - last_call;
-  float period = sample_time*1000;
-  if ( time_diff < period) {
-      return false;
-  }
-
-  last_call = millis();
-  return true;
-}
 
 void rosDelay(uint32_t sleep_msec) {
   uint32_t wake_up_time = millis() + sleep_msec;
@@ -156,13 +198,13 @@ void calibrateMagnetometerOffsetsCallback(const std_msgs::Bool& message) {
   if (!calibrating) {
     calibrating = true;
     char log_msg[24];
-    char str_temp[9];
+    char str_temp[8];
     YELLOW_LED_ON;
     RED_LED_ON;
     BLUE_LED_ON;
     nh.logwarn("Move the magnetometer in circles while rotating it for 30s");
     rosDelay(5000);
-    float min_max_field[6] = {4000,-4000,4000,-4000,4000,-4000};
+    float min_max_field[6] = {5000,-5000,5000,-5000,5000,-5000};
     uint32_t stop_time = millis() + 30000;
     while (stop_time > millis()) {
       nh.spinOnce();
@@ -173,15 +215,15 @@ void calibrateMagnetometerOffsetsCallback(const std_msgs::Bool& message) {
     float val;
     float scale = magnetometer.getScaling();
     val = scale*readEEPROMInt16(EEPROM_MAGNETOMETER_OFFSET_X);
-    dtostrf(val, 5, 4, str_temp);
+    dtostrf(val, 5, 2, str_temp);
     sprintf(log_msg,"x offset: %s", str_temp);
     nh.loginfo(log_msg);
     val = scale*readEEPROMInt16(EEPROM_MAGNETOMETER_OFFSET_Y);
-    dtostrf(val, 5, 4, str_temp);
+    dtostrf(val, 5, 2, str_temp);
     sprintf(log_msg,"y offset: %s", str_temp);
     nh.loginfo(log_msg);
     val = scale*readEEPROMInt16(EEPROM_MAGNETOMETER_OFFSET_Z);
-    dtostrf(val, 5, 4, str_temp);
+    dtostrf(val, 5, 2, str_temp);
     sprintf(log_msg,"z offset: %s", str_temp);
     nh.loginfo(log_msg);
     YELLOW_LED_OFF;
@@ -198,7 +240,7 @@ void calibrateGyroOffsetsCallback(const std_msgs::Bool& message) {
     RED_LED_ON;
     BLUE_LED_ON;
     char log_msg[24];
-    char str_temp[9];
+    char str_temp[8];
     float val;
     nh.logwarn("Hold gyro still");
     rosDelay(5000);
@@ -207,15 +249,15 @@ void calibrateGyroOffsetsCallback(const std_msgs::Bool& message) {
 
     float scale = imu.getGyroScaling();
     val = scale*readEEPROMInt16(EEPROM_GYRO_OFFSET_X);
-    dtostrf(val, 5, 4, str_temp);
+    dtostrf(val, 5, 2, str_temp);
     sprintf(log_msg,"x offset: %s", str_temp);
     nh.loginfo(log_msg);
     val = scale*readEEPROMInt16(EEPROM_GYRO_OFFSET_Y);
-    dtostrf(val, 5, 4, str_temp);
+    dtostrf(val, 5, 2, str_temp);
     sprintf(log_msg,"y offset: %s", str_temp);
     nh.loginfo(log_msg);
     val = scale*readEEPROMInt16(EEPROM_GYRO_OFFSET_Z);
-    dtostrf(val, 5, 4, str_temp);
+    dtostrf(val, 5, 2, str_temp);
     sprintf(log_msg,"z offset: %s", str_temp);
     nh.loginfo(log_msg);
 
@@ -234,7 +276,7 @@ void calibrateAccelerometerOffsetsCallback(const std_msgs::Bool& message) {
     RED_LED_ON;
     BLUE_LED_ON;
     char log_msg[24];
-    char str_temp[9];
+    char str_temp[8];
     float val;
 
     for (uint8_t i = 0; i < 6; i++) {
@@ -273,15 +315,15 @@ void calibrateAccelerometerOffsetsCallback(const std_msgs::Bool& message) {
       nh.loginfo("Calculated offset in sensor frame");
       float scale = imu.getAccelerometerScaling();
       val = scale*readEEPROMInt16(EEPROM_ACCELOMETER_OFFSET_X);
-      dtostrf(val, 5, 4, str_temp);
+      dtostrf(val, 5, 2, str_temp);
       sprintf(log_msg,"x offset: %s", str_temp);
       nh.loginfo(log_msg);
       val = scale*readEEPROMInt16(EEPROM_ACCELOMETER_OFFSET_Y);
-      dtostrf(val, 5, 4, str_temp);
+      dtostrf(val, 5, 2, str_temp);
       sprintf(log_msg,"y offset: %s", str_temp);
       nh.loginfo(log_msg);
       val = scale*readEEPROMInt16(EEPROM_ACCELOMETER_OFFSET_Z);
-      dtostrf(val, 5, 4, str_temp);
+      dtostrf(val, 5, 2, str_temp);
       sprintf(log_msg,"z offset: %s", str_temp);
       nh.loginfo(log_msg);
     }
@@ -292,10 +334,17 @@ void calibrateAccelerometerOffsetsCallback(const std_msgs::Bool& message) {
   }
 }
 
-void loopRateCallback(const std_msgs::Float32& message) {
-  sample_time = message.data;
+void waterPressureLoopRateCallback(const std_msgs::Float32& message) {
+  water_pressure_sample_time = message.data/3; // It has 3 read cycles
 }
 
+void magnetometerLoopRateCallback(const std_msgs::Float32& message) {
+  magnetometer_sample_time = message.data;
+}
+
+void imuLoopRateCallback(const std_msgs::Float32& message) {
+  imu_sample_time = message.data;
+}
 /******************************************************************************
 *       Setup and loop                                                        *
 *******************************************************************************/
@@ -308,21 +357,37 @@ void setup() {
   BLUE_LED_OFF;
   RED_LED_ON;
 
-  sensor_message.data_length = 11;
-  sensor_message.layout.dim[0].size = sensor_message.data_length;
-  sensor_message.layout.dim[0].stride = 1*sensor_message.data_length;
-  sensor_message.layout.dim[0].label = "Sensors";
-  sensor_message.data = (float*)malloc(sizeof(float)*sensor_message.data_length);
+  water_pressure_message.data_length = 2;
+  water_pressure_message.layout.dim[0].size = water_pressure_message.data_length;
+  water_pressure_message.layout.dim[0].stride = 1*water_pressure_message.data_length;
+  water_pressure_message.layout.dim[0].label = "Water pressure";
+  water_pressure_message.data = (float*)malloc(sizeof(float)*water_pressure_message.data_length);
+
+  magnetometer_message.data_length = 4;
+  magnetometer_message.layout.dim[0].size = magnetometer_message.data_length;
+  magnetometer_message.layout.dim[0].stride = 1*magnetometer_message.data_length;
+  magnetometer_message.layout.dim[0].label = "Water pressure";
+  magnetometer_message.data = (float*)malloc(sizeof(float)*magnetometer_message.data_length);
+
+  imu_message.data_length = 7;
+  imu_message.layout.dim[0].size = imu_message.data_length;
+  imu_message.layout.dim[0].stride = 1*imu_message.data_length;
+  imu_message.layout.dim[0].label = "Water pressure";
+  imu_message.data = (float*)malloc(sizeof(float)*imu_message.data_length);
 
   nh.getHardware()->setBaud(115200); //115200
   nh.initNode();
-  nh.advertise(sensor_publisher);
+  nh.advertise(water_pressure_publisher);
+  nh.advertise(magnetometer_publisher);
+  nh.advertise(imu_publisher);
   nh.subscribe(enable_thrusters_subscriber);
   nh.subscribe(thrusters_subscriber);
   nh.subscribe(calibrate_magnetometer_offsets_subscriber);
   nh.subscribe(calibrate_gyro_offsets_subscriber);
   nh.subscribe(calibrate_accelerometer_offsets_subscriber);
-  nh.subscribe(sample_time_subscriber);
+  nh.subscribe(water_pressuer_sample_time_subscriber);
+  nh.subscribe(magnetometer_sample_time_subscriber);
+  nh.subscribe(imu_sample_time_subscriber);
 
   while(!nh.connected()){
     nh.spinOnce();
@@ -365,14 +430,12 @@ void setup() {
 
   rov_servo.init();
   nh.loginfo("Setup complete");
-  last_call = millis();
+  water_pressure_last_call = magnetometer_last_call = imu_last_call = millis();
   RED_LED_OFF;
   YELLOW_LED_ON;
 }
 
 void loop() {
-  if(rate()) {
-    spin();
-  }
+  spin();
   nh.spinOnce();
 }
