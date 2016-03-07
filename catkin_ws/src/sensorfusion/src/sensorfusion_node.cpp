@@ -17,9 +17,9 @@ class Ekf {
         void calcHPressure();
         void calcGv();
         void calcF();
-        void acc_update();
-        void mag_update();
-        void pressure_update();
+        void accUpdate();
+        void magUpdate();
+        void pressureUpdate();
 
 
 
@@ -86,7 +86,7 @@ Ekf::Ekf(){
   //server.setCallback(f);
 
 }
-void Ekf::pressure_update()
+void Ekf::pressureUpdate()
 {
   if(enable_pressure && (pressure_meas(0) > 0))
   {
@@ -98,23 +98,33 @@ void Ekf::pressure_update()
     double g = 9.82;
     double x_offset = 0.2;
 
-    double h_pressure=g*rho*(d - x_offset*(2*q0*q2 - 2*q1*q3));
+    Eigen::RowVectorXd h_pressure;
+    h_pressure(0)=g*rho*(d - x_offset*(2*q0*q2 - 2*q1*q3));
+
+
     Eigen::MatrixXd H_pressure;
-
-
-    //
     H_pressure(0,0) = -2*g*q2*rho*x_offset; H_pressure(0,1) = 2*g*q3*rho*x_offset;
     H_pressure(0,2) =  -2*g*q0*rho*x_offset;
     H_pressure(0,3) = 2*g*q1*rho*x_offset;
     H_pressure(0,4) = g*rho;
 
-    double innovation = pressure_meas(0) - h_pressure;
-    Eigen::MatrixXd temp = (H_pressure*p*H_pressure.transpose() + r_pressure).inverse();
-    Eigen::MatrixXd k = p*H_pressure*temp;
+
 
 
   }
 
+}
+void Ekf::measurementUpdate(Eigen::MatrixXd H, Eigen::MatrixXd h, Eigen::MatrixXd r, Eigen::RowVectorXd measurements)
+{
+      Eigen::RowVectorXd innovation = measurements - h;
+      Eigen::MatrixXd temp = (H*p*H.transpose() + r).inverse();
+      Eigen::MatrixXd k = p*H*temp;
+
+      Eigen::RowVectorXd new_states = states + k*innovation;
+      states = new_states;
+
+      Eigen::MatrixXd p_new = p - k*H*p;
+      p = p_new;
 }
 
 
