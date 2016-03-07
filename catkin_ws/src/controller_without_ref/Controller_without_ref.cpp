@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'Controller_without_ref'.
 //
-// Model version                  : 1.149
+// Model version                  : 1.150
 // Simulink Coder version         : 8.9 (R2015b) 13-Aug-2015
-// C/C++ source code generated on : Mon Mar  7 17:07:29 2016
+// C/C++ source code generated on : Mon Mar  7 21:18:35 2016
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Generic->Unspecified (assume 32-bit Generic)
@@ -6699,13 +6699,13 @@ ControllerModelClass::ControllerModelClass()
     0.0,                               // Computed Parameter: velocitesangularxyzlinearxyz_Y0
                                        //  Referenced by: '<S9>/velocites [angular xyz, linear xyz]'
 
-    0.2,                               // Computed Parameter: Integrator_gainval
+    0.1,                               // Computed Parameter: Integrator_gainval
                                        //  Referenced by: '<S40>/Integrator'
 
     0.0,                               // Expression: InitialConditionForIntegrator
                                        //  Referenced by: '<S40>/Integrator'
 
-    0.2,                               // Computed Parameter: Filter_gainval
+    0.1,                               // Computed Parameter: Filter_gainval
                                        //  Referenced by: '<S40>/Filter'
 
     0.0,                               // Expression: InitialConditionForFilter
@@ -6717,13 +6717,13 @@ ControllerModelClass::ControllerModelClass()
     0.0,                               // Expression: 0
                                        //  Referenced by: '<S40>/Constant'
 
-    0.2,                               // Computed Parameter: Integrator_gainval_c
+    0.1,                               // Computed Parameter: Integrator_gainval_c
                                        //  Referenced by: '<S43>/Integrator'
 
     0.0,                               // Expression: InitialConditionForIntegrator
                                        //  Referenced by: '<S43>/Integrator'
 
-    0.2,                               // Computed Parameter: Filter_gainval_i
+    0.1,                               // Computed Parameter: Filter_gainval_i
                                        //  Referenced by: '<S43>/Filter'
 
     0.0,                               // Expression: InitialConditionForFilter
@@ -6735,13 +6735,13 @@ ControllerModelClass::ControllerModelClass()
     0.0,                               // Expression: 0
                                        //  Referenced by: '<S43>/Constant'
 
-    0.2,                               // Computed Parameter: Integrator_gainval_n
+    0.1,                               // Computed Parameter: Integrator_gainval_n
                                        //  Referenced by: '<S46>/Integrator'
 
     0.0,                               // Expression: InitialConditionForIntegrator
                                        //  Referenced by: '<S46>/Integrator'
 
-    0.2,                               // Computed Parameter: Filter_gainval_k
+    0.1,                               // Computed Parameter: Filter_gainval_k
                                        //  Referenced by: '<S46>/Filter'
 
     0.0,                               // Expression: InitialConditionForFilter
@@ -6753,13 +6753,13 @@ ControllerModelClass::ControllerModelClass()
     0.0,                               // Expression: 0
                                        //  Referenced by: '<S46>/Constant'
 
-    0.2,                               // Computed Parameter: Integrator_gainval_j
+    0.1,                               // Computed Parameter: Integrator_gainval_j
                                        //  Referenced by: '<S49>/Integrator'
 
     0.0,                               // Expression: InitialConditionForIntegrator
                                        //  Referenced by: '<S49>/Integrator'
 
-    0.2,                               // Computed Parameter: Filter_gainval_h
+    0.1,                               // Computed Parameter: Filter_gainval_h
                                        //  Referenced by: '<S49>/Filter'
 
     0.0,                               // Expression: InitialConditionForFilter
@@ -6771,13 +6771,13 @@ ControllerModelClass::ControllerModelClass()
     0.0,                               // Expression: 0
                                        //  Referenced by: '<S49>/Constant'
 
-    0.2,                               // Computed Parameter: Integrator_gainval_np
+    0.1,                               // Computed Parameter: Integrator_gainval_np
                                        //  Referenced by: '<S52>/Integrator'
 
     0.0,                               // Expression: InitialConditionForIntegrator
                                        //  Referenced by: '<S52>/Integrator'
 
-    0.2,                               // Computed Parameter: Filter_gainval_h0
+    0.1,                               // Computed Parameter: Filter_gainval_h0
                                        //  Referenced by: '<S52>/Filter'
 
     0.0,                               // Expression: InitialConditionForFilter
@@ -6789,13 +6789,13 @@ ControllerModelClass::ControllerModelClass()
     0.0,                               // Expression: 0
                                        //  Referenced by: '<S52>/Constant'
 
-    0.2,                               // Computed Parameter: Integrator_gainval_m
+    0.1,                               // Computed Parameter: Integrator_gainval_m
                                        //  Referenced by: '<S55>/Integrator'
 
     0.0,                               // Expression: InitialConditionForIntegrator
                                        //  Referenced by: '<S55>/Integrator'
 
-    0.2,                               // Computed Parameter: Filter_gainval_b
+    0.1,                               // Computed Parameter: Filter_gainval_b
                                        //  Referenced by: '<S55>/Filter'
 
     0.0,                               // Expression: InitialConditionForFilter
@@ -6843,19 +6843,19 @@ ControllerModelClass::ControllerModelClass()
     -1.0,                              // Expression: -1
                                        //  Referenced by: '<S12>/Saturation'
 
-    0.2,                               // Computed Parameter: DiscreteTimeIntegrator_gainval
+    0.1,                               // Computed Parameter: DiscreteTimeIntegrator_gainval
                                        //  Referenced by: '<S7>/Discrete-Time Integrator'
 
     0.0,                               // Expression: 0
                                        //  Referenced by: '<S7>/Discrete-Time Integrator'
 
-    0.2,                               // Computed Parameter: DiscreteTimeIntegrator1_gainval
+    0.1,                               // Computed Parameter: DiscreteTimeIntegrator1_gainval
                                        //  Referenced by: '<S7>/Discrete-Time Integrator1'
 
     0.0,                               // Expression: 0
                                        //  Referenced by: '<S7>/Discrete-Time Integrator1'
 
-    0.2,                               // Computed Parameter: DiscreteTimeIntegrator2_gainval
+    0.1,                               // Computed Parameter: DiscreteTimeIntegrator2_gainval
                                        //  Referenced by: '<S7>/Discrete-Time Integrator2'
 
     0.0,                               // Expression: 0

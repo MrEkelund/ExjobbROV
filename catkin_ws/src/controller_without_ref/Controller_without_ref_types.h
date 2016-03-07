@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'Controller_without_ref'.
 //
-// Model version                  : 1.149
+// Model version                  : 1.150
 // Simulink Coder version         : 8.9 (R2015b) 13-Aug-2015
-// C/C++ source code generated on : Mon Mar  7 17:07:29 2016
+// C/C++ source code generated on : Mon Mar  7 21:18:35 2016
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Generic->Unspecified (assume 32-bit Generic)
@@ -19,17 +19,6 @@
 #ifndef RTW_HEADER_Controller_without_ref_types_h_
 #define RTW_HEADER_Controller_without_ref_types_h_
 #include "rtwtypes.h"
-#ifndef _DEFINED_TYPEDEF_FOR_SL_Bus_Controller_without_ref_geometry_msgs_Point_
-#define _DEFINED_TYPEDEF_FOR_SL_Bus_Controller_without_ref_geometry_msgs_Point_
-
-typedef struct {
-  real_T X;
-  real_T Y;
-  real_T Z;
-} SL_Bus_Controller_without_ref_geometry_msgs_Point;
-
-#endif
-
 #ifndef _DEFINED_TYPEDEF_FOR_SL_Bus_Controller_without_ref_geometry_msgs_Vector3_
 #define _DEFINED_TYPEDEF_FOR_SL_Bus_Controller_without_ref_geometry_msgs_Vector3_
 

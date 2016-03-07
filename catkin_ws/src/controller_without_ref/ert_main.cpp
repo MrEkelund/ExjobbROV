@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'Controller_without_ref'.
 //
-// Model version                  : 1.149
+// Model version                  : 1.150
 // Simulink Coder version         : 8.9 (R2015b) 13-Aug-2015
-// C/C++ source code generated on : Mon Mar  7 17:07:29 2016
+// C/C++ source code generated on : Mon Mar  7 21:18:35 2016
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Generic->Unspecified (assume 32-bit Generic)
@@ -89,7 +89,7 @@ int main(int argc, char **argv)
   Controller_without_ref_Object.initialize();
 
   // Call RTOS Initialization funcation
-  myRTOSInit(0.2, 0);
+  myRTOSInit(0.1, 0);
 
   // Wait for stop semaphore
   sem_wait(&stopSem);
