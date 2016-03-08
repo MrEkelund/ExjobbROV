@@ -54,6 +54,7 @@
 
 #define MAG_GAIN         MAG_GAIN1090
 #define MAG_BASE_CONFIG (SAMPLE_AVERAGING_8 | DATA_OUTPUT_RATE_75HZ | NORMAL_OPERATION)
+#define MAG_CALIBRATION_CONFIG (SAMPLE_AVERAGING_8 | DATA_OUTPUT_RATE_15HZ | POSITIVE_BIAS_CONFIG)
 
 HMC5883L::HMC5883L():
 _IO_fail(false),
@@ -134,12 +135,13 @@ bool HMC5883L::reInitialise() {
     _IO_fail = true;
     return false;
   }
+
   return true;
 }
 
 // Public Methods //////////////////////////////////////////////////////////////
-bool HMC5883L::init() {
-
+bool HMC5883L::init(ros::NodeHandle& nh) {
+  _nh = nh;
   uint16_t expected_xy = 0;
   uint16_t expected_z = 0;
   uint8_t calibration_gain = 0;
@@ -217,6 +219,7 @@ bool HMC5883L::init() {
       expected_z = 1.08*230;
       break;
     }
+    _nh.logwarn("scaling");
     success = calibrateSensitivity(calibration_gain, expected_xy, expected_z);
   }
   while(!success && gain < 8);
@@ -259,22 +262,20 @@ bool HMC5883L::calibrateSensitivity(uint8_t calibration_gain,
 
     int numAttempts = 0, good_count = 0;
     bool success = false;
+    bool init_calibration_done = false;
     uint8_t reg1, reg2;
     bool read_status;
 
-    while (!success && numAttempts < 25 && good_count < 5) {
+    while (numAttempts < 25 && !init_calibration_done) {
       numAttempts++;
-
+      delay(10);
       // force positiveBias (compass should return 715 for all channels)
-      writeRegister(CONFIG_REG_A, POSITIVE_BIAS_CONFIG);
+      writeRegister(CONFIG_REG_A, MAG_CALIBRATION_CONFIG);
       read_status = readBlock(CONFIG_REG_A, &reg1, 1);
 
-      if (reg1 != POSITIVE_BIAS_CONFIG) {
+      if (reg1 != MAG_CALIBRATION_CONFIG) {
         continue;   // compass not responding on the bus
       }
-
-
-      delay(50);
 
       // set gains
       writeRegister(CONFIG_REG_B, calibration_gain);
@@ -283,15 +284,35 @@ bool HMC5883L::calibrateSensitivity(uint8_t calibration_gain,
       read_status = readBlock(MODE_REGISTER, &reg2, 1);
       if (reg1 != calibration_gain || reg2 != CONTINUOUS_CONVERSION) {
         continue;
+      }
+      init_calibration_done = true;
+
     }
+
+    if (numAttempts == 25) {
+      return false;
+    }
+
+    numAttempts = 0;
+    while (!success && numAttempts < 25 && good_count < 5) {
+      numAttempts++;
 
       // read values from the compass
-      delay(50);
-      if (!readRaw()){
-        continue;      // we didn't read valid values
-    }
+      uint8_t count = 0;
+      while (!dataReady() && count < 5) {
+        count++;
+        delay(67);
+      }
 
-      delay(10);
+      if (count == 5) {
+        _nh.logwarn("Data ready");
+        continue;
+      } else {
+        if (!readRaw()) {
+          _nh.logwarn("Read error");
+          continue;      // we didn't read valid values
+        }
+      }
 
       float cal[3];
 
@@ -313,12 +334,13 @@ bool HMC5883L::calibrateSensitivity(uint8_t calibration_gain,
       if (IS_CALIBRATION_VALUE_VALID(cal[0]) &&
       IS_CALIBRATION_VALUE_VALID(cal[1]) &&
       IS_CALIBRATION_VALUE_VALID(cal[2])) {
-        // hal.console->printf("car=%.2f %.2f %.2f good\n", cal[0], cal[1], cal[2]);
         good_count++;
 
         _scaling[0] += cal[0];
         _scaling[1] += cal[1];
         _scaling[2] += cal[2];
+      } else {
+        _nh.logwarn("shite");
       }
 
       #undef IS_CALIBRATION_VALUE_VALID
@@ -342,15 +364,15 @@ bool HMC5883L::calibrateSensitivity(uint8_t calibration_gain,
 bool HMC5883L::calibrateOffsets(float* min_max_array, bool last_test) {
   // float x_max = -4000, y_max = -4000, z_max = -4000;
   // float x_min = 4000, y_min = 4000, z_min = 4000;
-  float x_max = min_max_array[0], y_max = min_max_array[2], z_max = min_max_array[4];
-  float x_min = min_max_array[1], y_min = min_max_array[3], z_min = min_max_array[5];
+  int16_t x_max = min_max_array[0], y_max = min_max_array[2], z_max = min_max_array[4];
+  int16_t x_min = min_max_array[1], y_min = min_max_array[3], z_min = min_max_array[5];
 
   uint8_t count = 0;
   while (count < 2) { // ignore first samples
     while(!dataReady()) {
       delay(10);
     }
-    if (readRaw()){
+    if (readRaw()) {
       count++;
     }
     delay(10);
@@ -366,6 +388,7 @@ bool HMC5883L::calibrateOffsets(float* min_max_array, bool last_test) {
       continue;
     }
 
+
     num_of_samples++;
     x_max = max(x_max,_mag_x);
     x_min = min(x_min,_mag_x);
@@ -373,18 +396,37 @@ bool HMC5883L::calibrateOffsets(float* min_max_array, bool last_test) {
     y_min = min(y_min,_mag_y);
     z_max = max(z_max,_mag_z);
     z_min = min(z_min,_mag_z);
+
     delay(10);
   }
-
+  char log_msg[24];
+  char str_temp[8];
   if (last_test) {
+    dtostrf(x_max, 5, 2, str_temp);
+    sprintf(log_msg,"max_x: %s", str_temp);
+    _nh.loginfo(log_msg);
+    dtostrf(x_min, 5, 2, str_temp);
+    sprintf(log_msg,"min_x: %s", str_temp);
+    _nh.loginfo(log_msg);
+    dtostrf(y_max, 5, 2, str_temp);
+    sprintf(log_msg,"max_y: %s", str_temp);
+    _nh.loginfo(log_msg);
+    dtostrf(y_min, 5, 2, str_temp);
+    sprintf(log_msg,"min_y: %s", str_temp);
+    _nh.loginfo(log_msg);
+    dtostrf(z_max, 5, 2, str_temp);
+    sprintf(log_msg,"max_z: %s", str_temp);
+    _nh.loginfo(log_msg);
+    dtostrf(z_min, 5, 2, str_temp);
+    sprintf(log_msg,"min_z: %s", str_temp);
     if ( x_max <= -4000 || x_min >= 4000 || y_max <= -4000 || y_min >= 4000 ||
       z_max <= -4000 || z_min >= 4000) {
         return false;
       }
 
-      _mag_x_offset = (x_max - x_min)/2;
-      _mag_y_offset = (y_max - y_min)/2;
-      _mag_z_offset = (z_max - z_min)/2;
+      _mag_x_offset = (x_max + x_min)/2;
+      _mag_y_offset = (y_max + y_min)/2;
+      _mag_z_offset = (z_max + z_min)/2;
 
       writeEEPROMInt16(EEPROM_MAGNETOMETER_OFFSET_X, _mag_x_offset);
       writeEEPROMInt16(EEPROM_MAGNETOMETER_OFFSET_Y, _mag_y_offset);
@@ -420,9 +462,12 @@ bool HMC5883L::read() {
   if (dataReady()) {
     if (readRaw()) {
       // get raw_field - sensor frame, uncorrected
-      _field = Vector3f((_mag_x - _mag_x_offset)*_scaling[0]
-      , (_mag_y - _mag_y_offset)*_scaling[1]
-      , (_mag_z - _mag_y_offset)*_scaling[2]);
+      // _field = Vector3f((_mag_x - _mag_x_offset)*_scaling[0]
+      // , (_mag_y - _mag_y_offset)*_scaling[1]
+      // , (_mag_z - _mag_y_offset)*_scaling[2]);
+      _field = Vector3f((_mag_x)*_scaling[0]
+      , (_mag_y)*_scaling[1]
+      , (_mag_z)*_scaling[2]);
       _field *= _gain_multiple;
       return true;
     }

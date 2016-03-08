@@ -27,11 +27,9 @@
 ros::NodeHandle nh;
 
 // Publishers
-std_msgs::Float32MultiArray sensor_message;
-std_msgs::Float32MultiArray water_pressure_message;
+std_msgs::Float32 water_pressure_message;
 std_msgs::Float32MultiArray magnetometer_message;
 std_msgs::Float32MultiArray imu_message;
-ros::Publisher sensor_publisher("rovio/sensors", &sensor_message);
 ros::Publisher water_pressure_publisher("rovio/water_pressure/data", &water_pressure_message);
 ros::Publisher magnetometer_publisher("rovio/magnetometer/data", &magnetometer_message);
 ros::Publisher imu_publisher("rovio/imu/data", &imu_message);
@@ -46,6 +44,7 @@ void calibrateAccelerometerOffsetsCallback(const std_msgs::Bool& message);
 void waterPressureLoopRateCallback(const std_msgs::Float32& message);
 void magnetometerLoopRateCallback(const std_msgs::Float32& message);
 void imuLoopRateCallback(const std_msgs::Float32& message);
+void heartbeatCallback(const std_msgs::Bool& message);
 
 ros::Subscriber<std_msgs::Bool>
                 enable_thrusters_subscriber("rovio/enable_thrusters",
@@ -72,6 +71,10 @@ ros::Subscriber<std_msgs::Float32>
                 imu_sample_time_subscriber("rovio/imu/sample_time",
                                               &imuLoopRateCallback);
 
+ros::Subscriber<std_msgs::Bool>
+                heartbeat_subscriber("rovio/heartbeat",
+                                              &heartbeatCallback);
+
 // Internal objects
 ROVServo rov_servo;
 MS5837 water_pressure_sensor;
@@ -82,27 +85,29 @@ HMC5883L magnetometer;
 uint32_t water_pressure_last_call;
 uint32_t magnetometer_last_call;
 uint32_t imu_last_call;
+uint32_t heartbeat_last_call;
+uint32_t heartbeat_count;
 float pressure_offset;
 float water_pressure_sample_time = 0.03; // Can handle apporx 20 Hz
 float magnetometer_sample_time = 0.01; // Can handle apporx 130 Hz
 float imu_sample_time = 0.008; // Can handle apporx 200 Hz
+float heartbeat_sample_time = 1;
 bool calibrating = false;
+bool blue_light_on = false;
 /******************************************************************************
 *       Functions                                                             *
 *******************************************************************************/
 void sendWaterPressure() {
-  water_pressure_message.data[0] = millis();
-  water_pressure_message.data[1] = water_pressure_sensor.pressure() - pressure_offset;
+  water_pressure_message.data = water_pressure_sensor.pressure() - pressure_offset;
   water_pressure_publisher.publish(&water_pressure_message);
 }
 
 void sendMagnetometer() {
   float x,y,z;
-  magnetometer_message.data[0] = millis();
   magnetometer.magneticField(x,y,z);
-  magnetometer_message.data[1] = x;
-  magnetometer_message.data[2] = y;
-  magnetometer_message.data[3] = z;
+  magnetometer_message.data[0] = x;
+  magnetometer_message.data[1] = y;
+  magnetometer_message.data[2] = z;
   magnetometer_publisher.publish(&magnetometer_message);
 }
 
@@ -150,6 +155,26 @@ void spin() {
     if (magnetometer.read()){
       sendMagnetometer();
     }
+  }
+
+  if (rate(heartbeat_last_call, heartbeat_sample_time)) {
+    if (heartbeat_count == 0) {
+      rov_servo.setEmergency(true);
+      rov_servo.resetThrusters();
+      nh.logerror("No heartbeat");
+      BLUE_LED_OFF;
+      blue_light_on = false;
+    } else {
+      rov_servo.setEmergency(false);
+      if (!blue_light_on) {
+        BLUE_LED_ON;
+        blue_light_on = true;
+      } else {
+        BLUE_LED_OFF;
+        blue_light_on = false;
+      }
+    }
+    heartbeat_count = 0;
   }
 
 }
@@ -204,28 +229,32 @@ void calibrateMagnetometerOffsetsCallback(const std_msgs::Bool& message) {
     BLUE_LED_ON;
     nh.logwarn("Move the magnetometer in circles while rotating it for 30s");
     rosDelay(5000);
-    float min_max_field[6] = {5000,-5000,5000,-5000,5000,-5000};
-    uint32_t stop_time = millis() + 30000;
+    float min_max_field[6] = {-5000,5000,-5000,5000,-5000,5000};
+    uint32_t stop_time = millis() + 3000;
     while (stop_time > millis()) {
       nh.spinOnce();
       magnetometer.calibrateOffsets(min_max_field,false);
     }
-    magnetometer.calibrateOffsets(min_max_field,true);
-    nh.loginfo("Magnetometer calibrated");
-    float val;
-    float scale = magnetometer.getScaling();
-    val = scale*readEEPROMInt16(EEPROM_MAGNETOMETER_OFFSET_X);
-    dtostrf(val, 5, 2, str_temp);
-    sprintf(log_msg,"x offset: %s", str_temp);
-    nh.loginfo(log_msg);
-    val = scale*readEEPROMInt16(EEPROM_MAGNETOMETER_OFFSET_Y);
-    dtostrf(val, 5, 2, str_temp);
-    sprintf(log_msg,"y offset: %s", str_temp);
-    nh.loginfo(log_msg);
-    val = scale*readEEPROMInt16(EEPROM_MAGNETOMETER_OFFSET_Z);
-    dtostrf(val, 5, 2, str_temp);
-    sprintf(log_msg,"z offset: %s", str_temp);
-    nh.loginfo(log_msg);
+    if (magnetometer.calibrateOffsets(min_max_field,true)) {
+      nh.loginfo("Magnetometer calibrated");
+      float val;
+      float scale = magnetometer.getScaling();
+      val = scale*readEEPROMInt16(EEPROM_MAGNETOMETER_OFFSET_X);
+      dtostrf(val, 5, 2, str_temp);
+      sprintf(log_msg,"x offset: %s", str_temp);
+      nh.loginfo(log_msg);
+      val = scale*readEEPROMInt16(EEPROM_MAGNETOMETER_OFFSET_Y);
+      dtostrf(val, 5, 2, str_temp);
+      sprintf(log_msg,"y offset: %s", str_temp);
+      nh.loginfo(log_msg);
+      val = scale*readEEPROMInt16(EEPROM_MAGNETOMETER_OFFSET_Z);
+      dtostrf(val, 5, 2, str_temp);
+      sprintf(log_msg,"z offset: %s", str_temp);
+      nh.loginfo(log_msg);
+    } else {
+      nh.logwarn("Magnetometer calibration failed");
+    }
+
     YELLOW_LED_OFF;
     RED_LED_OFF;
     BLUE_LED_OFF;
@@ -345,6 +374,10 @@ void magnetometerLoopRateCallback(const std_msgs::Float32& message) {
 void imuLoopRateCallback(const std_msgs::Float32& message) {
   imu_sample_time = message.data;
 }
+
+void heartbeatCallback(const std_msgs::Bool& message) {
+  heartbeat_count++;
+}
 /******************************************************************************
 *       Setup and loop                                                        *
 *******************************************************************************/
@@ -357,13 +390,12 @@ void setup() {
   BLUE_LED_OFF;
   RED_LED_ON;
 
-  water_pressure_message.data_length = 2;
-  water_pressure_message.layout.dim[0].size = water_pressure_message.data_length;
-  water_pressure_message.layout.dim[0].stride = 1*water_pressure_message.data_length;
-  water_pressure_message.layout.dim[0].label = "Water pressure";
-  water_pressure_message.data = (float*)malloc(sizeof(float)*water_pressure_message.data_length);
+  SPI.begin();
+  SPI.setClockDivider(SPI_CLOCK_DIV16);
+  SPI.setBitOrder(MSBFIRST);
+  SPI.setDataMode(SPI_MODE0);
 
-  magnetometer_message.data_length = 4;
+  magnetometer_message.data_length = 3;
   magnetometer_message.layout.dim[0].size = magnetometer_message.data_length;
   magnetometer_message.layout.dim[0].stride = 1*magnetometer_message.data_length;
   magnetometer_message.layout.dim[0].label = "Water pressure";
@@ -388,39 +420,38 @@ void setup() {
   nh.subscribe(water_pressuer_sample_time_subscriber);
   nh.subscribe(magnetometer_sample_time_subscriber);
   nh.subscribe(imu_sample_time_subscriber);
+  nh.subscribe(heartbeat_subscriber);
 
   while(!nh.connected()){
     nh.spinOnce();
   }
-
+nh.logerror("1");
   Wire.begin();
   if (!water_pressure_sensor.init()) {
     nh.logerror("MS5837: Initialise fail");
   }
-  if (!magnetometer.init()) {
+  nh.logerror("2");
+  nh.spinOnce();
+  if (!magnetometer.init(nh)) {
     nh.logerror("HMC5883L: Initialise fail");
   }
-
-
-  SPI.begin();
-  SPI.setClockDivider(SPI_CLOCK_DIV16);
-  SPI.setBitOrder(MSBFIRST);
-  SPI.setDataMode(SPI_MODE0);
-  delay(100);
-
+  nh.logerror("3");
+  nh.spinOnce();
   if (!air_pressure_sensor.init()) {
     nh.logerror("MS5611: Initialise fail");
   }
-
+  nh.logerror("4");
+  nh.spinOnce();
   if (!imu.init()) {
     nh.logerror("MPU6000: Initialise fail");
   }
 
-
+nh.logerror("5");
   for (uint8_t i = 0; i < 10; i++) {
     air_pressure_sensor.read();
     delay(10);
     pressure_offset += air_pressure_sensor.pressure()/10;
+    nh.spinOnce();
   }
 
   if (pressure_offset < 81300 || pressure_offset > 121300) {
@@ -429,8 +460,9 @@ void setup() {
   }
 
   rov_servo.init();
+  heartbeat_count = 0;
   nh.loginfo("Setup complete");
-  water_pressure_last_call = magnetometer_last_call = imu_last_call = millis();
+  heartbeat_last_call = water_pressure_last_call = magnetometer_last_call = imu_last_call = millis();
   RED_LED_OFF;
   YELLOW_LED_ON;
 }

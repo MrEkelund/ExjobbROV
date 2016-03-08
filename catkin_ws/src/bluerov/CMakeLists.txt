@@ -29,7 +29,6 @@ generate_messages(DEPENDENCIES
 generate_dynamic_reconfigure_options(
   config/teleop_xbox.config
   config/matlab_controller.config
-  ##config/pid_parameters.config
 )
 
 ## Declare a catkin package
@@ -47,3 +46,7 @@ add_dependencies(teleop_xbox ${catkin_EXPORTED_TARGETS})
 add_executable(matlab_controller src/matlab_controller.cpp)
 target_link_libraries(matlab_controller ${catkin_LIBRARIES})
 add_dependencies(matlab_controller ${catkin_EXPORTED_TARGETS})
+
+add_executable(heartbeat_rovio src/heartbeat_rovio.cpp)
+target_link_libraries(heartbeat_rovio ${catkin_LIBRARIES})
+add_dependencies(heartbeat_rovio ${catkin_EXPORTED_TARGETS})

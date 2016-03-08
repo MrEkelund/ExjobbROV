@@ -1,6 +1,6 @@
 #include "ROVServo.h"
 // ROVServo constructor
-ROVServo::ROVServo(): _thrusters_enabled(false) {
+ROVServo::ROVServo(): _thrusters_enabled(false), _emergency(false) {
 }
 
 // Initialize the ROV thrusters.
@@ -32,9 +32,11 @@ void ROVServo::pwmSanityCheck(uint16_t* thruster_pwm_array) {
 void ROVServo::setThrusters(uint16_t* thruster_pwm_array) {
   pwmSanityCheck(thruster_pwm_array);
 
-  if (_thrusters_enabled) {
-    for (int i = 0; i < 6; i++) {
-      _servo[i].writeMicroseconds(thruster_pwm_array[i]);
+  if (!_emergency) {
+    if (_thrusters_enabled) {
+      for (int i = 0; i < 6; i++) {
+        _servo[i].writeMicroseconds(thruster_pwm_array[i]);
+      }
     }
   }
 }
@@ -48,4 +50,8 @@ void ROVServo::resetThrusters() {
   for (int i = 0; i < 6; i++) {
     _servo[i].writeMicroseconds(THRUSTERSTOP);
   }
+}
+
+void ROVServo::setEmergency(bool emergency) {
+  _emergency = emergency;
 }
