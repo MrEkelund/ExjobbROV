@@ -1,18 +1,18 @@
 #ifndef _HMC5883L_H_
 #define _HMC5883L_H_
 
-#include "AP_Math.h"
 #include <Arduino.h>
+#include "AP_Math.h"
 #include <Wire.h>
 #include <EEPROM.h>
 #include "defines.h"
-
+#include <ros.h>
 
 class HMC5883L {
 public:
     HMC5883L();
 
-    bool        init();
+    bool        init(ros::NodeHandle& nh);
     bool        read();
     void        magneticField(float& x, float& y, float& z);
     bool        calibrateOffsets(float* min_max_array, bool last_test);
@@ -49,6 +49,7 @@ private:
     uint16_t        _address;
 
     float               _gain_multiple;
+    ros::NodeHandle _nh;
 };
 
 #endif // _HMC5883L_H_

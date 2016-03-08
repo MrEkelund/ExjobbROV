@@ -229,28 +229,32 @@ void calibrateMagnetometerOffsetsCallback(const std_msgs::Bool& message) {
     BLUE_LED_ON;
     nh.logwarn("Move the magnetometer in circles while rotating it for 30s");
     rosDelay(5000);
-    float min_max_field[6] = {5000,-5000,5000,-5000,5000,-5000};
-    uint32_t stop_time = millis() + 30000;
+    float min_max_field[6] = {-5000,5000,-5000,5000,-5000,5000};
+    uint32_t stop_time = millis() + 3000;
     while (stop_time > millis()) {
       nh.spinOnce();
       magnetometer.calibrateOffsets(min_max_field,false);
     }
-    magnetometer.calibrateOffsets(min_max_field,true);
-    nh.loginfo("Magnetometer calibrated");
-    float val;
-    float scale = magnetometer.getScaling();
-    val = scale*readEEPROMInt16(EEPROM_MAGNETOMETER_OFFSET_X);
-    dtostrf(val, 5, 2, str_temp);
-    sprintf(log_msg,"x offset: %s", str_temp);
-    nh.loginfo(log_msg);
-    val = scale*readEEPROMInt16(EEPROM_MAGNETOMETER_OFFSET_Y);
-    dtostrf(val, 5, 2, str_temp);
-    sprintf(log_msg,"y offset: %s", str_temp);
-    nh.loginfo(log_msg);
-    val = scale*readEEPROMInt16(EEPROM_MAGNETOMETER_OFFSET_Z);
-    dtostrf(val, 5, 2, str_temp);
-    sprintf(log_msg,"z offset: %s", str_temp);
-    nh.loginfo(log_msg);
+    if (magnetometer.calibrateOffsets(min_max_field,true)) {
+      nh.loginfo("Magnetometer calibrated");
+      float val;
+      float scale = magnetometer.getScaling();
+      val = scale*readEEPROMInt16(EEPROM_MAGNETOMETER_OFFSET_X);
+      dtostrf(val, 5, 2, str_temp);
+      sprintf(log_msg,"x offset: %s", str_temp);
+      nh.loginfo(log_msg);
+      val = scale*readEEPROMInt16(EEPROM_MAGNETOMETER_OFFSET_Y);
+      dtostrf(val, 5, 2, str_temp);
+      sprintf(log_msg,"y offset: %s", str_temp);
+      nh.loginfo(log_msg);
+      val = scale*readEEPROMInt16(EEPROM_MAGNETOMETER_OFFSET_Z);
+      dtostrf(val, 5, 2, str_temp);
+      sprintf(log_msg,"z offset: %s", str_temp);
+      nh.loginfo(log_msg);
+    } else {
+      nh.logwarn("Magnetometer calibration failed");
+    }
+
     YELLOW_LED_OFF;
     RED_LED_OFF;
     BLUE_LED_OFF;
@@ -421,25 +425,28 @@ void setup() {
   while(!nh.connected()){
     nh.spinOnce();
   }
-
+nh.logerror("1");
   Wire.begin();
   if (!water_pressure_sensor.init()) {
     nh.logerror("MS5837: Initialise fail");
   }
+  nh.logerror("2");
   nh.spinOnce();
-  if (!magnetometer.init()) {
+  if (!magnetometer.init(nh)) {
     nh.logerror("HMC5883L: Initialise fail");
   }
+  nh.logerror("3");
   nh.spinOnce();
   if (!air_pressure_sensor.init()) {
     nh.logerror("MS5611: Initialise fail");
   }
+  nh.logerror("4");
   nh.spinOnce();
   if (!imu.init()) {
     nh.logerror("MPU6000: Initialise fail");
   }
 
-
+nh.logerror("5");
   for (uint8_t i = 0; i < 10; i++) {
     air_pressure_sensor.read();
     delay(10);
