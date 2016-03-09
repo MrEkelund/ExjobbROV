@@ -305,11 +305,9 @@ bool HMC5883L::calibrateSensitivity(uint8_t calibration_gain,
       }
 
       if (count == 5) {
-        _nh.logwarn("Data ready");
         continue;
       } else {
         if (!readRaw()) {
-          _nh.logwarn("Read error");
           continue;      // we didn't read valid values
         }
       }
@@ -339,8 +337,6 @@ bool HMC5883L::calibrateSensitivity(uint8_t calibration_gain,
         _scaling[0] += cal[0];
         _scaling[1] += cal[1];
         _scaling[2] += cal[2];
-      } else {
-        _nh.logwarn("shite");
       }
 
       #undef IS_CALIBRATION_VALUE_VALID
@@ -362,8 +358,6 @@ bool HMC5883L::calibrateSensitivity(uint8_t calibration_gain,
 }
 
 bool HMC5883L::calibrateOffsets(float* min_max_array, bool last_test) {
-  // float x_max = -4000, y_max = -4000, z_max = -4000;
-  // float x_min = 4000, y_min = 4000, z_min = 4000;
   int16_t x_max = min_max_array[0], y_max = min_max_array[2], z_max = min_max_array[4];
   int16_t x_min = min_max_array[1], y_min = min_max_array[3], z_min = min_max_array[5];
 
@@ -377,48 +371,45 @@ bool HMC5883L::calibrateOffsets(float* min_max_array, bool last_test) {
     }
     delay(10);
   }
+  uint8_t num_of_samples = 0;
+  uint8_t num_of_laps = 0;
+  int16_t temp_x = 0, temp_y = 0 ,temp_z = 0;
+  uint8_t tries = 0;
+  while (num_of_laps < 4) {
+    num_of_laps++;
+    num_of_samples = 0;
+    temp_x = 0, temp_y = 0 ,temp_z = 0;
 
-  uint8_t num_of_samples;
-  while (num_of_samples < 20) {
-    if (!dataReady()) {
-      continue;
+    while (num_of_samples < 10) {
+      tries = 0;
+      while (!dataReady() && tries < 5) {
+        tries++;
+        delay(20);
+      }
+      if (tries == 5) {
+        continue;
+      }
+
+      if (!readRaw()) {
+        delay(10);
+        continue;
+      }
+
+      num_of_samples++;
+      temp_x += _mag_x/10;
+      temp_y += _mag_y/10;
+      temp_z += _mag_z/10;
     }
-    if (!readRaw()) {
-      delay(10);
-      continue;
-    }
 
-
-    num_of_samples++;
-    x_max = max(x_max,_mag_x);
-    x_min = min(x_min,_mag_x);
-    y_max = max(y_max,_mag_y);
-    y_min = min(y_min,_mag_y);
-    z_max = max(z_max,_mag_z);
-    z_min = min(z_min,_mag_z);
-
-    delay(10);
+    x_max = max(x_max, temp_x);
+    x_min = min(x_min, temp_x);
+    y_max = max(y_max, temp_y);
+    y_min = min(y_min, temp_y);
+    z_max = max(z_max, temp_z);
+    z_min = min(z_min, temp_z);
   }
-  char log_msg[24];
-  char str_temp[8];
+
   if (last_test) {
-    dtostrf(x_max, 5, 2, str_temp);
-    sprintf(log_msg,"max_x: %s", str_temp);
-    _nh.loginfo(log_msg);
-    dtostrf(x_min, 5, 2, str_temp);
-    sprintf(log_msg,"min_x: %s", str_temp);
-    _nh.loginfo(log_msg);
-    dtostrf(y_max, 5, 2, str_temp);
-    sprintf(log_msg,"max_y: %s", str_temp);
-    _nh.loginfo(log_msg);
-    dtostrf(y_min, 5, 2, str_temp);
-    sprintf(log_msg,"min_y: %s", str_temp);
-    _nh.loginfo(log_msg);
-    dtostrf(z_max, 5, 2, str_temp);
-    sprintf(log_msg,"max_z: %s", str_temp);
-    _nh.loginfo(log_msg);
-    dtostrf(z_min, 5, 2, str_temp);
-    sprintf(log_msg,"min_z: %s", str_temp);
     if ( x_max <= -4000 || x_min >= 4000 || y_max <= -4000 || y_min >= 4000 ||
       z_max <= -4000 || z_min >= 4000) {
         return false;
@@ -462,12 +453,9 @@ bool HMC5883L::read() {
   if (dataReady()) {
     if (readRaw()) {
       // get raw_field - sensor frame, uncorrected
-      // _field = Vector3f((_mag_x - _mag_x_offset)*_scaling[0]
-      // , (_mag_y - _mag_y_offset)*_scaling[1]
-      // , (_mag_z - _mag_y_offset)*_scaling[2]);
-      _field = Vector3f((_mag_x)*_scaling[0]
-      , (_mag_y)*_scaling[1]
-      , (_mag_z)*_scaling[2]);
+      _field = Vector3f((_mag_x - _mag_x_offset)*_scaling[0]
+      , (_mag_y - _mag_y_offset)*_scaling[1]
+      , (_mag_z - _mag_y_offset)*_scaling[2]);
       _field *= _gain_multiple;
       return true;
     }

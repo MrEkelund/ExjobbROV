@@ -230,7 +230,7 @@ void calibrateMagnetometerOffsetsCallback(const std_msgs::Bool& message) {
     nh.logwarn("Move the magnetometer in circles while rotating it for 30s");
     rosDelay(5000);
     float min_max_field[6] = {-5000,5000,-5000,5000,-5000,5000};
-    uint32_t stop_time = millis() + 3000;
+    uint32_t stop_time = millis() + 30000;
     while (stop_time > millis()) {
       nh.spinOnce();
       magnetometer.calibrateOffsets(min_max_field,false);
@@ -238,7 +238,7 @@ void calibrateMagnetometerOffsetsCallback(const std_msgs::Bool& message) {
     if (magnetometer.calibrateOffsets(min_max_field,true)) {
       nh.loginfo("Magnetometer calibrated");
       float val;
-      float scale = magnetometer.getScaling();
+      float scale = 1;//magnetometer.getScaling();
       val = scale*readEEPROMInt16(EEPROM_MAGNETOMETER_OFFSET_X);
       dtostrf(val, 5, 2, str_temp);
       sprintf(log_msg,"x offset: %s", str_temp);

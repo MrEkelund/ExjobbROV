@@ -270,7 +270,7 @@ void Ekf::pressureUpdate()
 {
   if(config.enable_pressure_update && (meas_pressure(0) > 0))
   {
-    std::cout << "Pressure update" << std::endl;
+    //std::cout << "Pressure update" << std::endl;
     //read states
     double q0 = states(0); double q1 = states(1);
     double q2 = states(2); double q3 = states(3);
@@ -309,7 +309,7 @@ void Ekf::accUpdate(){
   double g = config.g;
 
   if (config.enable_acceleration_update && (abs(meas_acc.norm() - g) < config.eps_acc)) {
-    std::cout << "Acc update" << std::endl;
+    //std::cout << "Acc update" << std::endl;
     //read states
     double q0 = states(0); double q1 = states(1);
     double q2 = states(2); double q3 = states(3);
@@ -364,7 +364,7 @@ void Ekf::magUpdate(){
     Eigen::Matrix<double, 3, 5> H_mag;
     H_mag(0,0) = q0*sqrt(mag_e*mag_e+mag_n*mag_n)*4.0-mag_d*q2*2.0;
     H_mag(0,1) = q1*sqrt(mag_e*mag_e+mag_n*mag_n)*4.0+mag_d*q3*2.0;
-    H_mag(0,3)  = mag_d*q0*-2.0;
+    H_mag(0,3) = mag_d*q0*-2.0;
     H_mag(0,3) = mag_d*q1*2.0;
     H_mag(0,4) = 0.0;
 
@@ -388,6 +388,7 @@ void Ekf::magUpdate(){
 
     Eigen::Matrix<double, 5, 5> p_new = p - k*H_mag*p;
     p = p_new;
+    std::cout << p << std::endl;
     normQuaternions();
     any_updates = true;
   }
@@ -395,8 +396,8 @@ void Ekf::magUpdate(){
 void Ekf::timeUpdate(double T){
   //read states
   if(config.enable_time_update){
-    std::cout << "Time update" << std::endl;
-    std::cout << "T = " << T << std::endl;
+    //std::cout << "Time update" << std::endl;
+    //std::cout << "T = " << T << std::endl;
     double q0 = states(0); double q1 = states(1);
     double q2 = states(2); double q3 = states(3);
     double wx = omega(0); double wy = omega(1); double wz = omega(2);
