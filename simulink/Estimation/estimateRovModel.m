@@ -1,6 +1,6 @@
 %% Initialise the parameters of the ROV estimation.
-[lin_acc_data, ang_vel_data, imu_time, thrusters_data, thrusters_time, states, states_time] = ...
-    retriveData(fullfile('..','..','bag','etst.bag'),0);
+%[lin_acc_data, ang_vel_data, imu_time, thrusters_data, thrusters_time, states, states_time] = ...
+ %   retriveData(fullfile('..','..','bag','etst.bag'),0);
 % Some constants
 Ts = 0;      % Sample time [s].                                                     
 m = 5;       % ROV mass[kg];       
@@ -9,13 +9,13 @@ rho = 1000; % water density [kg/m^3]
 V = 1;       % Discplaced water volume [m^3]
 % Thruster placement from CO [m]
 
-lx1 = 1;
-ly1 = 1;
-ly2 = 1;
-lx2 = 1;
-ly3 = 1;
-lx5 = 1;
-ly4 = 1;
+lx1 = 0.16;
+ly1 = 0.11;
+ly2 = 0.11;
+lx2 = 0.16;
+ly3 = 0.11;
+lx5 = 0.2;
+ly4 = 0.11;
 lz6 = 1;
 zb = 1;
 
@@ -46,11 +46,11 @@ Iz_init = 1;
 u_init = 0;
 v_init = 0;
 w_init = 0;
-p_init = ang_vel_data(1,3);
-q_init = ang_vel_data(1,2);
-r_init = ang_vel_data(1,1);
-fi_init = states(1,3);
-theta_init = states(1,2);
+p_init = 0;%ang_vel_data(1,3);
+q_init = 0;%ang_vel_data(1,2);
+r_init = 0;%ang_vel_data(1,1);
+fi_init = 0;%states(1,3);
+theta_init = 0;%states(1,2);
 
 parameter_strings = {'m';'g';'rho';'V';'lx1';'ly1';'ly2';'lx2';'ly3';'lx5';'ly4';'lz6';'zb';'Xu';'Xu_dot';'Xu_abs_u';'Yv';'Yv_dot';'Yv_abs_w';'Zw';'Zw_dot';'Zw_abs_w'; 'Kp';'Kp_dot'; 'Kp_abs_p'; 'Mq';'Mq_dot'; 'Mq_abs_q'; 'Nr';'Nr_dot';'Nr_abs_r';'Ix';'Iy';'Iz'};
 state_strings = {'u';'v';'w'; 'p'; 'q'; 'r';'fi';'theta'};
@@ -58,7 +58,7 @@ state_units = {'m/s'; 'm/s'; 'm/s';'rad/s'; 'rad/s'; 'rad/s';'rad';'rad'};
 
 %% Set up the nglr object
 
-FileName      = 'rovMotionModel';                                       % File describing the model structure.
+FileName      = strcat('rovMotionModel',estimation_mode);                                       % File describing the model structure.
 
 Order         = [8 6 8];                                                % Model orders [ny nu nx].
 
@@ -81,7 +81,7 @@ nlgr = idnlgrey(FileName, Order, Parameters, InitialStates, Ts, ...
 nlgr.InputName =  {'Thruster1'; 'Thruster2'; 'Thruster3'; ...
                    'Thurster4'; 'Thruster5'; 'Thruster6'};
 
-              nlgr.InputUnit =  {'ms'; 'ms'; 'ms'; 'ms'; 'ms';'ms'};
+              nlgr.InputUnit =  {'%'; '%'; '%'; '%'; '%';'%'};
 
               nlgr.OutputName = state_strings;
               nlgr.OutputUnit = state_units;
@@ -109,14 +109,23 @@ nlgr = setpar(nlgr, 'Name', parameter_strings);
 % Set that some of the parameters are known the other parameters is to 
 % be estimated
 
-fixed_parameters = [1:13];  % Stores the index of the parameters that is fixed
+fixed_parameters = [1:size(Parameters,1)];  % Stores the index of the parameters that is fixed
+u_dot_estimate_parameter_index = [14, 16, 18, 21, 15]; % Parameters u_dot estimates
+v_dot_estimate_parameter_index = [17, 19, 15, 21, 18]; % Parameters v_dot estimates
+w_dot_estimate_parameter_index = [20, 22, 15, 18, 21]; % Parameters w_dot estimates
+p_dot_estimate_parameter_index = [23, 25, 33, 34, 27, 30, 18, 21, 32, 24]; % Parameters p_dot estimates
+q_dot_estimate_parameter_index = [26, 28, 32, 34, 24, 30, 15, 21, 33, 27]; % Parameters q_dot estimates
+r_dot_estimate_parameter_index = [29, 31, 32, 33, 24, 27, 15, 18, 34, 30]; % Parameters r_dot estimates
+
 switch estimation_mode
-    case 'yaw_test'
-        fixed_parameters = [fixed_parameters, ];
-    case 'pitch_test'
-        fixed_parameters = [fixed_parameters, ];
-    case 'roll_test'
-        fixed_parameters = [fixed_parameters, ];
+    case 'Yaw'
+        [true_list] = ismember(fixed_parameters, r_dot_estimate_parameter_index);
+        fixed_parameters = fixed_parameters(~true_list);
+    case 'RollPitch'
+        [true_list] = ismember(fixed_parameters, p_dot_estimate_parameter_index);
+        fixed_parameters = fixed_parameters(~true_list);
+        [true_list] = ismember(fixed_parameters, q_dot_estimate_parameter_index);
+        fixed_parameters = fixed_parameters(~true_list);
     otherwise
         error('Unkown test: %s', estimation_mode);
 end
@@ -125,7 +134,8 @@ for i = 1:size(fixed_parameters,2)
  nlgr.Parameters(fixed_parameters(i)).Fixed = true;
 end
 
-
+nlgr.Name = estimation_mode;
+estmation_data = iddata();
 %%
 % With this, a textual summary of the entered IDNLGREY model structure is
 % obtained through PRESENT as follows.
@@ -154,7 +164,7 @@ load(fullfile(matlabroot, 'toolbox', 'ident', 'iddemos', 'data', 'vehicledata'))
 % vehicle so much in the lateral direction.
 nlgr1 = nlgr;
 nlgr1.Name = 'Bicycle vehicle model with high tire stiffness';
-z1 = iddata([], rc_data, , 'Name', 'Simulated high tire stiffness vehicle data');
+z1 = iddata([], data,  'Name', 'Simulated high tire stiffness vehicle data');
 z1.InputName = nlgr1.InputName;
 z1.InputUnit = nlgr1.InputUnit;
 z1.OutputName = nlgr1.OutputName;
