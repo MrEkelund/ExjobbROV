@@ -1,6 +1,7 @@
 %% Initialise the parameters of the ROV estimation.
-%[lin_acc_data, ang_vel_data, imu_time, thrusters_data, thrusters_time, states, states_time] = ...
- %   retriveData(fullfile('..','..','bag','etst.bag'),0);
+[lin_acc_data, ang_vel_data, imu_time, thrusters_data, thrusters_time, states, states_time] = ...
+   retriveData(fullfile('..','..','bag','super*.bag'),1);
+
 % Some constants
 Ts = 0;      % Sample time [s].                                                     
 m = 5;       % ROV mass[kg];       
