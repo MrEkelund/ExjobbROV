@@ -50,7 +50,7 @@ acc_ned = [acc_n; acc_e; acc_d];
 acc_meas = transpose(Q)*([0; 0; -g]); % fråga Manon + acc_ned
 % measurement equation for magnetometer 
 % should i change to mag_global = [0;sqrt;mag_d]???
-mag_global=[0;sqrt(mag_n^2 + mag_e^2);mag_d]
+%mag_global=[0;sqrt(mag_n^2 + mag_e^2);mag_d]
 mag_global=[sqrt(mag_n^2 + mag_e^2);0;mag_d]; % could change to mx 0 mz and use bjord =mz bjord sin(θdip)dˆ+ bjord cos(θdip)nˆ
 mag_meas = transpose(Q)*mag_global;
 
