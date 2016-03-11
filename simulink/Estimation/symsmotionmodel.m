@@ -1,9 +1,9 @@
 syms q p r u w v Zw_dot Yv_dot Xu_dot Mq_dot Nr_dot Kp_dot Yv Xu Zw Mq Nr Kp ...
     m Iy Iz Ix W B Nr_abs_r Xu_abs_u Yv_abs_v Zw_abs_w Kp_abs_p Mq_abs_q ct ...
     st sf cf cp sp lx1 lx2 ly1 ly2 ly3 lx5 lx4 ly5 ly4 lz6 zb g f1 f2 f3 f4 f5 f6;
-
+% Mass, intertia and added mass
 M = diag([m, m, m, Ix, Iy, Iz])...
-    + diag([Xu_dot,Yv_dot,Zw_dot,Kp_dot,Mq_dot,Nr_dot]);
+   - diag([Xu_dot,Yv_dot,Zw_dot,Kp_dot,Mq_dot,Nr_dot]);
 
 nu = [u;v;w;p;q;r];
 
@@ -14,26 +14,21 @@ C_AA = [0 , 0 , 0 , 0 , -Zw_dot*w , Yv_dot*v ;
     Zw_dot*w , 0 , -Xu_dot*u , Nr_dot*r , 0 , -Kp_dot*p ;
     -Yv_dot*v , Xu_dot*u , 0 , - Mq_dot*q , Kp_dot*p , 0];
 
-C_A = [...
-        Yv_dot*v*r - Zw_dot*w*q;
-        Zw_dot*w*p - Xu_dot*u*r;
-        Xu_dot*u*q - Yv_dot*v*p;
-        (Yv_dot - Zw_dot)*v*w + (Mq_dot - Nr_dot)*q*r;
-        (Zw_dot - Xu_dot)*u*w + (Nr_dot - Kp_dot)*p*r;
-        (Xu_dot - Yv_dot)*u*v + (Kp_dot - Mq_dot)*p*q];
+C_A =  C_AA*nu;
+
 
 % def (3.57) page 55 fossen
 C_RB = [...
     m*(q*w-r*v);
     m*(r*u-p*w);
     m*(p*v-q*u);
-    q*r*(Iy-Iz);
-    r*p*(Iz-Ix);
-    q*p*(Ix-Iy)];
+   q*r*(-Iy+Iz);
+   r*p*(-Iz+Ix);
+   q*p*(-Ix+Iy)];
 
 C = C_A + C_RB;    
 
-%Hydrodynamic dampening
+% Hydrodynamic dampening
 D = -[...
     (Xu + Xu_abs_u*abs(u))*u;
     (Yv + Yv_abs_v*abs(v))*v;
@@ -42,10 +37,12 @@ D = -[...
     (Mq + Mq_abs_q*abs(q))*q;
     (Nr + Nr_abs_r*abs(r))*r];
 
+% Restoring forces page 60 Fossen
+% zb positive distance from center of origin
 gn = [...
     (W - B)*st;
     -(W - B)*ct*sf;
-    -(W - B)*ct*sf;
+    -(W - B)*ct*cf;
     -zb*B*ct*sf;
     -zb*B*st;
     0];
@@ -87,4 +84,13 @@ thrusterforce = [...
 
 tau = T*thrusterforce;
 
-nu_dot = inv(M)*(tau-C-D-gn)
+nu_dot = inv(M)*(tau-C-D-gn);
+u_dot = nu_dot(1)
+v_dot = nu_dot(2)
+w_dot = nu_dot(3)
+p_dot = nu_dot(4)
+q_dot = nu_dot(5)
+r_dot = nu_dot(6)
+
+
+
