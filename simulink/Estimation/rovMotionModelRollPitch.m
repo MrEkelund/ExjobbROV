@@ -40,7 +40,7 @@ ct = cosd(theta);
 st = sind(theta);
 cf = cosd(fi);
 sf = sind(fi);
-
+ 
 B = rho*g*V;
 W = m*g;
 % look-up table for t200.
