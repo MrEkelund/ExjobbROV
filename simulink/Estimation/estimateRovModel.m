@@ -63,15 +63,15 @@ FileName      = strcat('rovMotionModel',estimation_mode);                       
 
 Order         = [8 6 8];                                                % Model orders [ny nu nx].
 
-Parameters    = [m; g; rho; V; lx1; ly1; ly2; lx2; ly3; lx5; ly4; ...   % Initial parameters.
-                lz6; zb; Xu_init; Xu_dot_init; Xu_abs_u_init;     ...
-                Yv_init; Yv_dot_init; Yv_abs_w_init; Zw_init;     ...
-                Zw_dot_init; Zw_abs_w_init; Kp_init; Kp_dot_init; ...
-                Kp_abs_p_init; Mq_init; Mq_dot_init;              ...
-                Mq_abs_q_init; Nr_init; Nr_dot_init;              ...
+Parameters    = [m; g; rho; V; lx1; ly1; ly2; lx2; ly3; lx5; ly4;    % Initial parameters.
+                lz6; zb; Xu_init; Xu_dot_init; Xu_abs_u_init;     
+                Yv_init; Yv_dot_init; Yv_abs_w_init; Zw_init;     
+                Zw_dot_init; Zw_abs_w_init; Kp_init; Kp_dot_init; 
+                Kp_abs_p_init; Mq_init; Mq_dot_init;              
+                Mq_abs_q_init; Nr_init; Nr_dot_init;              
                 Nr_abs_r_init; Ix_init; Iy_init; Iz_init];
             
-InitialStates = [u_init; v_init; w_init; p_init; q_init; r_init;    ... % Initial initial states.
+InitialStates = [u_init; v_init; w_init; p_init; q_init; r_init;     % Initial initial states.
                 fi_init; theta_init];                          
             
 
@@ -79,7 +79,7 @@ InitialStates = [u_init; v_init; w_init; p_init; q_init; r_init;    ... % Initia
 nlgr = idnlgrey(FileName, Order, Parameters, InitialStates, Ts, ...
                     'Name', 'Rov Model', 'TimeUnit', 's');
 
-nlgr.InputName =  {'Thruster1'; 'Thruster2'; 'Thruster3'; ...
+nlgr.InputName =  {'Thruster1'; 'Thruster2'; 'Thruster3'; 
                    'Thurster4'; 'Thruster5'; 'Thruster6'};
 
               nlgr.InputUnit =  {'%'; '%'; '%'; '%'; '%';'%'};
@@ -120,13 +120,10 @@ r_dot_estimate_parameter_index = [29, 31, 32, 33, 24, 27, 15, 18, 34, 30]; % Par
 
 switch estimation_mode
     case 'Yaw'
-        [true_list] = ismember(fixed_parameters, r_dot_estimate_parameter_index);
-        fixed_parameters = fixed_parameters(~true_list);
+        fixed_parameters = setdiff(fixed_parameters,r_dot_estimate_parameter_index)
     case 'RollPitch'
-        [true_list] = ismember(fixed_parameters, p_dot_estimate_parameter_index);
-        fixed_parameters = fixed_parameters(~true_list);
-        [true_list] = ismember(fixed_parameters, q_dot_estimate_parameter_index);
-        fixed_parameters = fixed_parameters(~true_list);
+        fixed_parameters = setdiff(fixed_parameters, p_dot_estimate_parameter_index);
+        fixed_parameters = setdiff(fixed_parameters, q_dot_estimate_parameter_index);
     otherwise
         error('Unkown test: %s', estimation_mode);
 end
@@ -152,6 +149,12 @@ present(nlgr);
 %
 % In all cases, the sample time Ts = 0.1 seconds.
 load(fullfile(matlabroot, 'toolbox', 'ident', 'iddemos', 'data', 'vehicledata'));
+            
+z1 = iddata([lin_vel_data, ang_vel_data, states(:,2:3)], thrusters_data,Ts,'Name', strcat(estimation_mode, 'data'));
+z1.InputName = nlgr.InputName;
+z1.InputUnit = nlgr.InputUnit;
+z1.OutputName = nlgr.OutputName;
+z1.OutputUnit = nlgr.OutputUnit;
 
 %% A. System Identification Using Simulated High Tire Stiffness Data
 % In our first vehicle identification experiment we consider simulated high

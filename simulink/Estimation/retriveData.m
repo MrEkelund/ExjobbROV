@@ -1,4 +1,4 @@
-function [lin_acc_data, ang_vel_data, imu_time, thrusters_data, thrusters_time, states, states_time] = retriveData(filepath,plotting)
+function [lin_vel_data ,lin_acc_data, ang_vel_data, imu_time, thrusters_data, thrusters_time, states, states_time] = retriveData(filepath,plotting)
     %retriveData
     %   Input: filepath - Fullfilepath or relative.
     %   Input: plotting - 1 for subplots of the data. 0 for no plots
@@ -11,10 +11,11 @@ function [lin_acc_data, ang_vel_data, imu_time, thrusters_data, thrusters_time, 
     %   Output: thruster_time - Time vector for the thruster data.
     
     bag = rosbag(filepath);
-    imu_fig = figure('Name','IMU','units','normalized','position',[0 0.5 .5 .5]);
-    thrusters_fig = figure('Name','Thruster','units','normalized','position',[0.5 0 .5 .5]);
-    states_fig = figure('Name','States','units','normalized','position',[0 0 .5 .5]);
-    integrated_fig = figure('Name','States','units','normalized','position',[0.5 0.5 .5 .5]);
+    imu_fig = figure('Name','IMU','units','normalized','position',[0 0.5 .5 .41]);
+    states_fig = figure('Name','States','units','normalized','position',[0 0 .5 .41]);
+    integrated_fig = figure('Name','Integrated acc','units','normalized','position',[0.5 0.5 .5 .41]);
+    thrusters_fig = figure('Name','Thruster','units','normalized','position',[0.5 0 .5 .41]);
+
 %% States
     states_bag = select(bag,'Topic','/sensor_fusion/states');
     
@@ -28,17 +29,38 @@ function [lin_acc_data, ang_vel_data, imu_time, thrusters_data, thrusters_time, 
         states_time(i) = states_bag.MessageList{i,1};
     end
     
+    states = states_data(:,[1 2 3 7]); % Angels and depth
+    ang_vel_data = states_data(:,4:6);
+    lin_acc_data = states_data(:,8:10);
+    imu_time = states_time;
+    
+    
+    % Integrate the acc to get vel
+    compensated_lin_acc_data = removeGravity(states_data(:,3),states_data(:,2),states_data(:,1), lin_acc_data);
+    lin_vel_data = integrateAcc(compensated_lin_acc_data, imu_time);
+    
+    %{
+     Remove the first and last sample  to get the same length vectors
+     (this is due to integration of the acc)
+    %}
+    
+    states = states(2:end-1,:);
+    ang_vel_data = ang_vel_data(2:end-1,:);
+    states_time = states_time(2:end-1,:);
+    imu_time = imu_time(2:end-1,:);
+    
     if plotting
+        plot_time = states_time-states_time(1)*ones(size(states_time,1),1);
         figure(states_fig);
         subplot(2,1,1)
         suptitle('States')
-        plot(states_time-states_time(1)*ones(size(states_time,1),1), states_data(:,1:3))
+        plot(plot_time, states_data(:,1:3))
         legend('Yaw','Pitch','Roll')
         ylabel(sprintf('Euler angles [%c]', char(176)));
         xlabel('Time [s]')
         
         subplot(2,1,2)
-        plot(states_time-states_time(1)*ones(size(states_time,1),1), states_data(:,7))
+        plot(plot_time, states_data(:,7))
         legend('Depth')
         ylabel('Depth [m]');
         xlabel('Time [s]')
@@ -46,24 +68,25 @@ function [lin_acc_data, ang_vel_data, imu_time, thrusters_data, thrusters_time, 
         figure(imu_fig)
         subplot(2,1,1)
         suptitle('IMU data recived from sensor fusion');
-        plot(states_time-states_time(1)*ones(size(states_time,1),1), states_data(:,4:6))
-        legend('Ang_vel_x','Ang_vel_y','Ang_vel_z')
+        plot(plot_time, states_data(:,4:6))
+        legend('Ang\_vel\_x','Ang\_vel\_y','Ang\_vel\_z')
         ylabel(sprintf('Angular velocites [%c/s]', char(176)));
         xlabel('Time [s]')
         
         subplot(2,1,2)
-        plot(states_time-states_time(1)*ones(size(states_time,1),1), states_data(:,8:10))
-        legend('Lin_acc_x','Lin_acc_y','Lin_acc_z')
+        plot(plot_time, states_data(:,8:10))
+        legend('Lin\_acc\_x','Lin\_acc\_y','Lin\_acc\_z')
+        ylabel('Linear acceleration [m/s]');
+        xlabel('Time [s]')
+        
+        figure(integrated_fig)
+        plot(plot_time, lin_vel_data)
+        legend('Lin\_vel\_x','Lin\_vel\_y','Lin\_vel\_z')
         ylabel('Linear acceleration [m/s]');
         xlabel('Time [s]')
     end
 
-    states = states_data(:,[1 2 3 7]); % Angels and depth
-    ang_vel_data = states_data(:,4:6);
-    lin_acc_data = states_data(:,8:10);
-    imu_time = states_time;
-    compensated_lin_acc_data = removeGravity(states_data(:,3),states_data(:,2),states_data(:,1), lin_acc_data);
-    lin_vel_data = integrateAcc(compensated_lin_acc_data, imu_time);
+
 %% IMU
 %     imu_bag = select(bag,'Topic','/rovio/imu/data');
 %     imu_msgs = readMessages(imu_bag);
@@ -106,6 +129,14 @@ function [lin_acc_data, ang_vel_data, imu_time, thrusters_data, thrusters_time, 
         thrusters_data(i,:) = (data(:) - 1500)/400;
         thrusters_time(i) = thrusters_bag.MessageList{i,1};
     end
+    
+       %{
+     Remove the first and last sample  to get the same length vectors
+     (this is due to integration of the acc)
+    %}
+    
+    thrusters_data = thrusters_data(2:end-1,:);
+    thrusters_time = thrusters_time(2:end-1,:);
     
     if plotting
         figure(thrusters_fig);
