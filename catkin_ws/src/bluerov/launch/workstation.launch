@@ -3,6 +3,7 @@
 <launch>
   <!-- roscore automatically started by roslaunch -->
 
+  <include file="$(find bluerov)/launch/heartbeat_rovio.launch" />
    <!-- start teleop -->
   <include file="$(find bluerov)/launch/teleop_xbox.launch" />
 
@@ -10,4 +11,3 @@
   <include file="$(find bluerov)/launch/rqt.launch" />
 
 </launch>
-
