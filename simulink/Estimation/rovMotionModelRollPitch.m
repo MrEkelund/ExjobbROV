@@ -167,13 +167,31 @@ Iz= parameters(34)
 % 26, 28, 32, 34, 24, 30, 15, 21, 33, 27 %q_dot
 % 29, 31, 32, 33, 24, 27, 15, 18, 34, 30 %r_dot
 
-% u_dot  =(f3 + f4 + u*(Xu + Xu_abs_u*abs(u)) + st*(B - W) - m*(q*w - r*v) - Yv_dot*r*v + Zw_dot*q*w)/(Xu_dot + m);
-% v_dot  =-(f6 - v*(Yv + Yv_abs_v*abs(v)) - m*(p*w - r*u) + ct*sf*(B - W) - Xu_dot*r*u + Zw_dot*p*w)/(Yv_dot + m);
-% w_dot  =-(f1 + f2 + f5 - w*(Zw + Zw_abs_w*abs(w)) + m*(p*v - q*u) + ct*sf*(B - W) + Xu_dot*q*u - Yv_dot*p*v)/(Zw_dot + m);
-p_dot  =(f1*ly1 - f2*ly2 + f6*lz6 + p*(Kp + Kp_abs_p*abs(p)) - q*r*(Iy - Iz) - q*r*(Mq_dot - Nr_dot) - v*w*(Yv_dot - Zw_dot) + B*ct*sf*zb)/(Ix + Kp_dot);
-q_dot  =(f1*lx1 + f2*lx2 - f5*lx5 + q*(Mq + Mq_abs_q*abs(q)) + B*st*zb + p*r*(Ix - Iz) + p*r*(Kp_dot - Nr_dot) + u*w*(Xu_dot - Zw_dot))/(Iy + Mq_dot);
-% r_dot  =-(f4*ly4 - f3*ly3 - r*(Nr + Nr_abs_r*abs(r)) + p*q*(Ix - Iy) + p*q*(Kp_dot - Mq_dot) + u*v*(Xu_dot - Yv_dot))/(Iz + Nr_dot);
 
+
+%u_dot =...
+    -(f3 + f4 + u*(Xu + Xu_abs_u*abs(u)) + st*(B - W) - m*(q*w - r*v) - Yv_dot*r*v + Zw_dot*q*w)/(Xu_dot - m);
+ 
+ 
+%v_dot =...
+    (f6 - v*(Yv + Yv_abs_v*abs(v)) - m*(p*w - r*u) + ct*sf*(B - W) - Xu_dot*r*u + Zw_dot*p*w)/(Yv_dot - m);
+ 
+ 
+%w_dot =...
+    (f1 + f2 + f5 - w*(Zw + Zw_abs_w*abs(w)) + m*(p*v - q*u) + cf*ct*(B - W) + Xu_dot*q*u - Yv_dot*p*v)/(Zw_dot - m);
+ 
+ 
+p_dot =...
+    (f1*ly1 - f2*ly2 + f6*lz6 + p*(Kp + Kp_abs_p*abs(p)) - Mq_dot*q*r + Nr_dot*q*r + q*r*(Iy - Iz) - Yv_dot*v*w + Zw_dot*v*w + B*ct*sf*zb)/(Ix - Kp_dot);
+ 
+ 
+q_dot =...
+    (f1*lx1 + f2*lx2 - f5*lx5 + q*(Mq + Mq_abs_q*abs(q)) + Kp_dot*p*r + B*st*zb - Nr_dot*p*r - p*r*(Ix - Iz) + Xu_dot*u*w - Zw_dot*u*w)/(Iy - Mq_dot);
+ 
+ 
+%r_dot =...
+    (r*(Nr + Nr_abs_r*abs(r)) + f3*ly3 - f4*ly4 - Kp_dot*p*q + Mq_dot*p*q + p*q*(Ix - Iy) - Xu_dot*u*v + Yv_dot*u*v)/(Iz - Nr_dot);
+ 
 
 fi_dot = p + q*sf*st/ct + r*cf*st/ct;
 theta_dot = q*cf - r*sf;
