@@ -117,6 +117,7 @@ catkin_package(
 include_directories(
   ${catkin_INCLUDE_DIRS}
   ${dynamic_reconfigure_PACKAGE_PATH}/cmake/cfgbuild.cmake
+  include
 )
 
 
@@ -131,14 +132,14 @@ include_directories(
 # add_dependencies(sensorfusion ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
- add_executable(sensorfusion_node src/sensorfusion_node.cpp)
+ add_executable(sensorfusion src/sensorfusion.cpp)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
-# add_dependencies(sensorfusion_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+# add_dependencies(sensorfusion ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(sensorfusion_node
+target_link_libraries(sensorfusion
   ${catkin_LIBRARIES}
 )
 
@@ -157,7 +158,7 @@ target_link_libraries(sensorfusion_node
 # )
 
 ## Mark executables and/or libraries for installation
-# install(TARGETS sensorfusion sensorfusion_node
+# install(TARGETS sensorfusion sensorfusion
 #   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
