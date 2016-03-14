@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+
+<launch>
+  <node respawn="true" pkg="bluerov" type="heartbeat_rovio" name="heartbeat_rovio" output="screen"></node>
+</launch>
