@@ -2,7 +2,7 @@
 #define _SLROS_INITIALIZE_H_
 
 #include "slros_busmsg_conversion.h"
-#include "slros_generic_pubsub.h"
+#include "slros_generic.h"
 
 extern ros::NodeHandle * SLROSNodePtr;
 extern const std::string SLROSNodeName;
@@ -21,6 +21,24 @@ extern SimulinkParameterGetter<real64_T, double> ParamGet_Controller_879;
 
 // For Block Controller/Decouple2/Get buoyancy
 extern SimulinkParameterGetter<real64_T, double> ParamGet_Controller_873;
+
+// For Block Controller/Enabled Subsystem/Get Parameter
+extern SimulinkParameterGetter<real64_T, double> ParamGet_Controller_901;
+
+// For Block Controller/Enabled Subsystem/Get Parameter1
+extern SimulinkParameterGetter<real64_T, double> ParamGet_Controller_905;
+
+// For Block Controller/Enabled Subsystem/Get Parameter2
+extern SimulinkParameterGetter<real64_T, double> ParamGet_Controller_907;
+
+// For Block Controller/Enabled Subsystem/Get Parameter3
+extern SimulinkParameterGetter<real64_T, double> ParamGet_Controller_909;
+
+// For Block Controller/Enabled Subsystem/Get Parameter4
+extern SimulinkParameterGetter<real64_T, double> ParamGet_Controller_911;
+
+// For Block Controller/Enabled Subsystem/Get Parameter5
+extern SimulinkParameterGetter<real64_T, double> ParamGet_Controller_913;
 
 // For Block Controller/Get controller type
 extern SimulinkParameterGetter<int32_T, int> ParamGet_Controller_106;

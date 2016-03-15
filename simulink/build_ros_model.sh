@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright 2014 The MathWorks, Inc.
+# Copyright 2014-2015 The MathWorks, Inc.
 ARCHIVE=$1
 CATKIN_WS=$2
 
@@ -119,8 +119,8 @@ touch "$PROJECT_DIR"/*.cpp
 
 # Build the Simulink model as a catkin project
 CURR_DIR=`pwd`
-cd $CATKIN_WS
+cd "$CATKIN_WS"
 catkin_make "$MODEL_NAME"_node
-cd $CURR_DIR
+cd "$CURR_DIR"
 
 exit 0

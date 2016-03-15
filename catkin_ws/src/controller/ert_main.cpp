@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'Controller'.
 //
-// Model version                  : 1.160
-// Simulink Coder version         : 8.9 (R2015b) 13-Aug-2015
-// C/C++ source code generated on : Mon Mar 14 10:07:11 2016
+// Model version                  : 1.164
+// Simulink Coder version         : 8.10 (R2016a) 10-Feb-2016
+// C/C++ source code generated on : Tue Mar 15 14:03:01 2016
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Generic->Unspecified (assume 32-bit Generic)
@@ -26,16 +26,19 @@
 #include "linuxinitialize.h"
 
 static ControllerModelClass Controller_Object;// Instance of model class
-volatile boolean_T runModel = 1;
+
+// Function prototype declaration
+void exitTask(int sig);
+void terminateTask(void *arg);
+void baseRateTask(void *arg);
+void subrateTask(void *arg);
+volatile boolean_T runModel = true;
 sem_t stopSem;
-sem_t termSem;
 sem_t baserateTaskSem;
-pthread_t terminateThread;
 pthread_t schedulerThread;
 pthread_t baseRateThread;
 unsigned long threadJoinStatus[8];
 int terminatingmodel = 0;
-int subratePriority[0];
 void baseRateTask(void *arg)
 {
   runModel = (rtmGetErrorStatus(Controller_Object.getRTM()) == (NULL));
@@ -47,7 +50,8 @@ void baseRateTask(void *arg)
     runModel = (rtmGetErrorStatus(Controller_Object.getRTM()) == (NULL));
   }
 
-  sem_post(&termSem);
+  runModel = 0;
+  terminateTask(arg);
   pthread_exit((void *)0);
 }
 
@@ -58,16 +62,14 @@ void exitTask(int sig)
 
 void terminateTask(void *arg)
 {
-  int i;
-  int ret;
-  sem_wait(&termSem);
   terminatingmodel = 1;
   printf("**terminating the model**\n");
   fflush(stdout);
 
-  // Wait for baseRate task to complete
-  ret = pthread_join(baseRateThread, (void *)&threadJoinStatus);
-  CHECK_STATUS(ret, 0, "pthread_join");
+  {
+    int ret;
+    runModel = 0;
+  }
 
   // Disable rt_OneStep() here
 
@@ -88,7 +90,7 @@ int main(int argc, char **argv)
   Controller_Object.initialize();
 
   // Call RTOS Initialization funcation
-  myRTOSInit(0.1, 0);
+  myRTOSInit(0.05, 0);
 
   // Wait for stop semaphore
   sem_wait(&stopSem);

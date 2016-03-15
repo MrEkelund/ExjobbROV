@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'Controller'.
 //
-// Model version                  : 1.160
-// Simulink Coder version         : 8.9 (R2015b) 13-Aug-2015
-// C/C++ source code generated on : Mon Mar 14 10:07:11 2016
+// Model version                  : 1.164
+// Simulink Coder version         : 8.10 (R2016a) 10-Feb-2016
+// C/C++ source code generated on : Tue Mar 15 14:03:01 2016
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Generic->Unspecified (assume 32-bit Generic)
@@ -19,8 +19,8 @@
 #ifndef RTW_HEADER_Controller_types_h_
 #define RTW_HEADER_Controller_types_h_
 #include "rtwtypes.h"
-#ifndef _DEFINED_TYPEDEF_FOR_SL_Bus_Controller_geometry_msgs_Vector3_
-#define _DEFINED_TYPEDEF_FOR_SL_Bus_Controller_geometry_msgs_Vector3_
+#ifndef DEFINED_TYPEDEF_FOR_SL_Bus_Controller_geometry_msgs_Vector3_
+#define DEFINED_TYPEDEF_FOR_SL_Bus_Controller_geometry_msgs_Vector3_
 
 typedef struct {
   real_T X;
@@ -30,8 +30,8 @@ typedef struct {
 
 #endif
 
-#ifndef _DEFINED_TYPEDEF_FOR_SL_Bus_Controller_geometry_msgs_Twist_
-#define _DEFINED_TYPEDEF_FOR_SL_Bus_Controller_geometry_msgs_Twist_
+#ifndef DEFINED_TYPEDEF_FOR_SL_Bus_Controller_geometry_msgs_Twist_
+#define DEFINED_TYPEDEF_FOR_SL_Bus_Controller_geometry_msgs_Twist_
 
 typedef struct {
   SL_Bus_Controller_geometry_msgs_Vector3 Linear;
@@ -40,8 +40,8 @@ typedef struct {
 
 #endif
 
-#ifndef _DEFINED_TYPEDEF_FOR_SL_Bus_ROSVariableLengthArrayInfo_
-#define _DEFINED_TYPEDEF_FOR_SL_Bus_ROSVariableLengthArrayInfo_
+#ifndef DEFINED_TYPEDEF_FOR_SL_Bus_ROSVariableLengthArrayInfo_
+#define DEFINED_TYPEDEF_FOR_SL_Bus_ROSVariableLengthArrayInfo_
 
 typedef struct {
   uint32_T CurrentLength;
@@ -50,8 +50,8 @@ typedef struct {
 
 #endif
 
-#ifndef _DEFINED_TYPEDEF_FOR_SL_Bus_Controller_std_msgs_MultiArrayDimension_
-#define _DEFINED_TYPEDEF_FOR_SL_Bus_Controller_std_msgs_MultiArrayDimension_
+#ifndef DEFINED_TYPEDEF_FOR_SL_Bus_Controller_std_msgs_MultiArrayDimension_
+#define DEFINED_TYPEDEF_FOR_SL_Bus_Controller_std_msgs_MultiArrayDimension_
 
 typedef struct {
   uint8_T Label[128];
@@ -62,8 +62,8 @@ typedef struct {
 
 #endif
 
-#ifndef _DEFINED_TYPEDEF_FOR_SL_Bus_Controller_std_msgs_MultiArrayLayout_
-#define _DEFINED_TYPEDEF_FOR_SL_Bus_Controller_std_msgs_MultiArrayLayout_
+#ifndef DEFINED_TYPEDEF_FOR_SL_Bus_Controller_std_msgs_MultiArrayLayout_
+#define DEFINED_TYPEDEF_FOR_SL_Bus_Controller_std_msgs_MultiArrayLayout_
 
 typedef struct {
   uint32_T DataOffset;
@@ -73,8 +73,8 @@ typedef struct {
 
 #endif
 
-#ifndef _DEFINED_TYPEDEF_FOR_SL_Bus_Controller_std_msgs_Float64MultiArray_
-#define _DEFINED_TYPEDEF_FOR_SL_Bus_Controller_std_msgs_Float64MultiArray_
+#ifndef DEFINED_TYPEDEF_FOR_SL_Bus_Controller_std_msgs_Float64MultiArray_
+#define DEFINED_TYPEDEF_FOR_SL_Bus_Controller_std_msgs_Float64MultiArray_
 
 typedef struct {
   real_T Data[10];
@@ -84,8 +84,8 @@ typedef struct {
 
 #endif
 
-#ifndef _DEFINED_TYPEDEF_FOR_SL_Bus_Controller_std_msgs_UInt16MultiArray_
-#define _DEFINED_TYPEDEF_FOR_SL_Bus_Controller_std_msgs_UInt16MultiArray_
+#ifndef DEFINED_TYPEDEF_FOR_SL_Bus_Controller_std_msgs_UInt16MultiArray_
+#define DEFINED_TYPEDEF_FOR_SL_Bus_Controller_std_msgs_UInt16MultiArray_
 
 typedef struct {
   uint16_T Data[6];
@@ -169,14 +169,7 @@ typedef struct {
 #define typedef_struct_T_Controller_l5_T
 
 typedef struct {
-  char_T f0[5];
-  char_T f1[4];
-  char_T f2[6];
-  char_T f3[5];
-  char_T f4[6];
-  char_T f5[5];
-  char_T f6[6];
-  char_T f7[6];
+  char_T f0[7];
 } struct_T_Controller_l5_T;
 
 #endif                                 //typedef_struct_T_Controller_l5_T
@@ -185,24 +178,15 @@ typedef struct {
 #define typedef_struct_T_Controller_l5x_T
 
 typedef struct {
-  char_T f0[7];
+  char_T f0[8];
+  char_T f1[4];
+  char_T f2[6];
 } struct_T_Controller_l5x_T;
 
 #endif                                 //typedef_struct_T_Controller_l5x_T
 
 #ifndef typedef_struct_T_Controller_l5xx_T
 #define typedef_struct_T_Controller_l5xx_T
-
-typedef struct {
-  char_T f0[8];
-  char_T f1[4];
-  char_T f2[6];
-} struct_T_Controller_l5xx_T;
-
-#endif                                 //typedef_struct_T_Controller_l5xx_T
-
-#ifndef typedef_struct_T_Controller_l5xxx_T
-#define typedef_struct_T_Controller_l5xxx_T
 
 typedef struct {
   char_T f0[5];
@@ -214,6 +198,18 @@ typedef struct {
   char_T f6[6];
   char_T f7[6];
   char_T f8[7];
+} struct_T_Controller_l5xx_T;
+
+#endif                                 //typedef_struct_T_Controller_l5xx_T
+
+#ifndef typedef_struct_T_Controller_l5xxx_T
+#define typedef_struct_T_Controller_l5xxx_T
+
+typedef struct {
+  char_T f0[8];
+  char_T f1[4];
+  char_T f2[6];
+  char_T f3[6];
 } struct_T_Controller_l5xxx_T;
 
 #endif                                 //typedef_struct_T_Controller_l5xxx_T
@@ -223,24 +219,11 @@ typedef struct {
 
 typedef struct {
   char_T f0[8];
-  char_T f1[4];
+  char_T f1[7];
   char_T f2[6];
-  char_T f3[6];
-  char_T f4[6];
 } struct_T_Controller_l5xxx5_T;
 
 #endif                                 //typedef_struct_T_Controller_l5xxx5_T
-
-#ifndef typedef_struct_T_Controller_l5xxx52_T
-#define typedef_struct_T_Controller_l5xxx52_T
-
-typedef struct {
-  char_T f0[8];
-  char_T f1[7];
-  char_T f2[6];
-} struct_T_Controller_l5xxx52_T;
-
-#endif                                 //typedef_struct_T_Controller_l5xxx52_T
 
 // Parameters (auto storage)
 typedef struct Parameters_Controller_T_ Parameters_Controller_T;

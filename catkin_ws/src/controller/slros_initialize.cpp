@@ -18,6 +18,24 @@ SimulinkParameterGetter<real64_T, double> ParamGet_Controller_879;
 // For Block Controller/Decouple2/Get buoyancy
 SimulinkParameterGetter<real64_T, double> ParamGet_Controller_873;
 
+// For Block Controller/Enabled Subsystem/Get Parameter
+SimulinkParameterGetter<real64_T, double> ParamGet_Controller_901;
+
+// For Block Controller/Enabled Subsystem/Get Parameter1
+SimulinkParameterGetter<real64_T, double> ParamGet_Controller_905;
+
+// For Block Controller/Enabled Subsystem/Get Parameter2
+SimulinkParameterGetter<real64_T, double> ParamGet_Controller_907;
+
+// For Block Controller/Enabled Subsystem/Get Parameter3
+SimulinkParameterGetter<real64_T, double> ParamGet_Controller_909;
+
+// For Block Controller/Enabled Subsystem/Get Parameter4
+SimulinkParameterGetter<real64_T, double> ParamGet_Controller_911;
+
+// For Block Controller/Enabled Subsystem/Get Parameter5
+SimulinkParameterGetter<real64_T, double> ParamGet_Controller_913;
+
 // For Block Controller/Get controller type
 SimulinkParameterGetter<int32_T, int> ParamGet_Controller_106;
 

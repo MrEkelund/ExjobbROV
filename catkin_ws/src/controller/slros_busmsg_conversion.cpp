@@ -3,30 +3,38 @@
 
 // Conversions between SL_Bus_Controller_geometry_msgs_Twist and geometry_msgs::Twist
 
-void convert_from_bus(geometry_msgs::Twist* msgPtr, SL_Bus_Controller_geometry_msgs_Twist const* busPtr)
+void convertFromBus(geometry_msgs::Twist* msgPtr, SL_Bus_Controller_geometry_msgs_Twist const* busPtr)
 {
-  convert_from_bus(&msgPtr->angular, &busPtr->Angular);
-  convert_from_bus(&msgPtr->linear, &busPtr->Linear);
+  const std::string rosMessageType("geometry_msgs/Twist");
+
+  convertFromBus(&msgPtr->angular, &busPtr->Angular);
+  convertFromBus(&msgPtr->linear, &busPtr->Linear);
 }
 
-void convert_to_bus(SL_Bus_Controller_geometry_msgs_Twist* busPtr, geometry_msgs::Twist const* msgPtr)
+void convertToBus(SL_Bus_Controller_geometry_msgs_Twist* busPtr, geometry_msgs::Twist const* msgPtr)
 {
-  convert_to_bus(&busPtr->Angular, &msgPtr->angular);
-  convert_to_bus(&busPtr->Linear, &msgPtr->linear);
+  const std::string rosMessageType("geometry_msgs/Twist");
+
+  convertToBus(&busPtr->Angular, &msgPtr->angular);
+  convertToBus(&busPtr->Linear, &msgPtr->linear);
 }
 
 
 // Conversions between SL_Bus_Controller_geometry_msgs_Vector3 and geometry_msgs::Vector3
 
-void convert_from_bus(geometry_msgs::Vector3* msgPtr, SL_Bus_Controller_geometry_msgs_Vector3 const* busPtr)
+void convertFromBus(geometry_msgs::Vector3* msgPtr, SL_Bus_Controller_geometry_msgs_Vector3 const* busPtr)
 {
+  const std::string rosMessageType("geometry_msgs/Vector3");
+
   msgPtr->x =  busPtr->X;
   msgPtr->y =  busPtr->Y;
   msgPtr->z =  busPtr->Z;
 }
 
-void convert_to_bus(SL_Bus_Controller_geometry_msgs_Vector3* busPtr, geometry_msgs::Vector3 const* msgPtr)
+void convertToBus(SL_Bus_Controller_geometry_msgs_Vector3* busPtr, geometry_msgs::Vector3 const* msgPtr)
 {
+  const std::string rosMessageType("geometry_msgs/Vector3");
+
   busPtr->X =  msgPtr->x;
   busPtr->Y =  msgPtr->y;
   busPtr->Z =  msgPtr->z;
@@ -35,69 +43,39 @@ void convert_to_bus(SL_Bus_Controller_geometry_msgs_Vector3* busPtr, geometry_ms
 
 // Conversions between SL_Bus_Controller_std_msgs_Float64MultiArray and std_msgs::Float64MultiArray
 
-void convert_from_bus(std_msgs::Float64MultiArray* msgPtr, SL_Bus_Controller_std_msgs_Float64MultiArray const* busPtr)
+void convertFromBus(std_msgs::Float64MultiArray* msgPtr, SL_Bus_Controller_std_msgs_Float64MultiArray const* busPtr)
 {
-  {
-    const int numItemsToCopy = busPtr->Data_SL_Info.CurrentLength;
-    msgPtr->data.resize(numItemsToCopy);
-    for (int i=0; i < numItemsToCopy; i++)
-    {
-      msgPtr->data[i] =  busPtr->Data[i];
-    }
-  }
-  convert_from_bus(&msgPtr->layout, &busPtr->Layout);
+  const std::string rosMessageType("std_msgs/Float64MultiArray");
+
+  convertFromBusVariablePrimitiveArray(msgPtr->data, busPtr->Data, busPtr->Data_SL_Info);
+  convertFromBus(&msgPtr->layout, &busPtr->Layout);
 }
 
-void convert_to_bus(SL_Bus_Controller_std_msgs_Float64MultiArray* busPtr, std_msgs::Float64MultiArray const* msgPtr)
+void convertToBus(SL_Bus_Controller_std_msgs_Float64MultiArray* busPtr, std_msgs::Float64MultiArray const* msgPtr)
 {
-  {
-    int numItemsToCopy = msgPtr->data.size();
-    if (numItemsToCopy > 10)
-    {
-      ROS_WARN_NAMED("Controller", "Truncating array '%s' in received message '%s' from %d to %d items", "data", "std_msgs/Float64MultiArray", numItemsToCopy, 10);
-      numItemsToCopy = 10;
-    }
-    busPtr->Data_SL_Info.CurrentLength = static_cast<uint32_T>( numItemsToCopy );
-    for (int i=0; i < numItemsToCopy; i++)
-    {
-      busPtr->Data[i] =  msgPtr->data[i];
-    }
-  }
-  convert_to_bus(&busPtr->Layout, &msgPtr->layout);
+  const std::string rosMessageType("std_msgs/Float64MultiArray");
+
+  convertToBusVariablePrimitiveArray(busPtr->Data, busPtr->Data_SL_Info, msgPtr->data, slros::EnabledWarning(rosMessageType, "data"));
+  convertToBus(&busPtr->Layout, &msgPtr->layout);
 }
 
 
 // Conversions between SL_Bus_Controller_std_msgs_MultiArrayDimension and std_msgs::MultiArrayDimension
 
-void convert_from_bus(std_msgs::MultiArrayDimension* msgPtr, SL_Bus_Controller_std_msgs_MultiArrayDimension const* busPtr)
+void convertFromBus(std_msgs::MultiArrayDimension* msgPtr, SL_Bus_Controller_std_msgs_MultiArrayDimension const* busPtr)
 {
-  {
-    const int numItemsToCopy = busPtr->Label_SL_Info.CurrentLength;
-    msgPtr->label.resize(numItemsToCopy);
-    for (int i=0; i < numItemsToCopy; i++)
-    {
-      msgPtr->label[i] =  busPtr->Label[i];
-    }
-  }
+  const std::string rosMessageType("std_msgs/MultiArrayDimension");
+
+  convertFromBusVariablePrimitiveArray(msgPtr->label, busPtr->Label, busPtr->Label_SL_Info);
   msgPtr->size =  busPtr->Size;
   msgPtr->stride =  busPtr->Stride;
 }
 
-void convert_to_bus(SL_Bus_Controller_std_msgs_MultiArrayDimension* busPtr, std_msgs::MultiArrayDimension const* msgPtr)
+void convertToBus(SL_Bus_Controller_std_msgs_MultiArrayDimension* busPtr, std_msgs::MultiArrayDimension const* msgPtr)
 {
-  {
-    int numItemsToCopy = msgPtr->label.size();
-    if (numItemsToCopy > 128)
-    {
-      ROS_WARN_NAMED("Controller", "Truncating array '%s' in received message '%s' from %d to %d items", "label", "std_msgs/MultiArrayDimension", numItemsToCopy, 128);
-      numItemsToCopy = 128;
-    }
-    busPtr->Label_SL_Info.CurrentLength = static_cast<uint32_T>( numItemsToCopy );
-    for (int i=0; i < numItemsToCopy; i++)
-    {
-      busPtr->Label[i] = (uint8_T) msgPtr->label[i];
-    }
-  }
+  const std::string rosMessageType("std_msgs/MultiArrayDimension");
+
+  convertToBusVariablePrimitiveArray(busPtr->Label, busPtr->Label_SL_Info, msgPtr->label, slros::EnabledWarning(rosMessageType, "label"));
   busPtr->Size =  msgPtr->size;
   busPtr->Stride =  msgPtr->stride;
 }
@@ -105,68 +83,38 @@ void convert_to_bus(SL_Bus_Controller_std_msgs_MultiArrayDimension* busPtr, std_
 
 // Conversions between SL_Bus_Controller_std_msgs_MultiArrayLayout and std_msgs::MultiArrayLayout
 
-void convert_from_bus(std_msgs::MultiArrayLayout* msgPtr, SL_Bus_Controller_std_msgs_MultiArrayLayout const* busPtr)
+void convertFromBus(std_msgs::MultiArrayLayout* msgPtr, SL_Bus_Controller_std_msgs_MultiArrayLayout const* busPtr)
 {
+  const std::string rosMessageType("std_msgs/MultiArrayLayout");
+
   msgPtr->data_offset =  busPtr->DataOffset;
-  {
-    const int numItemsToCopy = busPtr->Dim_SL_Info.CurrentLength;
-    msgPtr->dim.resize(numItemsToCopy);
-    for (int i=0; i < numItemsToCopy; i++)
-    {
-      convert_from_bus(&msgPtr->dim[i], &busPtr->Dim[i]);
-    }
-  }
+  convertFromBusVariableNestedArray(msgPtr->dim, busPtr->Dim, busPtr->Dim_SL_Info);
 }
 
-void convert_to_bus(SL_Bus_Controller_std_msgs_MultiArrayLayout* busPtr, std_msgs::MultiArrayLayout const* msgPtr)
+void convertToBus(SL_Bus_Controller_std_msgs_MultiArrayLayout* busPtr, std_msgs::MultiArrayLayout const* msgPtr)
 {
+  const std::string rosMessageType("std_msgs/MultiArrayLayout");
+
   busPtr->DataOffset =  msgPtr->data_offset;
-  {
-    int numItemsToCopy = msgPtr->dim.size();
-    if (numItemsToCopy > 16)
-    {
-      ROS_WARN_NAMED("Controller", "Truncating array '%s' in received message '%s' from %d to %d items", "dim", "std_msgs/MultiArrayLayout", numItemsToCopy, 16);
-      numItemsToCopy = 16;
-    }
-    busPtr->Dim_SL_Info.CurrentLength = static_cast<uint32_T>( numItemsToCopy );
-    for (int i=0; i < numItemsToCopy; i++)
-    {
-      convert_to_bus(&busPtr->Dim[i], &msgPtr->dim[i]);
-    }
-  }
+  convertToBusVariableNestedArray(busPtr->Dim, busPtr->Dim_SL_Info, msgPtr->dim, slros::EnabledWarning(rosMessageType, "dim"));
 }
 
 
 // Conversions between SL_Bus_Controller_std_msgs_UInt16MultiArray and std_msgs::UInt16MultiArray
 
-void convert_from_bus(std_msgs::UInt16MultiArray* msgPtr, SL_Bus_Controller_std_msgs_UInt16MultiArray const* busPtr)
+void convertFromBus(std_msgs::UInt16MultiArray* msgPtr, SL_Bus_Controller_std_msgs_UInt16MultiArray const* busPtr)
 {
-  {
-    const int numItemsToCopy = busPtr->Data_SL_Info.CurrentLength;
-    msgPtr->data.resize(numItemsToCopy);
-    for (int i=0; i < numItemsToCopy; i++)
-    {
-      msgPtr->data[i] =  busPtr->Data[i];
-    }
-  }
-  convert_from_bus(&msgPtr->layout, &busPtr->Layout);
+  const std::string rosMessageType("std_msgs/UInt16MultiArray");
+
+  convertFromBusVariablePrimitiveArray(msgPtr->data, busPtr->Data, busPtr->Data_SL_Info);
+  convertFromBus(&msgPtr->layout, &busPtr->Layout);
 }
 
-void convert_to_bus(SL_Bus_Controller_std_msgs_UInt16MultiArray* busPtr, std_msgs::UInt16MultiArray const* msgPtr)
+void convertToBus(SL_Bus_Controller_std_msgs_UInt16MultiArray* busPtr, std_msgs::UInt16MultiArray const* msgPtr)
 {
-  {
-    int numItemsToCopy = msgPtr->data.size();
-    if (numItemsToCopy > 6)
-    {
-      ROS_WARN_NAMED("Controller", "Truncating array '%s' in received message '%s' from %d to %d items", "data", "std_msgs/UInt16MultiArray", numItemsToCopy, 6);
-      numItemsToCopy = 6;
-    }
-    busPtr->Data_SL_Info.CurrentLength = static_cast<uint32_T>( numItemsToCopy );
-    for (int i=0; i < numItemsToCopy; i++)
-    {
-      busPtr->Data[i] =  msgPtr->data[i];
-    }
-  }
-  convert_to_bus(&busPtr->Layout, &msgPtr->layout);
+  const std::string rosMessageType("std_msgs/UInt16MultiArray");
+
+  convertToBusVariablePrimitiveArray(busPtr->Data, busPtr->Data_SL_Info, msgPtr->data, slros::EnabledWarning(rosMessageType, "data"));
+  convertToBus(&busPtr->Layout, &msgPtr->layout);
 }
 

@@ -31,6 +31,10 @@ struct sched_param sp;
  #define MW_DEBUG_LOG(str)
 #endif
 
+#ifdef MW_HAS_TARGET_SERVICES
+extern int makeCSTaskIdle();
+#endif
+
 /* ---------------------------- */
 /* Internally visible functions */
 /* ---------------------------- */
@@ -85,6 +89,9 @@ void schedulerTask(void* arg)
     fd = createTimer(info.period);
     while(1) {
 		waitForTimerEvent(fd);
+#ifdef DETECT_OVERRUNS          
+        testForRateOverrun(0);
+#endif
         sem_post(&baserateTaskSem);    
     }
 }
@@ -201,8 +208,6 @@ void myRTOSInit(double baseRatePeriod, int numSubrates)
     CHECK_STATUS(status, 0, "sem_init:baserateTaskSemSem");
     status = sem_init(&stopSem, 0, 0);
     CHECK_STATUS(status, 0, "sem_init:stopSem");
-    status = sem_init(&termSem, 0, 0);
-    CHECK_STATUS(status, 0, "sem_init:termSem");
    
 #if MW_SP_SCHED_FIFO
 	/* Set scheduling policy of the main thread to SCHED_FIFO */
@@ -241,15 +246,21 @@ void myRTOSInit(double baseRatePeriod, int numSubrates)
 
 #ifdef MW_HAS_MULTIPLE_RATES
 	MW_DEBUG_LOG("**creating subrate task threads**\n");   
-	for (i = 0; i < MW_NUMBER_SUBRATES; i++) {
+    for (i = 0; i < MW_NUMBER_SUBRATES; i++) 
+    {
 		taskId[i] = i;
 		status = sem_init(&subrateTaskSem[i], 0, 0);
 		CHECK_STATUS(status, 0, "sem_init");
         setThreadPriority(subratePriority[i], &attr, &sp);
 		status = pthread_create(&subRateThread[i], &attr, (void *) subrateTask, (void *)&taskId[i]);
 		CHECK_STATUS(status, 0, "pthread_create");
+#ifdef DETECT_OVERRUNS
+        status = pthread_mutex_init(&rateTaskFcnRunningMutex[i+1], NULL);
+        CHECK_STATUS(status, 0, "pthread_mutex_init");
+#endif 
 #ifdef COREAFFINITYREQUIRED
-        if (coreAffinity[i] >= 0) {
+        if (coreAffinity[i] >= 0) 
+        {
  	        cpu_set_t cpuset;
  	        CPU_ZERO(&cpuset);
  	        CPU_SET(coreAffinity[i], &cpuset);
@@ -265,10 +276,10 @@ void myRTOSInit(double baseRatePeriod, int numSubrates)
 	status = pthread_create(&baseRateThread, &attr, (void *) baseRateTask, NULL);
 	CHECK_STATUS(status, 0, "pthread_create");
 
-	MW_DEBUG_LOG("**creating the terminate thread**\n"); 
-    setThreadPriority(MW_BASERATE_PRIORITY, &attr, &sp);
-	status = pthread_create(&terminateThread, &attr, (void *) terminateTask, NULL);
-	CHECK_STATUS(status, 0, "pthread_create");
+#ifdef DETECT_OVERRUNS
+    status = pthread_mutex_init(&rateTaskFcnRunningMutex[0], NULL);
+    CHECK_STATUS(status, 0, "pthread_mutex_init");
+#endif
 
 	MW_DEBUG_LOG("**creating the scheduler thread**\n");  
     setThreadPriority(MW_BASERATE_PRIORITY, &attr, &sp);
@@ -286,12 +297,20 @@ void myRTOSInit(double baseRatePeriod, int numSubrates)
 #endif
 
 #ifdef MW_NEEDS_BACKGROUND_TASK
-	MW_DEBUG_LOG("**creating the background thread**\n"); 	
+    MW_DEBUG_LOG("**creating the background thread**\n");
     status = pthread_attr_setschedpolicy(&attr, SCHED_OTHER);
-	CHECK_STATUS(status, 0, "pthread_attr_setschedpolicy");
+    CHECK_STATUS(status, 0, "pthread_attr_setschedpolicy");
     setThreadPriority(0, &attr, &sp);
-	status = pthread_create(&backgroundThread, &attr, (void *) backgroundTask, NULL);
-	CHECK_STATUS(status, 0, "pthread_create");
+    status = pthread_create(&backgroundThread, &attr, (void *)backgroundTask, NULL);
+    CHECK_STATUS(status, 0, "pthread_create");
+#if MW_SP_SCHED_FIFO == 0
+    status = pthread_setschedparam(backgroundThread, SCHED_IDLE, &sp);
+    CHECK_STATUS(status, 0, "pthread_setschedparam");
+#ifdef MW_HAS_TARGET_SERVICES
+    status = makeCSTaskIdle();
+    CHECK_STATUS(status, 0, "pthread_setschedparam");
+#endif 
+#endif
 #endif
 
 	pthread_attr_destroy(&attr);

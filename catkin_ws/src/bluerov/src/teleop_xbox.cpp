@@ -77,12 +77,13 @@ void TeleopXbox::configCallback(bluerov::teleop_xboxConfig &update, uint32_t lev
 void TeleopXbox::joyCallback(const sensor_msgs::Joy::ConstPtr& joy) {
   // send cmd_vel message
   geometry_msgs::Twist msg;
+  // Shifted yz axis for NED sysetm
   msg.linear.x =  config.x_scaling  * computeAxisValue(joy, config.x_axis,  config.expo);
-  msg.linear.y =  config.y_scaling  * computeAxisValue(joy, config.y_axis,  config.expo);
-  msg.linear.z =  config.z_scaling  * computeAxisValue(joy, config.z_axis,  config.expo);
+  msg.linear.y =  -config.y_scaling  * computeAxisValue(joy, config.y_axis,  config.expo);
+  msg.linear.z =  -config.z_scaling  * computeAxisValue(joy, config.z_axis,  config.expo);
   msg.angular.x = config.wx_scaling * computeAxisValue(joy, config.wx_axis, config.expo);
-  msg.angular.y = config.wy_scaling * computeAxisValue(joy, config.wy_axis, config.expo);
-  msg.angular.z = config.wz_scaling * computeAxisValue(joy, config.wz_axis, config.expo);
+  msg.angular.y = -config.wy_scaling * computeAxisValue(joy, config.wy_axis, config.expo);
+  msg.angular.z = -config.wz_scaling * computeAxisValue(joy, config.wz_axis, config.expo);
   cmd_vel_pub.publish(msg);
 
   // send hazards enable message
@@ -129,7 +130,7 @@ double TeleopXbox::computeAxisValue(const sensor_msgs::Joy::ConstPtr& joy, int i
   }
 
   // apply exponential scaling
-  //return expo * pow(value, 5) + (1.0 - expo) * value;
+  // return expo * pow(value, 5) + (1.0 - expo) * value;
   return value;
 }
 

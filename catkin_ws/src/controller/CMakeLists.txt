@@ -33,9 +33,13 @@ catkin_package(
 # include_directories(include)
 include_directories(
   include
+  ${PROJECT_SOURCE_DIR}
   ${Boost_INCLUDE_DIRS}
   ${catkin_INCLUDE_DIRS}
 )
+
+## Get list of .c files in project source directory
+file(GLOB ${PROJECT_NAME}_C_SOURCES RELATIVE ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/*.c)
 
 ## Declare executable
 add_executable(controller_node
@@ -47,6 +51,8 @@ add_executable(controller_node
    linuxinitialize.cpp
    slros_busmsg_conversion.cpp
    slros_initialize.cpp
+   slros_generic_param.cpp
+   ${${PROJECT_NAME}_C_SOURCES}
 )
 
 ## Add cmake target dependencies of the executable/library
@@ -60,4 +66,6 @@ target_link_libraries(${PROJECT_NAME}_node
    rt
 )
 
-set_target_properties(${PROJECT_NAME}_node PROPERTIES COMPILE_FLAGS " -fpermissive ")
+set_target_properties(${PROJECT_NAME}_node PROPERTIES COMPILE_FLAGS " ")
+SET( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpermissive" )
+SET( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -include stdbool.h" )
