@@ -3,7 +3,7 @@ clear;
 close all;
 simulation = 1;
 plotting = 0;
-estimation_mode = 'Yaw'
+estimation_mode = 'Yaw';
 roll_pitch_filepath = fullfile('simulator_runs','Actuators_1_2_5');
 yaw_filepath = fullfile('simulator_runs','Actuators_3_4');
 [parameters, parameter_strings]= initROVParameters();

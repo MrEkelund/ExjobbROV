@@ -83,15 +83,15 @@ for i = 1:size(fixed_parameters,2)
 end
 
 % Sets the sign of the parameters
-positive_parameters = [1:12,(size(parameters)-2:size(parameters))];
-negative_parameters = [13:size(parameters,1)-3];
-for i = 1:size(positive_parameters,2)
-    nonlinear_graybox_model.Parameters(positive_parameters(i)).Minimum = 0;
-end
-
-for i = 1:size(negative_parameters,2)
-    nonlinear_graybox_model.Parameters(negative_parameters(i)).Maximum = 0;
-end
+% positive_parameters = [1:12,(size(parameters)-2:size(parameters))];
+% negative_parameters = [13:size(parameters,1)-3];
+% for i = 1:size(positive_parameters,2)
+%     nonlinear_graybox_model.Parameters(positive_parameters(i)).Minimum = 0;
+% end
+% 
+% for i = 1:size(negative_parameters,2)
+%     nonlinear_graybox_model.Parameters(negative_parameters(i)).Maximum = 0;
+% end
 
 warning('Ts not fixed')
 

@@ -15,7 +15,7 @@ if plotting
     integrated_fig = figure('Name','Integrated acc','units','normalized','position',[0.5 0.5 .5 .41]);
     thrusters_fig = figure('Name','Thruster','units','normalized','position',[0.5 0 .5 .41]);
 end
-
+dataset.data
 lin_acc_data = zeros(size(dataset.data.get(char(ang_vel_list(1))).Values.Data,1),3);
 % for i=1:3
 %     lin_acc_data(:,i) = dataset.data.get(acc_vel_list(i)).Values.Data;
