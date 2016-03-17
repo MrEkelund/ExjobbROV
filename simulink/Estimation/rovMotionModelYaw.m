@@ -1,4 +1,4 @@
-function [x_dot, y] = rovMotionModelRollPitch( t, x, control, parameters,varargin)
+function [x_dot, y] = rovMotionModelYaw( t, x, control,parameters,varargin)
 if length(parameters) == 1
     parameters(2:length(varargin)) = cell2mat(varargin(1:end-1));
 end
@@ -185,11 +185,11 @@ Iz= parameters(34);
  
  
 p_dot =...
-    (f1*ly1 - f2*ly2 + f6*lz6 + p*(Kp + Kp_abs_p*abs(p)) - Mq_dot*q*r + Nr_dot*q*r + q*r*(Iy - Iz) + B*ct*sf*zb - Yv_dot*v*w + Zw_dot*v*w)/(Ix - Kp_dot); 
+    (f1*ly1 - f2*ly2 + f6*lz6 + p*(Kp + Kp_abs_p*abs(p)) - Mq_dot*q*r + Nr_dot*q*r + q*r*(Iy - Iz) + B*ct*sf*zb)/(Ix - Kp_dot); %  - Yv_dot*v*w + Zw_dot*v*w
  
  
 q_dot =...
-    (f1*lx1 + f2*lx2 - f5*lx5 + q*(Mq + Mq_abs_q*abs(q)) + Kp_dot*p*r + B*st*zb - Nr_dot*p*r - p*r*(Ix - Iz)  + Xu_dot*u*w - Zw_dot*u*w )/(Iy - Mq_dot); 
+    (f1*lx1 + f2*lx2 - f5*lx5 + q*(Mq + Mq_abs_q*abs(q)) + Kp_dot*p*r + B*st*zb - Nr_dot*p*r - p*r*(Ix - Iz) )/(Iy - Mq_dot);  %+ Xu_dot*u*w - Zw_dot*u*w
  
  
 r_dot =...

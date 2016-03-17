@@ -11,11 +11,12 @@ function [lin_vel_data ,lin_acc_data, ang_vel_data, imu_time, thrusters_data, th
     %   Output: thruster_time - Time vector for the thruster data.
     
     bag = rosbag(filepath);
-    imu_fig = figure('Name','IMU','units','normalized','position',[0 0.5 .5 .41]);
-    states_fig = figure('Name','States','units','normalized','position',[0 0 .5 .41]);
-    integrated_fig = figure('Name','Integrated acc','units','normalized','position',[0.5 0.5 .5 .41]);
-    thrusters_fig = figure('Name','Thruster','units','normalized','position',[0.5 0 .5 .41]);
-
+    if plotting
+        imu_fig = figure('Name','IMU','units','normalized','position',[0 0.5 .5 .41]);
+        states_fig = figure('Name','States','units','normalized','position',[0 0 .5 .41]);
+        integrated_fig = figure('Name','Integrated acc','units','normalized','position',[0.5 0.5 .5 .41]);
+        thrusters_fig = figure('Name','Thruster','units','normalized','position',[0.5 0 .5 .41]);
+    end
 %% States
     states_bag = select(bag,'Topic','/sensor_fusion/states');
     
