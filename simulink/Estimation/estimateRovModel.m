@@ -1,160 +1,65 @@
 %% Initialise the parameters of the ROV estimation.
-[lin_acc_data, ang_vel_data, imu_time, thrusters_data, thrusters_time, states, states_time] = ...
-   retriveData(fullfile('..','..','bag','super*.bag'),1);
+clear;
+close all;
+simulation = 1;
+plotting = 0;
+estimation_mode = 'Yaw';
+roll_pitch_filepath = fullfile('simulator_runs','Actuators_1_2_5');
+yaw_filepath = fullfile('simulator_runs','Actuators_3_4');
+[parameters, parameter_strings]= initROVParameters();
 
-% Some constants
-Ts = 0;      % Sample time [s].                                                     
-m = 5;       % ROV mass[kg];       
-g = 9.82;   % Gravity[m/s^2]
-rho = 1000; % water density [kg/m^3]
-V = 1;       % Discplaced water volume [m^3]
-% Thruster placement from CO [m]
-
-lx1 = 0.16;
-ly1 = 0.11;
-ly2 = 0.11;
-lx2 = 0.16;
-ly3 = 0.11;
-lx5 = 0.2;
-ly4 = 0.11;
-lz6 = 1;
-zb = 1;
-
-% Parameters that will be estimated
-Xu_init = 1;
-Xu_dot_init = 1;
-Xu_abs_u_init = 1;
-Yv_init = 1;
-Yv_dot_init = 1;
-Yv_abs_w_init = 1;
-Zw_init = 1;
-Zw_dot_init = 1;
-Zw_abs_w_init = 1;
-Kp_init = 1;
-Kp_dot_init = 1;
-Kp_abs_p_init = 1;
-Mq_init = 1;
-Mq_dot_init = 1;
-Mq_abs_q_init = 1;
-Nr_init = 1;
-Nr_dot_init = 1;
-Nr_abs_r_init = 1;
-Ix_init = 1;
-Iy_init = 1;
-Iz_init = 1;
-
-% Initial states
-u_init = 0;
-v_init = 0;
-w_init = 0;
-p_init = 0;%ang_vel_data(1,3);
-q_init = 0;%ang_vel_data(1,2);
-r_init = 0;%ang_vel_data(1,1);
-fi_init = 0;%states(1,3);
-theta_init = 0;%states(1,2);
-
-parameter_strings = {'m';'g';'rho';'V';'lx1';'ly1';'ly2';'lx2';'ly3';'lx5';'ly4';'lz6';'zb';'Xu';'Xu_dot';'Xu_abs_u';'Yv';'Yv_dot';'Yv_abs_w';'Zw';'Zw_dot';'Zw_abs_w'; 'Kp';'Kp_dot'; 'Kp_abs_p'; 'Mq';'Mq_dot'; 'Mq_abs_q'; 'Nr';'Nr_dot';'Nr_abs_r';'Ix';'Iy';'Iz'};
-state_strings = {'u';'v';'w'; 'p'; 'q'; 'r';'fi';'theta'};
-state_units = {'m/s'; 'm/s'; 'm/s';'rad/s'; 'rad/s'; 'rad/s';'rad';'rad'};
-
-%% Set up the nglr object
-
-FileName      = strcat('rovMotionModel',estimation_mode);                                       % File describing the model structure.
-
-Order         = [8 6 8];                                                % Model orders [ny nu nx].
-
-Parameters    = [m; g; rho; V; lx1; ly1; ly2; lx2; ly3; lx5; ly4;    % Initial parameters.
-                lz6; zb; Xu_init; Xu_dot_init; Xu_abs_u_init;     
-                Yv_init; Yv_dot_init; Yv_abs_w_init; Zw_init;     
-                Zw_dot_init; Zw_abs_w_init; Kp_init; Kp_dot_init; 
-                Kp_abs_p_init; Mq_init; Mq_dot_init;              
-                Mq_abs_q_init; Nr_init; Nr_dot_init;              
-                Nr_abs_r_init; Ix_init; Iy_init; Iz_init];
-            
-InitialStates = [u_init; v_init; w_init; p_init; q_init; r_init;     % Initial initial states.
-                fi_init; theta_init];                          
-            
+[yaw_nonlinear_graybox_model, yaw_estimation_data] =...
+    setupEstimation(parameters, parameter_strings, estimation_mode, simulation, yaw_filepath, plotting);
 
 
-nlgr = idnlgrey(FileName, Order, Parameters, InitialStates, Ts, ...
-                    'Name', 'Rov Model', 'TimeUnit', 's');
+first_yaw_estimation_data = iddata;
+first_yaw_estimation_data.OutputData = yaw_estimation_data.OutputData;
+first_yaw_estimation_data.InputData = yaw_estimation_data.InputData;
+first_yaw_estimation_data.InputName = yaw_estimation_data.InputName;
+first_yaw_estimation_data.InputUnit = yaw_estimation_data.InputUnit;
+first_yaw_estimation_data.OutputName = yaw_estimation_data.OutputName;
+first_yaw_estimation_data.OutputUnit = yaw_estimation_data.OutputUnit;
 
-nlgr.InputName =  {'Thruster1'; 'Thruster2'; 'Thruster3'; 
-                   'Thurster4'; 'Thruster5'; 'Thruster6'};
+opt = nlgreyestOptions;
+opt.Display = 'full';
+opt.SearchOption.MaxIter = 1;
+tic
+yaw_estimation = nlgreyest(first_yaw_estimation_data, yaw_nonlinear_graybox_model,opt);
+toc
 
-              nlgr.InputUnit =  {'%'; '%'; '%'; '%'; '%';'%'};
-
-              nlgr.OutputName = state_strings;
-              nlgr.OutputUnit = state_units;
-
-
-
-% Names on initial states
-nlgr = setinit(nlgr, 'Name', state_strings);
-
-
-nlgr = setinit(nlgr, 'Unit', state_units);
-
-% Demands on the initial states
-%nlgr.InitialStates(1).Minimum = eps(0);   % Longitudinal velocity > 0 for the model to be valid.
-
-% Set the parameter names
-nlgr = setpar(nlgr, 'Name', parameter_strings);
-
-% Set the parameter units 
-%nlgr = setpar(nlgr, 'Unit', {'kg'; 'm'; 'm'; 'N'; 'N/rad'; '1/m'}); 
-
-% Set minimum of the parameters
-%nlgr = setpar(nlgr, 'Minimum', num2cell(eps(0)*ones(6, 1)));   % All parameters > 0!
-
-% Set that some of the parameters are known the other parameters is to 
-% be estimated
-
-fixed_parameters = [1:size(Parameters,1)];  % Stores the index of the parameters that is fixed
-u_dot_estimate_parameter_index = [14, 16, 18, 21, 15]; % Parameters u_dot estimates
-v_dot_estimate_parameter_index = [17, 19, 15, 21, 18]; % Parameters v_dot estimates
-w_dot_estimate_parameter_index = [20, 22, 15, 18, 21]; % Parameters w_dot estimates
-p_dot_estimate_parameter_index = [23, 25, 33, 34, 27, 30, 18, 21, 32, 24]; % Parameters p_dot estimates
-q_dot_estimate_parameter_index = [26, 28, 32, 34, 24, 30, 15, 21, 33, 27]; % Parameters q_dot estimates
-r_dot_estimate_parameter_index = [29, 31, 32, 33, 24, 27, 15, 18, 34, 30]; % Parameters r_dot estimates
-
-switch estimation_mode
-    case 'Yaw'
-        fixed_parameters = setdiff(fixed_parameters,r_dot_estimate_parameter_index)
-    case 'RollPitch'
-        fixed_parameters = setdiff(fixed_parameters, p_dot_estimate_parameter_index);
-        fixed_parameters = setdiff(fixed_parameters, q_dot_estimate_parameter_index);
-    otherwise
-        error('Unkown test: %s', estimation_mode);
-end
-
-for i = 1:size(fixed_parameters,2)
- nlgr.Parameters(fixed_parameters(i)).Fixed = true;
-end
-
-nlgr.Name = estimation_mode;
-estmation_data = iddata();
 %%
-% With this, a textual summary of the entered IDNLGREY model structure is
-% obtained through PRESENT as follows.
-present(nlgr);
+estimation_mode = 'RollPitch';
+simulation = 1;
+plotting = 0;
+roll_pitch_filepath = fullfile('simulator_runs','Actuators_1_2_5');
 
-%% Input-Output Data
-% At this point, we load the available input-output data. This file
-% contains data from three different experiments:
-%
-%    A. Simulated data with high stiffness tires [y1 u1].
-%    B. Simulated data with low stiffness tires  [y2 u2].
-%    C. Measured data from a Volvo V70           [y3 u3].
-%
-% In all cases, the sample time Ts = 0.1 seconds.
-load(fullfile(matlabroot, 'toolbox', 'ident', 'iddemos', 'data', 'vehicledata'));
-            
-z1 = iddata([lin_vel_data, ang_vel_data, states(:,2:3)], thrusters_data,Ts,'Name', strcat(estimation_mode, 'data'));
-z1.InputName = nlgr.InputName;
-z1.InputUnit = nlgr.InputUnit;
-z1.OutputName = nlgr.OutputName;
-z1.OutputUnit = nlgr.OutputUnit;
+[roll_pitch_nonlinear_graybox_model, roll_pitch_estimation_data] =...
+    setupEstimation(parameters, parameter_strings, estimation_mode, simulation, roll_pitch_filepath, plotting);
+
+
+first_roll_pitch_estimation_data = iddata;
+first_roll_pitch_estimation_data.OutputData = roll_pitch_estimation_data.OutputData(1:40,:);
+first_roll_pitch_estimation_data.InputData = roll_pitch_estimation_data.InputData(1:40,:);
+first_roll_pitch_estimation_data.InputName = roll_pitch_estimation_data.InputName;
+first_roll_pitch_estimation_data.InputUnit = roll_pitch_estimation_data.InputUnit;
+first_roll_pitch_estimation_data.OutputName = roll_pitch_estimation_data.OutputName;
+first_roll_pitch_estimation_data.OutputUnit = roll_pitch_estimation_data.OutputUnit;
+
+opt = nlgreyestOptions;
+opt.Display = 'full';
+opt.SearchOption.MaxIter = 2;
+tic
+yaw_estimation = nlgreyest(first_roll_pitch_estimation_data, roll_pitch_nonlinear_graybox_model,opt);
+toc
+%% Estimate the model
+
+opt = nlgreyestOptions;
+opt.Display = 'full';
+opt.SearchOption.MaxIter = 2;
+
+tic
+estim = pem(z1,non_linear_graybox_model,opt);
+toc
 
 %% A. System Identification Using Simulated High Tire Stiffness Data
 % In our first vehicle identification experiment we consider simulated high
@@ -166,7 +71,7 @@ z1.OutputUnit = nlgr.OutputUnit;
 % also sinusoidal but with a different amplitude and frequency. In reality,
 % this is a somewhat artificial situation, because one rarely excites the
 % vehicle so much in the lateral direction.
-nlgr1 = nlgr;
+nlgr1 = non_linear_graybox_model;
 nlgr1.Name = 'Bicycle vehicle model with high tire stiffness';
 z1 = iddata([], data,  'Name', 'Simulated high tire stiffness vehicle data');
 z1.InputName = nlgr1.InputName;
@@ -247,7 +152,7 @@ fprintf('Lateral stiffness     : %6.0f    %6.0f\n', 5e4, nlgr1.Parameters(5).Val
 %% B. System Identification Using Simulated Low Tire Stiffness Data
 % In the second experiment we repeat the modeling from the first
 % experiment, but now with simulated low tire stiffness data.
-nlgr2 = nlgr;
+nlgr2 = non_linear_graybox_model;
 nlgr2.Name = 'Bicycle vehicle model with low tire stiffness';
 z2 = iddata(y2, u2, 0.1, 'Name', 'Simulated low tire stiffness vehicle data');
 z2.InputName = nlgr2.InputName;
@@ -326,7 +231,7 @@ fprintf('Lateral stiffness     : %6.0f    %6.0f\n', 2.5e4, nlgr2.Parameters(5).V
 % a new IDDATA object containing the measured data. Here we have also
 % increased the air resistance coefficient from 0.50 to 0.70 to better
 % reflect the Volvo V70 situation.
-nlgr3 = nlgr;
+nlgr3 = non_linear_graybox_model;
 nlgr3.Name = 'Volvo V70 vehicle model';
 nlgr3.Parameters(6).Value = 0.70;   % Use another initial CA for the Volvo data.
 z3 = iddata(y3, u3, 0.1, 'Name', 'Volvo V70 data');
