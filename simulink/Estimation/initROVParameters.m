@@ -25,7 +25,7 @@ Xu_dot_init = -1;
 Xu_abs_u_init = -1;
 Yv_init = -1;
 Yv_dot_init = -1;
-Yv_abs_w_init = -1;
+Yv_abs_v_init = -1;
 Zw_init = -1;
 Zw_dot_init = -1;
 Zw_abs_w_init = -1;
@@ -45,7 +45,7 @@ Iz_init = 13;
 Parameters= [...
     m; g; rho; V; lx1; ly1; ly2; lx2; ly3; lx5; ly4;
     lz6; zb; Xu_init; Xu_dot_init; Xu_abs_u_init;
-    Yv_init; Yv_dot_init; Yv_abs_w_init; Zw_init;
+    Yv_init; Yv_dot_init; Yv_abs_v_init; Zw_init;
     Zw_dot_init; Zw_abs_w_init; Kp_init; Kp_dot_init;
     Kp_abs_p_init; Mq_init; Mq_dot_init;
     Mq_abs_q_init; Nr_init; Nr_dot_init;

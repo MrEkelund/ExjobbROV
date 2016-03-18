@@ -2,19 +2,19 @@
 clear;
 close all;
 simulation = 1;
-plotting = 0;
-estimation_mode = 'Yaw';
+plotting = 1;
+estimation_mode = 'RollPitch';
 roll_pitch_filepath = fullfile('simulator_runs','Actuators_1_2_5');
 yaw_filepath = fullfile('simulator_runs','Actuators_3_4');
 [parameters, parameter_strings]= initROVParameters();
 
-[yaw_nonlinear_graybox_model, yaw_estimation_data] =...
+[yaw_nonlinear_greybox_model, yaw_estimation_data] =...
     setupEstimation(parameters, parameter_strings, estimation_mode, simulation, yaw_filepath, plotting);
-
+%%
 
 first_yaw_estimation_data = iddata;
-first_yaw_estimation_data.OutputData = yaw_estimation_data.OutputData;
-first_yaw_estimation_data.InputData = yaw_estimation_data.InputData;
+first_yaw_estimation_data.OutputData = yaw_estimation_data.OutputData(1:40,:);
+first_yaw_estimation_data.InputData = yaw_estimation_data.InputData(1:40,:);
 first_yaw_estimation_data.InputName = yaw_estimation_data.InputName;
 first_yaw_estimation_data.InputUnit = yaw_estimation_data.InputUnit;
 first_yaw_estimation_data.OutputName = yaw_estimation_data.OutputName;
@@ -24,22 +24,25 @@ opt = nlgreyestOptions;
 opt.Display = 'full';
 opt.SearchOption.MaxIter = 1;
 tic
-yaw_estimation = nlgreyest(first_yaw_estimation_data, yaw_nonlinear_graybox_model,opt);
+yaw_estimation = nlgreyest(first_yaw_estimation_data, yaw_nonlinear_greybox_model,opt);
 toc
 
 %%
+clear;
+close all;
 estimation_mode = 'RollPitch';
+roll_pitch_filepath = fullfile('simulator_runs','Actuators_1_2_5');
+[parameters, parameter_strings]= initROVParameters();
 simulation = 1;
 plotting = 0;
-roll_pitch_filepath = fullfile('simulator_runs','Actuators_1_2_5');
 
-[roll_pitch_nonlinear_graybox_model, roll_pitch_estimation_data] =...
+[roll_pitch_nonlinear_greybox_model, roll_pitch_estimation_data] =...
     setupEstimation(parameters, parameter_strings, estimation_mode, simulation, roll_pitch_filepath, plotting);
 
-
+%%
 first_roll_pitch_estimation_data = iddata;
-first_roll_pitch_estimation_data.OutputData = roll_pitch_estimation_data.OutputData(1:40,:);
-first_roll_pitch_estimation_data.InputData = roll_pitch_estimation_data.InputData(1:40,:);
+first_roll_pitch_estimation_data.OutputData = roll_pitch_estimation_data.OutputData(1:20,:);
+first_roll_pitch_estimation_data.InputData = roll_pitch_estimation_data.InputData(1:20,:);
 first_roll_pitch_estimation_data.InputName = roll_pitch_estimation_data.InputName;
 first_roll_pitch_estimation_data.InputUnit = roll_pitch_estimation_data.InputUnit;
 first_roll_pitch_estimation_data.OutputName = roll_pitch_estimation_data.OutputName;
@@ -49,7 +52,7 @@ opt = nlgreyestOptions;
 opt.Display = 'full';
 opt.SearchOption.MaxIter = 2;
 tic
-yaw_estimation = nlgreyest(first_roll_pitch_estimation_data, roll_pitch_nonlinear_graybox_model,opt);
+roll_pitch_estimation = nlgreyest(first_roll_pitch_estimation_data, roll_pitch_nonlinear_greybox_model,opt);
 toc
 %% Estimate the model
 
@@ -58,7 +61,7 @@ opt.Display = 'full';
 opt.SearchOption.MaxIter = 2;
 
 tic
-estim = pem(z1,non_linear_graybox_model,opt);
+estim = pem(z1,non_linear_greybox_model,opt);
 toc
 
 %% A. System Identification Using Simulated High Tire Stiffness Data
@@ -71,7 +74,7 @@ toc
 % also sinusoidal but with a different amplitude and frequency. In reality,
 % this is a somewhat artificial situation, because one rarely excites the
 % vehicle so much in the lateral direction.
-nlgr1 = non_linear_graybox_model;
+nlgr1 = non_linear_greybox_model;
 nlgr1.Name = 'Bicycle vehicle model with high tire stiffness';
 z1 = iddata([], data,  'Name', 'Simulated high tire stiffness vehicle data');
 z1.InputName = nlgr1.InputName;
@@ -152,7 +155,7 @@ fprintf('Lateral stiffness     : %6.0f    %6.0f\n', 5e4, nlgr1.Parameters(5).Val
 %% B. System Identification Using Simulated Low Tire Stiffness Data
 % In the second experiment we repeat the modeling from the first
 % experiment, but now with simulated low tire stiffness data.
-nlgr2 = non_linear_graybox_model;
+nlgr2 = non_linear_greybox_model;
 nlgr2.Name = 'Bicycle vehicle model with low tire stiffness';
 z2 = iddata(y2, u2, 0.1, 'Name', 'Simulated low tire stiffness vehicle data');
 z2.InputName = nlgr2.InputName;
@@ -231,7 +234,7 @@ fprintf('Lateral stiffness     : %6.0f    %6.0f\n', 2.5e4, nlgr2.Parameters(5).V
 % a new IDDATA object containing the measured data. Here we have also
 % increased the air resistance coefficient from 0.50 to 0.70 to better
 % reflect the Volvo V70 situation.
-nlgr3 = non_linear_graybox_model;
+nlgr3 = non_linear_greybox_model;
 nlgr3.Name = 'Volvo V70 vehicle model';
 nlgr3.Parameters(6).Value = 0.70;   % Use another initial CA for the Volvo data.
 z3 = iddata(y3, u3, 0.1, 'Name', 'Volvo V70 data');

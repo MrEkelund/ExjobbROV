@@ -37,7 +37,7 @@ r = x(6);
 
 fi = x(7);
 theta = x(8);
-%******* Computed values
+%*******    Computed values
 
 ct = cos(theta);
 st = sin(theta);
@@ -199,8 +199,10 @@ r_dot =0;%...
 fi_dot = p + q*sf*st/ct + r*cf*st/ct;
 theta_dot = q*cf - r*sf;
 
-
 x_dot = [u_dot;v_dot;w_dot;p_dot;q_dot;r_dot;fi_dot;theta_dot];
+if any(abs(x_dot)> 10000)
+    error('Bad estimation %f',find(abs(x_dot) > 10000));
+end
 y = x;
 end
 

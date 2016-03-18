@@ -12,7 +12,7 @@ states_list = {'phi','theta','psi','D'};
 if plotting
     imu_fig = figure('Name','IMU','units','normalized','position',[0 0.5 .5 .41]);
     states_fig = figure('Name','States','units','normalized','position',[0 0 .5 .41]);
-    integrated_fig = figure('Name','Integrated acc','units','normalized','position',[0.5 0.5 .5 .41]);
+    %integrated_fig = figure('Name','Integrated acc','units','normalized','position',[0.5 0.5 .5 .41]);
     thrusters_fig = figure('Name','Thruster','units','normalized','position',[0.5 0 .5 .41]);
 end
 
@@ -32,7 +32,7 @@ for i=1:6
     thrusters_data(:,i) = dataset.data.get(char(thrusters_list(i))).Values.Data;
 end
 thrusters_time = dataset.data.get(char(thrusters_list(1))).Values.Time;
-
+thrusters_data(1:40,:)
 states = zeros(size(dataset.data.get(char(states_list(1))).Values.Data,1),4);
 for i=1:4
     states(:,i) = dataset.data.get(char(states_list(i))).Values.Data;
@@ -45,7 +45,7 @@ if plotting
     subplot(2,1,1)
     suptitle('States')
     plot(plot_time, states(:,1:3))
-    legend('Pitch','Roll','Yaw')
+    legend('Roll','Pitch','Yaw')
     ylabel('Euler angles [rad]');
     xlabel('Time [s]')
     
@@ -56,7 +56,7 @@ if plotting
     xlabel('Time [s]')
     
     figure(imu_fig)
-    subplot(2,1,1)
+   % subplot(2,1,1)
     suptitle('Angular velocites');
     plot(plot_time, ang_vel_data)
     legend('Ang\_vel\_x','Ang\_vel\_y','Ang\_vel\_z')

@@ -171,7 +171,6 @@ Iz= parameters(34);
 % 29, 31, 32, 33, 24, 27, 15, 18, 34, 30 %r_dot
 
 
-
 u_dot =0:%...
 %    -(f3 + f4 + u*(Xu + Xu_abs_u*abs(u)) + st*(B - W) - m*(q*w - r*v) - Yv_dot*r*v + Zw_dot*q*w)/(Xu_dot - m);
  
@@ -193,7 +192,7 @@ q_dot =0;%...
  
  
 r_dot =...
-    (r*(Nr + Nr_abs_r*abs(r)) + f3*ly3 - f4*ly4 - Kp_dot*p*q + Mq_dot*p*q + p*q*(Ix - Iy) - Xu_dot*u*v + Yv_dot*u*v)/(Iz - Nr_dot);
+    (r*(Nr + Nr_abs_r*abs(r)) + f3*ly3 - f4*ly4 - Kp_dot*p*q + Mq_dot*p*q + p*q*(Ix - Iy))/(Iz - Nr_dot); % - Xu_dot*u*v + Yv_dot*u*v
  
 
 fi_dot =  p + q*sf*st/ct + r*cf*st/ct;
