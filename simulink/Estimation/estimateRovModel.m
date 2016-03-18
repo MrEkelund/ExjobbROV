@@ -13,8 +13,8 @@ yaw_filepath = fullfile('simulator_runs','Actuators_3_4');
 
 
 first_yaw_estimation_data = iddata;
-first_yaw_estimation_data.OutputData = yaw_estimation_data.OutputData(1:40,:);
-first_yaw_estimation_data.InputData = yaw_estimation_data.InputData(1:40,:);
+first_yaw_estimation_data.OutputData = yaw_estimation_data.OutputData;
+first_yaw_estimation_data.InputData = yaw_estimation_data.InputData;
 first_yaw_estimation_data.InputName = yaw_estimation_data.InputName;
 first_yaw_estimation_data.InputUnit = yaw_estimation_data.InputUnit;
 first_yaw_estimation_data.OutputName = yaw_estimation_data.OutputName;
@@ -22,7 +22,7 @@ first_yaw_estimation_data.OutputUnit = yaw_estimation_data.OutputUnit;
 
 opt = nlgreyestOptions;
 opt.Display = 'full';
-opt.SearchOption.MaxIter = 2;
+opt.SearchOption.MaxIter = 1;
 tic
 yaw_estimation = nlgreyest(first_yaw_estimation_data, yaw_nonlinear_graybox_model,opt);
 toc

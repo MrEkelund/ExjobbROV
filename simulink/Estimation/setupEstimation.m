@@ -5,9 +5,11 @@ function [nonlinear_graybox_model, estimation_data] = setupEstimation(parameters
 %% Read from data files
 switch simulation
     case 0
+        disp(strcat('Using test data from ',filepath));
         [lin_acc_data, ang_vel_data, imu_time, thrusters_data, thrusters_time, states, states_time] = ...
             retriveData(filepath, plotting);
     case 1
+        disp(strcat('Using simulated data from ',filepath));
         [lin_acc_data, ang_vel_data, imu_time, thrusters_data, thrusters_time, states, states_time] = ...
             getSimulationData(filepath,plotting);
     otherwise
@@ -27,6 +29,8 @@ fi_init = states(1,3);
 theta_init = states(1,2);
 
 file_name  = strcat('rovMotionModel',estimation_mode); % File describing the model structure.
+
+disp(strcat('Using ',file_name,' as model file'));
 
 order = [8 6 8]; % Model orders [ny nu nx].
 
@@ -70,8 +74,10 @@ r_dot_estimate_parameter_index = [29, 31, 32, 33, 24, 27, 15, 18, 34, 30]; % Par
 % Sets which parameters that will be estimated
 switch estimation_mode
     case 'Yaw'
+        disp('Yaw test')
         fixed_parameters = setdiff(fixed_parameters,r_dot_estimate_parameter_index);
     case 'RollPitch'
+        disp('RollPitch test')
         fixed_parameters = setdiff(fixed_parameters, p_dot_estimate_parameter_index);
         fixed_parameters = setdiff(fixed_parameters, q_dot_estimate_parameter_index);
     otherwise
@@ -96,7 +102,7 @@ end
 warning('Ts not fixed')
 
 % Setup the estimation data
-estimation_data = iddata([zeros(size(ang_vel_data)), ang_vel_data, states(:,2:3)], thrusters_data, 0.0500,'Name', strcat(estimation_mode, 'data'));
+estimation_data = iddata([zeros(size(ang_vel_data)), ang_vel_data, states(:,1:2)], thrusters_data, 0.0500,'Name', strcat(estimation_mode, 'data'));
 estimation_data.InputName = nonlinear_graybox_model.InputName;
 estimation_data.InputUnit = nonlinear_graybox_model.InputUnit;
 estimation_data.OutputName = nonlinear_graybox_model.OutputName;
