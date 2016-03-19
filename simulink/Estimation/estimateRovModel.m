@@ -8,17 +8,14 @@ roll_pitch_filepath = fullfile('simulator_runs','Actuators_1_2_5');
 yaw_filepath = fullfile('simulator_runs','Actuators_3_4');
 [parameters, parameter_strings]= initROVParameters();
 
-[yaw_nonlinear_greybox_model, yaw_estimation_data] =...
+[yaw_nonlinear_greybox_model, input_data, input_data] =...
     setupEstimation(parameters, parameter_strings, estimation_mode, simulation, yaw_filepath, plotting);
 %%
-
-first_yaw_estimation_data = iddata;
-first_yaw_estimation_data.OutputData = yaw_estimation_data.OutputData(1:40,:);
-first_yaw_estimation_data.InputData = yaw_estimation_data.InputData(1:40,:);
-first_yaw_estimation_data.InputName = yaw_estimation_data.InputName;
-first_yaw_estimation_data.InputUnit = yaw_estimation_data.InputUnit;
-first_yaw_estimation_data.OutputName = yaw_estimation_data.OutputName;
-first_yaw_estimation_data.OutputUnit = yaw_estimation_data.OutputUnit;
+estimation_data = iddata(output_data(1:40,:),input_data(1:40,:) ,0.05,'Name', strcat(estimation_mode, 'data'));
+estimation_data.InputName = nonlinear_greybox_model.InputName;
+estimation_data.InputUnit = nonlinear_greybox_model.InputUnit;
+estimation_data.OutputName = nonlinear_greybox_model.OutputName;
+estimation_data.OutputUnit = nonlinear_greybox_model.OutputUnit;
 
 opt = nlgreyestOptions;
 opt.Display = 'full';
@@ -36,23 +33,21 @@ roll_pitch_filepath = fullfile('simulator_runs','Actuators_1_2_5');
 simulation = 1;
 plotting = 0;
 
-[roll_pitch_nonlinear_greybox_model, roll_pitch_estimation_data] =...
+[roll_pitch_nonlinear_greybox_model, input_data, output_data] =...
     setupEstimation(parameters, parameter_strings, estimation_mode, simulation, roll_pitch_filepath, plotting);
 
 %%
-first_roll_pitch_estimation_data = iddata;
-first_roll_pitch_estimation_data.OutputData = roll_pitch_estimation_data.OutputData(1:20,:);
-first_roll_pitch_estimation_data.InputData = roll_pitch_estimation_data.InputData(1:20,:);
-first_roll_pitch_estimation_data.InputName = roll_pitch_estimation_data.InputName;
-first_roll_pitch_estimation_data.InputUnit = roll_pitch_estimation_data.InputUnit;
-first_roll_pitch_estimation_data.OutputName = roll_pitch_estimation_data.OutputName;
-first_roll_pitch_estimation_data.OutputUnit = roll_pitch_estimation_data.OutputUnit;
+estimation_data = iddata(output_data(1:40,:),input_data(1:40,:) ,0.05,'Name', strcat(estimation_mode, 'data'));
+estimation_data.InputName = roll_pitch_nonlinear_greybox_model.InputName;
+estimation_data.InputUnit = roll_pitch_nonlinear_greybox_model.InputUnit;
+estimation_data.OutputName = roll_pitch_nonlinear_greybox_model.OutputName;
+estimation_data.OutputUnit = roll_pitch_nonlinear_greybox_model.OutputUnit;
 
 opt = nlgreyestOptions;
 opt.Display = 'full';
 opt.SearchOption.MaxIter = 2;
 tic
-roll_pitch_estimation = nlgreyest(first_roll_pitch_estimation_data, roll_pitch_nonlinear_greybox_model,opt);
+roll_pitch_estimation = nlgreyest(estimation_data, roll_pitch_nonlinear_greybox_model,opt);
 toc
 %% Estimate the model
 

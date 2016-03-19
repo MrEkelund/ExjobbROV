@@ -1,4 +1,4 @@
-function [nonlinear_greybox_model, estimation_data] = setupEstimation(parameters, parameter_strings, estimation_mode, simulation, filepath, plotting)
+function [nonlinear_greybox_model, input_data, output_data] = setupEstimation(parameters, parameter_strings, estimation_mode, simulation, filepath, plotting)
 %setupEstimation Setups the nonlinear model of the rov and reads data
 %   Detailed explanation goes here
 
@@ -91,25 +91,18 @@ for i = 1:size(fixed_parameters,2)
 end
 
 %Sets the sign of the parameters
-positive_parameters = [1:12,(size(parameters)-2:size(parameters))];
-negative_parameters = [13:size(parameters,1)-3];
-for i = 1:size(positive_parameters,2)
-    nonlinear_greybox_model.Parameters(positive_parameters(i)).Minimum = 0;
-end
+% positive_parameters = [1:12,(size(parameters)-2:size(parameters))];
+% negative_parameters = [13:size(parameters,1)-3];
+% for i = 1:size(positive_parameters,2)
+%     nonlinear_greybox_model.Parameters(positive_parameters(i)).Minimum = 0;
+% end
+% 
+% for i = 1:size(negative_parameters,2)
+%     nonlinear_greybox_model.Parameters(negative_parameters(i)).Maximum = 0;
+%     nonlinear_greybox_model.Parameters(negative_parameters(i)).Minimum = -25;
+% end
 
-for i = 1:size(negative_parameters,2)
-    nonlinear_greybox_model.Parameters(negative_parameters(i)).Maximum = 0;
-    nonlinear_greybox_model.Parameters(negative_parameters(i)).Minimum = -25;
-end
-
-warning('Ts not fixed')
-
-% Setup the estimation data
-estimation_data = iddata([zeros(size(ang_vel_data)), ang_vel_data, states(:,1:2)], thrusters_data, 0.0500,'Name', strcat(estimation_mode, 'data'));
-estimation_data.InputName = nonlinear_greybox_model.InputName;
-estimation_data.InputUnit = nonlinear_greybox_model.InputUnit;
-estimation_data.OutputName = nonlinear_greybox_model.OutputName;
-estimation_data.OutputUnit = nonlinear_greybox_model.OutputUnit;
-
+output_data = [zeros(size(ang_vel_data)), ang_vel_data , states(:,1:2)];
+input_data = thrusters_data;
 end
 
