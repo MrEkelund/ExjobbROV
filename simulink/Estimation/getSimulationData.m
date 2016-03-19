@@ -32,7 +32,7 @@ for i=1:6
     thrusters_data(:,i) = dataset.data.get(char(thrusters_list(i))).Values.Data;
 end
 thrusters_time = dataset.data.get(char(thrusters_list(1))).Values.Time;
-thrusters_data(1:40,:)
+
 states = zeros(size(dataset.data.get(char(states_list(1))).Values.Data,1),4);
 for i=1:4
     states(:,i) = dataset.data.get(char(states_list(i))).Values.Data;

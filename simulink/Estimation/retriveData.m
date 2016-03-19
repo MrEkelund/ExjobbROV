@@ -37,19 +37,19 @@ function [lin_vel_data ,lin_acc_data, ang_vel_data, imu_time, thrusters_data, th
     
     
     % Integrate the acc to get vel
-    compensated_lin_acc_data = removeGravity(states_data(:,3),states_data(:,2),states_data(:,1), lin_acc_data);
-    lin_vel_data = integrateAcc(compensated_lin_acc_data, imu_time);
-    
-    %{
-     Remove the first and last sample  to get the same length vectors
-     (this is due to integration of the acc)
-    %}
-    
-    states = states(2:end-1,:);
-    ang_vel_data = ang_vel_data(2:end-1,:);
-    states_time = states_time(2:end-1,:);
-    imu_time = imu_time(2:end-1,:);
-    
+%     compensated_lin_acc_data = removeGravity(states_data(:,3),states_data(:,2),states_data(:,1), lin_acc_data);
+%     lin_vel_data = integrateAcc(compensated_lin_acc_data, imu_time);
+%     
+%     %{
+%      Remove the first and last sample  to get the same length vectors
+%      (this is due to integration of the acc)
+%     %}
+%     
+%     states = states(2:end-1,:);
+%     ang_vel_data = ang_vel_data(2:end-1,:);
+%     states_time = states_time(2:end-1,:);
+%     imu_time = imu_time(2:end-1,:);
+%     
     if plotting
         plot_time = states_time-states_time(1)*ones(size(states_time,1),1);
         figure(states_fig);
@@ -136,9 +136,9 @@ function [lin_vel_data ,lin_acc_data, ang_vel_data, imu_time, thrusters_data, th
      (this is due to integration of the acc)
     %}
     
-    thrusters_data = thrusters_data(2:end-1,:);
-    thrusters_time = thrusters_time(2:end-1,:);
-    
+%     thrusters_data = thrusters_data(2:end-1,:);
+%     thrusters_time = thrusters_time(2:end-1,:);
+%     
     if plotting
         figure(thrusters_fig);
         title('Thrusters')

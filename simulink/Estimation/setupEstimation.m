@@ -61,7 +61,7 @@ nonlinear_greybox_model = setpar(nonlinear_greybox_model, 'Name', parameter_stri
 %% Setup parameters
 % Set that some of the parameters are known the other parameters is to
 % be estimated
-size(parameters)
+
 fixed_parameters = [1:size(parameters,1)];  % Stores the index of the parameters that is fixed
 u_dot_estimate_parameter_index = [14, 16, 18, 21, 15]; % Parameters u_dot estimates
 v_dot_estimate_parameter_index = [17, 19, 15, 21, 18]; % Parameters v_dot estimates
