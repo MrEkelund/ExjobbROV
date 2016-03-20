@@ -3,6 +3,9 @@
 ros::NodeHandle * SLROSNodePtr;
 const std::string SLROSNodeName = "Controller";
 
+// For Block Controller/Enable thrusters
+SimulinkSubscriber<std_msgs::Bool, SL_Bus_Controller_std_msgs_Bool> Sub_Controller_997;
+
 // For Block Controller/cmd_vel
 SimulinkSubscriber<geometry_msgs::Twist, SL_Bus_Controller_geometry_msgs_Twist> Sub_Controller_1;
 
@@ -11,12 +14,6 @@ SimulinkSubscriber<std_msgs::Float64MultiArray, SL_Bus_Controller_std_msgs_Float
 
 // For Block Controller/toPWM/Publish
 SimulinkPublisher<std_msgs::UInt16MultiArray, SL_Bus_Controller_std_msgs_UInt16MultiArray> Pub_Controller_607;
-
-// For Block Controller/Decouple1/Get buoyancy
-SimulinkParameterGetter<real64_T, double> ParamGet_Controller_879;
-
-// For Block Controller/Decouple2/Get buoyancy
-SimulinkParameterGetter<real64_T, double> ParamGet_Controller_873;
 
 // For Block Controller/Enabled Subsystem/Get Parameter
 SimulinkParameterGetter<real64_T, double> ParamGet_Controller_901;
@@ -41,6 +38,51 @@ SimulinkParameterGetter<int32_T, int> ParamGet_Controller_106;
 
 // For Block Controller/Get test
 SimulinkParameterGetter<int32_T, int> ParamGet_Controller_823;
+
+// For Block Controller/Subsystem/pitch_control/Retrive PID-Parameters/D_pitch
+SimulinkParameterGetter<real64_T, double> ParamGet_Controller_951;
+
+// For Block Controller/Subsystem/pitch_control/Retrive PID-Parameters/I_pitch
+SimulinkParameterGetter<real64_T, double> ParamGet_Controller_952;
+
+// For Block Controller/Subsystem/pitch_control/Retrive PID-Parameters/N_pitch 
+SimulinkParameterGetter<real64_T, double> ParamGet_Controller_953;
+
+// For Block Controller/Subsystem/pitch_control/Retrive PID-Parameters/P_pitch
+SimulinkParameterGetter<real64_T, double> ParamGet_Controller_954;
+
+// For Block Controller/Subsystem/pitch_ref
+SimulinkParameterGetter<real64_T, double> ParamGet_Controller_982;
+
+// For Block Controller/Subsystem/roll_control/Retrive PID-Parameters/D_roll
+SimulinkParameterGetter<real64_T, double> ParamGet_Controller_965;
+
+// For Block Controller/Subsystem/roll_control/Retrive PID-Parameters/I_roll
+SimulinkParameterGetter<real64_T, double> ParamGet_Controller_966;
+
+// For Block Controller/Subsystem/roll_control/Retrive PID-Parameters/N_roll 
+SimulinkParameterGetter<real64_T, double> ParamGet_Controller_967;
+
+// For Block Controller/Subsystem/roll_control/Retrive PID-Parameters/P_roll
+SimulinkParameterGetter<real64_T, double> ParamGet_Controller_968;
+
+// For Block Controller/Subsystem/roll_ref
+SimulinkParameterGetter<real64_T, double> ParamGet_Controller_980;
+
+// For Block Controller/Subsystem/yaw_control/Retrive PID-Parameters/D_yaw
+SimulinkParameterGetter<real64_T, double> ParamGet_Controller_937;
+
+// For Block Controller/Subsystem/yaw_control/Retrive PID-Parameters/I_yaw
+SimulinkParameterGetter<real64_T, double> ParamGet_Controller_938;
+
+// For Block Controller/Subsystem/yaw_control/Retrive PID-Parameters/N_yaw 
+SimulinkParameterGetter<real64_T, double> ParamGet_Controller_939;
+
+// For Block Controller/Subsystem/yaw_control/Retrive PID-Parameters/P_yaw
+SimulinkParameterGetter<real64_T, double> ParamGet_Controller_940;
+
+// For Block Controller/Subsystem/yaw_ref
+SimulinkParameterGetter<real64_T, double> ParamGet_Controller_981;
 
 // For Block Controller/Telegraph/Thruster1 block/Swtiching factor
 SimulinkParameterGetter<int32_T, int> ParamGet_Controller_714;

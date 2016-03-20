@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'Controller'.
 //
-// Model version                  : 1.164
+// Model version                  : 1.174
 // Simulink Coder version         : 8.10 (R2016a) 10-Feb-2016
-// C/C++ source code generated on : Tue Mar 15 14:03:01 2016
+// C/C++ source code generated on : Sun Mar 20 10:44:52 2016
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Generic->Unspecified (assume 32-bit Generic)
@@ -21,8 +21,6 @@
 #include "rtwtypes.h"
 #include "Controller.h"
 
-extern real_T rt_roundd_snf(real_T u);
-extern real_T rt_remd_snf(real_T u0, real_T u1);
 extern void RandSrcInitState_U_64(const uint32_T seed[], real_T state[], int32_T
   nChans);
 extern void Controller_MATLABFunction(real_T rtu_u, real_T rtu_min_scale, real_T
@@ -32,6 +30,10 @@ extern void Contr_StateTransitionTable_Init(rtDW_StateTransitionTable_Con_T
 extern void Controller_StateTransitionTable(real_T rtu_x,
   rtB_StateTransitionTable_Cont_T *localB, rtDW_StateTransitionTable_Con_T
   *localDW);
+extern void Controller_thrustalloc(real_T rtu_control_signals, real_T
+  rtu_control_signals_n, real_T rtu_control_signals_a, real_T
+  rtu_control_signals_o, real_T rtu_control_signals_k, real_T
+  rtu_control_signals_f, rtB_thrustalloc_Controller_T *localB);
 
 #endif                                 // RTW_HEADER_Controller_private_h_
 

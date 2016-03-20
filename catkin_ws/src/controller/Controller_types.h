@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'Controller'.
 //
-// Model version                  : 1.164
+// Model version                  : 1.174
 // Simulink Coder version         : 8.10 (R2016a) 10-Feb-2016
-// C/C++ source code generated on : Tue Mar 15 14:03:01 2016
+// C/C++ source code generated on : Sun Mar 20 10:44:52 2016
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Generic->Unspecified (assume 32-bit Generic)
@@ -19,6 +19,15 @@
 #ifndef RTW_HEADER_Controller_types_h_
 #define RTW_HEADER_Controller_types_h_
 #include "rtwtypes.h"
+#ifndef DEFINED_TYPEDEF_FOR_SL_Bus_Controller_std_msgs_Bool_
+#define DEFINED_TYPEDEF_FOR_SL_Bus_Controller_std_msgs_Bool_
+
+typedef struct {
+  boolean_T Data;
+} SL_Bus_Controller_std_msgs_Bool;
+
+#endif
+
 #ifndef DEFINED_TYPEDEF_FOR_SL_Bus_Controller_geometry_msgs_Vector3_
 #define DEFINED_TYPEDEF_FOR_SL_Bus_Controller_geometry_msgs_Vector3_
 
@@ -189,6 +198,17 @@ typedef struct {
 #define typedef_struct_T_Controller_l5xx_T
 
 typedef struct {
+  char_T f0[8];
+  char_T f1[7];
+  char_T f2[6];
+} struct_T_Controller_l5xx_T;
+
+#endif                                 //typedef_struct_T_Controller_l5xx_T
+
+#ifndef typedef_struct_T_Controller_l5xxx_T
+#define typedef_struct_T_Controller_l5xxx_T
+
+typedef struct {
   char_T f0[5];
   char_T f1[4];
   char_T f2[6];
@@ -198,18 +218,6 @@ typedef struct {
   char_T f6[6];
   char_T f7[6];
   char_T f8[7];
-} struct_T_Controller_l5xx_T;
-
-#endif                                 //typedef_struct_T_Controller_l5xx_T
-
-#ifndef typedef_struct_T_Controller_l5xxx_T
-#define typedef_struct_T_Controller_l5xxx_T
-
-typedef struct {
-  char_T f0[8];
-  char_T f1[4];
-  char_T f2[6];
-  char_T f3[6];
 } struct_T_Controller_l5xxx_T;
 
 #endif                                 //typedef_struct_T_Controller_l5xxx_T
@@ -219,8 +227,9 @@ typedef struct {
 
 typedef struct {
   char_T f0[8];
-  char_T f1[7];
+  char_T f1[4];
   char_T f2[6];
+  char_T f3[6];
 } struct_T_Controller_l5xxx5_T;
 
 #endif                                 //typedef_struct_T_Controller_l5xxx5_T
