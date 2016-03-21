@@ -11,12 +11,6 @@ function [lin_vel_data ,lin_acc_data, ang_vel_data, imu_time, thrusters_data, th
     %   Output: thruster_time - Time vector for the thruster data.
     
     bag = rosbag(filepath);
-    if plotting
-        imu_fig = figure('Name','IMU','units','normalized','position',[0 0.5 .5 .41]);
-        states_fig = figure('Name','States','units','normalized','position',[0 0 .5 .41]);
-        integrated_fig = figure('Name','Integrated acc','units','normalized','position',[0.5 0.5 .5 .41]);
-        thrusters_fig = figure('Name','Thruster','units','normalized','position',[0.5 0 .5 .41]);
-    end
 %% States
     states_bag = select(bag,'Topic','/sensor_fusion/states');
     
@@ -30,10 +24,7 @@ function [lin_vel_data ,lin_acc_data, ang_vel_data, imu_time, thrusters_data, th
         states_time(i) = states_bag.MessageList{i,1};
     end
     
-    states = states_data(:,[1 2 3 7]); % Angels and depth
-    ang_vel_data = states_data(:,4:6);
-    lin_acc_data = states_data(:,8:10);
-    imu_time = states_time;
+
     
     
     % Integrate the acc to get vel
@@ -50,42 +41,6 @@ function [lin_vel_data ,lin_acc_data, ang_vel_data, imu_time, thrusters_data, th
 %     states_time = states_time(2:end-1,:);
 %     imu_time = imu_time(2:end-1,:);
 %     
-    if plotting
-        plot_time = states_time-states_time(1)*ones(size(states_time,1),1);
-        figure(states_fig);
-        subplot(2,1,1)
-        suptitle('States')
-        plot(plot_time, states_data(:,1:3))
-        legend('Yaw','Pitch','Roll')
-        ylabel(sprintf('Euler angles [%c]', char(176)));
-        xlabel('Time [s]')
-        
-        subplot(2,1,2)
-        plot(plot_time, states_data(:,7))
-        legend('Depth')
-        ylabel('Depth [m]');
-        xlabel('Time [s]')
-        
-        figure(imu_fig)
-        subplot(2,1,1)
-        suptitle('IMU data recived from sensor fusion');
-        plot(plot_time, states_data(:,4:6))
-        legend('Ang\_vel\_x','Ang\_vel\_y','Ang\_vel\_z')
-        ylabel(sprintf('Angular velocites [%c/s]', char(176)));
-        xlabel('Time [s]')
-        
-        subplot(2,1,2)
-        plot(plot_time, states_data(:,8:10))
-        legend('Lin\_acc\_x','Lin\_acc\_y','Lin\_acc\_z')
-        ylabel('Linear acceleration [m/s]');
-        xlabel('Time [s]')
-        
-        figure(integrated_fig)
-        plot(plot_time, lin_vel_data)
-        legend('Lin\_vel\_x','Lin\_vel\_y','Lin\_vel\_z')
-        ylabel('Linear acceleration [m/s]');
-        xlabel('Time [s]')
-    end
 
 
 %% IMU
@@ -138,16 +93,58 @@ function [lin_vel_data ,lin_acc_data, ang_vel_data, imu_time, thrusters_data, th
     
 %     thrusters_data = thrusters_data(2:end-1,:);
 %     thrusters_time = thrusters_time(2:end-1,:);
-%     
-    if plotting
-        figure(thrusters_fig);
-        title('Thrusters')
-        plot(thrusters_time-thrusters_time(1)*ones(size(thrusters_time,1),1), thrusters_data)
-        legend('Thruster1','Thruster2','Thruster3','Thruster4','Thruster5','Thruster6')
-        ylabel('Output [%]');
-        xlabel('Time [s]')
-        axis([0 (thruster_time(end)-thruster_time(1)) -1 1])
-    end
+%
+[thrusters_data, states_data, time] = resampleControlSignals(thrusters_data, thrusters_time, states_data, states_time);
+states = states_data(:,[1 2 3 7]); % Angels and depth
+ang_vel_data = states_data(:,4:6);
+lin_acc_data = states_data(:,8:10);
+imu_time = time;
+thrusters_time = time;
+
+if plotting
+    plot_time = time-time(1)*ones(size(time,1),1);
+    figure(states_fig);
+    subplot(2,1,1)
+    suptitle('States')
+    plot(plot_time, states_data(:,1:3))
+    legend('Roll','Yaw','Pitch')
+    ylabel('Euler angles [rad]');
+    xlabel('Time [s]')
+    
+    subplot(2,1,2)
+    plot(plot_time, states_data(:,7))
+    legend('Depth')
+    ylabel('Depth [m]');
+    xlabel('Time [s]')
+    
+    figure(imu_fig)
+    subplot(2,1,1)
+    suptitle('IMU data recived from sensor fusion');
+    plot(plot_time, states_data(:,4:6))
+    legend('Ang\_vel\_x','Ang\_vel\_y','Ang\_vel\_z')
+    ylabel(sprintf('Angular velocites [%c/s]', char(176)));
+    xlabel('Time [s]')
+    
+    subplot(2,1,2)
+    plot(plot_time, states_data(:,8:10))
+    legend('Lin\_acc\_x','Lin\_acc\_y','Lin\_acc\_z')
+    ylabel('Linear acceleration [m/s]');
+    xlabel('Time [s]')
+    
+    figure(integrated_fig)
+    plot(plot_time, lin_vel_data)
+    legend('Lin\_vel\_x','Lin\_vel\_y','Lin\_vel\_z')
+    ylabel('Linear acceleration [m/s]');
+    xlabel('Time [s]')
+    
+    figure(thrusters_fig);
+    title('Thrusters')
+    plot(plot_time, thrusters_data)
+    legend('Thruster1','Thruster2','Thruster3','Thruster4','Thruster5','Thruster6')
+    ylabel('Output [%]');
+    xlabel('Time [s]')
+    axis([0 plot_time(end) -1 1])
+end
 
 end
     
