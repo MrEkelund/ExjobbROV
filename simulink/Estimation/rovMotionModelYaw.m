@@ -200,8 +200,8 @@ theta_dot = q*cf - r*sf;
 
 global counter;
 counter = counter + 1;
-if counter ==1000
-    disp('w');
+if mod(counter,100000) == 0
+    disp(counter);
 end
 
 x_dot = [u_dot;v_dot;w_dot;p_dot;q_dot;r_dot;fi_dot;theta_dot];

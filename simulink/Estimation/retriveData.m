@@ -1,4 +1,4 @@
-function [lin_vel_data ,lin_acc_data, ang_vel_data, imu_time, thrusters_data, thrusters_time, states, states_time] = retriveData(filepath,plotting)
+function [lin_vel_data ,lin_acc_data, ang_vel_data, imu_time, thrusters_data, thrusters_time, states, states_time, Ts] = retriveData(filepath,plotting)
     %retriveData
     %   Input: filepath - Fullfilepath or relative.
     %   Input: plotting - 1 for subplots of the data. 0 for no plots
@@ -99,16 +99,17 @@ function [lin_vel_data ,lin_acc_data, ang_vel_data, imu_time, thrusters_data, th
      (this is due to integration of the acc)
     %}
     
-%     thrusters_data = thrusters_data(2:end-1,:);
+%     thrusters_data = thrusters_data(2:end-1,:%%);
 %     thrusters_time = thrusters_time(2:end-1,:);
 %
-[thrusters_data, states_data, time] = resampleControlSignals(thrusters_data, thrusters_time, states_data, states_time);
+[thrusters_data, states_data, time, Ts] = resampleControlSignals(thrusters_data, thrusters_time, states_data, states_time);
 states = states_data(:,[3 2 1 7]); % Angels and depth
 states(:,1:3) = states(:,1:3)*pi/180;
 ang_vel_data = states_data(:,4:6)*pi/180.0;
 lin_acc_data = states_data(:,8:10);
 imu_time = time;
 thrusters_time = time;
+states_time = time;
 lin_vel_data = 0;
 
 if plotting
@@ -116,13 +117,13 @@ if plotting
     figure(states_fig);
     subplot(2,1,1)
     suptitle('States')
-    plot(plot_time, states_data(:,1:3))
-    legend('Roll','Yaw','Pitch')
+    plot(plot_time, states(:,1:3))
+    legend('Roll','Pitch','Yaw')
     ylabel('Euler angles [rad]');
     xlabel('Time [s]')
     
     subplot(2,1,2)
-    plot(plot_time, states_data(:,7))
+    plot(plot_time, states(:,4))
     legend('Depth')
     ylabel('Depth [m]');
     xlabel('Time [s]')
@@ -130,26 +131,37 @@ if plotting
     figure(imu_fig)
     subplot(2,1,1)
     suptitle('IMU data recived from sensor fusion');
-    plot(plot_time, states_data(:,4:6))
+    plot(plot_time, ang_vel_data)
     legend('Ang\_vel\_x','Ang\_vel\_y','Ang\_vel\_z')
-    ylabel(sprintf('Angular velocites [%c/s]', char(176)));
+    ylabel('Angular velocites [rad/s]');
     xlabel('Time [s]')
     
     subplot(2,1,2)
-    plot(plot_time, states_data(:,8:10))
+    plot(plot_time, lin_acc_data)
     legend('Lin\_acc\_x','Lin\_acc\_y','Lin\_acc\_z')
     ylabel('Linear acceleration [m/s]');
     xlabel('Time [s]')
     
-    figure(integrated_fig)
-    plot(plot_time, lin_vel_data)
-    legend('Lin\_vel\_x','Lin\_vel\_y','Lin\_vel\_z')
-    ylabel('Linear acceleration [m/s]');
-    xlabel('Time [s]')
+%     figure(integrated_fig)
+%     plot(plot_time, lin_vel_data)
+%     legend('Lin\_vel\_x','Lin\_vel\_y','Lin\_vel\_z')
+%     ylabel('Linear acceleration [m/s]');
+%     xlabel('Time [s]')
     
     figure(thrusters_fig);
-    title('Thrusters')
-    plot(plot_time, thrusters_data)
+    suptitle('Thrusters')
+    subplot(3,2,1)
+    plot(plot_time, thrusters_data(:,1))
+    subplot(3,2,2)
+    plot(plot_time, thrusters_data(:,2))
+    subplot(3,2,3)
+    plot(plot_time, thrusters_data(:,3))
+    subplot(3,2,4)
+    plot(plot_time, thrusters_data(:,4))
+    subplot(3,2,5)
+    plot(plot_time, thrusters_data(:,5))
+    subplot(3,2,6)
+    plot(plot_time, thrusters_data(:,6))
     legend('Thruster1','Thruster2','Thruster3','Thruster4','Thruster5','Thruster6')
     ylabel('Output [%]');
     xlabel('Time [s]')

@@ -1,4 +1,4 @@
-function [resampled_control_signals, states, time] = resampleControlSignals(control_signals, control_time, states_data,sensor_time)
+function [resampled_control_signals, states, time, Ts] = resampleControlSignals(control_signals, control_time, states_data,sensor_time)
 %UNTITLED2 Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -12,7 +12,7 @@ resampled_control_signals = zeros(length(test_time),size(control_signals,2));
 resampled_index = 1;
 for i =1:length(control_time)-1
     while(resampled_index <= length(test_time) && control_time(i+1) > test_time(resampled_index))
-        resampled_control_signals(resampled_index) = control_signals(i);
+        resampled_control_signals(resampled_index,:) = control_signals(i,:);
         resampled_index = resampled_index + 1;
     end
 end

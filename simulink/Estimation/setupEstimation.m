@@ -1,4 +1,4 @@
-function [nonlinear_greybox_model, input_data, output_data] = setupEstimation(parameters, parameter_strings, estimation_mode, simulation, filepath, plotting)
+function [nonlinear_greybox_model, input_data, output_data, Ts] = setupEstimation(parameters, parameter_strings, estimation_mode, simulation, filepath, plotting)
 %setupEstimation Setups the nonlinear model of the rov and reads data
 %   Detailed explanation goes here
 
@@ -6,18 +6,19 @@ function [nonlinear_greybox_model, input_data, output_data] = setupEstimation(pa
 switch simulation
     case 0
         disp(sprintf('Using test data from %s',filepath));
-       [lin_vel_data ,lin_acc_data, ang_vel_data, imu_time, thrusters_data, thrusters_time, states, states_time]= ...
+       [lin_vel_data ,lin_acc_data, ang_vel_data, imu_time, thrusters_data, thrusters_time, states, states_time, Ts]= ...
             retriveData(filepath, plotting);
     case 1
         disp(sprintf('Using simulated data from %s',filepath));
         [lin_acc_data, ang_vel_data, imu_time, thrusters_data, thrusters_time, states, states_time] = ...
             getSimulationData(filepath,plotting);
+        Ts = 0.05;
     otherwise
         error('Simulation can only be 0 or 1');
 end
 
 %% Setup the non linear greybox model
-Ts = 0;      % Sample time [s].  
+Ts_model = 0;      % Sample time [s].  
 % Initial states
 u_init = 0;
 v_init = 0;
@@ -37,13 +38,13 @@ order = [8 6 8]; % Model orders [ny nu nx].
 initial_states = [u_init; v_init; w_init; p_init; q_init; r_init;     % Initial initial states.
     fi_init; theta_init];
 
-nonlinear_greybox_model = idnlgrey(file_name, order, parameters', initial_states, Ts, ...
+nonlinear_greybox_model = idnlgrey(file_name, order, parameters', initial_states, Ts_model, ...
     'Name', 'Rov Model', 'TimeUnit', 's');
 
 %% Setup names for the non linear greybox
 nonlinear_greybox_model.Name = estimation_mode;
 
-% Names on inputs
+% Names on input
 nonlinear_greybox_model.InputName =  {'Thruster1'; 'Thruster2'; 'Thruster3';
     'Thurster4'; 'Thruster5'; 'Thruster6'};
 nonlinear_greybox_model.InputUnit =  {'%'; '%'; '%'; '%'; '%';'%'};
@@ -104,5 +105,6 @@ end
 
 output_data = [zeros(size(ang_vel_data)), ang_vel_data , states(:,1:2)];
 input_data = thrusters_data;
+time = states_time;
 end
 

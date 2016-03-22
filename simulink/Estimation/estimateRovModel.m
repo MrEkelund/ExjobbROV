@@ -2,21 +2,21 @@
 clear;
 close all;
 simulation = 0;
-plotting = 0;
+plotting = 1;
 estimation_mode = 'Yaw';
-yaw_filepath = fullfile('bag','act_3_4_test_4_2016-03-21-15-14-04.bag');
+yaw_filepath = fullfile('bag','act_3_4_test_3_2016-03-21-15-09-30.bag');
 [parameters, parameter_strings]= initROVParameters();
 
-[yaw_nonlinear_greybox_model, input_data, output_data] =...
+[yaw_nonlinear_greybox_model, input_data, output_data, Ts] =...
     setupEstimation(parameters, parameter_strings, estimation_mode, simulation, yaw_filepath, plotting);
-%%
-yaw_data = iddata(output_data(1:400,:),input_data(1:400,:) ,0.05,'Name', strcat(estimation_mode, 'data'));
+%
+yaw_data = iddata(output_data,input_data,Ts,'Name', strcat(estimation_mode, 'data'));
 yaw_data.InputName = yaw_nonlinear_greybox_model.InputName;
 yaw_data.InputUnit = yaw_nonlinear_greybox_model.InputUnit;
 yaw_data.OutputName = yaw_nonlinear_greybox_model.OutputName;
 yaw_data.OutputUnit = yaw_nonlinear_greybox_model.OutputUnit;
 global counter 
-counter = 0
+counter = 0;
 opt = nlgreyestOptions;
 opt.Display = 'full';
 % opt.SearchOption.MaxIter = 2;
@@ -33,11 +33,11 @@ roll_pitch_filepath = fullfile('bag','act_1_2_5_6_test_4_2016-03-21-15-29-25.bag
 simulation = 0;
 plotting = 0;
 
-[roll_pitch_nonlinear_greybox_model, input_data, output_data] =...
+[roll_pitch_nonlinear_greybox_model, input_data, output_data, Ts] =...
     setupEstimation(parameters, parameter_strings, estimation_mode, simulation, roll_pitch_filepath, plotting);
 
 %%
-roll_pitch_data = iddata(output_data(1:400,:),input_data(1:400,:) ,0.05,'Name', strcat(estimation_mode, 'data'));
+roll_pitch_data = iddata(output_data(1:400,:),input_data(1:400,:), Ts,'Name', strcat(estimation_mode, 'data','SamplingInstants'));
 roll_pitch_data.InputName = roll_pitch_nonlinear_greybox_model.InputName;
 roll_pitch_data.InputUnit = roll_pitch_nonlinear_greybox_model.InputUnit;
 roll_pitch_data.OutputName = roll_pitch_nonlinear_greybox_model.OutputName;
