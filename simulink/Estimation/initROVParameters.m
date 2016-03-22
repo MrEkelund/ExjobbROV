@@ -3,44 +3,11 @@ function [ Parameters, Parameter_strings ] = initROVParameters(  )
 %   Detailed explanation goes here
 
 % Some constants                                                   
-m = 4.5;       % ROV mass[kg];       
+m = 5.5;       % ROV mass[kg];       
 g = 9.82;   % Gravity[m/s^2]
 rho = 1000; % water density [kg/m^3]
 V = 0.012;       % Discplaced water volume [m^3]
 % Thruster placement from CO [m]
-
-lx1 = 0.16;
-ly1 = 0.11;
-ly2 = 0.11;
-lx2 = 0.16;
-ly3 = 0.11;
-lx5 = 0.2;
-ly4 = 0.11;
-lz6 = 0.1;
-zb = -0.15;
-
-% Parameters that will be estimated
-Xu_init = -1;
-Xu_dot_init = -1;
-Xu_abs_u_init = -1;
-Yv_init = -1;
-Yv_dot_init = -1;
-Yv_abs_v_init = -1;
-Zw_init = -1;
-Zw_dot_init = -1;
-Zw_abs_w_init = -1;
-Kp_init = -1;
-Kp_dot_init = -1;
-Kp_abs_p_init = -1;
-Mq_init = -1;
-Mq_dot_init = -1;
-Mq_abs_q_init = -1;
-Nr_init = -1;
-Nr_dot_init = -1;
-Nr_abs_r_init = -1;
-Ix_init = 13;
-Iy_init = 13;
-Iz_init = 13;
 
  lx1 = 0.16;
  ly1 = 0.11;
@@ -49,7 +16,7 @@ Iz_init = 13;
  ly3 = 0.11;
  lx5 = 0.2;
  ly4 = 0.11;
- lz6 = 1;
+ lz6 = 0.1;
  zb = -0.15;
  
  % Parameters that will be estimated

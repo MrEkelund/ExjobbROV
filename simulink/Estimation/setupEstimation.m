@@ -6,7 +6,7 @@ function [nonlinear_greybox_model, input_data, output_data] = setupEstimation(pa
 switch simulation
     case 0
         disp(sprintf('Using test data from %s',filepath));
-        [lin_acc_data, ang_vel_data, imu_time, thrusters_data, thrusters_time, states, states_time] = ...
+       [lin_vel_data ,lin_acc_data, ang_vel_data, imu_time, thrusters_data, thrusters_time, states, states_time]= ...
             retriveData(filepath, plotting);
     case 1
         disp(sprintf('Using simulated data from %s',filepath));
@@ -91,11 +91,11 @@ for i = 1:size(fixed_parameters,2)
 end
 
 %Sets the sign of the parameters
-% positive_parameters = [1:12,(size(parameters)-2:size(parameters))];
+positive_parameters = [1:12,(size(parameters)-2:size(parameters))];
 % negative_parameters = [13:size(parameters,1)-3];
-% for i = 1:size(positive_parameters,2)
-%     nonlinear_greybox_model.Parameters(positive_parameters(i)).Minimum = 0;
-% end
+for i = 1:size(positive_parameters,2)
+    nonlinear_greybox_model.Parameters(positive_parameters(i)).Minimum = 0;
+end
 % 
 % for i = 1:size(negative_parameters,2)
 %     nonlinear_greybox_model.Parameters(negative_parameters(i)).Maximum = 0;

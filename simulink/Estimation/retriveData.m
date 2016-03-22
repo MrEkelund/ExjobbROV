@@ -10,8 +10,16 @@ function [lin_vel_data ,lin_acc_data, ang_vel_data, imu_time, thrusters_data, th
     %   Output: thruster_data - thruster data vector.
     %   Output: thruster_time - Time vector for the thruster data.
     
+    if plotting
+        imu_fig = figure('Name','IMU','units','normalized','position',[0 0.5 .5 .41]);
+        states_fig = figure('Name','States','units','normalized','position',[0 0 .5 .41]);
+        %integrated_fig = figure('Name','Integrated acc','units','normalized','position',[0.5 0.5 .5 .41]);
+        thrusters_fig = figure('Name','Thruster','units','normalized','position',[0.5 0 .5 .41]);
+    end
+    
+    
     bag = rosbag(filepath);
-%% States
+    %% States
     states_bag = select(bag,'Topic','/sensor_fusion/states');
     
     states_msgs = readMessages(states_bag);
@@ -95,11 +103,13 @@ function [lin_vel_data ,lin_acc_data, ang_vel_data, imu_time, thrusters_data, th
 %     thrusters_time = thrusters_time(2:end-1,:);
 %
 [thrusters_data, states_data, time] = resampleControlSignals(thrusters_data, thrusters_time, states_data, states_time);
-states = states_data(:,[1 2 3 7]); % Angels and depth
-ang_vel_data = states_data(:,4:6);
+states = states_data(:,[3 2 1 7]); % Angels and depth
+states(:,1:3) = states(:,1:3)*pi/180;
+ang_vel_data = states_data(:,4:6)*pi/180.0;
 lin_acc_data = states_data(:,8:10);
 imu_time = time;
 thrusters_time = time;
+lin_vel_data = 0;
 
 if plotting
     plot_time = time-time(1)*ones(size(time,1),1);
