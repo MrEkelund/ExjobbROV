@@ -7,6 +7,9 @@ Ekf::Ekf(){
   f = boost::bind(&Ekf::configCallback, this, _1, _2);
   server.setCallback(f);
   initFilter();
+  mag_n = 1000;
+  mag_e = 1000;
+  mag_d = 1000;
 }
 
 
@@ -14,6 +17,8 @@ void Ekf::initFilter(){
   imu_data_sub = node_handle.subscribe("/rovio/imu/data", 20, &Ekf::imuCallback,this);
   pressure_data_sub = node_handle.subscribe("/rovio/water_pressure/data", 20, &Ekf::pressureCallback,this);
   mag_data_sub = node_handle.subscribe("/rovio/magnetometer/data", 20, &Ekf::magCallback,this);
+  restart_sub = node_handle.subscribe("/sensor_fusion/restart",10, &Ekf::restartCallback,this);
+  calibrate_mag_sub = node_handle.subscribe("/sensor_fusion/calibrate_mag",10,&Ekf::calibrateMagCallback,this);
   states_pub = node_handle.advertise<std_msgs::Float64MultiArray>("/sensor_fusion/states", 50);
   state_message.data.resize(10);
 
@@ -46,6 +51,15 @@ void Ekf::restartFilter(){
   any_updates = false;
 }
 
+ void Ekf::calibrateMagCallback(const std_msgs::Bool &msg)
+ {
+   mag_n = meas_mag(0);
+   mag_e = meas_mag(1);
+   mag_d = meas_mag(2);
+   ROS_INFO("Calibrated mag to %f uT %f uT %f uT", mag_n, mag_e, mag_d);
+ }
+
+
 //what to do when i configure request is received
 void Ekf::configCallback(sensorfusion::ekfConfig &update, uint level){
   //since some parameters from the parameter server are parts of matrices,
@@ -59,6 +73,10 @@ void Ekf::configCallback(sensorfusion::ekfConfig &update, uint level){
   setInitialStates();
   setP0();
 
+}
+
+void Ekf::restartCallback(const std_msgs::Bool &msg){
+ restartFilter();
 }
 
 void Ekf::setRMag(){
@@ -251,17 +269,11 @@ void Ekf::accUpdate(){
 
 //Calculation of h and H matrix for magnetometer measurement update
 void Ekf::magUpdate(){
-  double mag_n = config.mag_n;
-  double mag_e = config.mag_e;
-  double mag_d = config.mag_d;
-
   if (config.enable_magnetometer_update && (abs(meas_mag.norm() - sqrt(mag_n*mag_n + mag_e*mag_e + mag_d*mag_d)) < config.eps_mag)) {
-    std::cout << "Mag update" << std::endl;
     //read states
     double q0 = states(0); double q1 = states(1);
     double q2 = states(2); double q3 = states(3);
     double d = states(4); //depth
-
 
     Eigen::Matrix<double, 3, 1> h_mag;
     // calculate predicted measurements
@@ -296,7 +308,6 @@ void Ekf::magUpdate(){
 
     Eigen::Matrix<double, 5, 5> p_new = p - k*H_mag*p;
     p = p_new;
-    std::cout << p << std::endl;
     normQuaternions();
     any_updates = true;
   }
@@ -446,12 +457,12 @@ void Ekf::sendStates(){
 
   state_message.data.resize(10);
   // convert to correct format and send
-  state_message.data[0] = yaw*180.0/M_PI;
-  state_message.data[1] = pitch*180.0/M_PI;
-  state_message.data[2] = roll*180.0/M_PI;
-  state_message.data[3] = omega(0)*180.0/M_PI;
-  state_message.data[4] = omega(1)*180.0/M_PI;
-  state_message.data[5] = omega(2)*180.0/M_PI;
+  state_message.data[0] = roll;
+  state_message.data[1] = pitch;
+  state_message.data[2] = yaw;
+  state_message.data[3] = omega(0);
+  state_message.data[4] = omega(1);
+  state_message.data[5] = omega(2);
   state_message.data[6] = d;
   state_message.data[7] = meas_acc(0);
   state_message.data[8] = meas_acc(1);
@@ -462,7 +473,7 @@ void Ekf::sendStates(){
 }
 
 void Ekf::spin(){
-  ros::Rate rate(150.);
+  //ros::Rate rate(150);
   while(ros::ok())
   {
     ros::spinOnce();
@@ -490,13 +501,14 @@ void Ekf::spin(){
       sendStates();
     }
 
-    rate.sleep();
+    //rate.sleep();
+    //caused problems NaNs in algorithm. Unkown reason
   }
 
 }
 
 int main(int argc, char **argv){
-  ros::init(argc, argv, "Sensor_fusion_node");
+  ros::init(argc, argv, "Sensorfusion");
   Ekf ekf;
   ekf.spin();
 }

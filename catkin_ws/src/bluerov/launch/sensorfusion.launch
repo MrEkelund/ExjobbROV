@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
 
 <launch>
-  <node respawn="true" pkg="sensorfusion" type="sensorfusion_node" name="sensorfusion_node" output="screen"></node>
+  <node respawn="true" pkg="sensorfusion" type="sensorfusion" name="sensor_fusion" output="screen"></node>
 </launch>

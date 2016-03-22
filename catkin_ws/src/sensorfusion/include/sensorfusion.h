@@ -10,6 +10,7 @@
 #include <std_msgs/Float64MultiArray.h>
 #include <std_msgs/Float32.h>
 #include "std_msgs/MultiArrayDimension.h"
+#include <std_msgs/Bool.h>
 
 class Ekf {
 public:
@@ -43,6 +44,8 @@ private:
   ros::Subscriber imu_data_sub;
   ros::Subscriber mag_data_sub;
   ros::Subscriber pressure_data_sub;
+  ros::Subscriber restart_sub;
+  ros::Subscriber calibrate_mag_sub;
   std_msgs::Float64MultiArray state_message;
 
 
@@ -53,6 +56,8 @@ private:
   void imuCallback(const std_msgs::Float32MultiArray &msg);
   void pressureCallback(const std_msgs::Float32 &msg);
   void magCallback(const std_msgs::Float32MultiArray &msg);
+  void restartCallback(const std_msgs::Bool &msg);
+  void calibrateMagCallback(const std_msgs::Bool &msg);
 
   //defenitions of matrices
   Eigen::Matrix<double, 5, 1> initial_states;
@@ -90,4 +95,8 @@ private:
   bool new_pressure_data;
   bool imu_first_data;
 
+  //constants for magnetometer.
+  double mag_n;
+  double mag_e;
+  double mag_d;
 };

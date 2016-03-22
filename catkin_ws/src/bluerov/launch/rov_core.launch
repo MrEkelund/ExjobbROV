@@ -17,9 +17,9 @@
   <!-- start matlab dynamic reconfigure -->
   <include file="$(find bluerov)/launch/matlab_controller.launch" />
 
-  <inclued file="$(find bluerov)/launch/sensorfusion.launch" />
+  <include file="$(find bluerov)/launch/sensorfusion.launch" />
   
-  <inclued file="$(find bluerov)/launch/controller.launch" />
+  <include file="$(find bluerov)/launch/controller.launch" />
   <!-- start camera -->
   <include file="$(find bluerov)/launch/camera.launch" />
 </launch>
