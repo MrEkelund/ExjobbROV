@@ -21,7 +21,7 @@ yaw_data.OutputUnit = yaw_nonlinear_greybox_model.OutputUnit;
 global counter 
 counter = 0;
 opt = nlgreyestOptions;
-opt.Display = 'full';
+opt.Display = 'on';
 % opt.SearchOption.MaxIter = 2;
 tic
 yaw_estimation = nlgreyest(yaw_data, yaw_nonlinear_greybox_model,opt);
@@ -47,7 +47,7 @@ roll_pitch_data.OutputName = roll_pitch_nonlinear_greybox_model.OutputName;
 roll_pitch_data.OutputUnit = roll_pitch_nonlinear_greybox_model.OutputUnit;
 
 opt = nlgreyestOptions;
-opt.Display = 'full';
+opt.Display = 'on';
 %opt.SearchOption.MaxIter = ;
 tic
 roll_pitch_estimation = nlgreyest(roll_pitch_data, roll_pitch_nonlinear_greybox_model,opt);

@@ -184,11 +184,11 @@ w_dot =0;%...
  
  
 p_dot =0;%...
-%     (f1*ly1 - f2*ly2 + f6*lz6 + p*(Kp + Kp_abs_p*abs(p)) - Mq_dot*q*r + Nr_dot*q*r + q*r*(Iy - Iz) + B*ct*sf*zb)/(Ix - Kp_dot); %  - Yv_dot*v*w + Zw_dot*v*w
-%  
-%  
+    %(f1*ly1 - f2*ly2 + f6*lz6 + p*(Kp + Kp_abs_p*abs(p)) - Mq_dot*q*r + Nr_dot*q*r + q*r*(Iy - Iz) + B*ct*sf*zb)/(Ix - Kp_dot); %  - Yv_dot*v*w + Zw_dot*v*w
+ 
+ 
 q_dot =0;%...
-%     (f1*lx1 + f2*lx2 - f5*lx5 + q*(Mq + Mq_abs_q*abs(q)) + Kp_dot*p*r + B*st*zb - Nr_dot*p*r - p*r*(Ix - Iz) )/(Iy - Mq_dot);  %+ Xu_dot*u*w - Zw_dot*u*w
+     %(f1*lx1 + f2*lx2 - f5*lx5 + q*(Mq + Mq_abs_q*abs(q)) + Kp_dot*p*r + B*st*zb - Nr_dot*p*r - p*r*(Ix - Iz) )/(Iy - Mq_dot);  %+ Xu_dot*u*w - Zw_dot*u*w
  
  
 r_dot =...
@@ -204,9 +204,6 @@ if mod(counter,1000) == 0
     disp(counter);
 end
 
-if abs(r_dot) > 500
-    disp(counter);
-end
 x_dot = [u_dot;v_dot;w_dot;p_dot;q_dot;r_dot;fi_dot;theta_dot];
 y = x;
 end
