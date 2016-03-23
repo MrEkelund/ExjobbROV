@@ -195,15 +195,18 @@ r_dot =...
     (r*(Nr + Nr_abs_r*abs(r)) + f3*ly3 - f4*ly4 - Kp_dot*p*q + Mq_dot*p*q + p*q*(Ix - Iy))/(Iz - Nr_dot); % - Xu_dot*u*v + Yv_dot*u*v
  
 
-fi_dot =  p + q*sf*st/ct + r*cf*st/ct;
-theta_dot = q*cf - r*sf;
+fi_dot =  0;%p + q*sf*st/ct + r*cf*st/ct;
+theta_dot = 0;%q*cf - r*sf;
 
 global counter;
 counter = counter + 1;
-if mod(counter,100000) == 0
+if mod(counter,1000) == 0
     disp(counter);
 end
 
+if abs(r_dot) > 500
+    disp(counter);
+end
 x_dot = [u_dot;v_dot;w_dot;p_dot;q_dot;r_dot;fi_dot;theta_dot];
 y = x;
 end

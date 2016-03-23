@@ -23,19 +23,19 @@ if isempty(files)
     zb = -0.15;
     
     % Parameters that will be estimated
-    Xu_init = 1;
-    Xu_dot_init = 1;
-    Xu_abs_u_init = 1;
-    Yv_init = 1;
-    Yv_dot_init = 1;
+    Xu_init = -1;
+    Xu_dot_init = -1;
+    Xu_abs_u_init = -1;
+    Yv_init = -1;
+    Yv_dot_init = -1;
     Yv_abs_v_init = 1;
-    Zw_init = 1;
-    Zw_dot_init = 1;
-    Zw_abs_w_init = 1;
-    Kp_init = 1;
+    Zw_init = -1;
+    Zw_dot_init = -1;
+    Zw_abs_w_init = -1;
+    Kp_init = -1;
     Kp_dot_init = -1;
-    Kp_abs_p_init = 1;
-    Mq_init = 1;
+    Kp_abs_p_init = -1;
+    Mq_init = -1;
     Mq_dot_init = -1;
     Mq_abs_q_init = -1;
     Nr_init = -1;

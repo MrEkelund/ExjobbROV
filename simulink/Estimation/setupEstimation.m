@@ -6,16 +6,18 @@ function [nonlinear_greybox_model, input_data, output_data, Ts] = setupEstimatio
 switch simulation
     case 0
         disp(sprintf('Using test data from %s',filepath));
-       [lin_vel_data ,lin_acc_data, ang_vel_data, imu_time, thrusters_data, thrusters_time, states, states_time, Ts]= ...
-            retriveData(filepath, plotting);
+       [lin_vel_data ,lin_acc_data, ang_vel_data, thrusters_data, states, time,Ts]= ...
+            getTestData(filepath, plotting);
     case 1
         disp(sprintf('Using simulated data from %s',filepath));
-        [lin_acc_data, ang_vel_data, imu_time, thrusters_data, thrusters_time, states, states_time] = ...
+        [lin_vel_data ,lin_acc_data, ang_vel_data, thrusters_data, states, time,Ts] = ...
             getSimulationData(filepath,plotting);
-        Ts = 0.05;
     otherwise
         error('Simulation can only be 0 or 1');
 end
+
+output_data = [zeros(size(ang_vel_data)), ang_vel_data , states(:,1:2)];
+input_data = thrusters_data;
 
 %% Setup the non linear greybox model
 Ts_model = 0;      % Sample time [s].  
@@ -94,17 +96,14 @@ end
 %Sets the sign of the parameters
 positive_parameters = [1:12,(size(parameters)-2:size(parameters))];
 % negative_parameters = [13:size(parameters,1)-3];
+negative_parameters = [15 18 21 24 27 30];
 for i = 1:size(positive_parameters,2)
     nonlinear_greybox_model.Parameters(positive_parameters(i)).Minimum = 0;
 end
-% 
-% for i = 1:size(negative_parameters,2)
-%     nonlinear_greybox_model.Parameters(negative_parameters(i)).Maximum = 0;
-%     nonlinear_greybox_model.Parameters(negative_parameters(i)).Minimum = -25;
-% end
 
-output_data = [zeros(size(ang_vel_data)), ang_vel_data , states(:,1:2)];
-input_data = thrusters_data;
-time = states_time;
+for i = 1:size(negative_parameters,2)
+    nonlinear_greybox_model.Parameters(negative_parameters(i)).Maximum = 0;
+end
+
 end
 
