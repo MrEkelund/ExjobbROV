@@ -18,14 +18,6 @@ ly4= parameters(11);
 lz6= parameters(12);
 zb= parameters(13);
 
-%******* Inputs
-u1 = control(1);
-u2 = control(2);
-u3 = control(3);
-u4 = control(4);
-u5 = control(5);
-u6 = control(6);
-
 %******* States
 u = x(1);
 v = x(2);
@@ -131,13 +123,14 @@ lookup =[...
     5.0938    1.0000];
 
 
+forces = g*interp1(lookup(:,2),lookup(:,1),control);
 %Thrusterforce in newtons. Lookup table returns in kgf
-f1 = g*interp1(lookup(:,2),lookup(:,1),u1);
-f2 = g*interp1(lookup(:,2),lookup(:,1),u2);
-f3 = g*interp1(lookup(:,2),lookup(:,1),u3);
-f4 = g*interp1(lookup(:,2),lookup(:,1),u4);
-f5 = g*interp1(lookup(:,2),lookup(:,1),u5);
-f6 = g*interp1(lookup(:,2),lookup(:,1),u6);
+f1 = forces(1);
+f2 = forces(2);
+f3 = forces(3);
+f4 = forces(4);
+f5 = forces(5);
+f6 = forces(6);
 %******* Parameters
 Xu= parameters(14);
 Xu_dot= parameters(15);
@@ -200,7 +193,7 @@ theta_dot = 0;%q*cf - r*sf;
 
 global counter;
 counter = counter + 1;
-if mod(counter,1000) == 0
+if mod(counter,10000) == 0
     disp(counter);
 end
 

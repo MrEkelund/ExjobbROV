@@ -18,14 +18,6 @@ ly4= parameters(11);
 lz6= parameters(12);
 zb= parameters(13);
 
-%******* Inputs
-u1 = control(1);
-u2 = control(2);
-u3 = control(3);
-u4 = control(4);
-u5 = control(5);
-u6 = control(6);
-
 %******* States
 u = x(1);
 v = x(2);
@@ -130,14 +122,14 @@ lookup =[...
     4.8988    0.9750
     5.0938    1.0000];
 
-
+forces = g*interp1(lookup(:,2),lookup(:,1),control);
 %Thrusterforce in newtons. Lookup table returns in kgf
-f1 = g*interp1(lookup(:,2),lookup(:,1),u1);
-f2 = g*interp1(lookup(:,2),lookup(:,1),u2);
-f3 = g*interp1(lookup(:,2),lookup(:,1),u3);
-f4 = g*interp1(lookup(:,2),lookup(:,1),u4);
-f5 = g*interp1(lookup(:,2),lookup(:,1),u5);
-f6 = g*interp1(lookup(:,2),lookup(:,1),u6);
+f1 = forces(1);
+f2 = forces(2);
+f3 = forces(3);
+f4 = forces(4);
+f5 = forces(5);
+f6 = forces(6);
 %******* Parameters
 Xu= parameters(14);
 Xu_dot= parameters(15);
@@ -160,6 +152,17 @@ Nr_abs_r= parameters(31);
 Ix= parameters(32);
 Iy= parameters(33);
 Iz= parameters(34);
+Ix_Kp_dot = parameters(35);
+Iy_Mq_dot = parameters(36);
+Kp_Ix_Kp_dot = parameters(37);
+Kp_abs_p_Ix_Kp_dot = parameters(38);
+Mq_dot_Ix_Kp_dot = parameters(39);
+Nr_dot_Ix_Kp_dot = parameters(40);
+Mq_Iy_Mq_dot = parameters(41);
+Mq_abs_q_Iy_Mq_dot = parameters(42);
+Kp_dot_Iy_Mq_dot = parameters(43);
+Nr_dot_Iy_Mq_dot = parameters(44);
+
 
 
 
@@ -182,18 +185,20 @@ v_dot =0;%...
  
 w_dot =0;%...
  %   (f1 + f2 + f5 - w*(Zw + Zw_abs_w*abs(w)) + m*(p*v - q*u) + cf*ct*(B - W) + Xu_dot*q*u - Yv_dot*p*v)/(Zw_dot - m);
- 
+
+% p_dot =...
+%     (f1*ly1 - f2*ly2 + f6*lz6 + p*(Kp + Kp_abs_p*abs(p)) - Mq_dot*q*r + Nr_dot*q*r + q*r*(Iy - Iz) + B*ct*sf*zb )/(Ix - Kp_dot); %- Yv_dot*v*w + Zw_dot*v*w 
  
 p_dot =...
-    (f1*ly1 - f2*ly2 + f6*lz6 + p*(Kp + Kp_abs_p*abs(p)) - Mq_dot*q*r + Nr_dot*q*r + q*r*(Iy - Iz) + B*ct*sf*zb )/(Ix - Kp_dot); %- Yv_dot*v*w + Zw_dot*v*w
+    (f1*ly1 - f2*ly2 + f6*lz6 + q*r*(Iy - Iz) + B*ct*sf*zb )/(Ix_Kp_dot) + p*(Kp_Ix_Kp_dot + Kp_abs_p_Ix_Kp_dot*abs(p)) - Mq_dot_Ix_Kp_dot*q*r + Nr_dot_Ix_Kp_dot*q*r; 
  
- 
+% q_dot =...
+%     (f1*lx1 + f2*lx2 - f5*lx5 + q*(Mq + Mq_abs_q*abs(q)) + Kp_dot*p*r + B*st*zb - Nr_dot*p*r - p*r*(Ix - Iz)  )/(Iy - Mq_dot); %+ Xu_dot*u*w - Zw_dot*u*w 
+
 q_dot =...
-    (f1*lx1 + f2*lx2 - f5*lx5 + q*(Mq + Mq_abs_q*abs(q)) + Kp_dot*p*r + B*st*zb - Nr_dot*p*r - p*r*(Ix - Iz)  )/(Iy - Mq_dot); %+ Xu_dot*u*w - Zw_dot*u*w 
+    (f1*lx1 + f2*lx2 - f5*lx5 + B*st*zb  - p*r*(Ix - Iz))/Iy_Mq_dot + q*(Mq_Iy_Mq_dot + Mq_abs_q_Iy_Mq_dot*abs(q)) + Kp_dot_Iy_Mq_dot*p*r - Nr_dot_Iy_Mq_dot*p*r; %+ Xu_dot*u*w - Zw_dot*u*w 
  
- 
-r_dot =0;%...
-%     (r*(Nr + Nr_abs_r*abs(r)) + f3*ly3 - f4*ly4 - Kp_dot*p*q + Mq_dot*p*q + p*q*(Ix - Iy) - Xu_dot*u*v + Yv_dot*u*v)/(Iz - Nr_dot);
+r_dot =(r*(Nr + Nr_abs_r*abs(r)) + f3*ly3 - f4*ly4 - Kp_dot*p*q + Mq_dot*p*q + p*q*(Ix - Iy) - Xu_dot*u*v + Yv_dot*u*v)/(Iz - Nr_dot);
  
 
 fi_dot = p + q*sf*st/ct + r*cf*st/ct;

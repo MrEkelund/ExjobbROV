@@ -69,9 +69,11 @@ fixed_parameters = [1:size(parameters,1)];  % Stores the index of the parameters
 u_dot_estimate_parameter_index = [14, 16, 18, 21, 15]; % Parameters u_dot estimates
 v_dot_estimate_parameter_index = [17, 19, 15, 21, 18]; % Parameters v_dot estimates
 w_dot_estimate_parameter_index = [20, 22, 15, 18, 21]; % Parameters w_dot estimates
-p_dot_estimate_parameter_index = [23, 25, 33, 34, 27, 30, 32, 24]; % Parameters p_dot estimates
+% p_dot_estimate_parameter_index = [23, 25, 33, 34, 27, 30, 32, 24]; % Parameters p_dot estimates
+p_dot_estimate_parameter_index = [33, 34,35,37,38,39,40];
 %p_dot_estimate_parameter_index = [23, 25, 33, 34, 27, 30, 18, 21, 32, 24]; % Parameters p_dot estimates
-q_dot_estimate_parameter_index = [26, 28, 32, 34, 24, 30, 33, 27]; % Parameters q_dot estimates
+% q_dot_estimate_parameter_index = [26, 28, 32, 34, 24, 30, 33, 27]; % Parameters q_dot estimates
+q_dot_estimate_parameter_index = [32, 34, 36, 40,41,42,43,44];
 % q_dot_estimate_parameter_index = [26, 28, 32, 34, 24, 30, 15, 21, 33, 27]; % Parameters q_dot estimates
 r_dot_estimate_parameter_index = [29, 31, 32, 33, 24, 27, 34, 30]; % Parameters r_dot estimates
 %r_dot_estimate_parameter_index = [29, 31, 32, 33, 24, 27, 15, 18, 34, 30]; % Parameters r_dot estimates
@@ -94,7 +96,7 @@ for i = 1:size(fixed_parameters,2)
 end
 
 %Sets the sign of the parameters
-positive_parameters = [1:12,(size(parameters)-2:size(parameters))];
+positive_parameters = [1:12, 32:34, 35, 36];
 % negative_parameters = [13:size(parameters,1)-3];
 negative_parameters = [15 18 21 24 27 30];
 for i = 1:size(positive_parameters,2)
