@@ -44,6 +44,16 @@ if isempty(files)
     Ix_init = 13;
     Iy_init = 13;
     Iz_init = 13;
+    Ix_Kp_dot = 1;
+    Iy_Mq_dot = 1;
+    Kp_Ix_Kp_dot = -1;
+    Kp_abs_p_Ix_Kp_dot = -1;
+    Mq_dot_Ix_Kp_dot = -1;
+    Nr_dot_Ix_Kp_dot = -1;
+    Mq_Iy_Mq_dot = -1;
+    Mq_abs_q_Iy_Mq_dot = -1;
+    Kp_dot_Iy_Mq_dot = -1;
+    Nr_dot_Iy_Mq_dot = -1;
     
     Parameters= [...
         m; g; rho; V; lx1; ly1; ly2; lx2; ly3; lx5; ly4;
@@ -52,7 +62,12 @@ if isempty(files)
         Zw_dot_init; Zw_abs_w_init; Kp_init; Kp_dot_init;
         Kp_abs_p_init; Mq_init; Mq_dot_init;
         Mq_abs_q_init; Nr_init; Nr_dot_init;
-        Nr_abs_r_init; Ix_init; Iy_init; Iz_init];
+        Nr_abs_r_init; Ix_init; Iy_init; Iz_init; 
+        Ix_Kp_dot; Iy_Mq_dot; Kp_Ix_Kp_dot; 
+        Kp_abs_p_Ix_Kp_dot; Mq_dot_Ix_Kp_dot;
+        Nr_dot_Ix_Kp_dot; Mq_Iy_Mq_dot;
+        Mq_abs_q_Iy_Mq_dot; Kp_dot_Iy_Mq_dot;
+        Nr_dot_Iy_Mq_dot];
 else
     temp = load('parameters.mat');
     disp('Parameters loaded from file')
@@ -64,8 +79,8 @@ Parameter_strings = {...
     'm';'g';'rho';'V';'lx1';'ly1';'ly2';'lx2';'ly3';'lx5';'ly4';'lz6';...
     'zb';'Xu';'Xu_dot';'Xu_abs_u';'Yv';'Yv_dot';'Yv_abs_v';'Zw';...
     'Zw_dot';'Zw_abs_w'; 'Kp';'Kp_dot'; 'Kp_abs_p'; 'Mq';'Mq_dot';...
-    'Mq_abs_q'; 'Nr';'Nr_dot';'Nr_abs_r';'Ix';'Iy';'Iz';'mqw';'kju';'qw';'qwe';...
-    'sadf';'azx';'öål';'qwed';'qqwe';'sad2'};
+    'Mq_abs_q'; 'Nr';'Nr_dot';'Nr_abs_r';'Ix';'Iy';'Iz';'Ix_Kp_dot';'Iy_Mq_dot';'Kp_Ix_Kp_dot';'Kp_abs_p_Ix_Kp_dot';...
+    'Mq_dot_Ix_Kp_dot';'Nr_dot_Ix_Kp_dot';'Mq_Iy_Mq_dot';'Mq_abs_q_Iy_Mq_dot';'Kp_dot_Iy_Mq_dot';'Nr_dot_Iy_Mq_dot'};
 
 end
 

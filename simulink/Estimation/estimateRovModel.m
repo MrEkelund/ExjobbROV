@@ -2,7 +2,7 @@
 clear;
 close all;
 simulation = 0;
-plotting = 1;
+plotting = 0;
 estimation_mode = 'Yaw';
 % yaw_filepath = fullfile('bag','act_3_4_test_1_2016-03-21-15-03-06.bag');
 yaw_filepath = fullfile('bag','act_3_4_test_2_2016-03-21-15-06-06.bag');
@@ -13,17 +13,15 @@ yaw_filepath = fullfile('bag','act_3_4_test_2_2016-03-21-15-06-06.bag');
 [yaw_nonlinear_greybox_model, input_data, output_data, Ts] =...
     setupEstimation(parameters, parameter_strings, estimation_mode, simulation, yaw_filepath, plotting);
 
-yaw_data = iddata(output_data(1:2000,:),input_data(1:2000,:),Ts,'Name', strcat(estimation_mode, 'data'));
+yaw_data = iddata(output_data(1:200,:),input_data(1:200,:),Ts,'Name', strcat(estimation_mode, 'data'));
 yaw_data.InputName = yaw_nonlinear_greybox_model.InputName;
 yaw_data.InputUnit = yaw_nonlinear_greybox_model.InputUnit;
 yaw_data.OutputName = yaw_nonlinear_greybox_model.OutputName;
 yaw_data.OutputUnit = yaw_nonlinear_greybox_model.OutputUnit;
 %%
-global counter 
-counter = 0;
 opt = nlgreyestOptions;
 opt.Display = 'on';
-% opt.SearchOption.MaxIter = 2;
+opt.SearchOption.MaxIter = 2;
 tic
 yaw_estimation = pem(yaw_data, yaw_nonlinear_greybox_model,opt);
 %yaw_estimation = nlgreyest(yaw_data, yaw_nonlinear_greybox_model,opt);
@@ -40,13 +38,13 @@ roll_pitch_filepath = fullfile('bag','act_1_2_5_6_test_1_2016-03-21-15-23-37.bag
 %roll_pitch_filepath = fullfile('bag','act_1_2_5_6_test_5_2016-03-21-15-32-03.bag');
 [parameters, parameter_strings]= initROVParameters();
 simulation = 0;
-plotting = 1;
+plotting = 0;
 
 [roll_pitch_nonlinear_greybox_model, input_data, output_data, Ts] =...
     setupEstimation(parameters, parameter_strings, estimation_mode, simulation, roll_pitch_filepath, plotting);
 
 %%
-roll_pitch_data = iddata(output_data(:,:),input_data(:,:), Ts,'Name', strcat(estimation_mode, 'data','SamplingInstants'));
+roll_pitch_data = iddata(output_data(1:100,:),input_data(1:100,:), Ts,'Name', strcat(estimation_mode, 'data'));
 roll_pitch_data.InputName = roll_pitch_nonlinear_greybox_model.InputName;
 roll_pitch_data.InputUnit = roll_pitch_nonlinear_greybox_model.InputUnit;
 roll_pitch_data.OutputName = roll_pitch_nonlinear_greybox_model.OutputName;
