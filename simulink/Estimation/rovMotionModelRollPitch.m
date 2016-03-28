@@ -122,7 +122,7 @@ lookup =[...
     4.8988    0.9750
     5.0938    1.0000];
 
-forces = g*interp1(lookup(:,2),lookup(:,1),control);
+forces = g*nakeinterp1(lookup(:,2),lookup(:,1),control');
 %Thrusterforce in newtons. Lookup table returns in kgf
 f1 = forces(1);
 f2 = forces(2);

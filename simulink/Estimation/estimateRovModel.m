@@ -54,7 +54,7 @@ roll_pitch_data.OutputUnit = roll_pitch_nonlinear_greybox_model.OutputUnit;
 
 opt = nlgreyestOptions;
 opt.Display = 'on';
-opt.SearchOption.MaxIter = 50;
+opt.SearchOption.MaxIter = 10;
 tic
 roll_pitch_estimation = nlgreyest(roll_pitch_data, roll_pitch_nonlinear_greybox_model,opt);
 toc
