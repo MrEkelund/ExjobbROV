@@ -1,4 +1,4 @@
-function [ output_args ] = saveParameters(new_parameters,estimated_parameters)
+function [] = saveParameters(new_parameters,estimated_parameters)
 %UNTITLED4 Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -17,8 +17,4 @@ else
 end
 save('parameters.mat','parameters')
 disp('Parameters saved to parameters.mat')
-
-
-
 end
-

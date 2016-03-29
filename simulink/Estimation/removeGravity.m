@@ -1,11 +1,11 @@
 function [ compensated_acc_data ] = removeGravity( roll,pitch,yaw, acc_data)
     %Removes gravity from the acceleration data
-    sfi = sind(roll);
-    cfi = cosd(roll);
-    spsi = sind(yaw);
-    cpsi = cosd(yaw);
-    stheta = sind(pitch);
-    ctheta = cosd(pitch);
+    sfi = sin(roll);
+    cfi = cos(roll);
+    spsi = sin(yaw);
+    cpsi = cos(yaw);
+    stheta = sin(pitch);
+    ctheta = cos(pitch);
     
     compensated_acc_data = zeros(size(acc_data));
     for i=1:size(acc_data,1)

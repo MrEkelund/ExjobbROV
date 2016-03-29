@@ -4,12 +4,12 @@ function [ filter_data  states] = fossenIntegration( acc_data, roll, pitch, yaw,
 
 gn = [0 0 9.80665]';
 
-sfi = sind(roll);
-cfi = cosd(roll);
-spsi = sind(yaw);
-cpsi = cosd(yaw);
-stheta = sind(pitch);
-ctheta = cosd(pitch);
+sfi = sin(roll);
+cfi = cos(roll);
+spsi = sin(yaw);
+cpsi = cos(yaw);
+stheta = sin(pitch);
+ctheta = cos(pitch);
 
 filter_data = zeros(size(acc_data,1)-1,size(acc_data,2));
 states = zeros(size(acc_data,1)-1,9);
