@@ -7,8 +7,8 @@ files = dir('parameters.mat');
 if isempty(files)
     warning('No parameter file found. Using default values.');
     % Some constants
-    m = 5.5;       % ROV mass[kg];
-    g = 9.82;   % Gravity[m/s^2]
+    m = 6.621;       % ROV mass[kg];
+    g = 9.81744;   % Gravity[m/s^2]
     rho = 1000; % water density [kg/m^3]
     V = 0.012;       % Discplaced water volume [m^3]
     % Thruster placement from CO [m]
