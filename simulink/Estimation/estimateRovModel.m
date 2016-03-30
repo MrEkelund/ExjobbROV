@@ -68,8 +68,8 @@ displayTable(roll_pitch_estimation, parameters, parameter_strings)
 clear;
 close all;
 estimation_mode = 'Pitch';
-pitch_filepath = fullfile('bag','act_5_test_1_2016-03-21-15-36-48.bag');
-%pitch_filepath = fullfile('bag','act_5_test_2_2016-03-21-15-37-53.bag');
+%pitch_filepath = fullfile('bag','act_5_test_1_2016-03-21-15-36-48.bag');
+pitch_filepath = fullfile('bag','act_5_test_2_2016-03-21-15-37-53.bag');
 
 [parameters, parameter_strings]= initROVParameters();
 simulation = 0;
@@ -88,7 +88,7 @@ pitch_data.OutputUnit = pitch_nonlinear_greybox_model.OutputUnit;
 
 opt = nlgreyestOptions;
 opt.Display = 'on';
-opt.SearchOption.MaxIter = 50;
+opt.SearchOption.MaxIter = 2;
 tic
 pitch_estimation = nlgreyest(pitch_data, pitch_nonlinear_greybox_model,opt);
 toc
