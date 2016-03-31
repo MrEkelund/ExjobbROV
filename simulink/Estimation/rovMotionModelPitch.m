@@ -1,4 +1,4 @@
-function [x_dot, y] = rovMotionModelYaw( t, x, control,  ...
+function [x_dot, y] = rovMotionModelPitch( t, x, control, ...
     m, g, rho, V, lx1, ly1, ly2, lx2, ly3, lx5, ly4, lz6, zb, Xu, ...
     Xu_dot, Xu_abs_u, Yv, Yv_dot, Yv_abs_v, Zw, Zw_dot,...
     Zw_abs_w, Kp, Kp_dot, Kp_abs_p, Mq, Mq_dot, Mq_abs_q,...
@@ -36,13 +36,13 @@ r = x(6);
 
 fi = x(7);
 theta = x(8);
-%******* Computed values
+%*******    Computed values
 
 ct = cos(theta);
 st = sin(theta);
 cf = cos(fi);
 sf = sin(fi);
- 
+
 % B = rho*g*V;
 W = m*g;
 B = W;
@@ -130,7 +130,6 @@ lookup =[...
     4.8988    0.9750
     5.0938    1.0000];
 
-
 forces = g*nakeinterp1(lookup(:,2),lookup(:,1),control');
 %Thrusterforce in newtons. Lookup table returns in kgf
 f1 = forces(1);
@@ -161,6 +160,17 @@ f6 = forces(6);
 % Ix= parameters(32);
 % Iy= parameters(33);
 % Iz= parameters(34);
+% Ix_Kp_dot = parameters(35);
+% Iy_Mq_dot = parameters(36);
+% Kp_Ix_Kp_dot = parameters(37);
+% Kp_abs_p_Ix_Kp_dot = parameters(38);
+% Mq_dot_Ix_Kp_dot = parameters(39);
+% Nr_dot_Ix_Kp_dot = parameters(40);
+% Mq_Iy_Mq_dot = parameters(41);
+% Mq_abs_q_Iy_Mq_dot = parameters(42);
+% Kp_dot_Iy_Mq_dot = parameters(43);
+% Nr_dot_Iy_Mq_dot = parameters(44);
+
 
 
 
@@ -172,34 +182,38 @@ f6 = forces(6);
 % 29, 31, 32, 33, 24, 27, 15, 18, 34, 30 %r_dot
 
 
+
 u_dot =0;%...
 %    -(f3 + f4 + u*(Xu + Xu_abs_u*abs(u)) + st*(B - W) - m*(q*w - r*v) - Yv_dot*r*v + Zw_dot*q*w)/(Xu_dot - m);
- 
- 
+
+
 v_dot =0;%...
 %    (f6 - v*(Yv + Yv_abs_v*abs(v)) - m*(p*w - r*u) + ct*sf*(B - W) - Xu_dot*r*u + Zw_dot*p*w)/(Yv_dot - m);
- 
- 
-w_dot =0;%...
- %   (f1 + f2 + f5 - w*(Zw + Zw_abs_w*abs(w)) + m*(p*v - q*u) + cf*ct*(B - W) + Xu_dot*q*u - Yv_dot*p*v)/(Zw_dot - m);
- 
- 
-p_dot =0;%...
-    %(f1*ly1 - f2*ly2 + f6*lz6 + p*(Kp + Kp_abs_p*abs(p)) - Mq_dot*q*r + Nr_dot*q*r + q*r*(Iy - Iz) + B*ct*sf*zb)/(Ix - Kp_dot); %  - Yv_dot*v*w + Zw_dot*v*w
- 
- 
-q_dot =0;%...
-     %(f1*lx1 + f2*lx2 - f5*lx5 + q*(Mq + Mq_abs_q*abs(q)) + Kp_dot*p*r + B*st*zb - Nr_dot*p*r - p*r*(Ix - Iz) )/(Iy - Mq_dot);  %+ Xu_dot*u*w - Zw_dot*u*w
- 
- 
-r_dot =...
-    (r*(Nr + Nr_abs_r*abs(r)) + f3*ly3 - f4*ly4 - Kp_dot*p*q + Mq_dot*p*q + p*q*(Ix - Iy))/(Iz - Nr_dot); % - Xu_dot*u*v + Yv_dot*u*v
- 
 
-fi_dot =  0;%p + q*sf*st/ct + r*cf*st/ct;
-theta_dot = 0;%q*cf - r*sf;
+
+w_dot =0;%...
+%   (f1 + f2 + f5 - w*(Zw + Zw_abs_w*abs(w)) + m*(p*v - q*u) + cf*ct*(B - W) + Xu_dot*q*u - Yv_dot*p*v)/(Zw_dot - m);
+
+ p_dot =0;%...
+%     (f1*ly1 - f2*ly2 + f6*lz6 + p*(Kp + Kp_abs_p*abs(p)) - Mq_dot*q*r + Nr_dot*q*r + q*r*(Iy - Iz) + B*ct*sf*zb )/(Ix - Kp_dot); %- Yv_dot*v*w + Zw_dot*v*w
+
+% p_dot =...
+%     (f1*ly1 - f2*ly2 + f6*lz6 + q*r*(Iy - Iz) + B*ct*sf*zb )/(Ix_Kp_dot) + p*(Kp_Ix_Kp_dot + Kp_abs_p_Ix_Kp_dot*abs(p)) - Mq_dot_Ix_Kp_dot*q*r + Nr_dot_Ix_Kp_dot*q*r;
+
+q_dot = ...
+    (f1*lx1 + f2*lx2 - f5*lx5 + q*(Mq + Mq_abs_q*abs(q)) + Kp_dot*p*r + B*st*zb - Nr_dot*p*r - p*r*(Ix - Iz)  )/(Iy - Mq_dot); %+ Xu_dot*u*w - Zw_dot*u*w
+
+% q_dot =...
+%     (f1*lx1 + f2*lx2 - f5*lx5 + B*st*zb  - p*r*(Ix - Iz))/Iy_Mq_dot + q*(Mq_Iy_Mq_dot + Mq_abs_q_Iy_Mq_dot*abs(q)) + Kp_dot_Iy_Mq_dot*p*r - Nr_dot_Iy_Mq_dot*p*r; %+ Xu_dot*u*w - Zw_dot*u*w
+
+r_dot =...
+    (r*(Nr + Nr_abs_r*abs(r)) + f3*ly3 - f4*ly4 - Kp_dot*p*q + Mq_dot*p*q + p*q*(Ix - Iy) - Xu_dot*u*v + Yv_dot*u*v)/(Iz - Nr_dot);
+
+
+fi_dot = p + q*sf*st/ct + r*cf*st/ct;
+theta_dot = q*cf - r*sf;
 
 x_dot = [u_dot;v_dot;w_dot;p_dot;q_dot;r_dot;fi_dot;theta_dot];
+
 y = x;
 end
-

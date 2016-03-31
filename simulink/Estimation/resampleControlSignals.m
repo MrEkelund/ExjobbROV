@@ -1,11 +1,22 @@
-function [resampled_control_signals, states, time, Ts] = resampleControlSignals(control_signals, control_time, states_data,sensor_time)
-%UNTITLED2 Summary of this function goes here
-%   Detailed explanation goes here
+function [resampled_control_signals, states, time, Ts] = resampleControlSignals(control_signals, control_time, states_data, state_time)
+%resampleControlSingals Resamples the control signal with a zero hold
+%method to the same sampletime as the states
+%   input: control_singals - Control signals vector with lower sampling
+%   time than states vector.
+%   input: control_time - The time vector for the control signals. Used for
+%   syncing the test time.
+%   input: states_data - State vector.
+%   input: state_time - Time vector for the states.
+%
+%   output: resampled_control_signals - The resampled control signals.
+%   output: states - The relevant states for the test.
+%   output: time - New time vector for both the states and control signals.
+%   output: Ts - Sampling period for the vectors
 
-Ts = mean(sensor_time(2:end) - sensor_time(1:end-1));
-first_time_instant = find((sensor_time - control_time(1)) > -0.001 & (sensor_time - control_time(1) < 0.5),1);
-last_time_instant = find((sensor_time - control_time(end)) > -Ts & (sensor_time - control_time(end) < Ts),1)
-test_time = sensor_time(first_time_instant:last_time_instant);
+Ts = mean(state_time(2:end) - state_time(1:end-1));
+first_time_instant = find((state_time - control_time(1)) > -0.001 & (state_time - control_time(1) < 0.5),1);
+last_time_instant = find((state_time - control_time(end)) > -Ts & (state_time - control_time(end) < Ts),1);
+test_time = state_time(first_time_instant:last_time_instant);
 
 
 resampled_control_signals = zeros(length(test_time),size(control_signals,2));
