@@ -1,10 +1,22 @@
-function [] = plotData(states, ang_vel_data, lin_vel_data,lin_acc_data, thrusters_data,time)
+function [] = plotData(states, ang_vel_data, lin_vel_data, lin_acc_data, thrusters_data, time, filename)
 %plotData plots the data
 
-imu_fig = figure('Name','IMU','units','normalized','position',[0 0.5 .5 .41]);
-states_fig = figure('Name','States','units','normalized','position',[0 0 .5 .41]);
-%integrated_fig = figure('Name','Integrated acc','units','normalized','position',[0.5 0.5 .5 .41]);
-thrusters_fig = figure('Name','Thruster','units','normalized','position',[0.5 0 .5 .41]);
+if nargin == 7
+    imu_name = strcat(filename ,' - IMU');
+    states_name = strcat(filename ,' - States');
+    %     integrated_name = strcat(filename ,' - Integrated acc');
+    thrusters_name = strcat(filename ,' - Thrusters');
+else
+    imu_name = 'IMU';
+    states_name = 'States';
+    %     integrated_name = 'Integrated acc';
+    thrusters_name = 'Thrusters';
+end
+
+imu_fig = figure('Name', imu_name, 'units', 'normalized', 'position', [0 0.5 .5 .41]);
+states_fig = figure('Name', states_name, 'units', 'normalized', 'position', [0 0 .5 .41]);
+%integrated_fig = figure('Name',integrated_name ,'units','normalized','position', [0.5 0.5 .5 .41]);
+thrusters_fig = figure('Name', thrusters_name, 'units', 'normalized', 'position', [0.5 0 .5 .41]);
 
 plot_time = time-time(1)*ones(size(time,1),1);
 figure(states_fig);
