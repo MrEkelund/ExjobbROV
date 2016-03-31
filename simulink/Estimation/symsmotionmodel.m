@@ -85,6 +85,7 @@ thrusterforce = [...
 tau = T*thrusterforce;
 
 nu_dot = inv(M)*(tau-C-D-gn);
+
 u_dot = nu_dot(1)
 v_dot = nu_dot(2)
 w_dot = nu_dot(3)

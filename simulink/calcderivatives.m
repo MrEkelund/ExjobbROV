@@ -33,13 +33,6 @@ Sw = [0, -(wx ), -(wy ), -(wz ); % wk = gyro_meas + bias bias is subtracted in a
     (wy ), -(wz ), 0, (wx );
     (wz ), (wy ), -(wx ), 0];
 
-% qk+1 = Aq + Bu  u = w  With bias added as states.
-
-
-% 
-% A = blkdiag(eye(4) + 1/2*Sw*T,eye(7));
-% B = [T/2*Sq;    %quaternions
-%     0, 0, 0];   %D pos aka depth
 
 
 

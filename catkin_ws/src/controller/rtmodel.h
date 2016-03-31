@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'Controller'.
 //
-// Model version                  : 1.174
+// Model version                  : 1.185
 // Simulink Coder version         : 8.10 (R2016a) 10-Feb-2016
-// C/C++ source code generated on : Sun Mar 20 10:44:52 2016
+// C/C++ source code generated on : Thu Mar 31 10:34:44 2016
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Generic->Unspecified (assume 32-bit Generic)
@@ -1172,6 +1172,15 @@ static Parameters_Controller_T Controller_P = {
 
   { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
   -1.0,                                // Expression: SampleTime
+                                       //  Referenced by: '<Root>/roll_ref'
+
+  -1.0,                                // Expression: SampleTime
+                                       //  Referenced by: '<Root>/pitch_ref'
+
+  -1.0,                                // Expression: SampleTime
+                                       //  Referenced by: '<Root>/yaw_ref'
+
+  -1.0,                                // Expression: SampleTime
                                        //  Referenced by: '<Root>/Get controller type'
 
   -1.0,                                // Expression: SampleTime
@@ -1259,15 +1268,6 @@ static Parameters_Controller_T Controller_P = {
                                        //  Referenced by: '<S4>/<velocity Z>'
 
   -1.0,                                // Expression: SampleTime
-                                       //  Referenced by: '<S5>/yaw_ref'
-
-  -1.0,                                // Expression: SampleTime
-                                       //  Referenced by: '<S5>/pitch_ref'
-
-  -1.0,                                // Expression: SampleTime
-                                       //  Referenced by: '<S5>/roll_ref'
-
-  -1.0,                                // Expression: SampleTime
                                        //  Referenced by: '<S23>/I_pitch'
 
   -1.0,                                // Expression: SampleTime
@@ -1309,37 +1309,37 @@ static Parameters_Controller_T Controller_P = {
   0.0,                                 // Expression: 0
                                        //  Referenced by: '<S5>/Constant'
 
-  0.05,                                // Computed Parameter: Integrator_gainval
+  0.01,                                // Computed Parameter: Integrator_gainval
                                        //  Referenced by: '<S25>/Integrator'
 
   0.0,                                 // Expression: InitialConditionForIntegrator
                                        //  Referenced by: '<S25>/Integrator'
 
-  0.05,                                // Computed Parameter: Filter_gainval
+  0.01,                                // Computed Parameter: Filter_gainval
                                        //  Referenced by: '<S25>/Filter'
 
   0.0,                                 // Expression: InitialConditionForFilter
                                        //  Referenced by: '<S25>/Filter'
 
-  0.05,                                // Computed Parameter: Integrator_gainval_b
+  0.01,                                // Computed Parameter: Integrator_gainval_b
                                        //  Referenced by: '<S22>/Integrator'
 
   0.0,                                 // Expression: InitialConditionForIntegrator
                                        //  Referenced by: '<S22>/Integrator'
 
-  0.05,                                // Computed Parameter: Filter_gainval_l
+  0.01,                                // Computed Parameter: Filter_gainval_l
                                        //  Referenced by: '<S22>/Filter'
 
   0.0,                                 // Expression: InitialConditionForFilter
                                        //  Referenced by: '<S22>/Filter'
 
-  0.05,                                // Computed Parameter: Integrator_gainval_l
+  0.01,                                // Computed Parameter: Integrator_gainval_l
                                        //  Referenced by: '<S28>/Integrator'
 
   0.0,                                 // Expression: InitialConditionForIntegrator
                                        //  Referenced by: '<S28>/Integrator'
 
-  0.05,                                // Computed Parameter: Filter_gainval_e
+  0.01,                                // Computed Parameter: Filter_gainval_e
                                        //  Referenced by: '<S28>/Filter'
 
   0.0,                                 // Expression: InitialConditionForFilter
@@ -1362,6 +1362,9 @@ static Parameters_Controller_T Controller_P = {
 
   0.0,                                 // Expression: 0
                                        //  Referenced by: '<S28>/Constant'
+
+  -1.0,                                // Expression: SampleTime
+                                       //  Referenced by: '<S6>/Get Parameter'
 
   -1.0,                                // Expression: SampleTime
                                        //  Referenced by: '<S31>/Swtiching factor2'
@@ -1537,13 +1540,13 @@ static Parameters_Controller_T Controller_P = {
   0.0,                                 // Computed Parameter: velociteslinearxyzangularxyz_Y0
                                        //  Referenced by: '<S10>/velocites [linear xyz, angular xyz]'
 
-  0.05,                                // Computed Parameter: Integrator_gainval_h
+  0.01,                                // Computed Parameter: Integrator_gainval_h
                                        //  Referenced by: '<S56>/Integrator'
 
   0.0,                                 // Expression: InitialConditionForIntegrator
                                        //  Referenced by: '<S56>/Integrator'
 
-  0.05,                                // Computed Parameter: Filter_gainval_n
+  0.01,                                // Computed Parameter: Filter_gainval_n
                                        //  Referenced by: '<S56>/Filter'
 
   0.0,                                 // Expression: InitialConditionForFilter
@@ -1555,13 +1558,13 @@ static Parameters_Controller_T Controller_P = {
   0.0,                                 // Expression: 0
                                        //  Referenced by: '<S56>/Constant'
 
-  0.05,                                // Computed Parameter: Integrator_gainval_c
+  0.01,                                // Computed Parameter: Integrator_gainval_c
                                        //  Referenced by: '<S59>/Integrator'
 
   0.0,                                 // Expression: InitialConditionForIntegrator
                                        //  Referenced by: '<S59>/Integrator'
 
-  0.05,                                // Computed Parameter: Filter_gainval_i
+  0.01,                                // Computed Parameter: Filter_gainval_i
                                        //  Referenced by: '<S59>/Filter'
 
   0.0,                                 // Expression: InitialConditionForFilter
@@ -1573,13 +1576,13 @@ static Parameters_Controller_T Controller_P = {
   0.0,                                 // Expression: 0
                                        //  Referenced by: '<S59>/Constant'
 
-  0.05,                                // Computed Parameter: Integrator_gainval_n
+  0.01,                                // Computed Parameter: Integrator_gainval_n
                                        //  Referenced by: '<S62>/Integrator'
 
   0.0,                                 // Expression: InitialConditionForIntegrator
                                        //  Referenced by: '<S62>/Integrator'
 
-  0.05,                                // Computed Parameter: Filter_gainval_k
+  0.01,                                // Computed Parameter: Filter_gainval_k
                                        //  Referenced by: '<S62>/Filter'
 
   0.0,                                 // Expression: InitialConditionForFilter
@@ -1591,13 +1594,13 @@ static Parameters_Controller_T Controller_P = {
   0.0,                                 // Expression: 0
                                        //  Referenced by: '<S62>/Constant'
 
-  0.05,                                // Computed Parameter: Integrator_gainval_j
+  0.01,                                // Computed Parameter: Integrator_gainval_j
                                        //  Referenced by: '<S65>/Integrator'
 
   0.0,                                 // Expression: InitialConditionForIntegrator
                                        //  Referenced by: '<S65>/Integrator'
 
-  0.05,                                // Computed Parameter: Filter_gainval_h
+  0.01,                                // Computed Parameter: Filter_gainval_h
                                        //  Referenced by: '<S65>/Filter'
 
   0.0,                                 // Expression: InitialConditionForFilter
@@ -1609,13 +1612,13 @@ static Parameters_Controller_T Controller_P = {
   0.0,                                 // Expression: 0
                                        //  Referenced by: '<S65>/Constant'
 
-  0.05,                                // Computed Parameter: Integrator_gainval_np
+  0.01,                                // Computed Parameter: Integrator_gainval_np
                                        //  Referenced by: '<S68>/Integrator'
 
   0.0,                                 // Expression: InitialConditionForIntegrator
                                        //  Referenced by: '<S68>/Integrator'
 
-  0.05,                                // Computed Parameter: Filter_gainval_h0
+  0.01,                                // Computed Parameter: Filter_gainval_h0
                                        //  Referenced by: '<S68>/Filter'
 
   0.0,                                 // Expression: InitialConditionForFilter
@@ -1627,13 +1630,13 @@ static Parameters_Controller_T Controller_P = {
   0.0,                                 // Expression: 0
                                        //  Referenced by: '<S68>/Constant'
 
-  0.05,                                // Computed Parameter: Integrator_gainval_m
+  0.01,                                // Computed Parameter: Integrator_gainval_m
                                        //  Referenced by: '<S71>/Integrator'
 
   0.0,                                 // Expression: InitialConditionForIntegrator
                                        //  Referenced by: '<S71>/Integrator'
 
-  0.05,                                // Computed Parameter: Filter_gainval_b
+  0.01,                                // Computed Parameter: Filter_gainval_b
                                        //  Referenced by: '<S71>/Filter'
 
   0.0,                                 // Expression: InitialConditionForFilter
@@ -1699,23 +1702,29 @@ static Parameters_Controller_T Controller_P = {
   -1.0,                                // Expression: -1
                                        //  Referenced by: '<S16>/Saturation'
 
-  0.05,                                // Computed Parameter: DiscreteTimeIntegrator_gainval
+  0.01,                                // Computed Parameter: DiscreteTimeIntegrator_gainval
                                        //  Referenced by: '<S8>/Discrete-Time Integrator'
 
   0.0,                                 // Expression: 0
                                        //  Referenced by: '<S8>/Discrete-Time Integrator'
 
-  0.05,                                // Computed Parameter: DiscreteTimeIntegrator1_gainval
+  0.01,                                // Computed Parameter: DiscreteTimeIntegrator1_gainval
                                        //  Referenced by: '<S8>/Discrete-Time Integrator1'
 
   0.0,                                 // Expression: 0
                                        //  Referenced by: '<S8>/Discrete-Time Integrator1'
 
-  0.05,                                // Computed Parameter: DiscreteTimeIntegrator2_gainval
+  0.01,                                // Computed Parameter: DiscreteTimeIntegrator2_gainval
                                        //  Referenced by: '<S8>/Discrete-Time Integrator2'
 
   0.0,                                 // Expression: 0
                                        //  Referenced by: '<S8>/Discrete-Time Integrator2'
+
+  1.0,                                 // Expression: 1
+                                       //  Referenced by: '<Root>/control 1'
+
+  2.0,                                 // Expression: 2
+                                       //  Referenced by: '<Root>/2'
 
   1.0,                                 // Expression: 1
                                        //  Referenced by: '<S8>/Constant'

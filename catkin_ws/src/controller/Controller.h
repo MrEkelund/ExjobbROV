@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'Controller'.
 //
-// Model version                  : 1.174
+// Model version                  : 1.185
 // Simulink Coder version         : 8.10 (R2016a) 10-Feb-2016
-// C/C++ source code generated on : Sun Mar 20 10:44:52 2016
+// C/C++ source code generated on : Thu Mar 31 10:34:44 2016
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Generic->Unspecified (assume 32-bit Generic)
@@ -122,6 +122,9 @@ typedef struct {
   real_T Product3;                     // '<S4>/Product3'
   real_T Product4;                     // '<S4>/Product4'
   real_T Product5;                     // '<S4>/Product5'
+  real_T Errorx1;                      // '<S2>/Error x1'
+  real_T Errory1;                      // '<S2>/Error y1'
+  real_T Errorz4;                      // '<S2>/Error z4'
   real_T Errorx;                       // '<S2>/Error x'
   real_T Errory;                       // '<S2>/Error y'
   real_T Errorz;                       // '<S2>/Error z'
@@ -134,38 +137,36 @@ typedef struct {
   real_T cpsi_c;
   real_T stheta;
   real_T ctheta;
+  real_T ChooseControllersignal_c;     // '<S6>/Choose Controller signal'
   real_T RandomSource;                 // '<S36>/Random Source'
   real_T SignPreIntegrator_k;          // '<S73>/SignPreIntegrator'
-  real_T SumI1_d;                      // '<S71>/SumI1'
   real_T NOut_e;                       // '<S59>/NOut'
   real_T NOut_m;                       // '<S62>/NOut'
   real_T NOut_b;                       // '<S65>/NOut'
-  real_T NOut_i;                       // '<S68>/NOut'
   real_T Switch;                       // '<S56>/Switch'
   real_T Switch_o;                     // '<S59>/Switch'
   real_T Switch_j;                     // '<S62>/Switch'
-  real_T Switch_e;                     // '<S65>/Switch'
-  real_T Switch_i;                     // '<S68>/Switch'
+  real_T ZeroGain_e;                   // '<S24>/ZeroGain'
   real_T min;
   real_T max;
   real_T d;
   SL_Bus_Controller_std_msgs_Bool In1_b;// '<S17>/In1'
   int32_T value;
   int32_T value_k;
+  int32_T value_c;
   int32_T i;
-  int32_T i0;
   int32_T one;
   int32_T lsw;
   int32_T chan;
   int32_T samps;
-  int32_T i_c;
+  int32_T i_b;
   uint32_T j;
-  int8_T rtb_DataTypeConv2_c_b;
-  int8_T i1;
+  int8_T rtb_DataTypeConv2_c_p;
+  int8_T i0;
   boolean_T p;
-  boolean_T p_p;
-  boolean_T value_c;
+  boolean_T p_c;
   boolean_T value_f;
+  boolean_T value_g;
   boolean_T Compare;                   // '<S1>/Compare'
   boolean_T LogicalOperator;           // '<Root>/Logical Operator'
   boolean_T NotEqual;                  // '<S58>/NotEqual'
@@ -238,6 +239,7 @@ typedef struct {
   robotics_slros_internal_block_T obj_of;// '<S31>/Swtiching factor'
   robotics_slros_internal_block_T obj_fx;// '<S31>/Swtiching factor1'
   robotics_slros_internal_block_T obj_d3;// '<S31>/Swtiching factor2'
+  robotics_slros_internal_block_T obj_fg;// '<S6>/Get Parameter'
   robotics_slros_internal_block_T obj_hn;// '<S29>/P_yaw'
   robotics_slros_internal_block_T obj_ha;// '<S29>/D_yaw'
   robotics_slros_internal_block_T obj_py;// '<S29>/N_yaw '
@@ -250,9 +252,6 @@ typedef struct {
   robotics_slros_internal_block_T obj_b4;// '<S23>/D_pitch'
   robotics_slros_internal_block_T obj_fq;// '<S23>/N_pitch '
   robotics_slros_internal_block_T obj_jb;// '<S23>/I_pitch'
-  robotics_slros_internal_block_T obj_pk;// '<S5>/roll_ref'
-  robotics_slros_internal_block_T obj_mbl;// '<S5>/pitch_ref'
-  robotics_slros_internal_block_T obj_o5;// '<S5>/yaw_ref'
   robotics_slros_internal_block_T obj_km;// '<S4>/Get Parameter'
   robotics_slros_internal_block_T obj_oz;// '<S4>/Get Parameter1'
   robotics_slros_internal_block_T obj_iv;// '<S4>/Get Parameter2'
@@ -261,6 +260,9 @@ typedef struct {
   robotics_slros_internal_block_T obj_ku;// '<S4>/Get Parameter5'
   robotics_slros_internal_block_T obj_h2;// '<Root>/Get test'
   robotics_slros_internal_block_T obj_nl;// '<Root>/Get controller type'
+  robotics_slros_internal_block_T obj_o5;// '<Root>/yaw_ref'
+  robotics_slros_internal_block_T obj_mbl;// '<Root>/pitch_ref'
+  robotics_slros_internal_block_T obj_pk;// '<Root>/roll_ref'
   real_T DiscreteTimeIntegrator_DSTATE;// '<S8>/Discrete-Time Integrator'
   real_T DiscreteTimeIntegrator1_DSTATE;// '<S8>/Discrete-Time Integrator1'
   real_T DiscreteTimeIntegrator2_DSTATE;// '<S8>/Discrete-Time Integrator2'
@@ -347,6 +349,7 @@ typedef struct {
   void *Swtichingfactor_PWORK_n;       // '<S31>/Swtiching factor'
   void *Swtichingfactor1_PWORK_l;      // '<S31>/Swtiching factor1'
   void *Swtichingfactor2_PWORK_l;      // '<S31>/Swtiching factor2'
+  void *GetParameter_PWORK_p;          // '<S6>/Get Parameter'
   void *P_yaw_PWORK;                   // '<S29>/P_yaw'
   void *D_yaw_PWORK;                   // '<S29>/D_yaw'
   void *N_yaw_PWORK;                   // '<S29>/N_yaw '
@@ -359,9 +362,6 @@ typedef struct {
   void *D_pitch_PWORK;                 // '<S23>/D_pitch'
   void *N_pitch_PWORK;                 // '<S23>/N_pitch '
   void *I_pitch_PWORK;                 // '<S23>/I_pitch'
-  void *roll_ref_PWORK;                // '<S5>/roll_ref'
-  void *pitch_ref_PWORK;               // '<S5>/pitch_ref'
-  void *yaw_ref_PWORK;                 // '<S5>/yaw_ref'
   void *GetParameter_PWORK_m;          // '<S4>/Get Parameter'
   void *GetParameter1_PWORK_o;         // '<S4>/Get Parameter1'
   void *GetParameter2_PWORK_h;         // '<S4>/Get Parameter2'
@@ -371,6 +371,9 @@ typedef struct {
   void *SourceBlock_PWORK_fw;          // '<S3>/SourceBlock'
   void *Gettest_PWORK;                 // '<Root>/Get test'
   void *Getcontrollertype_PWORK;       // '<Root>/Get controller type'
+  void *yaw_ref_PWORK;                 // '<Root>/yaw_ref'
+  void *pitch_ref_PWORK;               // '<Root>/pitch_ref'
+  void *roll_ref_PWORK;                // '<Root>/roll_ref'
   uint32_T RandomSource_SEED_DWORK;    // '<S31>/Random Source'
   uint32_T RandomSource_SEED_DWORK_l;  // '<S32>/Random Source'
   uint32_T RandomSource_SEED_DWORK_c;  // '<S33>/Random Source'
@@ -434,6 +437,7 @@ typedef struct {
   boolean_T objisempty_ls;             // '<S31>/Swtiching factor'
   boolean_T objisempty_jb;             // '<S31>/Swtiching factor1'
   boolean_T objisempty_jr;             // '<S31>/Swtiching factor2'
+  boolean_T objisempty_ni;             // '<S6>/Get Parameter'
   boolean_T objisempty_gj;             // '<S29>/P_yaw'
   boolean_T objisempty_pl;             // '<S29>/D_yaw'
   boolean_T objisempty_ifg;            // '<S29>/N_yaw '
@@ -446,9 +450,6 @@ typedef struct {
   boolean_T objisempty_o5;             // '<S23>/D_pitch'
   boolean_T objisempty_jg;             // '<S23>/N_pitch '
   boolean_T objisempty_ljn;            // '<S23>/I_pitch'
-  boolean_T objisempty_lg;             // '<S5>/roll_ref'
-  boolean_T objisempty_ho;             // '<S5>/pitch_ref'
-  boolean_T objisempty_j5;             // '<S5>/yaw_ref'
   boolean_T objisempty_c1;             // '<S4>/Get Parameter'
   boolean_T objisempty_k3;             // '<S4>/Get Parameter1'
   boolean_T objisempty_jz;             // '<S4>/Get Parameter2'
@@ -458,6 +459,9 @@ typedef struct {
   boolean_T objisempty_j0;             // '<S3>/SourceBlock'
   boolean_T objisempty_pr;             // '<Root>/Get test'
   boolean_T objisempty_m0;             // '<Root>/Get controller type'
+  boolean_T objisempty_j5;             // '<Root>/yaw_ref'
+  boolean_T objisempty_ho;             // '<Root>/pitch_ref'
+  boolean_T objisempty_lg;             // '<Root>/roll_ref'
   rtDW_StateTransitionTable_Con_T sf_StateTransitionTable_o2;// '<S36>/State Transition Table' 
   rtDW_StateTransitionTable_Con_T sf_StateTransitionTable_o;// '<S35>/State Transition Table' 
   rtDW_StateTransitionTable_Con_T sf_StateTransitionTable_mx;// '<S34>/State Transition Table' 
@@ -642,6 +646,15 @@ struct Parameters_Controller_T_ {
   real_T nocontrol_Value[6];           // Expression: zeros(6,1)
                                        //  Referenced by: '<Root>/no control'
 
+  real_T roll_ref_SampleTime;          // Expression: SampleTime
+                                       //  Referenced by: '<Root>/roll_ref'
+
+  real_T pitch_ref_SampleTime;         // Expression: SampleTime
+                                       //  Referenced by: '<Root>/pitch_ref'
+
+  real_T yaw_ref_SampleTime;           // Expression: SampleTime
+                                       //  Referenced by: '<Root>/yaw_ref'
+
   real_T Getcontrollertype_SampleTime; // Expression: SampleTime
                                        //  Referenced by: '<Root>/Get controller type'
 
@@ -728,15 +741,6 @@ struct Parameters_Controller_T_ {
 
   real_T velocityZ_Y0;                 // Computed Parameter: velocityZ_Y0
                                        //  Referenced by: '<S4>/<velocity Z>'
-
-  real_T yaw_ref_SampleTime;           // Expression: SampleTime
-                                       //  Referenced by: '<S5>/yaw_ref'
-
-  real_T pitch_ref_SampleTime;         // Expression: SampleTime
-                                       //  Referenced by: '<S5>/pitch_ref'
-
-  real_T roll_ref_SampleTime;          // Expression: SampleTime
-                                       //  Referenced by: '<S5>/roll_ref'
 
   real_T I_pitch_SampleTime;           // Expression: SampleTime
                                        //  Referenced by: '<S23>/I_pitch'
@@ -833,6 +837,9 @@ struct Parameters_Controller_T_ {
 
   real_T Constant_Value_e;             // Expression: 0
                                        //  Referenced by: '<S28>/Constant'
+
+  real_T GetParameter_SampleTime_g;    // Expression: SampleTime
+                                       //  Referenced by: '<S6>/Get Parameter'
 
   real_T Swtichingfactor2_SampleTime;  // Expression: SampleTime
                                        //  Referenced by: '<S31>/Swtiching factor2'
@@ -1187,6 +1194,12 @@ struct Parameters_Controller_T_ {
 
   real_T DiscreteTimeIntegrator2_IC;   // Expression: 0
                                        //  Referenced by: '<S8>/Discrete-Time Integrator2'
+
+  real_T control1_Value;               // Expression: 1
+                                       //  Referenced by: '<Root>/control 1'
+
+  real_T u_Value;                      // Expression: 2
+                                       //  Referenced by: '<Root>/2'
 
   real_T Constant_Value_ay;            // Expression: 1
                                        //  Referenced by: '<S8>/Constant'

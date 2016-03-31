@@ -47,7 +47,7 @@ void MatlabController::configCallback(bluerov::matlab_controllerConfig &update, 
 }
 
 int main(int argc, char** argv) {
-  ros::init(argc, argv, "MatlabController");
+  ros::init(argc, argv, "matlab_controller");
   MatlabController MatlabController;
   MatlabController.spin();
   return 0;
