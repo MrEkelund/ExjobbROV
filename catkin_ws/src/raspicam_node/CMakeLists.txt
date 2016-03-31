@@ -60,6 +60,7 @@ catkin_package(
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
+if(EXISTS /opt/vc/include)
 include_directories(include
   ${catkin_INCLUDE_DIRS}
   /home/pi/userland
@@ -156,3 +157,4 @@ raspicamcontrol raspicli
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
+endif(EXISTS /opt/vc/include)

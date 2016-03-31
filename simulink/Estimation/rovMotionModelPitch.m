@@ -43,8 +43,9 @@ st = sin(theta);
 cf = cos(fi);
 sf = sin(fi);
 
-B = rho*g*V;
+% B = rho*g*V;
 W = m*g;
+B = W;
 % look-up table for t200.
 lookup =[...
     -4.0823   -1.0000

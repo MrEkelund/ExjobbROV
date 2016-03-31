@@ -10,6 +10,7 @@ estimation_mode = 'Yaw';
 % yaw_filepath = fullfile('bag','act_3_4_test_4_2016-03-21-15-14-04.bag');
 %yaw_filepath = fullfile('bag','act_3_4_test_5_2016-03-21-15-15-26.bag');
 [parameters, parameter_strings]= initROVParameters();
+displayTable(parameters, parameter_strings);
 [yaw_nonlinear_greybox_model, input_data, output_data, Ts] =...
     setupEstimation(parameters, parameter_strings, estimation_mode, simulation, yaw_filepath, plotting);
 
@@ -28,7 +29,7 @@ tic
 yaw_estimation = pem(yaw_data, yaw_nonlinear_greybox_model,opt);
 %yaw_estimation = nlgreyest(yaw_data, yaw_nonlinear_greybox_model,opt);
 toc
-displayTable(yaw_estimation, parameters, parameter_strings)
+displayTable(parameters, parameter_strings, yaw_estimation)
 compare(yaw_data, yaw_estimation, inf, compareOptions('InitialCondition', 'model'));
 %%
 saveParameters(yaw_estimation.Report.Parameters.ParVector, yaw_estimation.Report.Parameters.Free)
@@ -42,6 +43,7 @@ roll_pitch_filepath = fullfile('bag','act_1_2_5_6_test_1_2016-03-21-15-23-37.bag
 %roll_pitch_filepath = fullfile('bag','act_1_2_5_6_test_4_2016-03-21-15-29-25.bag');
 %roll_pitch_filepath = fullfile('bag','act_1_2_5_6_test_5_2016-03-21-15-32-03.bag');
 [parameters, parameter_strings]= initROVParameters();
+displayTable(parameters, parameter_strings);
 simulation = 0;
 plotting = 1;
 
@@ -72,8 +74,9 @@ estimation_mode = 'Pitch';
 pitch_filepath = fullfile('bag','act_5_test_2_2016-03-21-15-37-53.bag');
 
 [parameters, parameter_strings]= initROVParameters();
+displayTable(parameters, parameter_strings);
 simulation = 0;
-plotting = 1;
+plotting = 0;
 
 [pitch_nonlinear_greybox_model, input_data, output_data, Ts] =...
     setupEstimation(parameters, parameter_strings, estimation_mode, simulation,pitch_filepath, plotting);
@@ -88,11 +91,13 @@ pitch_data.OutputUnit = pitch_nonlinear_greybox_model.OutputUnit;
 
 opt = nlgreyestOptions;
 opt.Display = 'on';
-opt.SearchOption.MaxIter = 2;
+opt.SearchOption.MaxIter = 10;
 tic
-pitch_estimation = nlgreyest(pitch_data, pitch_nonlinear_greybox_model,opt);
+% pitch_estimation = nlgreyest(pitch_data, pitch_nonlinear_greybox_model,opt);
+pitch_estimation = pem(pitch_data, pitch_nonlinear_greybox_model,opt);
 toc
 displayTable(pitch_estimation, parameters, parameter_strings)
+compare(pitch_data, pitch_estimation, inf, compareOptions('InitialCondition', 'model'));
 %% A. System Identification Using Simulated High Tire Stiffness Data
 % In our first vehicle identification experiment we consider simulated high
 % tire stiffness data. A copy of the model structure nlgr and an IDDATA
