@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'Controller'.
 //
-// Model version                  : 1.174
+// Model version                  : 1.185
 // Simulink Coder version         : 8.10 (R2016a) 10-Feb-2016
-// C/C++ source code generated on : Sun Mar 20 10:44:52 2016
+// C/C++ source code generated on : Thu Mar 31 10:34:44 2016
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Generic->Unspecified (assume 32-bit Generic)
@@ -26,9 +26,9 @@
 #define Con_ParameterInitialValue_l5xxx (true)
 #define Cont_ParameterInitialValue_l5xx (false)
 #define Contr_ParameterInitialValue_l5x (1.0)
-#define Contro_ParameterInitialValue_l5 (0.0)
-#define Control_ParameterInitialValue_l (1)
-#define Controlle_ParameterInitialValue (0)
+#define Contro_ParameterInitialValue_l5 (1)
+#define Control_ParameterInitialValue_l (0)
+#define Controlle_ParameterInitialValue (0.0)
 #define Controller_MessageQueueLen     (1)
 #define Controller_MessageQueueLen_l   (10)
 
@@ -194,15 +194,15 @@ void ControllerModelClass::Controller_RandSrc_U_D(real_T y[], const real_T
     Controller_B.min = minVec[minLen > 1 ? Controller_B.chan : 0];
     Controller_B.max = maxVec[maxLen > 1 ? Controller_B.chan : 0];
     Controller_B.max -= Controller_B.min;
-    Controller_B.i_c = (int32_T)((uint32_T)state[Controller_B.chan * 35 + 33] &
+    Controller_B.i_b = (int32_T)((uint32_T)state[Controller_B.chan * 35 + 33] &
       31U);
     Controller_B.j = (uint32_T)state[Controller_B.chan * 35 + 34];
     Controller_B.samps = 0;
     while (Controller_B.samps < nSamps) {
       // "Subtract with borrow" generator
-      Controller_B.d = state[((Controller_B.i_c + 20) & 31) + Controller_B.chan *
+      Controller_B.d = state[((Controller_B.i_b + 20) & 31) + Controller_B.chan *
         35];
-      Controller_B.d -= state[((Controller_B.i_c + 5) & 31) + Controller_B.chan *
+      Controller_B.d -= state[((Controller_B.i_b + 5) & 31) + Controller_B.chan *
         35];
       Controller_B.d -= state[Controller_B.chan * 35 + 32];
       if (Controller_B.d >= 0.0) {
@@ -214,8 +214,8 @@ void ControllerModelClass::Controller_RandSrc_U_D(real_T y[], const real_T
         state[Controller_B.chan * 35 + 32] = 1.1102230246251565E-16;
       }
 
-      state[Controller_B.chan * 35 + Controller_B.i_c] = Controller_B.d;
-      Controller_B.i_c = (Controller_B.i_c + 1) & 31;
+      state[Controller_B.chan * 35 + Controller_B.i_b] = Controller_B.d;
+      Controller_B.i_b = (Controller_B.i_b + 1) & 31;
 
       // XOR with shift register sequence
       memcpy(&Controller_B.ii[0U], &Controller_B.d, sizeof(real_T));
@@ -230,7 +230,7 @@ void ControllerModelClass::Controller_RandSrc_U_D(real_T y[], const real_T
       Controller_B.samps++;
     }
 
-    state[Controller_B.chan * 35 + 33] = Controller_B.i_c;
+    state[Controller_B.chan * 35 + 33] = Controller_B.i_b;
     state[Controller_B.chan * 35 + 34] = Controller_B.j;
     Controller_B.chan++;
   }
@@ -302,13 +302,13 @@ void ControllerModelClass::step()
   //   MATLABSystem: '<Root>/Get test'
 
   Controller_B.p = false;
-  Controller_B.p_p = true;
+  Controller_B.p_c = true;
   if (!(Controller_DWork.obj_h2.SampleTime == Controller_P.Gettest_SampleTime))
   {
-    Controller_B.p_p = false;
+    Controller_B.p_c = false;
   }
 
-  if (Controller_B.p_p) {
+  if (Controller_B.p_c) {
     Controller_B.p = true;
   }
 
@@ -330,8 +330,29 @@ void ControllerModelClass::step()
   //   EnablePort: '<S6>/Enable'
 
   if (Controller_B.Compare) {
+    // Start for MATLABSystem: '<S6>/Get Parameter' incorporates:
+    //   MATLABSystem: '<S6>/Get Parameter'
+
+    Controller_B.p = false;
+    Controller_B.p_c = true;
+    if (!(Controller_DWork.obj_fg.SampleTime ==
+          Controller_P.GetParameter_SampleTime_g)) {
+      Controller_B.p_c = false;
+    }
+
+    if (Controller_B.p_c) {
+      Controller_B.p = true;
+    }
+
+    if (!Controller_B.p) {
+      Controller_DWork.obj_fg.SampleTime =
+        Controller_P.GetParameter_SampleTime_g;
+    }
+
+    ParamGet_Controller_1018.get_parameter(&Controller_B.value_k);
+
     // S-Function (sdsprandsrc2): '<S31>/Random Source'
-    Controller_RandSrc_U_D(&Controller_B.RandomSource,
+    Controller_RandSrc_U_D(&Controller_B.ChooseControllersignal_c,
       &Controller_P.RandomSource_MinVal, 1, &Controller_P.RandomSource_MaxVal, 1,
       Controller_DWork.RandomSource_STATE_DWORK, 1, 1);
 
@@ -339,13 +360,13 @@ void ControllerModelClass::step()
     //   MATLABSystem: '<S31>/Swtiching factor'
 
     Controller_B.p = false;
-    Controller_B.p_p = true;
+    Controller_B.p_c = true;
     if (!(Controller_DWork.obj_of.SampleTime ==
           Controller_P.Swtichingfactor_SampleTime)) {
-      Controller_B.p_p = false;
+      Controller_B.p_c = false;
     }
 
-    if (Controller_B.p_p) {
+    if (Controller_B.p_c) {
       Controller_B.p = true;
     }
 
@@ -354,7 +375,7 @@ void ControllerModelClass::step()
         Controller_P.Swtichingfactor_SampleTime;
     }
 
-    ParamGet_Controller_714.get_parameter(&Controller_B.value_k);
+    ParamGet_Controller_714.get_parameter(&Controller_B.value_c);
 
     // State Transition Table: '<S31>/State Transition Table' incorporates:
     //   Constant: '<S31>/Constant'
@@ -362,8 +383,8 @@ void ControllerModelClass::step()
     //   Start for MATLABSystem: '<S31>/Swtiching factor'
     //   Sum: '<S31>/Add'
 
-    Controller_StateTransitionTable((Controller_B.RandomSource + (real_T)
-      Controller_B.value_k) - Controller_P.Constant_Value_f,
+    Controller_StateTransitionTable((Controller_B.ChooseControllersignal_c +
+      (real_T)Controller_B.value_c) - Controller_P.Constant_Value_f,
       &Controller_B.sf_StateTransitionTable,
       &Controller_DWork.sf_StateTransitionTable);
 
@@ -371,13 +392,13 @@ void ControllerModelClass::step()
     //   MATLABSystem: '<S31>/Swtiching factor1'
 
     Controller_B.p = false;
-    Controller_B.p_p = true;
+    Controller_B.p_c = true;
     if (!(Controller_DWork.obj_fx.SampleTime ==
           Controller_P.Swtichingfactor1_SampleTime)) {
-      Controller_B.p_p = false;
+      Controller_B.p_c = false;
     }
 
-    if (Controller_B.p_p) {
+    if (Controller_B.p_c) {
       Controller_B.p = true;
     }
 
@@ -386,19 +407,19 @@ void ControllerModelClass::step()
         Controller_P.Swtichingfactor1_SampleTime;
     }
 
-    ParamGet_Controller_715.get_parameter(&Controller_B.sfi);
+    ParamGet_Controller_715.get_parameter(&Controller_B.ZeroGain_e);
 
     // Start for MATLABSystem: '<S31>/Swtiching factor2' incorporates:
     //   MATLABSystem: '<S31>/Swtiching factor2'
 
     Controller_B.p = false;
-    Controller_B.p_p = true;
+    Controller_B.p_c = true;
     if (!(Controller_DWork.obj_d3.SampleTime ==
           Controller_P.Swtichingfactor2_SampleTime)) {
-      Controller_B.p_p = false;
+      Controller_B.p_c = false;
     }
 
-    if (Controller_B.p_p) {
+    if (Controller_B.p_c) {
       Controller_B.p = true;
     }
 
@@ -416,11 +437,11 @@ void ControllerModelClass::step()
     //   Start for MATLABSystem: '<S31>/Swtiching factor2'
 
     Controller_MATLABFunction(Controller_B.sf_StateTransitionTable.u,
-      Controller_B.sfi, Controller_B.SignPreIntegrator_k,
+      Controller_B.ZeroGain_e, Controller_B.SignPreIntegrator_k,
       &Controller_B.sf_MATLABFunction);
 
     // S-Function (sdsprandsrc2): '<S32>/Random Source'
-    Controller_RandSrc_U_D(&Controller_B.RandomSource,
+    Controller_RandSrc_U_D(&Controller_B.ChooseControllersignal_c,
       &Controller_P.RandomSource_MinVal_h, 1,
       &Controller_P.RandomSource_MaxVal_o, 1,
       Controller_DWork.RandomSource_STATE_DWORK_i, 1, 1);
@@ -429,13 +450,13 @@ void ControllerModelClass::step()
     //   MATLABSystem: '<S32>/Swtiching factor'
 
     Controller_B.p = false;
-    Controller_B.p_p = true;
+    Controller_B.p_c = true;
     if (!(Controller_DWork.obj_i.SampleTime ==
           Controller_P.Swtichingfactor_SampleTime_k)) {
-      Controller_B.p_p = false;
+      Controller_B.p_c = false;
     }
 
-    if (Controller_B.p_p) {
+    if (Controller_B.p_c) {
       Controller_B.p = true;
     }
 
@@ -444,7 +465,7 @@ void ControllerModelClass::step()
         Controller_P.Swtichingfactor_SampleTime_k;
     }
 
-    ParamGet_Controller_724.get_parameter(&Controller_B.value_k);
+    ParamGet_Controller_724.get_parameter(&Controller_B.value_c);
 
     // State Transition Table: '<S32>/State Transition Table' incorporates:
     //   Constant: '<S32>/Constant'
@@ -452,8 +473,8 @@ void ControllerModelClass::step()
     //   Start for MATLABSystem: '<S32>/Swtiching factor'
     //   Sum: '<S32>/Add'
 
-    Controller_StateTransitionTable((Controller_B.RandomSource + (real_T)
-      Controller_B.value_k) - Controller_P.Constant_Value_k,
+    Controller_StateTransitionTable((Controller_B.ChooseControllersignal_c +
+      (real_T)Controller_B.value_c) - Controller_P.Constant_Value_k,
       &Controller_B.sf_StateTransitionTable_i,
       &Controller_DWork.sf_StateTransitionTable_i);
 
@@ -461,13 +482,13 @@ void ControllerModelClass::step()
     //   MATLABSystem: '<S32>/Swtiching factor1'
 
     Controller_B.p = false;
-    Controller_B.p_p = true;
+    Controller_B.p_c = true;
     if (!(Controller_DWork.obj_j5.SampleTime ==
           Controller_P.Swtichingfactor1_SampleTime_i)) {
-      Controller_B.p_p = false;
+      Controller_B.p_c = false;
     }
 
-    if (Controller_B.p_p) {
+    if (Controller_B.p_c) {
       Controller_B.p = true;
     }
 
@@ -476,19 +497,19 @@ void ControllerModelClass::step()
         Controller_P.Swtichingfactor1_SampleTime_i;
     }
 
-    ParamGet_Controller_725.get_parameter(&Controller_B.sfi);
+    ParamGet_Controller_725.get_parameter(&Controller_B.ZeroGain_e);
 
     // Start for MATLABSystem: '<S32>/Swtiching factor2' incorporates:
     //   MATLABSystem: '<S32>/Swtiching factor2'
 
     Controller_B.p = false;
-    Controller_B.p_p = true;
+    Controller_B.p_c = true;
     if (!(Controller_DWork.obj_fu.SampleTime ==
           Controller_P.Swtichingfactor2_SampleTime_b)) {
-      Controller_B.p_p = false;
+      Controller_B.p_c = false;
     }
 
-    if (Controller_B.p_p) {
+    if (Controller_B.p_c) {
       Controller_B.p = true;
     }
 
@@ -506,8 +527,20 @@ void ControllerModelClass::step()
     //   Start for MATLABSystem: '<S32>/Swtiching factor2'
 
     Controller_MATLABFunction(Controller_B.sf_StateTransitionTable_i.u,
-      Controller_B.sfi, Controller_B.SignPreIntegrator_k,
+      Controller_B.ZeroGain_e, Controller_B.SignPreIntegrator_k,
       &Controller_B.sf_MATLABFunction_l);
+
+    // MultiPortSwitch: '<S6>/Choose Controller signal' incorporates:
+    //   MATLABSystem: '<S6>/Get Parameter'
+    //   Start for MATLABSystem: '<S6>/Get Parameter'
+
+    if (Controller_B.value_k == 1) {
+      Controller_B.ChooseControllersignal_c = Controller_B.sf_MATLABFunction.y;
+    } else {
+      Controller_B.ChooseControllersignal_c = Controller_B.sf_MATLABFunction_l.y;
+    }
+
+    // End of MultiPortSwitch: '<S6>/Choose Controller signal'
 
     // S-Function (sdsprandsrc2): '<S33>/Random Source'
     Controller_RandSrc_U_D(&Controller_B.RandomSource,
@@ -519,13 +552,13 @@ void ControllerModelClass::step()
     //   MATLABSystem: '<S33>/Swtiching factor'
 
     Controller_B.p = false;
-    Controller_B.p_p = true;
+    Controller_B.p_c = true;
     if (!(Controller_DWork.obj_o.SampleTime ==
           Controller_P.Swtichingfactor_SampleTime_g)) {
-      Controller_B.p_p = false;
+      Controller_B.p_c = false;
     }
 
-    if (Controller_B.p_p) {
+    if (Controller_B.p_c) {
       Controller_B.p = true;
     }
 
@@ -551,13 +584,13 @@ void ControllerModelClass::step()
     //   MATLABSystem: '<S33>/Swtiching factor1'
 
     Controller_B.p = false;
-    Controller_B.p_p = true;
+    Controller_B.p_c = true;
     if (!(Controller_DWork.obj_f.SampleTime ==
           Controller_P.Swtichingfactor1_SampleTime_o)) {
-      Controller_B.p_p = false;
+      Controller_B.p_c = false;
     }
 
-    if (Controller_B.p_p) {
+    if (Controller_B.p_c) {
       Controller_B.p = true;
     }
 
@@ -566,19 +599,19 @@ void ControllerModelClass::step()
         Controller_P.Swtichingfactor1_SampleTime_o;
     }
 
-    ParamGet_Controller_735.get_parameter(&Controller_B.sfi);
+    ParamGet_Controller_735.get_parameter(&Controller_B.ZeroGain_e);
 
     // Start for MATLABSystem: '<S33>/Swtiching factor2' incorporates:
     //   MATLABSystem: '<S33>/Swtiching factor2'
 
     Controller_B.p = false;
-    Controller_B.p_p = true;
+    Controller_B.p_c = true;
     if (!(Controller_DWork.obj_mb.SampleTime ==
           Controller_P.Swtichingfactor2_SampleTime_o)) {
-      Controller_B.p_p = false;
+      Controller_B.p_c = false;
     }
 
-    if (Controller_B.p_p) {
+    if (Controller_B.p_c) {
       Controller_B.p = true;
     }
 
@@ -596,7 +629,7 @@ void ControllerModelClass::step()
     //   Start for MATLABSystem: '<S33>/Swtiching factor2'
 
     Controller_MATLABFunction(Controller_B.sf_StateTransitionTable_m.u,
-      Controller_B.sfi, Controller_B.SignPreIntegrator_k,
+      Controller_B.ZeroGain_e, Controller_B.SignPreIntegrator_k,
       &Controller_B.sf_MATLABFunction_j);
 
     // S-Function (sdsprandsrc2): '<S34>/Random Source'
@@ -609,13 +642,13 @@ void ControllerModelClass::step()
     //   MATLABSystem: '<S34>/Swtiching factor'
 
     Controller_B.p = false;
-    Controller_B.p_p = true;
+    Controller_B.p_c = true;
     if (!(Controller_DWork.obj_gv.SampleTime ==
           Controller_P.Swtichingfactor_SampleTime_n)) {
-      Controller_B.p_p = false;
+      Controller_B.p_c = false;
     }
 
-    if (Controller_B.p_p) {
+    if (Controller_B.p_c) {
       Controller_B.p = true;
     }
 
@@ -641,13 +674,13 @@ void ControllerModelClass::step()
     //   MATLABSystem: '<S34>/Swtiching factor1'
 
     Controller_B.p = false;
-    Controller_B.p_p = true;
+    Controller_B.p_c = true;
     if (!(Controller_DWork.obj_c2.SampleTime ==
           Controller_P.Swtichingfactor1_SampleTime_j)) {
-      Controller_B.p_p = false;
+      Controller_B.p_c = false;
     }
 
-    if (Controller_B.p_p) {
+    if (Controller_B.p_c) {
       Controller_B.p = true;
     }
 
@@ -656,19 +689,19 @@ void ControllerModelClass::step()
         Controller_P.Swtichingfactor1_SampleTime_j;
     }
 
-    ParamGet_Controller_745.get_parameter(&Controller_B.sfi);
+    ParamGet_Controller_745.get_parameter(&Controller_B.ZeroGain_e);
 
     // Start for MATLABSystem: '<S34>/Swtiching factor2' incorporates:
     //   MATLABSystem: '<S34>/Swtiching factor2'
 
     Controller_B.p = false;
-    Controller_B.p_p = true;
+    Controller_B.p_c = true;
     if (!(Controller_DWork.obj_g0e.SampleTime ==
           Controller_P.Swtichingfactor2_SampleTime_e)) {
-      Controller_B.p_p = false;
+      Controller_B.p_c = false;
     }
 
-    if (Controller_B.p_p) {
+    if (Controller_B.p_c) {
       Controller_B.p = true;
     }
 
@@ -686,7 +719,7 @@ void ControllerModelClass::step()
     //   Start for MATLABSystem: '<S34>/Swtiching factor2'
 
     Controller_MATLABFunction(Controller_B.sf_StateTransitionTable_mx.u,
-      Controller_B.sfi, Controller_B.SignPreIntegrator_k,
+      Controller_B.ZeroGain_e, Controller_B.SignPreIntegrator_k,
       &Controller_B.sf_MATLABFunction_o);
 
     // S-Function (sdsprandsrc2): '<S35>/Random Source'
@@ -699,13 +732,13 @@ void ControllerModelClass::step()
     //   MATLABSystem: '<S35>/Swtiching factor'
 
     Controller_B.p = false;
-    Controller_B.p_p = true;
+    Controller_B.p_c = true;
     if (!(Controller_DWork.obj_j0.SampleTime ==
           Controller_P.Swtichingfactor_SampleTime_nq)) {
-      Controller_B.p_p = false;
+      Controller_B.p_c = false;
     }
 
-    if (Controller_B.p_p) {
+    if (Controller_B.p_c) {
       Controller_B.p = true;
     }
 
@@ -731,13 +764,13 @@ void ControllerModelClass::step()
     //   MATLABSystem: '<S35>/Swtiching factor1'
 
     Controller_B.p = false;
-    Controller_B.p_p = true;
+    Controller_B.p_c = true;
     if (!(Controller_DWork.obj_hr.SampleTime ==
           Controller_P.Swtichingfactor1_SampleTime_a)) {
-      Controller_B.p_p = false;
+      Controller_B.p_c = false;
     }
 
-    if (Controller_B.p_p) {
+    if (Controller_B.p_c) {
       Controller_B.p = true;
     }
 
@@ -746,19 +779,19 @@ void ControllerModelClass::step()
         Controller_P.Swtichingfactor1_SampleTime_a;
     }
 
-    ParamGet_Controller_851.get_parameter(&Controller_B.sfi);
+    ParamGet_Controller_851.get_parameter(&Controller_B.ZeroGain_e);
 
     // Start for MATLABSystem: '<S35>/Swtiching factor2' incorporates:
     //   MATLABSystem: '<S35>/Swtiching factor2'
 
     Controller_B.p = false;
-    Controller_B.p_p = true;
+    Controller_B.p_c = true;
     if (!(Controller_DWork.obj_dn.SampleTime ==
           Controller_P.Swtichingfactor2_SampleTime_n)) {
-      Controller_B.p_p = false;
+      Controller_B.p_c = false;
     }
 
-    if (Controller_B.p_p) {
+    if (Controller_B.p_c) {
       Controller_B.p = true;
     }
 
@@ -776,7 +809,7 @@ void ControllerModelClass::step()
     //   Start for MATLABSystem: '<S35>/Swtiching factor2'
 
     Controller_MATLABFunction(Controller_B.sf_StateTransitionTable_o.u,
-      Controller_B.sfi, Controller_B.SignPreIntegrator_k,
+      Controller_B.ZeroGain_e, Controller_B.SignPreIntegrator_k,
       &Controller_B.sf_MATLABFunction_e);
 
     // S-Function (sdsprandsrc2): '<S36>/Random Source'
@@ -789,13 +822,13 @@ void ControllerModelClass::step()
     //   MATLABSystem: '<S36>/Swtiching factor'
 
     Controller_B.p = false;
-    Controller_B.p_p = true;
+    Controller_B.p_c = true;
     if (!(Controller_DWork.obj_gf.SampleTime ==
           Controller_P.Swtichingfactor_SampleTime_f)) {
-      Controller_B.p_p = false;
+      Controller_B.p_c = false;
     }
 
-    if (Controller_B.p_p) {
+    if (Controller_B.p_c) {
       Controller_B.p = true;
     }
 
@@ -821,13 +854,13 @@ void ControllerModelClass::step()
     //   MATLABSystem: '<S36>/Swtiching factor1'
 
     Controller_B.p = false;
-    Controller_B.p_p = true;
+    Controller_B.p_c = true;
     if (!(Controller_DWork.obj_cvy.SampleTime ==
           Controller_P.Swtichingfactor1_SampleTime_e)) {
-      Controller_B.p_p = false;
+      Controller_B.p_c = false;
     }
 
-    if (Controller_B.p_p) {
+    if (Controller_B.p_c) {
       Controller_B.p = true;
     }
 
@@ -836,19 +869,19 @@ void ControllerModelClass::step()
         Controller_P.Swtichingfactor1_SampleTime_e;
     }
 
-    ParamGet_Controller_765.get_parameter(&Controller_B.sfi);
+    ParamGet_Controller_765.get_parameter(&Controller_B.ZeroGain_e);
 
     // Start for MATLABSystem: '<S36>/Swtiching factor2' incorporates:
     //   MATLABSystem: '<S36>/Swtiching factor2'
 
     Controller_B.p = false;
-    Controller_B.p_p = true;
+    Controller_B.p_c = true;
     if (!(Controller_DWork.obj_dt.SampleTime ==
           Controller_P.Swtichingfactor2_SampleTime_c)) {
-      Controller_B.p_p = false;
+      Controller_B.p_c = false;
     }
 
-    if (Controller_B.p_p) {
+    if (Controller_B.p_c) {
       Controller_B.p = true;
     }
 
@@ -866,13 +899,13 @@ void ControllerModelClass::step()
     //   Start for MATLABSystem: '<S36>/Swtiching factor2'
 
     Controller_MATLABFunction(Controller_B.sf_StateTransitionTable_o2.u,
-      Controller_B.sfi, Controller_B.SignPreIntegrator_k,
+      Controller_B.ZeroGain_e, Controller_B.SignPreIntegrator_k,
       &Controller_B.sf_MATLABFunction_i);
 
     // SignalConversion: '<S6>/OutportBufferForThrusters'
     Controller_B.OutportBufferForThrusters[0] = Controller_B.sf_MATLABFunction.y;
     Controller_B.OutportBufferForThrusters[1] =
-      Controller_B.sf_MATLABFunction_l.y;
+      Controller_B.ChooseControllersignal_c;
     Controller_B.OutportBufferForThrusters[2] =
       Controller_B.sf_MATLABFunction_j.y;
     Controller_B.OutportBufferForThrusters[3] =
@@ -889,13 +922,13 @@ void ControllerModelClass::step()
   //   MATLABSystem: '<Root>/Get controller type'
 
   Controller_B.p = false;
-  Controller_B.p_p = true;
+  Controller_B.p_c = true;
   if (!(Controller_DWork.obj_nl.SampleTime ==
         Controller_P.Getcontrollertype_SampleTime)) {
-    Controller_B.p_p = false;
+    Controller_B.p_c = false;
   }
 
-  if (Controller_B.p_p) {
+  if (Controller_B.p_c) {
     Controller_B.p = true;
   }
 
@@ -928,13 +961,13 @@ void ControllerModelClass::step()
   //   Inport: '<S74>/In1'
   //   MATLABSystem: '<S11>/SourceBlock'
 
-  Controller_B.p_p = Sub_Controller_28.getLatestMessage
+  Controller_B.p_c = Sub_Controller_28.getLatestMessage
     (&Controller_B.varargout_2);
 
   // Outputs for Enabled SubSystem: '<S11>/Enabled Subsystem' incorporates:
   //   EnablePort: '<S74>/Enable'
 
-  if (Controller_B.p_p) {
+  if (Controller_B.p_c) {
     Controller_B.In1 = Controller_B.varargout_2;
   }
 
@@ -947,7 +980,7 @@ void ControllerModelClass::step()
   //   MATLABSystem: '<S9>/SourceBlock'
   //   Start for MATLABSystem: '<S9>/SourceBlock'
 
-  Controller_B.LogicalOperator = (Controller_B.p || Controller_B.p_p);
+  Controller_B.LogicalOperator = (Controller_B.p || Controller_B.p_c);
 
   // End of Outputs for SubSystem: '<Root>/cmd_vel'
   // End of Outputs for SubSystem: '<Root>/imu_data'
@@ -982,6 +1015,66 @@ void ControllerModelClass::step()
     Controller_B.X_hw, Controller_B.Y_in, Controller_B.Z_n,
     &Controller_B.sf_thrustalloc);
 
+  // Start for MATLABSystem: '<Root>/yaw_ref' incorporates:
+  //   MATLABSystem: '<Root>/yaw_ref'
+
+  Controller_B.p = false;
+  Controller_B.p_c = true;
+  if (!(Controller_DWork.obj_o5.SampleTime == Controller_P.yaw_ref_SampleTime))
+  {
+    Controller_B.p_c = false;
+  }
+
+  if (Controller_B.p_c) {
+    Controller_B.p = true;
+  }
+
+  if (!Controller_B.p) {
+    Controller_DWork.obj_o5.SampleTime = Controller_P.yaw_ref_SampleTime;
+  }
+
+  ParamGet_Controller_981.get_parameter(&Controller_B.ZeroGain_e);
+
+  // Start for MATLABSystem: '<Root>/pitch_ref' incorporates:
+  //   MATLABSystem: '<Root>/pitch_ref'
+
+  Controller_B.p = false;
+  Controller_B.p_c = true;
+  if (!(Controller_DWork.obj_mbl.SampleTime == Controller_P.pitch_ref_SampleTime))
+  {
+    Controller_B.p_c = false;
+  }
+
+  if (Controller_B.p_c) {
+    Controller_B.p = true;
+  }
+
+  if (!Controller_B.p) {
+    Controller_DWork.obj_mbl.SampleTime = Controller_P.pitch_ref_SampleTime;
+  }
+
+  ParamGet_Controller_982.get_parameter(&Controller_B.SignPreIntegrator_k);
+
+  // Start for MATLABSystem: '<Root>/roll_ref' incorporates:
+  //   MATLABSystem: '<Root>/roll_ref'
+
+  Controller_B.p = false;
+  Controller_B.p_c = true;
+  if (!(Controller_DWork.obj_pk.SampleTime == Controller_P.roll_ref_SampleTime))
+  {
+    Controller_B.p_c = false;
+  }
+
+  if (Controller_B.p_c) {
+    Controller_B.p = true;
+  }
+
+  if (!Controller_B.p) {
+    Controller_DWork.obj_pk.SampleTime = Controller_P.roll_ref_SampleTime;
+  }
+
+  ParamGet_Controller_980.get_parameter(&Controller_B.ChooseControllersignal_c);
+
   // Outputs for Enabled SubSystem: '<Root>/states' incorporates:
   //   EnablePort: '<S12>/Enable'
 
@@ -993,13 +1086,13 @@ void ControllerModelClass::step()
     //   MATLABSystem: '<S4>/Get Parameter'
 
     Controller_B.p = false;
-    Controller_B.p_p = true;
+    Controller_B.p_c = true;
     if (!(Controller_DWork.obj_km.SampleTime ==
           Controller_P.GetParameter_SampleTime)) {
-      Controller_B.p_p = false;
+      Controller_B.p_c = false;
     }
 
-    if (Controller_B.p_p) {
+    if (Controller_B.p_c) {
       Controller_B.p = true;
     }
 
@@ -1007,25 +1100,25 @@ void ControllerModelClass::step()
       Controller_DWork.obj_km.SampleTime = Controller_P.GetParameter_SampleTime;
     }
 
-    ParamGet_Controller_901.get_parameter(&Controller_B.sfi);
+    ParamGet_Controller_901.get_parameter(&Controller_B.RandomSource);
 
     // Product: '<S4>/Product' incorporates:
     //   MATLABSystem: '<S4>/Get Parameter'
     //   Start for MATLABSystem: '<S4>/Get Parameter'
 
-    Controller_B.Product = Controller_B.sfi * Controller_B.X_hw;
+    Controller_B.Product = Controller_B.RandomSource * Controller_B.X_hw;
 
     // Start for MATLABSystem: '<S4>/Get Parameter1' incorporates:
     //   MATLABSystem: '<S4>/Get Parameter1'
 
     Controller_B.p = false;
-    Controller_B.p_p = true;
+    Controller_B.p_c = true;
     if (!(Controller_DWork.obj_oz.SampleTime ==
           Controller_P.GetParameter1_SampleTime)) {
-      Controller_B.p_p = false;
+      Controller_B.p_c = false;
     }
 
-    if (Controller_B.p_p) {
+    if (Controller_B.p_c) {
       Controller_B.p = true;
     }
 
@@ -1033,25 +1126,25 @@ void ControllerModelClass::step()
       Controller_DWork.obj_oz.SampleTime = Controller_P.GetParameter1_SampleTime;
     }
 
-    ParamGet_Controller_905.get_parameter(&Controller_B.sfi);
+    ParamGet_Controller_905.get_parameter(&Controller_B.RandomSource);
 
     // Product: '<S4>/Product1' incorporates:
     //   MATLABSystem: '<S4>/Get Parameter1'
     //   Start for MATLABSystem: '<S4>/Get Parameter1'
 
-    Controller_B.Product1 = Controller_B.sfi * Controller_B.Y_in;
+    Controller_B.Product1 = Controller_B.RandomSource * Controller_B.Y_in;
 
     // Start for MATLABSystem: '<S4>/Get Parameter2' incorporates:
     //   MATLABSystem: '<S4>/Get Parameter2'
 
     Controller_B.p = false;
-    Controller_B.p_p = true;
+    Controller_B.p_c = true;
     if (!(Controller_DWork.obj_iv.SampleTime ==
           Controller_P.GetParameter2_SampleTime)) {
-      Controller_B.p_p = false;
+      Controller_B.p_c = false;
     }
 
-    if (Controller_B.p_p) {
+    if (Controller_B.p_c) {
       Controller_B.p = true;
     }
 
@@ -1059,25 +1152,25 @@ void ControllerModelClass::step()
       Controller_DWork.obj_iv.SampleTime = Controller_P.GetParameter2_SampleTime;
     }
 
-    ParamGet_Controller_907.get_parameter(&Controller_B.sfi);
+    ParamGet_Controller_907.get_parameter(&Controller_B.RandomSource);
 
     // Product: '<S4>/Product2' incorporates:
     //   MATLABSystem: '<S4>/Get Parameter2'
     //   Start for MATLABSystem: '<S4>/Get Parameter2'
 
-    Controller_B.Product2 = Controller_B.sfi * Controller_B.Z_n;
+    Controller_B.Product2 = Controller_B.RandomSource * Controller_B.Z_n;
 
     // Start for MATLABSystem: '<S4>/Get Parameter3' incorporates:
     //   MATLABSystem: '<S4>/Get Parameter3'
 
     Controller_B.p = false;
-    Controller_B.p_p = true;
+    Controller_B.p_c = true;
     if (!(Controller_DWork.obj_dy.SampleTime ==
           Controller_P.GetParameter3_SampleTime)) {
-      Controller_B.p_p = false;
+      Controller_B.p_c = false;
     }
 
-    if (Controller_B.p_p) {
+    if (Controller_B.p_c) {
       Controller_B.p = true;
     }
 
@@ -1085,25 +1178,25 @@ void ControllerModelClass::step()
       Controller_DWork.obj_dy.SampleTime = Controller_P.GetParameter3_SampleTime;
     }
 
-    ParamGet_Controller_909.get_parameter(&Controller_B.sfi);
+    ParamGet_Controller_909.get_parameter(&Controller_B.RandomSource);
 
     // Product: '<S4>/Product3' incorporates:
     //   MATLABSystem: '<S4>/Get Parameter3'
     //   Start for MATLABSystem: '<S4>/Get Parameter3'
 
-    Controller_B.Product3 = Controller_B.sfi * Controller_B.X_h;
+    Controller_B.Product3 = Controller_B.RandomSource * Controller_B.X_h;
 
     // Start for MATLABSystem: '<S4>/Get Parameter4' incorporates:
     //   MATLABSystem: '<S4>/Get Parameter4'
 
     Controller_B.p = false;
-    Controller_B.p_p = true;
+    Controller_B.p_c = true;
     if (!(Controller_DWork.obj_kg.SampleTime ==
           Controller_P.GetParameter4_SampleTime)) {
-      Controller_B.p_p = false;
+      Controller_B.p_c = false;
     }
 
-    if (Controller_B.p_p) {
+    if (Controller_B.p_c) {
       Controller_B.p = true;
     }
 
@@ -1111,25 +1204,25 @@ void ControllerModelClass::step()
       Controller_DWork.obj_kg.SampleTime = Controller_P.GetParameter4_SampleTime;
     }
 
-    ParamGet_Controller_911.get_parameter(&Controller_B.sfi);
+    ParamGet_Controller_911.get_parameter(&Controller_B.RandomSource);
 
     // Product: '<S4>/Product4' incorporates:
     //   MATLABSystem: '<S4>/Get Parameter4'
     //   Start for MATLABSystem: '<S4>/Get Parameter4'
 
-    Controller_B.Product4 = Controller_B.sfi * Controller_B.Y_i;
+    Controller_B.Product4 = Controller_B.RandomSource * Controller_B.Y_i;
 
     // Start for MATLABSystem: '<S4>/Get Parameter5' incorporates:
     //   MATLABSystem: '<S4>/Get Parameter5'
 
     Controller_B.p = false;
-    Controller_B.p_p = true;
+    Controller_B.p_c = true;
     if (!(Controller_DWork.obj_ku.SampleTime ==
           Controller_P.GetParameter5_SampleTime)) {
-      Controller_B.p_p = false;
+      Controller_B.p_c = false;
     }
 
-    if (Controller_B.p_p) {
+    if (Controller_B.p_c) {
       Controller_B.p = true;
     }
 
@@ -1137,13 +1230,13 @@ void ControllerModelClass::step()
       Controller_DWork.obj_ku.SampleTime = Controller_P.GetParameter5_SampleTime;
     }
 
-    ParamGet_Controller_913.get_parameter(&Controller_B.sfi);
+    ParamGet_Controller_913.get_parameter(&Controller_B.RandomSource);
 
     // Product: '<S4>/Product5' incorporates:
     //   MATLABSystem: '<S4>/Get Parameter5'
     //   Start for MATLABSystem: '<S4>/Get Parameter5'
 
-    Controller_B.Product5 = Controller_B.sfi * Controller_B.Z;
+    Controller_B.Product5 = Controller_B.RandomSource * Controller_B.Z;
 
     // SignalConversion: '<S12>/TmpSignal ConversionAtBus SelectorOutport1'
     memcpy(&Controller_B.Data[0], &Controller_B.In1.Data[0], 10U * sizeof(real_T));
@@ -1188,10 +1281,12 @@ void ControllerModelClass::step()
     Controller_B.cpsi[6] = -Controller_B.stheta;
     Controller_B.cpsi[7] = Controller_B.ctheta * Controller_B.sfi;
     Controller_B.cpsi[8] = Controller_B.ctheta * Controller_B.cfi;
-    for (Controller_B.i0 = 0; Controller_B.i0 < 3; Controller_B.i0++) {
-      Controller_B.acc[Controller_B.i0] = Controller_B.cpsi[Controller_B.i0 + 6]
-        * 9.8 + (Controller_B.cpsi[Controller_B.i0 + 3] * 0.0 +
-                 Controller_B.cpsi[Controller_B.i0] * 0.0);
+    for (Controller_B.value_c = 0; Controller_B.value_c < 3;
+         Controller_B.value_c++) {
+      Controller_B.acc[Controller_B.value_c] =
+        Controller_B.cpsi[Controller_B.value_c + 6] * 9.8 +
+        (Controller_B.cpsi[Controller_B.value_c + 3] * 0.0 +
+         Controller_B.cpsi[Controller_B.value_c] * 0.0);
     }
 
     // SignalConversion: '<S12>/OutportBufferFor<acc X [m//s^2]>' incorporates:
@@ -1229,7 +1324,7 @@ void ControllerModelClass::step()
     Controller_B.OutportBufferForpitchradians = Controller_B.Data[1];
 
     // SignalConversion: '<S12>/OutportBufferFor<roll [radians]>'
-    Controller_B.OutportBufferForrollradians = Controller_B.Data[2];
+    Controller_B.OutportBufferForrollradians = Controller_B.Data[0];
   }
 
   // End of Outputs for SubSystem: '<Root>/Enabled Subsystem'
@@ -1239,13 +1334,13 @@ void ControllerModelClass::step()
   //   MATLABSystem: '<S8>/Enable integration?'
 
   Controller_B.p = false;
-  Controller_B.p_p = true;
+  Controller_B.p_c = true;
   if (!(Controller_DWork.obj_g0.SampleTime ==
         Controller_P.Enableintegration_SampleTime)) {
-    Controller_B.p_p = false;
+    Controller_B.p_c = false;
   }
 
-  if (Controller_B.p_p) {
+  if (Controller_B.p_c) {
     Controller_B.p = true;
   }
 
@@ -1272,13 +1367,30 @@ void ControllerModelClass::step()
       Controller_P.DiscreteTimeIntegrator2_IC;
   }
 
-  // Outputs for Enabled SubSystem: '<Root>/decController' incorporates:
-  //   EnablePort: '<S10>/Enable'
-
   // Outputs for Enabled SubSystem: '<Root>/Create errors' incorporates:
   //   EnablePort: '<S2>/Enable'
 
   if (Controller_B.LogicalOperator) {
+    // Sum: '<S2>/Error x1' incorporates:
+    //   MATLABSystem: '<Root>/yaw_ref'
+    //   Start for MATLABSystem: '<Root>/yaw_ref'
+
+    Controller_B.Errorx1 = Controller_B.ZeroGain_e - Controller_B.Data[2];
+
+    // Sum: '<S2>/Error y1' incorporates:
+    //   MATLABSystem: '<Root>/pitch_ref'
+    //   Start for MATLABSystem: '<Root>/pitch_ref'
+
+    Controller_B.Errory1 = Controller_B.SignPreIntegrator_k -
+      Controller_B.OutportBufferForpitchradians;
+
+    // Sum: '<S2>/Error z4' incorporates:
+    //   MATLABSystem: '<Root>/roll_ref'
+    //   Start for MATLABSystem: '<Root>/roll_ref'
+
+    Controller_B.Errorz4 = Controller_B.ChooseControllersignal_c -
+      Controller_B.OutportBufferForrollradians;
+
     // Sum: '<S2>/Error x'
     Controller_B.Errorx = Controller_B.Product - Controller_B.X;
 
@@ -1306,18 +1418,32 @@ void ControllerModelClass::step()
 
     Controller_B.Errorz10 = Controller_B.Product5 -
       Controller_DWork.DiscreteTimeIntegrator2_DSTATE;
+  }
 
+  // End of Outputs for SubSystem: '<Root>/Create errors'
+
+  // Outputs for Enabled SubSystem: '<Root>/decController' incorporates:
+  //   EnablePort: '<S10>/Enable'
+
+  // Logic: '<Root>/Logical Operator3' incorporates:
+  //   Constant: '<Root>/control 1'
+  //   MATLABSystem: '<Root>/Get controller type'
+  //   Start for MATLABSystem: '<Root>/Get controller type'
+  //   RelationalOperator: '<Root>/Relational Operator'
+
+  if (Controller_B.LogicalOperator && (Controller_P.control1_Value ==
+       Controller_B.value_k)) {
     // Start for MATLABSystem: '<S57>/P_angular_vel_x' incorporates:
     //   MATLABSystem: '<S57>/P_angular_vel_x'
 
     Controller_B.p = false;
-    Controller_B.p_p = true;
+    Controller_B.p_c = true;
     if (!(Controller_DWork.obj_bm.SampleTime ==
           Controller_P.P_angular_vel_x_SampleTime)) {
-      Controller_B.p_p = false;
+      Controller_B.p_c = false;
     }
 
-    if (Controller_B.p_p) {
+    if (Controller_B.p_c) {
       Controller_B.p = true;
     }
 
@@ -1326,19 +1452,19 @@ void ControllerModelClass::step()
         Controller_P.P_angular_vel_x_SampleTime;
     }
 
-    ParamGet_Controller_508.get_parameter(&Controller_B.sfi);
+    ParamGet_Controller_508.get_parameter(&Controller_B.ZeroGain_e);
 
     // Start for MATLABSystem: '<S57>/D_angular_vel_x' incorporates:
     //   MATLABSystem: '<S57>/D_angular_vel_x'
 
     Controller_B.p = false;
-    Controller_B.p_p = true;
+    Controller_B.p_c = true;
     if (!(Controller_DWork.obj_be.SampleTime ==
           Controller_P.D_angular_vel_x_SampleTime)) {
-      Controller_B.p_p = false;
+      Controller_B.p_c = false;
     }
 
-    if (Controller_B.p_p) {
+    if (Controller_B.p_c) {
       Controller_B.p = true;
     }
 
@@ -1353,13 +1479,13 @@ void ControllerModelClass::step()
     //   MATLABSystem: '<S57>/N_angular_vel_x '
 
     Controller_B.p = false;
-    Controller_B.p_p = true;
+    Controller_B.p_c = true;
     if (!(Controller_DWork.obj_lb.SampleTime ==
           Controller_P.N_angular_vel_x_SampleTime)) {
-      Controller_B.p_p = false;
+      Controller_B.p_c = false;
     }
 
-    if (Controller_B.p_p) {
+    if (Controller_B.p_c) {
       Controller_B.p = true;
     }
 
@@ -1368,7 +1494,7 @@ void ControllerModelClass::step()
         Controller_P.N_angular_vel_x_SampleTime;
     }
 
-    ParamGet_Controller_507.get_parameter(&Controller_B.SumI1_d);
+    ParamGet_Controller_507.get_parameter(&Controller_B.ChooseControllersignal_c);
 
     // Product: '<S56>/NOut' incorporates:
     //   DiscreteIntegrator: '<S56>/Filter'
@@ -1381,7 +1507,7 @@ void ControllerModelClass::step()
 
     Controller_B.RandomSource = (Controller_B.Errorx *
       Controller_B.SignPreIntegrator_k - Controller_DWork.Filter_DSTATE) *
-      Controller_B.SumI1_d;
+      Controller_B.ChooseControllersignal_c;
 
     // Sum: '<S56>/Sum' incorporates:
     //   DiscreteIntegrator: '<S56>/Integrator'
@@ -1389,19 +1515,20 @@ void ControllerModelClass::step()
     //   Start for MATLABSystem: '<S57>/P_angular_vel_x'
     //   Product: '<S56>/POut'
 
-    Controller_B.SignPreIntegrator_k = (Controller_B.Errorx * Controller_B.sfi +
-      Controller_DWork.Integrator_DSTATE) + Controller_B.RandomSource;
+    Controller_B.SignPreIntegrator_k = (Controller_B.Errorx *
+      Controller_B.ZeroGain_e + Controller_DWork.Integrator_DSTATE) +
+      Controller_B.RandomSource;
 
     // DeadZone: '<S58>/DeadZone'
     if (Controller_B.SignPreIntegrator_k >
         Controller_P.PIDController_UpperSaturation_b) {
-      Controller_B.SumI1_d = Controller_B.SignPreIntegrator_k -
+      Controller_B.ChooseControllersignal_c = Controller_B.SignPreIntegrator_k -
         Controller_P.PIDController_UpperSaturation_b;
     } else if (Controller_B.SignPreIntegrator_k >=
                Controller_P.PIDController_LowerSaturation_l) {
-      Controller_B.SumI1_d = 0.0;
+      Controller_B.ChooseControllersignal_c = 0.0;
     } else {
-      Controller_B.SumI1_d = Controller_B.SignPreIntegrator_k -
+      Controller_B.ChooseControllersignal_c = Controller_B.SignPreIntegrator_k -
         Controller_P.PIDController_LowerSaturation_l;
     }
 
@@ -1411,39 +1538,40 @@ void ControllerModelClass::step()
     //   Gain: '<S58>/ZeroGain'
 
     Controller_B.NotEqual = (Controller_P.ZeroGain_Gain_d *
-      Controller_B.SignPreIntegrator_k != Controller_B.SumI1_d);
+      Controller_B.SignPreIntegrator_k != Controller_B.ChooseControllersignal_c);
 
     // Signum: '<S58>/SignDeltaU'
-    if (Controller_B.SumI1_d < 0.0) {
-      Controller_B.SumI1_d = -1.0;
-    } else if (Controller_B.SumI1_d > 0.0) {
-      Controller_B.SumI1_d = 1.0;
+    if (Controller_B.ChooseControllersignal_c < 0.0) {
+      Controller_B.ChooseControllersignal_c = -1.0;
+    } else if (Controller_B.ChooseControllersignal_c > 0.0) {
+      Controller_B.ChooseControllersignal_c = 1.0;
     } else {
-      if (Controller_B.SumI1_d == 0.0) {
-        Controller_B.SumI1_d = 0.0;
+      if (Controller_B.ChooseControllersignal_c == 0.0) {
+        Controller_B.ChooseControllersignal_c = 0.0;
       }
     }
 
     // End of Signum: '<S58>/SignDeltaU'
 
     // DataTypeConversion: '<S58>/DataTypeConv1'
-    if (Controller_B.SumI1_d < 128.0) {
-      Controller_B.rtb_DataTypeConv2_c_b = (int8_T)Controller_B.SumI1_d;
+    if (Controller_B.ChooseControllersignal_c < 128.0) {
+      Controller_B.rtb_DataTypeConv2_c_p = (int8_T)
+        Controller_B.ChooseControllersignal_c;
     } else {
-      Controller_B.rtb_DataTypeConv2_c_b = MAX_int8_T;
+      Controller_B.rtb_DataTypeConv2_c_p = MAX_int8_T;
     }
 
     // Start for MATLABSystem: '<S57>/I_angular_vel_x' incorporates:
     //   MATLABSystem: '<S57>/I_angular_vel_x'
 
     Controller_B.p = false;
-    Controller_B.p_p = true;
+    Controller_B.p_c = true;
     if (!(Controller_DWork.obj_pb.SampleTime ==
           Controller_P.I_angular_vel_x_SampleTime)) {
-      Controller_B.p_p = false;
+      Controller_B.p_c = false;
     }
 
-    if (Controller_B.p_p) {
+    if (Controller_B.p_c) {
       Controller_B.p = true;
     }
 
@@ -1452,7 +1580,7 @@ void ControllerModelClass::step()
         Controller_P.I_angular_vel_x_SampleTime;
     }
 
-    ParamGet_Controller_506.get_parameter(&Controller_B.sfi);
+    ParamGet_Controller_506.get_parameter(&Controller_B.ZeroGain_e);
 
     // Saturate: '<S56>/Saturate'
     if (Controller_B.SignPreIntegrator_k >
@@ -1474,31 +1602,32 @@ void ControllerModelClass::step()
     //   Product: '<S56>/IOut'
     //   Sum: '<S56>/SumI3'
 
-    Controller_B.SumI1_d = (Controller_B.X_hw - Controller_B.Saturate) *
-      Controller_P.PIDController_Kt_l + Controller_B.Errorx * Controller_B.sfi;
+    Controller_B.ChooseControllersignal_c = (Controller_B.X_hw -
+      Controller_B.Saturate) * Controller_P.PIDController_Kt_l +
+      Controller_B.Errorx * Controller_B.ZeroGain_e;
 
     // Signum: '<S58>/SignPreIntegrator'
-    if (Controller_B.SumI1_d < 0.0) {
+    if (Controller_B.ChooseControllersignal_c < 0.0) {
       // DataTypeConversion: '<S58>/DataTypeConv2'
       Controller_B.spsi = -1.0;
-    } else if (Controller_B.SumI1_d > 0.0) {
+    } else if (Controller_B.ChooseControllersignal_c > 0.0) {
       // DataTypeConversion: '<S58>/DataTypeConv2'
       Controller_B.spsi = 1.0;
-    } else if (Controller_B.SumI1_d == 0.0) {
+    } else if (Controller_B.ChooseControllersignal_c == 0.0) {
       // DataTypeConversion: '<S58>/DataTypeConv2'
       Controller_B.spsi = 0.0;
     } else {
       // DataTypeConversion: '<S58>/DataTypeConv2'
-      Controller_B.spsi = Controller_B.SumI1_d;
+      Controller_B.spsi = Controller_B.ChooseControllersignal_c;
     }
 
     // End of Signum: '<S58>/SignPreIntegrator'
 
     // DataTypeConversion: '<S58>/DataTypeConv2'
     if (Controller_B.spsi < 128.0) {
-      Controller_B.i1 = (int8_T)Controller_B.spsi;
+      Controller_B.i0 = (int8_T)Controller_B.spsi;
     } else {
-      Controller_B.i1 = MAX_int8_T;
+      Controller_B.i0 = MAX_int8_T;
     }
 
     // Switch: '<S56>/Switch' incorporates:
@@ -1507,11 +1636,11 @@ void ControllerModelClass::step()
     //   Logic: '<S58>/AND'
     //   RelationalOperator: '<S58>/Equal'
 
-    if (Controller_B.NotEqual && (Controller_B.rtb_DataTypeConv2_c_b ==
-         Controller_B.i1)) {
+    if (Controller_B.NotEqual && (Controller_B.rtb_DataTypeConv2_c_p ==
+         Controller_B.i0)) {
       Controller_B.Switch = Controller_P.Constant_Value_ke;
     } else {
-      Controller_B.Switch = Controller_B.SumI1_d;
+      Controller_B.Switch = Controller_B.ChooseControllersignal_c;
     }
 
     // End of Switch: '<S56>/Switch'
@@ -1520,13 +1649,13 @@ void ControllerModelClass::step()
     //   MATLABSystem: '<S60>/P_angular_vel_y'
 
     Controller_B.p = false;
-    Controller_B.p_p = true;
+    Controller_B.p_c = true;
     if (!(Controller_DWork.obj_b.SampleTime ==
           Controller_P.P_angular_vel_y_SampleTime)) {
-      Controller_B.p_p = false;
+      Controller_B.p_c = false;
     }
 
-    if (Controller_B.p_p) {
+    if (Controller_B.p_c) {
       Controller_B.p = true;
     }
 
@@ -1535,19 +1664,19 @@ void ControllerModelClass::step()
         Controller_P.P_angular_vel_y_SampleTime;
     }
 
-    ParamGet_Controller_522.get_parameter(&Controller_B.sfi);
+    ParamGet_Controller_522.get_parameter(&Controller_B.ZeroGain_e);
 
     // Start for MATLABSystem: '<S60>/D_angular_vel_y' incorporates:
     //   MATLABSystem: '<S60>/D_angular_vel_y'
 
     Controller_B.p = false;
-    Controller_B.p_p = true;
+    Controller_B.p_c = true;
     if (!(Controller_DWork.obj_m.SampleTime ==
           Controller_P.D_angular_vel_y_SampleTime)) {
-      Controller_B.p_p = false;
+      Controller_B.p_c = false;
     }
 
-    if (Controller_B.p_p) {
+    if (Controller_B.p_c) {
       Controller_B.p = true;
     }
 
@@ -1562,13 +1691,13 @@ void ControllerModelClass::step()
     //   MATLABSystem: '<S60>/N_angular_vel_y '
 
     Controller_B.p = false;
-    Controller_B.p_p = true;
+    Controller_B.p_c = true;
     if (!(Controller_DWork.obj_dp.SampleTime ==
           Controller_P.N_angular_vel_y_SampleTime)) {
-      Controller_B.p_p = false;
+      Controller_B.p_c = false;
     }
 
-    if (Controller_B.p_p) {
+    if (Controller_B.p_c) {
       Controller_B.p = true;
     }
 
@@ -1577,7 +1706,7 @@ void ControllerModelClass::step()
         Controller_P.N_angular_vel_y_SampleTime;
     }
 
-    ParamGet_Controller_521.get_parameter(&Controller_B.SumI1_d);
+    ParamGet_Controller_521.get_parameter(&Controller_B.ChooseControllersignal_c);
 
     // Product: '<S59>/NOut' incorporates:
     //   DiscreteIntegrator: '<S59>/Filter'
@@ -1590,7 +1719,7 @@ void ControllerModelClass::step()
 
     Controller_B.NOut_e = (Controller_B.Errory *
       Controller_B.SignPreIntegrator_k - Controller_DWork.Filter_DSTATE_c) *
-      Controller_B.SumI1_d;
+      Controller_B.ChooseControllersignal_c;
 
     // Sum: '<S59>/Sum' incorporates:
     //   DiscreteIntegrator: '<S59>/Integrator'
@@ -1598,18 +1727,20 @@ void ControllerModelClass::step()
     //   Start for MATLABSystem: '<S60>/P_angular_vel_y'
     //   Product: '<S59>/POut'
 
-    Controller_B.SumI1_d = (Controller_B.Errory * Controller_B.sfi +
-      Controller_DWork.Integrator_DSTATE_h) + Controller_B.NOut_e;
+    Controller_B.ChooseControllersignal_c = (Controller_B.Errory *
+      Controller_B.ZeroGain_e + Controller_DWork.Integrator_DSTATE_h) +
+      Controller_B.NOut_e;
 
     // DeadZone: '<S61>/DeadZone'
-    if (Controller_B.SumI1_d > Controller_P.PIDController_UpperSaturation_o) {
-      Controller_B.SignPreIntegrator_k = Controller_B.SumI1_d -
+    if (Controller_B.ChooseControllersignal_c >
+        Controller_P.PIDController_UpperSaturation_o) {
+      Controller_B.SignPreIntegrator_k = Controller_B.ChooseControllersignal_c -
         Controller_P.PIDController_UpperSaturation_o;
-    } else if (Controller_B.SumI1_d >=
+    } else if (Controller_B.ChooseControllersignal_c >=
                Controller_P.PIDController_LowerSaturatio_ek) {
       Controller_B.SignPreIntegrator_k = 0.0;
     } else {
-      Controller_B.SignPreIntegrator_k = Controller_B.SumI1_d -
+      Controller_B.SignPreIntegrator_k = Controller_B.ChooseControllersignal_c -
         Controller_P.PIDController_LowerSaturatio_ek;
     }
 
@@ -1618,8 +1749,8 @@ void ControllerModelClass::step()
     // RelationalOperator: '<S61>/NotEqual' incorporates:
     //   Gain: '<S61>/ZeroGain'
 
-    Controller_B.NotEqual = (Controller_P.ZeroGain_Gain_k * Controller_B.SumI1_d
-      != Controller_B.SignPreIntegrator_k);
+    Controller_B.NotEqual = (Controller_P.ZeroGain_Gain_k *
+      Controller_B.ChooseControllersignal_c != Controller_B.SignPreIntegrator_k);
 
     // Signum: '<S61>/SignDeltaU'
     if (Controller_B.SignPreIntegrator_k < 0.0) {
@@ -1638,13 +1769,13 @@ void ControllerModelClass::step()
     //   MATLABSystem: '<S60>/I_angular_vel_y'
 
     Controller_B.p = false;
-    Controller_B.p_p = true;
+    Controller_B.p_c = true;
     if (!(Controller_DWork.obj_ep.SampleTime ==
           Controller_P.I_angular_vel_y_SampleTime)) {
-      Controller_B.p_p = false;
+      Controller_B.p_c = false;
     }
 
-    if (Controller_B.p_p) {
+    if (Controller_B.p_c) {
       Controller_B.p = true;
     }
 
@@ -1653,16 +1784,17 @@ void ControllerModelClass::step()
         Controller_P.I_angular_vel_y_SampleTime;
     }
 
-    ParamGet_Controller_520.get_parameter(&Controller_B.sfi);
+    ParamGet_Controller_520.get_parameter(&Controller_B.ZeroGain_e);
 
     // Saturate: '<S59>/Saturate'
-    if (Controller_B.SumI1_d > Controller_P.PIDController_UpperSaturation_o) {
+    if (Controller_B.ChooseControllersignal_c >
+        Controller_P.PIDController_UpperSaturation_o) {
       Controller_B.Saturate_f = Controller_P.PIDController_UpperSaturation_o;
-    } else if (Controller_B.SumI1_d <
+    } else if (Controller_B.ChooseControllersignal_c <
                Controller_P.PIDController_LowerSaturatio_ek) {
       Controller_B.Saturate_f = Controller_P.PIDController_LowerSaturatio_ek;
     } else {
-      Controller_B.Saturate_f = Controller_B.SumI1_d;
+      Controller_B.Saturate_f = Controller_B.ChooseControllersignal_c;
     }
 
     // End of Saturate: '<S59>/Saturate'
@@ -1674,41 +1806,42 @@ void ControllerModelClass::step()
     //   Product: '<S59>/IOut'
     //   Sum: '<S59>/SumI3'
 
-    Controller_B.SumI1_d = (Controller_B.Y_in - Controller_B.Saturate_f) *
-      Controller_P.PIDController_Kt_jo + Controller_B.Errory * Controller_B.sfi;
+    Controller_B.ChooseControllersignal_c = (Controller_B.Y_in -
+      Controller_B.Saturate_f) * Controller_P.PIDController_Kt_jo +
+      Controller_B.Errory * Controller_B.ZeroGain_e;
 
     // Signum: '<S61>/SignPreIntegrator'
-    if (Controller_B.SumI1_d < 0.0) {
+    if (Controller_B.ChooseControllersignal_c < 0.0) {
       // DataTypeConversion: '<S61>/DataTypeConv2'
       Controller_B.spsi = -1.0;
-    } else if (Controller_B.SumI1_d > 0.0) {
+    } else if (Controller_B.ChooseControllersignal_c > 0.0) {
       // DataTypeConversion: '<S61>/DataTypeConv2'
       Controller_B.spsi = 1.0;
-    } else if (Controller_B.SumI1_d == 0.0) {
+    } else if (Controller_B.ChooseControllersignal_c == 0.0) {
       // DataTypeConversion: '<S61>/DataTypeConv2'
       Controller_B.spsi = 0.0;
     } else {
       // DataTypeConversion: '<S61>/DataTypeConv2'
-      Controller_B.spsi = Controller_B.SumI1_d;
+      Controller_B.spsi = Controller_B.ChooseControllersignal_c;
     }
 
     // End of Signum: '<S61>/SignPreIntegrator'
 
     // DataTypeConversion: '<S61>/DataTypeConv1'
     if (Controller_B.SignPreIntegrator_k < 128.0) {
-      Controller_B.rtb_DataTypeConv2_c_b = (int8_T)
+      Controller_B.rtb_DataTypeConv2_c_p = (int8_T)
         Controller_B.SignPreIntegrator_k;
     } else {
-      Controller_B.rtb_DataTypeConv2_c_b = MAX_int8_T;
+      Controller_B.rtb_DataTypeConv2_c_p = MAX_int8_T;
     }
 
     // End of DataTypeConversion: '<S61>/DataTypeConv1'
 
     // DataTypeConversion: '<S61>/DataTypeConv2'
     if (Controller_B.spsi < 128.0) {
-      Controller_B.i1 = (int8_T)Controller_B.spsi;
+      Controller_B.i0 = (int8_T)Controller_B.spsi;
     } else {
-      Controller_B.i1 = MAX_int8_T;
+      Controller_B.i0 = MAX_int8_T;
     }
 
     // Switch: '<S59>/Switch' incorporates:
@@ -1716,11 +1849,11 @@ void ControllerModelClass::step()
     //   Logic: '<S61>/AND'
     //   RelationalOperator: '<S61>/Equal'
 
-    if (Controller_B.NotEqual && (Controller_B.rtb_DataTypeConv2_c_b ==
-         Controller_B.i1)) {
+    if (Controller_B.NotEqual && (Controller_B.rtb_DataTypeConv2_c_p ==
+         Controller_B.i0)) {
       Controller_B.Switch_o = Controller_P.Constant_Value_m;
     } else {
-      Controller_B.Switch_o = Controller_B.SumI1_d;
+      Controller_B.Switch_o = Controller_B.ChooseControllersignal_c;
     }
 
     // End of Switch: '<S59>/Switch'
@@ -1729,13 +1862,13 @@ void ControllerModelClass::step()
     //   MATLABSystem: '<S63>/P_angular_vel_z'
 
     Controller_B.p = false;
-    Controller_B.p_p = true;
+    Controller_B.p_c = true;
     if (!(Controller_DWork.obj_e.SampleTime ==
           Controller_P.P_angular_vel_z_SampleTime)) {
-      Controller_B.p_p = false;
+      Controller_B.p_c = false;
     }
 
-    if (Controller_B.p_p) {
+    if (Controller_B.p_c) {
       Controller_B.p = true;
     }
 
@@ -1744,19 +1877,19 @@ void ControllerModelClass::step()
         Controller_P.P_angular_vel_z_SampleTime;
     }
 
-    ParamGet_Controller_536.get_parameter(&Controller_B.sfi);
+    ParamGet_Controller_536.get_parameter(&Controller_B.ZeroGain_e);
 
     // Start for MATLABSystem: '<S63>/D_angular_vel_z' incorporates:
     //   MATLABSystem: '<S63>/D_angular_vel_z'
 
     Controller_B.p = false;
-    Controller_B.p_p = true;
+    Controller_B.p_c = true;
     if (!(Controller_DWork.obj_jg.SampleTime ==
           Controller_P.D_angular_vel_z_SampleTime)) {
-      Controller_B.p_p = false;
+      Controller_B.p_c = false;
     }
 
-    if (Controller_B.p_p) {
+    if (Controller_B.p_c) {
       Controller_B.p = true;
     }
 
@@ -1771,13 +1904,13 @@ void ControllerModelClass::step()
     //   MATLABSystem: '<S63>/N_angular_vel_z '
 
     Controller_B.p = false;
-    Controller_B.p_p = true;
+    Controller_B.p_c = true;
     if (!(Controller_DWork.obj_g.SampleTime ==
           Controller_P.N_angular_vel_z_SampleTime)) {
-      Controller_B.p_p = false;
+      Controller_B.p_c = false;
     }
 
-    if (Controller_B.p_p) {
+    if (Controller_B.p_c) {
       Controller_B.p = true;
     }
 
@@ -1786,7 +1919,7 @@ void ControllerModelClass::step()
         Controller_P.N_angular_vel_z_SampleTime;
     }
 
-    ParamGet_Controller_535.get_parameter(&Controller_B.SumI1_d);
+    ParamGet_Controller_535.get_parameter(&Controller_B.ChooseControllersignal_c);
 
     // Product: '<S62>/NOut' incorporates:
     //   DiscreteIntegrator: '<S62>/Filter'
@@ -1799,7 +1932,7 @@ void ControllerModelClass::step()
 
     Controller_B.NOut_m = (Controller_B.Errorz *
       Controller_B.SignPreIntegrator_k - Controller_DWork.Filter_DSTATE_f) *
-      Controller_B.SumI1_d;
+      Controller_B.ChooseControllersignal_c;
 
     // Sum: '<S62>/Sum' incorporates:
     //   DiscreteIntegrator: '<S62>/Integrator'
@@ -1807,18 +1940,20 @@ void ControllerModelClass::step()
     //   Start for MATLABSystem: '<S63>/P_angular_vel_z'
     //   Product: '<S62>/POut'
 
-    Controller_B.SumI1_d = (Controller_B.Errorz * Controller_B.sfi +
-      Controller_DWork.Integrator_DSTATE_a) + Controller_B.NOut_m;
+    Controller_B.ChooseControllersignal_c = (Controller_B.Errorz *
+      Controller_B.ZeroGain_e + Controller_DWork.Integrator_DSTATE_a) +
+      Controller_B.NOut_m;
 
     // DeadZone: '<S64>/DeadZone'
-    if (Controller_B.SumI1_d > Controller_P.PIDController_UpperSaturation_e) {
-      Controller_B.SignPreIntegrator_k = Controller_B.SumI1_d -
+    if (Controller_B.ChooseControllersignal_c >
+        Controller_P.PIDController_UpperSaturation_e) {
+      Controller_B.SignPreIntegrator_k = Controller_B.ChooseControllersignal_c -
         Controller_P.PIDController_UpperSaturation_e;
-    } else if (Controller_B.SumI1_d >=
+    } else if (Controller_B.ChooseControllersignal_c >=
                Controller_P.PIDController_LowerSaturation_p) {
       Controller_B.SignPreIntegrator_k = 0.0;
     } else {
-      Controller_B.SignPreIntegrator_k = Controller_B.SumI1_d -
+      Controller_B.SignPreIntegrator_k = Controller_B.ChooseControllersignal_c -
         Controller_P.PIDController_LowerSaturation_p;
     }
 
@@ -1827,8 +1962,8 @@ void ControllerModelClass::step()
     // RelationalOperator: '<S64>/NotEqual' incorporates:
     //   Gain: '<S64>/ZeroGain'
 
-    Controller_B.NotEqual = (Controller_P.ZeroGain_Gain_a * Controller_B.SumI1_d
-      != Controller_B.SignPreIntegrator_k);
+    Controller_B.NotEqual = (Controller_P.ZeroGain_Gain_a *
+      Controller_B.ChooseControllersignal_c != Controller_B.SignPreIntegrator_k);
 
     // Signum: '<S64>/SignDeltaU'
     if (Controller_B.SignPreIntegrator_k < 0.0) {
@@ -1847,13 +1982,13 @@ void ControllerModelClass::step()
     //   MATLABSystem: '<S63>/I_angular_vel_z'
 
     Controller_B.p = false;
-    Controller_B.p_p = true;
+    Controller_B.p_c = true;
     if (!(Controller_DWork.obj_p.SampleTime ==
           Controller_P.I_angular_vel_z_SampleTime)) {
-      Controller_B.p_p = false;
+      Controller_B.p_c = false;
     }
 
-    if (Controller_B.p_p) {
+    if (Controller_B.p_c) {
       Controller_B.p = true;
     }
 
@@ -1862,16 +1997,17 @@ void ControllerModelClass::step()
         Controller_P.I_angular_vel_z_SampleTime;
     }
 
-    ParamGet_Controller_534.get_parameter(&Controller_B.sfi);
+    ParamGet_Controller_534.get_parameter(&Controller_B.ZeroGain_e);
 
     // Saturate: '<S62>/Saturate'
-    if (Controller_B.SumI1_d > Controller_P.PIDController_UpperSaturation_e) {
+    if (Controller_B.ChooseControllersignal_c >
+        Controller_P.PIDController_UpperSaturation_e) {
       Controller_B.Saturate_i = Controller_P.PIDController_UpperSaturation_e;
-    } else if (Controller_B.SumI1_d <
+    } else if (Controller_B.ChooseControllersignal_c <
                Controller_P.PIDController_LowerSaturation_p) {
       Controller_B.Saturate_i = Controller_P.PIDController_LowerSaturation_p;
     } else {
-      Controller_B.Saturate_i = Controller_B.SumI1_d;
+      Controller_B.Saturate_i = Controller_B.ChooseControllersignal_c;
     }
 
     // End of Saturate: '<S62>/Saturate'
@@ -1883,41 +2019,42 @@ void ControllerModelClass::step()
     //   Product: '<S62>/IOut'
     //   Sum: '<S62>/SumI3'
 
-    Controller_B.SumI1_d = (Controller_B.Z_n - Controller_B.Saturate_i) *
-      Controller_P.PIDController_Kt_p + Controller_B.Errorz * Controller_B.sfi;
+    Controller_B.ChooseControllersignal_c = (Controller_B.Z_n -
+      Controller_B.Saturate_i) * Controller_P.PIDController_Kt_p +
+      Controller_B.Errorz * Controller_B.ZeroGain_e;
 
     // Signum: '<S64>/SignPreIntegrator'
-    if (Controller_B.SumI1_d < 0.0) {
+    if (Controller_B.ChooseControllersignal_c < 0.0) {
       // DataTypeConversion: '<S64>/DataTypeConv2'
       Controller_B.spsi = -1.0;
-    } else if (Controller_B.SumI1_d > 0.0) {
+    } else if (Controller_B.ChooseControllersignal_c > 0.0) {
       // DataTypeConversion: '<S64>/DataTypeConv2'
       Controller_B.spsi = 1.0;
-    } else if (Controller_B.SumI1_d == 0.0) {
+    } else if (Controller_B.ChooseControllersignal_c == 0.0) {
       // DataTypeConversion: '<S64>/DataTypeConv2'
       Controller_B.spsi = 0.0;
     } else {
       // DataTypeConversion: '<S64>/DataTypeConv2'
-      Controller_B.spsi = Controller_B.SumI1_d;
+      Controller_B.spsi = Controller_B.ChooseControllersignal_c;
     }
 
     // End of Signum: '<S64>/SignPreIntegrator'
 
     // DataTypeConversion: '<S64>/DataTypeConv1'
     if (Controller_B.SignPreIntegrator_k < 128.0) {
-      Controller_B.rtb_DataTypeConv2_c_b = (int8_T)
+      Controller_B.rtb_DataTypeConv2_c_p = (int8_T)
         Controller_B.SignPreIntegrator_k;
     } else {
-      Controller_B.rtb_DataTypeConv2_c_b = MAX_int8_T;
+      Controller_B.rtb_DataTypeConv2_c_p = MAX_int8_T;
     }
 
     // End of DataTypeConversion: '<S64>/DataTypeConv1'
 
     // DataTypeConversion: '<S64>/DataTypeConv2'
     if (Controller_B.spsi < 128.0) {
-      Controller_B.i1 = (int8_T)Controller_B.spsi;
+      Controller_B.i0 = (int8_T)Controller_B.spsi;
     } else {
-      Controller_B.i1 = MAX_int8_T;
+      Controller_B.i0 = MAX_int8_T;
     }
 
     // Switch: '<S62>/Switch' incorporates:
@@ -1925,11 +2062,11 @@ void ControllerModelClass::step()
     //   Logic: '<S64>/AND'
     //   RelationalOperator: '<S64>/Equal'
 
-    if (Controller_B.NotEqual && (Controller_B.rtb_DataTypeConv2_c_b ==
-         Controller_B.i1)) {
+    if (Controller_B.NotEqual && (Controller_B.rtb_DataTypeConv2_c_p ==
+         Controller_B.i0)) {
       Controller_B.Switch_j = Controller_P.Constant_Value_fw;
     } else {
-      Controller_B.Switch_j = Controller_B.SumI1_d;
+      Controller_B.Switch_j = Controller_B.ChooseControllersignal_c;
     }
 
     // End of Switch: '<S62>/Switch'
@@ -1938,13 +2075,13 @@ void ControllerModelClass::step()
     //   MATLABSystem: '<S66>/P_vel_x'
 
     Controller_B.p = false;
-    Controller_B.p_p = true;
+    Controller_B.p_c = true;
     if (!(Controller_DWork.obj_ns.SampleTime == Controller_P.P_vel_x_SampleTime))
     {
-      Controller_B.p_p = false;
+      Controller_B.p_c = false;
     }
 
-    if (Controller_B.p_p) {
+    if (Controller_B.p_c) {
       Controller_B.p = true;
     }
 
@@ -1952,19 +2089,19 @@ void ControllerModelClass::step()
       Controller_DWork.obj_ns.SampleTime = Controller_P.P_vel_x_SampleTime;
     }
 
-    ParamGet_Controller_550.get_parameter(&Controller_B.sfi);
+    ParamGet_Controller_550.get_parameter(&Controller_B.ZeroGain_e);
 
     // Start for MATLABSystem: '<S66>/D_vel_x' incorporates:
     //   MATLABSystem: '<S66>/D_vel_x'
 
     Controller_B.p = false;
-    Controller_B.p_p = true;
+    Controller_B.p_c = true;
     if (!(Controller_DWork.obj_d.SampleTime == Controller_P.D_vel_x_SampleTime))
     {
-      Controller_B.p_p = false;
+      Controller_B.p_c = false;
     }
 
-    if (Controller_B.p_p) {
+    if (Controller_B.p_c) {
       Controller_B.p = true;
     }
 
@@ -1978,13 +2115,13 @@ void ControllerModelClass::step()
     //   MATLABSystem: '<S66>/N_vel_x '
 
     Controller_B.p = false;
-    Controller_B.p_p = true;
+    Controller_B.p_c = true;
     if (!(Controller_DWork.obj_a3.SampleTime == Controller_P.N_vel_x_SampleTime))
     {
-      Controller_B.p_p = false;
+      Controller_B.p_c = false;
     }
 
-    if (Controller_B.p_p) {
+    if (Controller_B.p_c) {
       Controller_B.p = true;
     }
 
@@ -1992,7 +2129,7 @@ void ControllerModelClass::step()
       Controller_DWork.obj_a3.SampleTime = Controller_P.N_vel_x_SampleTime;
     }
 
-    ParamGet_Controller_549.get_parameter(&Controller_B.SumI1_d);
+    ParamGet_Controller_549.get_parameter(&Controller_B.ChooseControllersignal_c);
 
     // Product: '<S65>/NOut' incorporates:
     //   DiscreteIntegrator: '<S65>/Filter'
@@ -2005,7 +2142,7 @@ void ControllerModelClass::step()
 
     Controller_B.NOut_b = (Controller_B.Errorz8 *
       Controller_B.SignPreIntegrator_k - Controller_DWork.Filter_DSTATE_a) *
-      Controller_B.SumI1_d;
+      Controller_B.ChooseControllersignal_c;
 
     // Sum: '<S65>/Sum' incorporates:
     //   DiscreteIntegrator: '<S65>/Integrator'
@@ -2013,18 +2150,20 @@ void ControllerModelClass::step()
     //   Start for MATLABSystem: '<S66>/P_vel_x'
     //   Product: '<S65>/POut'
 
-    Controller_B.SumI1_d = (Controller_B.Errorz8 * Controller_B.sfi +
-      Controller_DWork.Integrator_DSTATE_f) + Controller_B.NOut_b;
+    Controller_B.ChooseControllersignal_c = (Controller_B.Errorz8 *
+      Controller_B.ZeroGain_e + Controller_DWork.Integrator_DSTATE_f) +
+      Controller_B.NOut_b;
 
     // DeadZone: '<S67>/DeadZone'
-    if (Controller_B.SumI1_d > Controller_P.PIDController_UpperSaturation_d) {
-      Controller_B.SignPreIntegrator_k = Controller_B.SumI1_d -
+    if (Controller_B.ChooseControllersignal_c >
+        Controller_P.PIDController_UpperSaturation_d) {
+      Controller_B.SignPreIntegrator_k = Controller_B.ChooseControllersignal_c -
         Controller_P.PIDController_UpperSaturation_d;
-    } else if (Controller_B.SumI1_d >=
+    } else if (Controller_B.ChooseControllersignal_c >=
                Controller_P.PIDController_LowerSaturation_i) {
       Controller_B.SignPreIntegrator_k = 0.0;
     } else {
-      Controller_B.SignPreIntegrator_k = Controller_B.SumI1_d -
+      Controller_B.SignPreIntegrator_k = Controller_B.ChooseControllersignal_c -
         Controller_P.PIDController_LowerSaturation_i;
     }
 
@@ -2033,8 +2172,8 @@ void ControllerModelClass::step()
     // RelationalOperator: '<S67>/NotEqual' incorporates:
     //   Gain: '<S67>/ZeroGain'
 
-    Controller_B.NotEqual = (Controller_P.ZeroGain_Gain_j * Controller_B.SumI1_d
-      != Controller_B.SignPreIntegrator_k);
+    Controller_B.NotEqual = (Controller_P.ZeroGain_Gain_j *
+      Controller_B.ChooseControllersignal_c != Controller_B.SignPreIntegrator_k);
 
     // Signum: '<S67>/SignDeltaU'
     if (Controller_B.SignPreIntegrator_k < 0.0) {
@@ -2053,13 +2192,13 @@ void ControllerModelClass::step()
     //   MATLABSystem: '<S66>/I_vel_x'
 
     Controller_B.p = false;
-    Controller_B.p_p = true;
+    Controller_B.p_c = true;
     if (!(Controller_DWork.obj_cv.SampleTime == Controller_P.I_vel_x_SampleTime))
     {
-      Controller_B.p_p = false;
+      Controller_B.p_c = false;
     }
 
-    if (Controller_B.p_p) {
+    if (Controller_B.p_c) {
       Controller_B.p = true;
     }
 
@@ -2067,16 +2206,17 @@ void ControllerModelClass::step()
       Controller_DWork.obj_cv.SampleTime = Controller_P.I_vel_x_SampleTime;
     }
 
-    ParamGet_Controller_548.get_parameter(&Controller_B.sfi);
+    ParamGet_Controller_548.get_parameter(&Controller_B.ZeroGain_e);
 
     // Saturate: '<S65>/Saturate'
-    if (Controller_B.SumI1_d > Controller_P.PIDController_UpperSaturation_d) {
+    if (Controller_B.ChooseControllersignal_c >
+        Controller_P.PIDController_UpperSaturation_d) {
       Controller_B.Saturate_b = Controller_P.PIDController_UpperSaturation_d;
-    } else if (Controller_B.SumI1_d <
+    } else if (Controller_B.ChooseControllersignal_c <
                Controller_P.PIDController_LowerSaturation_i) {
       Controller_B.Saturate_b = Controller_P.PIDController_LowerSaturation_i;
     } else {
-      Controller_B.Saturate_b = Controller_B.SumI1_d;
+      Controller_B.Saturate_b = Controller_B.ChooseControllersignal_c;
     }
 
     // End of Saturate: '<S65>/Saturate'
@@ -2088,41 +2228,42 @@ void ControllerModelClass::step()
     //   Product: '<S65>/IOut'
     //   Sum: '<S65>/SumI3'
 
-    Controller_B.SumI1_d = (Controller_B.X_h - Controller_B.Saturate_b) *
-      Controller_P.PIDController_Kt_jw + Controller_B.Errorz8 * Controller_B.sfi;
+    Controller_B.ChooseControllersignal_c = (Controller_B.X_h -
+      Controller_B.Saturate_b) * Controller_P.PIDController_Kt_jw +
+      Controller_B.Errorz8 * Controller_B.ZeroGain_e;
 
     // Signum: '<S67>/SignPreIntegrator'
-    if (Controller_B.SumI1_d < 0.0) {
+    if (Controller_B.ChooseControllersignal_c < 0.0) {
       // DataTypeConversion: '<S67>/DataTypeConv2'
       Controller_B.spsi = -1.0;
-    } else if (Controller_B.SumI1_d > 0.0) {
+    } else if (Controller_B.ChooseControllersignal_c > 0.0) {
       // DataTypeConversion: '<S67>/DataTypeConv2'
       Controller_B.spsi = 1.0;
-    } else if (Controller_B.SumI1_d == 0.0) {
+    } else if (Controller_B.ChooseControllersignal_c == 0.0) {
       // DataTypeConversion: '<S67>/DataTypeConv2'
       Controller_B.spsi = 0.0;
     } else {
       // DataTypeConversion: '<S67>/DataTypeConv2'
-      Controller_B.spsi = Controller_B.SumI1_d;
+      Controller_B.spsi = Controller_B.ChooseControllersignal_c;
     }
 
     // End of Signum: '<S67>/SignPreIntegrator'
 
     // DataTypeConversion: '<S67>/DataTypeConv1'
     if (Controller_B.SignPreIntegrator_k < 128.0) {
-      Controller_B.rtb_DataTypeConv2_c_b = (int8_T)
+      Controller_B.rtb_DataTypeConv2_c_p = (int8_T)
         Controller_B.SignPreIntegrator_k;
     } else {
-      Controller_B.rtb_DataTypeConv2_c_b = MAX_int8_T;
+      Controller_B.rtb_DataTypeConv2_c_p = MAX_int8_T;
     }
 
     // End of DataTypeConversion: '<S67>/DataTypeConv1'
 
     // DataTypeConversion: '<S67>/DataTypeConv2'
     if (Controller_B.spsi < 128.0) {
-      Controller_B.i1 = (int8_T)Controller_B.spsi;
+      Controller_B.i0 = (int8_T)Controller_B.spsi;
     } else {
-      Controller_B.i1 = MAX_int8_T;
+      Controller_B.i0 = MAX_int8_T;
     }
 
     // Switch: '<S65>/Switch' incorporates:
@@ -2130,11 +2271,11 @@ void ControllerModelClass::step()
     //   Logic: '<S67>/AND'
     //   RelationalOperator: '<S67>/Equal'
 
-    if (Controller_B.NotEqual && (Controller_B.rtb_DataTypeConv2_c_b ==
-         Controller_B.i1)) {
-      Controller_B.Switch_e = Controller_P.Constant_Value_m0;
+    if (Controller_B.NotEqual && (Controller_B.rtb_DataTypeConv2_c_p ==
+         Controller_B.i0)) {
+      Controller_B.sfi = Controller_P.Constant_Value_m0;
     } else {
-      Controller_B.Switch_e = Controller_B.SumI1_d;
+      Controller_B.sfi = Controller_B.ChooseControllersignal_c;
     }
 
     // End of Switch: '<S65>/Switch'
@@ -2143,13 +2284,13 @@ void ControllerModelClass::step()
     //   MATLABSystem: '<S69>/P_vel_y'
 
     Controller_B.p = false;
-    Controller_B.p_p = true;
+    Controller_B.p_c = true;
     if (!(Controller_DWork.obj_ji.SampleTime == Controller_P.P_vel_y_SampleTime))
     {
-      Controller_B.p_p = false;
+      Controller_B.p_c = false;
     }
 
-    if (Controller_B.p_p) {
+    if (Controller_B.p_c) {
       Controller_B.p = true;
     }
 
@@ -2157,19 +2298,19 @@ void ControllerModelClass::step()
       Controller_DWork.obj_ji.SampleTime = Controller_P.P_vel_y_SampleTime;
     }
 
-    ParamGet_Controller_564.get_parameter(&Controller_B.sfi);
+    ParamGet_Controller_564.get_parameter(&Controller_B.ZeroGain_e);
 
     // Start for MATLABSystem: '<S69>/D_vel_y' incorporates:
     //   MATLABSystem: '<S69>/D_vel_y'
 
     Controller_B.p = false;
-    Controller_B.p_p = true;
+    Controller_B.p_c = true;
     if (!(Controller_DWork.obj_ny.SampleTime == Controller_P.D_vel_y_SampleTime))
     {
-      Controller_B.p_p = false;
+      Controller_B.p_c = false;
     }
 
-    if (Controller_B.p_p) {
+    if (Controller_B.p_c) {
       Controller_B.p = true;
     }
 
@@ -2183,13 +2324,13 @@ void ControllerModelClass::step()
     //   MATLABSystem: '<S69>/N_vel_y '
 
     Controller_B.p = false;
-    Controller_B.p_p = true;
+    Controller_B.p_c = true;
     if (!(Controller_DWork.obj_cb.SampleTime == Controller_P.N_vel_y_SampleTime))
     {
-      Controller_B.p_p = false;
+      Controller_B.p_c = false;
     }
 
-    if (Controller_B.p_p) {
+    if (Controller_B.p_c) {
       Controller_B.p = true;
     }
 
@@ -2197,7 +2338,7 @@ void ControllerModelClass::step()
       Controller_DWork.obj_cb.SampleTime = Controller_P.N_vel_y_SampleTime;
     }
 
-    ParamGet_Controller_563.get_parameter(&Controller_B.SumI1_d);
+    ParamGet_Controller_563.get_parameter(&Controller_B.ChooseControllersignal_c);
 
     // Product: '<S68>/NOut' incorporates:
     //   DiscreteIntegrator: '<S68>/Filter'
@@ -2208,9 +2349,9 @@ void ControllerModelClass::step()
     //   Product: '<S68>/DOut'
     //   Sum: '<S68>/SumD'
 
-    Controller_B.NOut_i = (Controller_B.Errorz9 *
-      Controller_B.SignPreIntegrator_k - Controller_DWork.Filter_DSTATE_g) *
-      Controller_B.SumI1_d;
+    Controller_B.cfi = (Controller_B.Errorz9 * Controller_B.SignPreIntegrator_k
+                        - Controller_DWork.Filter_DSTATE_g) *
+      Controller_B.ChooseControllersignal_c;
 
     // Sum: '<S68>/Sum' incorporates:
     //   DiscreteIntegrator: '<S68>/Integrator'
@@ -2218,18 +2359,20 @@ void ControllerModelClass::step()
     //   Start for MATLABSystem: '<S69>/P_vel_y'
     //   Product: '<S68>/POut'
 
-    Controller_B.SumI1_d = (Controller_B.Errorz9 * Controller_B.sfi +
-      Controller_DWork.Integrator_DSTATE_n) + Controller_B.NOut_i;
+    Controller_B.ChooseControllersignal_c = (Controller_B.Errorz9 *
+      Controller_B.ZeroGain_e + Controller_DWork.Integrator_DSTATE_n) +
+      Controller_B.cfi;
 
     // DeadZone: '<S70>/DeadZone'
-    if (Controller_B.SumI1_d > Controller_P.PIDController_UpperSaturatio_bf) {
-      Controller_B.SignPreIntegrator_k = Controller_B.SumI1_d -
+    if (Controller_B.ChooseControllersignal_c >
+        Controller_P.PIDController_UpperSaturatio_bf) {
+      Controller_B.SignPreIntegrator_k = Controller_B.ChooseControllersignal_c -
         Controller_P.PIDController_UpperSaturatio_bf;
-    } else if (Controller_B.SumI1_d >=
+    } else if (Controller_B.ChooseControllersignal_c >=
                Controller_P.PIDController_LowerSaturation_g) {
       Controller_B.SignPreIntegrator_k = 0.0;
     } else {
-      Controller_B.SignPreIntegrator_k = Controller_B.SumI1_d -
+      Controller_B.SignPreIntegrator_k = Controller_B.ChooseControllersignal_c -
         Controller_P.PIDController_LowerSaturation_g;
     }
 
@@ -2239,7 +2382,7 @@ void ControllerModelClass::step()
     //   Gain: '<S70>/ZeroGain'
 
     Controller_B.NotEqual = (Controller_P.ZeroGain_Gain_jk *
-      Controller_B.SumI1_d != Controller_B.SignPreIntegrator_k);
+      Controller_B.ChooseControllersignal_c != Controller_B.SignPreIntegrator_k);
 
     // Signum: '<S70>/SignDeltaU'
     if (Controller_B.SignPreIntegrator_k < 0.0) {
@@ -2258,13 +2401,13 @@ void ControllerModelClass::step()
     //   MATLABSystem: '<S69>/I_vel_y'
 
     Controller_B.p = false;
-    Controller_B.p_p = true;
+    Controller_B.p_c = true;
     if (!(Controller_DWork.obj_jx.SampleTime == Controller_P.I_vel_y_SampleTime))
     {
-      Controller_B.p_p = false;
+      Controller_B.p_c = false;
     }
 
-    if (Controller_B.p_p) {
+    if (Controller_B.p_c) {
       Controller_B.p = true;
     }
 
@@ -2272,16 +2415,17 @@ void ControllerModelClass::step()
       Controller_DWork.obj_jx.SampleTime = Controller_P.I_vel_y_SampleTime;
     }
 
-    ParamGet_Controller_562.get_parameter(&Controller_B.sfi);
+    ParamGet_Controller_562.get_parameter(&Controller_B.ZeroGain_e);
 
     // Saturate: '<S68>/Saturate'
-    if (Controller_B.SumI1_d > Controller_P.PIDController_UpperSaturatio_bf) {
+    if (Controller_B.ChooseControllersignal_c >
+        Controller_P.PIDController_UpperSaturatio_bf) {
       Controller_B.Saturate_h = Controller_P.PIDController_UpperSaturatio_bf;
-    } else if (Controller_B.SumI1_d <
+    } else if (Controller_B.ChooseControllersignal_c <
                Controller_P.PIDController_LowerSaturation_g) {
       Controller_B.Saturate_h = Controller_P.PIDController_LowerSaturation_g;
     } else {
-      Controller_B.Saturate_h = Controller_B.SumI1_d;
+      Controller_B.Saturate_h = Controller_B.ChooseControllersignal_c;
     }
 
     // End of Saturate: '<S68>/Saturate'
@@ -2293,41 +2437,42 @@ void ControllerModelClass::step()
     //   Product: '<S68>/IOut'
     //   Sum: '<S68>/SumI3'
 
-    Controller_B.SumI1_d = (Controller_B.Y_i - Controller_B.Saturate_h) *
-      Controller_P.PIDController_Kt_c + Controller_B.Errorz9 * Controller_B.sfi;
+    Controller_B.ChooseControllersignal_c = (Controller_B.Y_i -
+      Controller_B.Saturate_h) * Controller_P.PIDController_Kt_c +
+      Controller_B.Errorz9 * Controller_B.ZeroGain_e;
 
     // Signum: '<S70>/SignPreIntegrator'
-    if (Controller_B.SumI1_d < 0.0) {
+    if (Controller_B.ChooseControllersignal_c < 0.0) {
       // DataTypeConversion: '<S70>/DataTypeConv2'
       Controller_B.spsi = -1.0;
-    } else if (Controller_B.SumI1_d > 0.0) {
+    } else if (Controller_B.ChooseControllersignal_c > 0.0) {
       // DataTypeConversion: '<S70>/DataTypeConv2'
       Controller_B.spsi = 1.0;
-    } else if (Controller_B.SumI1_d == 0.0) {
+    } else if (Controller_B.ChooseControllersignal_c == 0.0) {
       // DataTypeConversion: '<S70>/DataTypeConv2'
       Controller_B.spsi = 0.0;
     } else {
       // DataTypeConversion: '<S70>/DataTypeConv2'
-      Controller_B.spsi = Controller_B.SumI1_d;
+      Controller_B.spsi = Controller_B.ChooseControllersignal_c;
     }
 
     // End of Signum: '<S70>/SignPreIntegrator'
 
     // DataTypeConversion: '<S70>/DataTypeConv1'
     if (Controller_B.SignPreIntegrator_k < 128.0) {
-      Controller_B.rtb_DataTypeConv2_c_b = (int8_T)
+      Controller_B.rtb_DataTypeConv2_c_p = (int8_T)
         Controller_B.SignPreIntegrator_k;
     } else {
-      Controller_B.rtb_DataTypeConv2_c_b = MAX_int8_T;
+      Controller_B.rtb_DataTypeConv2_c_p = MAX_int8_T;
     }
 
     // End of DataTypeConversion: '<S70>/DataTypeConv1'
 
     // DataTypeConversion: '<S70>/DataTypeConv2'
     if (Controller_B.spsi < 128.0) {
-      Controller_B.i1 = (int8_T)Controller_B.spsi;
+      Controller_B.i0 = (int8_T)Controller_B.spsi;
     } else {
-      Controller_B.i1 = MAX_int8_T;
+      Controller_B.i0 = MAX_int8_T;
     }
 
     // Switch: '<S68>/Switch' incorporates:
@@ -2335,11 +2480,11 @@ void ControllerModelClass::step()
     //   Logic: '<S70>/AND'
     //   RelationalOperator: '<S70>/Equal'
 
-    if (Controller_B.NotEqual && (Controller_B.rtb_DataTypeConv2_c_b ==
-         Controller_B.i1)) {
-      Controller_B.Switch_i = Controller_P.Constant_Value_p;
+    if (Controller_B.NotEqual && (Controller_B.rtb_DataTypeConv2_c_p ==
+         Controller_B.i0)) {
+      Controller_B.spsi = Controller_P.Constant_Value_p;
     } else {
-      Controller_B.Switch_i = Controller_B.SumI1_d;
+      Controller_B.spsi = Controller_B.ChooseControllersignal_c;
     }
 
     // End of Switch: '<S68>/Switch'
@@ -2348,13 +2493,13 @@ void ControllerModelClass::step()
     //   MATLABSystem: '<S72>/P_vel_z'
 
     Controller_B.p = false;
-    Controller_B.p_p = true;
+    Controller_B.p_c = true;
     if (!(Controller_DWork.obj_j.SampleTime == Controller_P.P_vel_z_SampleTime))
     {
-      Controller_B.p_p = false;
+      Controller_B.p_c = false;
     }
 
-    if (Controller_B.p_p) {
+    if (Controller_B.p_c) {
       Controller_B.p = true;
     }
 
@@ -2362,19 +2507,19 @@ void ControllerModelClass::step()
       Controller_DWork.obj_j.SampleTime = Controller_P.P_vel_z_SampleTime;
     }
 
-    ParamGet_Controller_578.get_parameter(&Controller_B.sfi);
+    ParamGet_Controller_578.get_parameter(&Controller_B.ZeroGain_e);
 
     // Start for MATLABSystem: '<S72>/D_vel_z' incorporates:
     //   MATLABSystem: '<S72>/D_vel_z'
 
     Controller_B.p = false;
-    Controller_B.p_p = true;
+    Controller_B.p_c = true;
     if (!(Controller_DWork.obj_a.SampleTime == Controller_P.D_vel_z_SampleTime))
     {
-      Controller_B.p_p = false;
+      Controller_B.p_c = false;
     }
 
-    if (Controller_B.p_p) {
+    if (Controller_B.p_c) {
       Controller_B.p = true;
     }
 
@@ -2388,13 +2533,13 @@ void ControllerModelClass::step()
     //   MATLABSystem: '<S72>/N_vel_z '
 
     Controller_B.p = false;
-    Controller_B.p_p = true;
+    Controller_B.p_c = true;
     if (!(Controller_DWork.obj_h.SampleTime == Controller_P.N_vel_z_SampleTime))
     {
-      Controller_B.p_p = false;
+      Controller_B.p_c = false;
     }
 
-    if (Controller_B.p_p) {
+    if (Controller_B.p_c) {
       Controller_B.p = true;
     }
 
@@ -2402,7 +2547,7 @@ void ControllerModelClass::step()
       Controller_DWork.obj_h.SampleTime = Controller_P.N_vel_z_SampleTime;
     }
 
-    ParamGet_Controller_577.get_parameter(&Controller_B.SumI1_d);
+    ParamGet_Controller_577.get_parameter(&Controller_B.ChooseControllersignal_c);
 
     // Product: '<S71>/NOut' incorporates:
     //   DiscreteIntegrator: '<S71>/Filter'
@@ -2413,9 +2558,9 @@ void ControllerModelClass::step()
     //   Product: '<S71>/DOut'
     //   Sum: '<S71>/SumD'
 
-    Controller_B.cfi = (Controller_B.Errorz10 * Controller_B.SignPreIntegrator_k
-                        - Controller_DWork.Filter_DSTATE_cw) *
-      Controller_B.SumI1_d;
+    Controller_B.cpsi_c = (Controller_B.Errorz10 *
+      Controller_B.SignPreIntegrator_k - Controller_DWork.Filter_DSTATE_cw) *
+      Controller_B.ChooseControllersignal_c;
 
     // Sum: '<S71>/Sum' incorporates:
     //   DiscreteIntegrator: '<S71>/Integrator'
@@ -2423,18 +2568,20 @@ void ControllerModelClass::step()
     //   Start for MATLABSystem: '<S72>/P_vel_z'
     //   Product: '<S71>/POut'
 
-    Controller_B.SumI1_d = (Controller_B.Errorz10 * Controller_B.sfi +
-      Controller_DWork.Integrator_DSTATE_ny) + Controller_B.cfi;
+    Controller_B.ChooseControllersignal_c = (Controller_B.Errorz10 *
+      Controller_B.ZeroGain_e + Controller_DWork.Integrator_DSTATE_ny) +
+      Controller_B.cpsi_c;
 
     // DeadZone: '<S73>/DeadZone'
-    if (Controller_B.SumI1_d > Controller_P.PIDController_UpperSaturatio_ba) {
-      Controller_B.SignPreIntegrator_k = Controller_B.SumI1_d -
+    if (Controller_B.ChooseControllersignal_c >
+        Controller_P.PIDController_UpperSaturatio_ba) {
+      Controller_B.SignPreIntegrator_k = Controller_B.ChooseControllersignal_c -
         Controller_P.PIDController_UpperSaturatio_ba;
-    } else if (Controller_B.SumI1_d >=
+    } else if (Controller_B.ChooseControllersignal_c >=
                Controller_P.PIDController_LowerSaturatio_pm) {
       Controller_B.SignPreIntegrator_k = 0.0;
     } else {
-      Controller_B.SignPreIntegrator_k = Controller_B.SumI1_d -
+      Controller_B.SignPreIntegrator_k = Controller_B.ChooseControllersignal_c -
         Controller_P.PIDController_LowerSaturatio_pm;
     }
 
@@ -2443,8 +2590,8 @@ void ControllerModelClass::step()
     // RelationalOperator: '<S73>/NotEqual' incorporates:
     //   Gain: '<S73>/ZeroGain'
 
-    Controller_B.NotEqual = (Controller_P.ZeroGain_Gain_p * Controller_B.SumI1_d
-      != Controller_B.SignPreIntegrator_k);
+    Controller_B.NotEqual = (Controller_P.ZeroGain_Gain_p *
+      Controller_B.ChooseControllersignal_c != Controller_B.SignPreIntegrator_k);
 
     // Signum: '<S73>/SignDeltaU'
     if (Controller_B.SignPreIntegrator_k < 0.0) {
@@ -2463,13 +2610,13 @@ void ControllerModelClass::step()
     //   MATLABSystem: '<S72>/I_vel_z'
 
     Controller_B.p = false;
-    Controller_B.p_p = true;
+    Controller_B.p_c = true;
     if (!(Controller_DWork.obj_js.SampleTime == Controller_P.I_vel_z_SampleTime))
     {
-      Controller_B.p_p = false;
+      Controller_B.p_c = false;
     }
 
-    if (Controller_B.p_p) {
+    if (Controller_B.p_c) {
       Controller_B.p = true;
     }
 
@@ -2477,16 +2624,17 @@ void ControllerModelClass::step()
       Controller_DWork.obj_js.SampleTime = Controller_P.I_vel_z_SampleTime;
     }
 
-    ParamGet_Controller_576.get_parameter(&Controller_B.sfi);
+    ParamGet_Controller_576.get_parameter(&Controller_B.ZeroGain_e);
 
     // Saturate: '<S71>/Saturate'
-    if (Controller_B.SumI1_d > Controller_P.PIDController_UpperSaturatio_ba) {
+    if (Controller_B.ChooseControllersignal_c >
+        Controller_P.PIDController_UpperSaturatio_ba) {
       Controller_B.Saturate_bk = Controller_P.PIDController_UpperSaturatio_ba;
-    } else if (Controller_B.SumI1_d <
+    } else if (Controller_B.ChooseControllersignal_c <
                Controller_P.PIDController_LowerSaturatio_pm) {
       Controller_B.Saturate_bk = Controller_P.PIDController_LowerSaturatio_pm;
     } else {
-      Controller_B.Saturate_bk = Controller_B.SumI1_d;
+      Controller_B.Saturate_bk = Controller_B.ChooseControllersignal_c;
     }
 
     // End of Saturate: '<S71>/Saturate'
@@ -2498,9 +2646,9 @@ void ControllerModelClass::step()
     //   Product: '<S71>/IOut'
     //   Sum: '<S71>/SumI3'
 
-    Controller_B.SumI1_d = (Controller_B.Z - Controller_B.Saturate_bk) *
-      Controller_P.PIDController_Kt_li + Controller_B.Errorz10 *
-      Controller_B.sfi;
+    Controller_B.ChooseControllersignal_c = (Controller_B.Z -
+      Controller_B.Saturate_bk) * Controller_P.PIDController_Kt_li +
+      Controller_B.Errorz10 * Controller_B.ZeroGain_e;
 
     // Update for DiscreteIntegrator: '<S56>/Integrator'
     Controller_DWork.Integrator_DSTATE += Controller_P.Integrator_gainval_h *
@@ -2528,7 +2676,7 @@ void ControllerModelClass::step()
 
     // Update for DiscreteIntegrator: '<S65>/Integrator'
     Controller_DWork.Integrator_DSTATE_f += Controller_P.Integrator_gainval_j *
-      Controller_B.Switch_e;
+      Controller_B.sfi;
 
     // Update for DiscreteIntegrator: '<S65>/Filter'
     Controller_DWork.Filter_DSTATE_a += Controller_P.Filter_gainval_h *
@@ -2536,44 +2684,44 @@ void ControllerModelClass::step()
 
     // Update for DiscreteIntegrator: '<S68>/Integrator'
     Controller_DWork.Integrator_DSTATE_n += Controller_P.Integrator_gainval_np *
-      Controller_B.Switch_i;
+      Controller_B.spsi;
 
     // Update for DiscreteIntegrator: '<S68>/Filter'
     Controller_DWork.Filter_DSTATE_g += Controller_P.Filter_gainval_h0 *
-      Controller_B.NOut_i;
+      Controller_B.cfi;
 
     // Signum: '<S73>/SignPreIntegrator'
-    if (Controller_B.SumI1_d < 0.0) {
+    if (Controller_B.ChooseControllersignal_c < 0.0) {
       // DataTypeConversion: '<S73>/DataTypeConv2'
       Controller_B.spsi = -1.0;
-    } else if (Controller_B.SumI1_d > 0.0) {
+    } else if (Controller_B.ChooseControllersignal_c > 0.0) {
       // DataTypeConversion: '<S73>/DataTypeConv2'
       Controller_B.spsi = 1.0;
-    } else if (Controller_B.SumI1_d == 0.0) {
+    } else if (Controller_B.ChooseControllersignal_c == 0.0) {
       // DataTypeConversion: '<S73>/DataTypeConv2'
       Controller_B.spsi = 0.0;
     } else {
       // DataTypeConversion: '<S73>/DataTypeConv2'
-      Controller_B.spsi = Controller_B.SumI1_d;
+      Controller_B.spsi = Controller_B.ChooseControllersignal_c;
     }
 
     // End of Signum: '<S73>/SignPreIntegrator'
 
     // DataTypeConversion: '<S73>/DataTypeConv1'
     if (Controller_B.SignPreIntegrator_k < 128.0) {
-      Controller_B.rtb_DataTypeConv2_c_b = (int8_T)
+      Controller_B.rtb_DataTypeConv2_c_p = (int8_T)
         Controller_B.SignPreIntegrator_k;
     } else {
-      Controller_B.rtb_DataTypeConv2_c_b = MAX_int8_T;
+      Controller_B.rtb_DataTypeConv2_c_p = MAX_int8_T;
     }
 
     // End of DataTypeConversion: '<S73>/DataTypeConv1'
 
     // DataTypeConversion: '<S73>/DataTypeConv2'
     if (Controller_B.spsi < 128.0) {
-      Controller_B.i1 = (int8_T)Controller_B.spsi;
+      Controller_B.i0 = (int8_T)Controller_B.spsi;
     } else {
-      Controller_B.i1 = MAX_int8_T;
+      Controller_B.i0 = MAX_int8_T;
     }
 
     // Switch: '<S71>/Switch' incorporates:
@@ -2581,23 +2729,23 @@ void ControllerModelClass::step()
     //   Logic: '<S73>/AND'
     //   RelationalOperator: '<S73>/Equal'
 
-    if (Controller_B.NotEqual && (Controller_B.rtb_DataTypeConv2_c_b ==
-         Controller_B.i1)) {
-      Controller_B.SumI1_d = Controller_P.Constant_Value_l;
+    if (Controller_B.NotEqual && (Controller_B.rtb_DataTypeConv2_c_p ==
+         Controller_B.i0)) {
+      Controller_B.ChooseControllersignal_c = Controller_P.Constant_Value_l;
     }
 
     // End of Switch: '<S71>/Switch'
 
     // Update for DiscreteIntegrator: '<S71>/Integrator'
     Controller_DWork.Integrator_DSTATE_ny += Controller_P.Integrator_gainval_m *
-      Controller_B.SumI1_d;
+      Controller_B.ChooseControllersignal_c;
 
     // Update for DiscreteIntegrator: '<S71>/Filter'
     Controller_DWork.Filter_DSTATE_cw += Controller_P.Filter_gainval_b *
-      Controller_B.cfi;
+      Controller_B.cpsi_c;
   }
 
-  // End of Outputs for SubSystem: '<Root>/Create errors'
+  // End of Logic: '<Root>/Logical Operator3'
   // End of Outputs for SubSystem: '<Root>/decController'
 
   // MATLAB Function: '<Root>/thrust alloc1'
@@ -2608,45 +2756,25 @@ void ControllerModelClass::step()
   // Outputs for Enabled SubSystem: '<Root>/Subsystem' incorporates:
   //   EnablePort: '<S5>/Enable'
 
-  if (Controller_B.LogicalOperator) {
-    // Start for MATLABSystem: '<S5>/roll_ref' incorporates:
-    //   MATLABSystem: '<S5>/roll_ref'
+  // Logic: '<Root>/Logical Operator4' incorporates:
+  //   Constant: '<Root>/2'
+  //   MATLABSystem: '<Root>/Get controller type'
+  //   Start for MATLABSystem: '<Root>/Get controller type'
+  //   RelationalOperator: '<Root>/Relational Operator1'
 
-    Controller_B.p = false;
-    Controller_B.p_p = true;
-    if (!(Controller_DWork.obj_pk.SampleTime == Controller_P.roll_ref_SampleTime))
-    {
-      Controller_B.p_p = false;
-    }
-
-    if (Controller_B.p_p) {
-      Controller_B.p = true;
-    }
-
-    if (!Controller_B.p) {
-      Controller_DWork.obj_pk.SampleTime = Controller_P.roll_ref_SampleTime;
-    }
-
-    ParamGet_Controller_980.get_parameter(&Controller_B.sfi);
-
-    // Sum: '<S5>/Subtract' incorporates:
-    //   MATLABSystem: '<S5>/roll_ref'
-    //   Start for MATLABSystem: '<S5>/roll_ref'
-
-    Controller_B.Switch_o = Controller_B.sfi -
-      Controller_B.OutportBufferForrollradians;
-
+  if (Controller_B.LogicalOperator && (Controller_P.u_Value ==
+       Controller_B.value_k)) {
     // Start for MATLABSystem: '<S26>/P_roll' incorporates:
     //   MATLABSystem: '<S26>/P_roll'
 
     Controller_B.p = false;
-    Controller_B.p_p = true;
+    Controller_B.p_c = true;
     if (!(Controller_DWork.obj_jp.SampleTime == Controller_P.P_roll_SampleTime))
     {
-      Controller_B.p_p = false;
+      Controller_B.p_c = false;
     }
 
-    if (Controller_B.p_p) {
+    if (Controller_B.p_c) {
       Controller_B.p = true;
     }
 
@@ -2654,19 +2782,19 @@ void ControllerModelClass::step()
       Controller_DWork.obj_jp.SampleTime = Controller_P.P_roll_SampleTime;
     }
 
-    ParamGet_Controller_968.get_parameter(&Controller_B.sfi);
+    ParamGet_Controller_968.get_parameter(&Controller_B.ZeroGain_e);
 
     // Start for MATLABSystem: '<S26>/D_roll' incorporates:
     //   MATLABSystem: '<S26>/D_roll'
 
     Controller_B.p = false;
-    Controller_B.p_p = true;
+    Controller_B.p_c = true;
     if (!(Controller_DWork.obj_k.SampleTime == Controller_P.D_roll_SampleTime))
     {
-      Controller_B.p_p = false;
+      Controller_B.p_c = false;
     }
 
-    if (Controller_B.p_p) {
+    if (Controller_B.p_c) {
       Controller_B.p = true;
     }
 
@@ -2680,13 +2808,13 @@ void ControllerModelClass::step()
     //   MATLABSystem: '<S26>/N_roll '
 
     Controller_B.p = false;
-    Controller_B.p_p = true;
+    Controller_B.p_c = true;
     if (!(Controller_DWork.obj_dp3.SampleTime == Controller_P.N_roll_SampleTime))
     {
-      Controller_B.p_p = false;
+      Controller_B.p_c = false;
     }
 
-    if (Controller_B.p_p) {
+    if (Controller_B.p_c) {
       Controller_B.p = true;
     }
 
@@ -2694,7 +2822,7 @@ void ControllerModelClass::step()
       Controller_DWork.obj_dp3.SampleTime = Controller_P.N_roll_SampleTime;
     }
 
-    ParamGet_Controller_967.get_parameter(&Controller_B.SumI1_d);
+    ParamGet_Controller_967.get_parameter(&Controller_B.ChooseControllersignal_c);
 
     // Product: '<S25>/NOut' incorporates:
     //   DiscreteIntegrator: '<S25>/Filter'
@@ -2705,9 +2833,9 @@ void ControllerModelClass::step()
     //   Product: '<S25>/DOut'
     //   Sum: '<S25>/SumD'
 
-    Controller_B.RandomSource = (Controller_B.Switch_o *
+    Controller_B.RandomSource = (Controller_B.Errorz4 *
       Controller_B.SignPreIntegrator_k - Controller_DWork.Filter_DSTATE_gs) *
-      Controller_B.SumI1_d;
+      Controller_B.ChooseControllersignal_c;
 
     // Sum: '<S25>/Sum' incorporates:
     //   DiscreteIntegrator: '<S25>/Integrator'
@@ -2715,59 +2843,32 @@ void ControllerModelClass::step()
     //   Start for MATLABSystem: '<S26>/P_roll'
     //   Product: '<S25>/POut'
 
-    Controller_B.NOut_m = (Controller_B.Switch_o * Controller_B.sfi +
+    Controller_B.NOut_e = (Controller_B.Errorz4 * Controller_B.ZeroGain_e +
       Controller_DWork.Integrator_DSTATE_nm) + Controller_B.RandomSource;
 
     // Saturate: '<S25>/Saturate'
-    if (Controller_B.NOut_m > Controller_P.PIDController_UpperSaturationLi) {
-      Controller_B.Switch_j = Controller_P.PIDController_UpperSaturationLi;
-    } else if (Controller_B.NOut_m <
+    if (Controller_B.NOut_e > Controller_P.PIDController_UpperSaturationLi) {
+      Controller_B.Switch_o = Controller_P.PIDController_UpperSaturationLi;
+    } else if (Controller_B.NOut_e <
                Controller_P.PIDController_LowerSaturationLi) {
-      Controller_B.Switch_j = Controller_P.PIDController_LowerSaturationLi;
+      Controller_B.Switch_o = Controller_P.PIDController_LowerSaturationLi;
     } else {
-      Controller_B.Switch_j = Controller_B.NOut_m;
+      Controller_B.Switch_o = Controller_B.NOut_e;
     }
 
     // End of Saturate: '<S25>/Saturate'
-
-    // Start for MATLABSystem: '<S5>/pitch_ref' incorporates:
-    //   MATLABSystem: '<S5>/pitch_ref'
-
-    Controller_B.p = false;
-    Controller_B.p_p = true;
-    if (!(Controller_DWork.obj_mbl.SampleTime ==
-          Controller_P.pitch_ref_SampleTime)) {
-      Controller_B.p_p = false;
-    }
-
-    if (Controller_B.p_p) {
-      Controller_B.p = true;
-    }
-
-    if (!Controller_B.p) {
-      Controller_DWork.obj_mbl.SampleTime = Controller_P.pitch_ref_SampleTime;
-    }
-
-    ParamGet_Controller_982.get_parameter(&Controller_B.sfi);
-
-    // Sum: '<S5>/Subtract1' incorporates:
-    //   MATLABSystem: '<S5>/pitch_ref'
-    //   Start for MATLABSystem: '<S5>/pitch_ref'
-
-    Controller_B.NOut_i = Controller_B.sfi -
-      Controller_B.OutportBufferForpitchradians;
 
     // Start for MATLABSystem: '<S23>/P_pitch' incorporates:
     //   MATLABSystem: '<S23>/P_pitch'
 
     Controller_B.p = false;
-    Controller_B.p_p = true;
+    Controller_B.p_c = true;
     if (!(Controller_DWork.obj_m1.SampleTime == Controller_P.P_pitch_SampleTime))
     {
-      Controller_B.p_p = false;
+      Controller_B.p_c = false;
     }
 
-    if (Controller_B.p_p) {
+    if (Controller_B.p_c) {
       Controller_B.p = true;
     }
 
@@ -2775,19 +2876,19 @@ void ControllerModelClass::step()
       Controller_DWork.obj_m1.SampleTime = Controller_P.P_pitch_SampleTime;
     }
 
-    ParamGet_Controller_954.get_parameter(&Controller_B.sfi);
+    ParamGet_Controller_954.get_parameter(&Controller_B.ZeroGain_e);
 
     // Start for MATLABSystem: '<S23>/D_pitch' incorporates:
     //   MATLABSystem: '<S23>/D_pitch'
 
     Controller_B.p = false;
-    Controller_B.p_p = true;
+    Controller_B.p_c = true;
     if (!(Controller_DWork.obj_b4.SampleTime == Controller_P.D_pitch_SampleTime))
     {
-      Controller_B.p_p = false;
+      Controller_B.p_c = false;
     }
 
-    if (Controller_B.p_p) {
+    if (Controller_B.p_c) {
       Controller_B.p = true;
     }
 
@@ -2801,13 +2902,13 @@ void ControllerModelClass::step()
     //   MATLABSystem: '<S23>/N_pitch '
 
     Controller_B.p = false;
-    Controller_B.p_p = true;
+    Controller_B.p_c = true;
     if (!(Controller_DWork.obj_fq.SampleTime == Controller_P.N_pitch_SampleTime))
     {
-      Controller_B.p_p = false;
+      Controller_B.p_c = false;
     }
 
-    if (Controller_B.p_p) {
+    if (Controller_B.p_c) {
       Controller_B.p = true;
     }
 
@@ -2815,7 +2916,7 @@ void ControllerModelClass::step()
       Controller_DWork.obj_fq.SampleTime = Controller_P.N_pitch_SampleTime;
     }
 
-    ParamGet_Controller_953.get_parameter(&Controller_B.SumI1_d);
+    ParamGet_Controller_953.get_parameter(&Controller_B.ChooseControllersignal_c);
 
     // Product: '<S22>/NOut' incorporates:
     //   DiscreteIntegrator: '<S22>/Filter'
@@ -2826,9 +2927,9 @@ void ControllerModelClass::step()
     //   Product: '<S22>/DOut'
     //   Sum: '<S22>/SumD'
 
-    Controller_B.Switch = (Controller_B.NOut_i *
+    Controller_B.Switch = (Controller_B.Errory1 *
       Controller_B.SignPreIntegrator_k - Controller_DWork.Filter_DSTATE_fb) *
-      Controller_B.SumI1_d;
+      Controller_B.ChooseControllersignal_c;
 
     // Sum: '<S22>/Sum' incorporates:
     //   DiscreteIntegrator: '<S22>/Integrator'
@@ -2836,58 +2937,32 @@ void ControllerModelClass::step()
     //   Start for MATLABSystem: '<S23>/P_pitch'
     //   Product: '<S22>/POut'
 
-    Controller_B.Switch_e = (Controller_B.NOut_i * Controller_B.sfi +
+    Controller_B.Switch_j = (Controller_B.Errory1 * Controller_B.ZeroGain_e +
       Controller_DWork.Integrator_DSTATE_c) + Controller_B.Switch;
 
     // Saturate: '<S22>/Saturate'
-    if (Controller_B.Switch_e > Controller_P.PIDController_UpperSaturation_n) {
-      Controller_B.Switch_i = Controller_P.PIDController_UpperSaturation_n;
-    } else if (Controller_B.Switch_e <
+    if (Controller_B.Switch_j > Controller_P.PIDController_UpperSaturation_n) {
+      Controller_B.NOut_b = Controller_P.PIDController_UpperSaturation_n;
+    } else if (Controller_B.Switch_j <
                Controller_P.PIDController_LowerSaturation_n) {
-      Controller_B.Switch_i = Controller_P.PIDController_LowerSaturation_n;
+      Controller_B.NOut_b = Controller_P.PIDController_LowerSaturation_n;
     } else {
-      Controller_B.Switch_i = Controller_B.Switch_e;
+      Controller_B.NOut_b = Controller_B.Switch_j;
     }
 
     // End of Saturate: '<S22>/Saturate'
-
-    // Start for MATLABSystem: '<S5>/yaw_ref' incorporates:
-    //   MATLABSystem: '<S5>/yaw_ref'
-
-    Controller_B.p = false;
-    Controller_B.p_p = true;
-    if (!(Controller_DWork.obj_o5.SampleTime == Controller_P.yaw_ref_SampleTime))
-    {
-      Controller_B.p_p = false;
-    }
-
-    if (Controller_B.p_p) {
-      Controller_B.p = true;
-    }
-
-    if (!Controller_B.p) {
-      Controller_DWork.obj_o5.SampleTime = Controller_P.yaw_ref_SampleTime;
-    }
-
-    ParamGet_Controller_981.get_parameter(&Controller_B.sfi);
-
-    // Sum: '<S5>/Subtract2' incorporates:
-    //   MATLABSystem: '<S5>/yaw_ref'
-    //   Start for MATLABSystem: '<S5>/yaw_ref'
-
-    Controller_B.NOut_e = Controller_B.sfi - Controller_B.Data[0];
 
     // Start for MATLABSystem: '<S29>/P_yaw' incorporates:
     //   MATLABSystem: '<S29>/P_yaw'
 
     Controller_B.p = false;
-    Controller_B.p_p = true;
+    Controller_B.p_c = true;
     if (!(Controller_DWork.obj_hn.SampleTime == Controller_P.P_yaw_SampleTime))
     {
-      Controller_B.p_p = false;
+      Controller_B.p_c = false;
     }
 
-    if (Controller_B.p_p) {
+    if (Controller_B.p_c) {
       Controller_B.p = true;
     }
 
@@ -2895,19 +2970,19 @@ void ControllerModelClass::step()
       Controller_DWork.obj_hn.SampleTime = Controller_P.P_yaw_SampleTime;
     }
 
-    ParamGet_Controller_940.get_parameter(&Controller_B.sfi);
+    ParamGet_Controller_940.get_parameter(&Controller_B.ZeroGain_e);
 
     // Start for MATLABSystem: '<S29>/D_yaw' incorporates:
     //   MATLABSystem: '<S29>/D_yaw'
 
     Controller_B.p = false;
-    Controller_B.p_p = true;
+    Controller_B.p_c = true;
     if (!(Controller_DWork.obj_ha.SampleTime == Controller_P.D_yaw_SampleTime))
     {
-      Controller_B.p_p = false;
+      Controller_B.p_c = false;
     }
 
-    if (Controller_B.p_p) {
+    if (Controller_B.p_c) {
       Controller_B.p = true;
     }
 
@@ -2921,13 +2996,13 @@ void ControllerModelClass::step()
     //   MATLABSystem: '<S29>/N_yaw '
 
     Controller_B.p = false;
-    Controller_B.p_p = true;
+    Controller_B.p_c = true;
     if (!(Controller_DWork.obj_py.SampleTime == Controller_P.N_yaw_SampleTime))
     {
-      Controller_B.p_p = false;
+      Controller_B.p_c = false;
     }
 
-    if (Controller_B.p_p) {
+    if (Controller_B.p_c) {
       Controller_B.p = true;
     }
 
@@ -2935,7 +3010,7 @@ void ControllerModelClass::step()
       Controller_DWork.obj_py.SampleTime = Controller_P.N_yaw_SampleTime;
     }
 
-    ParamGet_Controller_939.get_parameter(&Controller_B.SumI1_d);
+    ParamGet_Controller_939.get_parameter(&Controller_B.ChooseControllersignal_c);
 
     // Product: '<S28>/NOut' incorporates:
     //   DiscreteIntegrator: '<S28>/Filter'
@@ -2946,9 +3021,9 @@ void ControllerModelClass::step()
     //   Product: '<S28>/DOut'
     //   Sum: '<S28>/SumD'
 
-    Controller_B.SignPreIntegrator_k = (Controller_B.NOut_e *
+    Controller_B.SignPreIntegrator_k = (Controller_B.Errorx1 *
       Controller_B.SignPreIntegrator_k - Controller_DWork.Filter_DSTATE_l) *
-      Controller_B.SumI1_d;
+      Controller_B.ChooseControllersignal_c;
 
     // Sum: '<S28>/Sum' incorporates:
     //   DiscreteIntegrator: '<S28>/Integrator'
@@ -2956,17 +3031,19 @@ void ControllerModelClass::step()
     //   Start for MATLABSystem: '<S29>/P_yaw'
     //   Product: '<S28>/POut'
 
-    Controller_B.SumI1_d = (Controller_B.NOut_e * Controller_B.sfi +
-      Controller_DWork.Integrator_DSTATE_ch) + Controller_B.SignPreIntegrator_k;
+    Controller_B.ChooseControllersignal_c = (Controller_B.Errorx1 *
+      Controller_B.ZeroGain_e + Controller_DWork.Integrator_DSTATE_ch) +
+      Controller_B.SignPreIntegrator_k;
 
     // Saturate: '<S28>/Saturate'
-    if (Controller_B.SumI1_d > Controller_P.PIDController_UpperSaturation_j) {
-      Controller_B.NOut_b = Controller_P.PIDController_UpperSaturation_j;
-    } else if (Controller_B.SumI1_d <
+    if (Controller_B.ChooseControllersignal_c >
+        Controller_P.PIDController_UpperSaturation_j) {
+      Controller_B.NOut_m = Controller_P.PIDController_UpperSaturation_j;
+    } else if (Controller_B.ChooseControllersignal_c <
                Controller_P.PIDController_LowerSaturation_e) {
-      Controller_B.NOut_b = Controller_P.PIDController_LowerSaturation_e;
+      Controller_B.NOut_m = Controller_P.PIDController_LowerSaturation_e;
     } else {
-      Controller_B.NOut_b = Controller_B.SumI1_d;
+      Controller_B.NOut_m = Controller_B.ChooseControllersignal_c;
     }
 
     // End of Saturate: '<S28>/Saturate'
@@ -2980,10 +3057,10 @@ void ControllerModelClass::step()
     Controller_B.cfi = cos(Controller_B.OutportBufferForrollradians);
 
     // '<S18>:1:5'
-    Controller_B.spsi = sin(Controller_B.Data[0]);
+    Controller_B.spsi = sin(Controller_B.Data[2]);
 
     // '<S18>:1:6'
-    Controller_B.cpsi_c = cos(Controller_B.Data[0]);
+    Controller_B.cpsi_c = cos(Controller_B.Data[2]);
 
     // '<S18>:1:7'
     Controller_B.stheta = sin(Controller_B.OutportBufferForpitchradians);
@@ -3008,19 +3085,20 @@ void ControllerModelClass::step()
 
     // '<S18>:1:13'
     memset(&Controller_B.rotmatrix[0], 0, 36U * sizeof(real_T));
-    for (Controller_B.i0 = 0; Controller_B.i0 < 3; Controller_B.i0++) {
-      Controller_B.rotmatrix[6 * Controller_B.i0] = Controller_B.r[3 *
-        Controller_B.i0];
-      Controller_B.rotmatrix[1 + 6 * Controller_B.i0] = Controller_B.r[3 *
-        Controller_B.i0 + 1];
-      Controller_B.rotmatrix[2 + 6 * Controller_B.i0] = Controller_B.r[3 *
-        Controller_B.i0 + 2];
-      Controller_B.rotmatrix[3 + 6 * (3 + Controller_B.i0)] = Controller_B.r[3 *
-        Controller_B.i0];
-      Controller_B.rotmatrix[4 + 6 * (3 + Controller_B.i0)] = Controller_B.r[3 *
-        Controller_B.i0 + 1];
-      Controller_B.rotmatrix[5 + 6 * (3 + Controller_B.i0)] = Controller_B.r[3 *
-        Controller_B.i0 + 2];
+    for (Controller_B.value_c = 0; Controller_B.value_c < 3;
+         Controller_B.value_c++) {
+      Controller_B.rotmatrix[6 * Controller_B.value_c] = Controller_B.r[3 *
+        Controller_B.value_c];
+      Controller_B.rotmatrix[1 + 6 * Controller_B.value_c] = Controller_B.r[3 *
+        Controller_B.value_c + 1];
+      Controller_B.rotmatrix[2 + 6 * Controller_B.value_c] = Controller_B.r[3 *
+        Controller_B.value_c + 2];
+      Controller_B.rotmatrix[3 + 6 * (3 + Controller_B.value_c)] =
+        Controller_B.r[3 * Controller_B.value_c];
+      Controller_B.rotmatrix[4 + 6 * (3 + Controller_B.value_c)] =
+        Controller_B.r[3 * Controller_B.value_c + 1];
+      Controller_B.rotmatrix[5 + 6 * (3 + Controller_B.value_c)] =
+        Controller_B.r[3 * Controller_B.value_c + 2];
     }
 
     // SignalConversion: '<S18>/TmpSignal ConversionAt SFunction Inport4' incorporates:
@@ -3031,18 +3109,19 @@ void ControllerModelClass::step()
     Controller_B.dv0[0] = Controller_P.Constant_Value_b;
     Controller_B.dv0[1] = Controller_P.Constant_Value_b;
     Controller_B.dv0[2] = Controller_P.Constant_Value_b;
-    Controller_B.dv0[3] = Controller_B.Switch_j;
-    Controller_B.dv0[4] = Controller_B.Switch_i;
-    Controller_B.dv0[5] = Controller_B.NOut_b;
+    Controller_B.dv0[3] = Controller_B.Switch_o;
+    Controller_B.dv0[4] = Controller_B.NOut_b;
+    Controller_B.dv0[5] = Controller_B.NOut_m;
 
     // SignalConversion: '<S5>/OutportBufferForOut2' incorporates:
     //   MATLAB Function: '<S5>/convert to local'
 
-    for (Controller_B.i0 = 0; Controller_B.i0 < 6; Controller_B.i0++) {
-      Controller_B.OutportBufferForOut2[Controller_B.i0] = 0.0;
+    for (Controller_B.value_c = 0; Controller_B.value_c < 6;
+         Controller_B.value_c++) {
+      Controller_B.OutportBufferForOut2[Controller_B.value_c] = 0.0;
       for (Controller_B.i = 0; Controller_B.i < 6; Controller_B.i++) {
-        Controller_B.OutportBufferForOut2[Controller_B.i0] +=
-          Controller_B.rotmatrix[6 * Controller_B.i + Controller_B.i0] *
+        Controller_B.OutportBufferForOut2[Controller_B.value_c] +=
+          Controller_B.rotmatrix[6 * Controller_B.i + Controller_B.value_c] *
           Controller_B.dv0[Controller_B.i];
       }
     }
@@ -3050,31 +3129,31 @@ void ControllerModelClass::step()
     // End of SignalConversion: '<S5>/OutportBufferForOut2'
 
     // Gain: '<S24>/ZeroGain'
-    Controller_B.sfi = Controller_P.ZeroGain_Gain * Controller_B.Switch_e;
+    Controller_B.ZeroGain_e = Controller_P.ZeroGain_Gain * Controller_B.Switch_j;
 
     // DeadZone: '<S24>/DeadZone'
-    if (Controller_B.Switch_e > Controller_P.PIDController_UpperSaturation_n) {
-      Controller_B.Switch_e -= Controller_P.PIDController_UpperSaturation_n;
-    } else if (Controller_B.Switch_e >=
+    if (Controller_B.Switch_j > Controller_P.PIDController_UpperSaturation_n) {
+      Controller_B.Switch_j -= Controller_P.PIDController_UpperSaturation_n;
+    } else if (Controller_B.Switch_j >=
                Controller_P.PIDController_LowerSaturation_n) {
-      Controller_B.Switch_e = 0.0;
+      Controller_B.Switch_j = 0.0;
     } else {
-      Controller_B.Switch_e -= Controller_P.PIDController_LowerSaturation_n;
+      Controller_B.Switch_j -= Controller_P.PIDController_LowerSaturation_n;
     }
 
     // End of DeadZone: '<S24>/DeadZone'
 
     // RelationalOperator: '<S24>/NotEqual'
-    Controller_B.NotEqual = (Controller_B.sfi != Controller_B.Switch_e);
+    Controller_B.NotEqual = (Controller_B.ZeroGain_e != Controller_B.Switch_j);
 
     // Signum: '<S24>/SignDeltaU'
-    if (Controller_B.Switch_e < 0.0) {
-      Controller_B.Switch_e = -1.0;
-    } else if (Controller_B.Switch_e > 0.0) {
-      Controller_B.Switch_e = 1.0;
+    if (Controller_B.Switch_j < 0.0) {
+      Controller_B.Switch_j = -1.0;
+    } else if (Controller_B.Switch_j > 0.0) {
+      Controller_B.Switch_j = 1.0;
     } else {
-      if (Controller_B.Switch_e == 0.0) {
-        Controller_B.Switch_e = 0.0;
+      if (Controller_B.Switch_j == 0.0) {
+        Controller_B.Switch_j = 0.0;
       }
     }
 
@@ -3084,13 +3163,13 @@ void ControllerModelClass::step()
     //   MATLABSystem: '<S23>/I_pitch'
 
     Controller_B.p = false;
-    Controller_B.p_p = true;
+    Controller_B.p_c = true;
     if (!(Controller_DWork.obj_jb.SampleTime == Controller_P.I_pitch_SampleTime))
     {
-      Controller_B.p_p = false;
+      Controller_B.p_c = false;
     }
 
-    if (Controller_B.p_p) {
+    if (Controller_B.p_c) {
       Controller_B.p = true;
     }
 
@@ -3098,7 +3177,7 @@ void ControllerModelClass::step()
       Controller_DWork.obj_jb.SampleTime = Controller_P.I_pitch_SampleTime;
     }
 
-    ParamGet_Controller_952.get_parameter(&Controller_B.sfi);
+    ParamGet_Controller_952.get_parameter(&Controller_B.ZeroGain_e);
 
     // Sum: '<S22>/SumI1' incorporates:
     //   Constant: '<S5>/Constant'
@@ -3108,40 +3187,41 @@ void ControllerModelClass::step()
     //   Product: '<S22>/IOut'
     //   Sum: '<S22>/SumI3'
 
-    Controller_B.sfi = (Controller_P.Constant_Value_b - Controller_B.Switch_i) *
-      Controller_P.PIDController_Kt + Controller_B.NOut_i * Controller_B.sfi;
+    Controller_B.ZeroGain_e = (Controller_P.Constant_Value_b -
+      Controller_B.NOut_b) * Controller_P.PIDController_Kt +
+      Controller_B.Errory1 * Controller_B.ZeroGain_e;
 
     // Signum: '<S24>/SignPreIntegrator'
-    if (Controller_B.sfi < 0.0) {
+    if (Controller_B.ZeroGain_e < 0.0) {
       // DataTypeConversion: '<S24>/DataTypeConv2'
       Controller_B.spsi = -1.0;
-    } else if (Controller_B.sfi > 0.0) {
+    } else if (Controller_B.ZeroGain_e > 0.0) {
       // DataTypeConversion: '<S24>/DataTypeConv2'
       Controller_B.spsi = 1.0;
-    } else if (Controller_B.sfi == 0.0) {
+    } else if (Controller_B.ZeroGain_e == 0.0) {
       // DataTypeConversion: '<S24>/DataTypeConv2'
       Controller_B.spsi = 0.0;
     } else {
       // DataTypeConversion: '<S24>/DataTypeConv2'
-      Controller_B.spsi = Controller_B.sfi;
+      Controller_B.spsi = Controller_B.ZeroGain_e;
     }
 
     // End of Signum: '<S24>/SignPreIntegrator'
 
     // DataTypeConversion: '<S24>/DataTypeConv1'
-    if (Controller_B.Switch_e < 128.0) {
-      Controller_B.rtb_DataTypeConv2_c_b = (int8_T)Controller_B.Switch_e;
+    if (Controller_B.Switch_j < 128.0) {
+      Controller_B.rtb_DataTypeConv2_c_p = (int8_T)Controller_B.Switch_j;
     } else {
-      Controller_B.rtb_DataTypeConv2_c_b = MAX_int8_T;
+      Controller_B.rtb_DataTypeConv2_c_p = MAX_int8_T;
     }
 
     // End of DataTypeConversion: '<S24>/DataTypeConv1'
 
     // DataTypeConversion: '<S24>/DataTypeConv2'
     if (Controller_B.spsi < 128.0) {
-      Controller_B.i1 = (int8_T)Controller_B.spsi;
+      Controller_B.i0 = (int8_T)Controller_B.spsi;
     } else {
-      Controller_B.i1 = MAX_int8_T;
+      Controller_B.i0 = MAX_int8_T;
     }
 
     // Switch: '<S22>/Switch' incorporates:
@@ -3149,41 +3229,41 @@ void ControllerModelClass::step()
     //   Logic: '<S24>/AND'
     //   RelationalOperator: '<S24>/Equal'
 
-    if (Controller_B.NotEqual && (Controller_B.rtb_DataTypeConv2_c_b ==
-         Controller_B.i1)) {
-      Controller_B.Switch_e = Controller_P.Constant_Value_d0;
+    if (Controller_B.NotEqual && (Controller_B.rtb_DataTypeConv2_c_p ==
+         Controller_B.i0)) {
+      Controller_B.Switch_j = Controller_P.Constant_Value_d0;
     } else {
-      Controller_B.Switch_e = Controller_B.sfi;
+      Controller_B.Switch_j = Controller_B.ZeroGain_e;
     }
 
     // End of Switch: '<S22>/Switch'
 
     // Gain: '<S27>/ZeroGain'
-    Controller_B.sfi = Controller_P.ZeroGain_Gain_g * Controller_B.NOut_m;
+    Controller_B.ZeroGain_e = Controller_P.ZeroGain_Gain_g * Controller_B.NOut_e;
 
     // DeadZone: '<S27>/DeadZone'
-    if (Controller_B.NOut_m > Controller_P.PIDController_UpperSaturationLi) {
-      Controller_B.NOut_m -= Controller_P.PIDController_UpperSaturationLi;
-    } else if (Controller_B.NOut_m >=
+    if (Controller_B.NOut_e > Controller_P.PIDController_UpperSaturationLi) {
+      Controller_B.NOut_e -= Controller_P.PIDController_UpperSaturationLi;
+    } else if (Controller_B.NOut_e >=
                Controller_P.PIDController_LowerSaturationLi) {
-      Controller_B.NOut_m = 0.0;
+      Controller_B.NOut_e = 0.0;
     } else {
-      Controller_B.NOut_m -= Controller_P.PIDController_LowerSaturationLi;
+      Controller_B.NOut_e -= Controller_P.PIDController_LowerSaturationLi;
     }
 
     // End of DeadZone: '<S27>/DeadZone'
 
     // RelationalOperator: '<S27>/NotEqual'
-    Controller_B.NotEqual = (Controller_B.sfi != Controller_B.NOut_m);
+    Controller_B.NotEqual = (Controller_B.ZeroGain_e != Controller_B.NOut_e);
 
     // Signum: '<S27>/SignDeltaU'
-    if (Controller_B.NOut_m < 0.0) {
-      Controller_B.NOut_m = -1.0;
-    } else if (Controller_B.NOut_m > 0.0) {
-      Controller_B.NOut_m = 1.0;
+    if (Controller_B.NOut_e < 0.0) {
+      Controller_B.NOut_e = -1.0;
+    } else if (Controller_B.NOut_e > 0.0) {
+      Controller_B.NOut_e = 1.0;
     } else {
-      if (Controller_B.NOut_m == 0.0) {
-        Controller_B.NOut_m = 0.0;
+      if (Controller_B.NOut_e == 0.0) {
+        Controller_B.NOut_e = 0.0;
       }
     }
 
@@ -3193,13 +3273,13 @@ void ControllerModelClass::step()
     //   MATLABSystem: '<S26>/I_roll'
 
     Controller_B.p = false;
-    Controller_B.p_p = true;
+    Controller_B.p_c = true;
     if (!(Controller_DWork.obj_c1.SampleTime == Controller_P.I_roll_SampleTime))
     {
-      Controller_B.p_p = false;
+      Controller_B.p_c = false;
     }
 
-    if (Controller_B.p_p) {
+    if (Controller_B.p_c) {
       Controller_B.p = true;
     }
 
@@ -3207,7 +3287,7 @@ void ControllerModelClass::step()
       Controller_DWork.obj_c1.SampleTime = Controller_P.I_roll_SampleTime;
     }
 
-    ParamGet_Controller_966.get_parameter(&Controller_B.sfi);
+    ParamGet_Controller_966.get_parameter(&Controller_B.ZeroGain_e);
 
     // Sum: '<S25>/SumI1' incorporates:
     //   Constant: '<S5>/Constant'
@@ -3217,40 +3297,41 @@ void ControllerModelClass::step()
     //   Product: '<S25>/IOut'
     //   Sum: '<S25>/SumI3'
 
-    Controller_B.sfi = (Controller_P.Constant_Value_b - Controller_B.Switch_j) *
-      Controller_P.PIDController_Kt_d + Controller_B.Switch_o * Controller_B.sfi;
+    Controller_B.ZeroGain_e = (Controller_P.Constant_Value_b -
+      Controller_B.Switch_o) * Controller_P.PIDController_Kt_d +
+      Controller_B.Errorz4 * Controller_B.ZeroGain_e;
 
     // Signum: '<S27>/SignPreIntegrator'
-    if (Controller_B.sfi < 0.0) {
+    if (Controller_B.ZeroGain_e < 0.0) {
       // DataTypeConversion: '<S27>/DataTypeConv2'
       Controller_B.spsi = -1.0;
-    } else if (Controller_B.sfi > 0.0) {
+    } else if (Controller_B.ZeroGain_e > 0.0) {
       // DataTypeConversion: '<S27>/DataTypeConv2'
       Controller_B.spsi = 1.0;
-    } else if (Controller_B.sfi == 0.0) {
+    } else if (Controller_B.ZeroGain_e == 0.0) {
       // DataTypeConversion: '<S27>/DataTypeConv2'
       Controller_B.spsi = 0.0;
     } else {
       // DataTypeConversion: '<S27>/DataTypeConv2'
-      Controller_B.spsi = Controller_B.sfi;
+      Controller_B.spsi = Controller_B.ZeroGain_e;
     }
 
     // End of Signum: '<S27>/SignPreIntegrator'
 
     // DataTypeConversion: '<S27>/DataTypeConv1'
-    if (Controller_B.NOut_m < 128.0) {
-      Controller_B.rtb_DataTypeConv2_c_b = (int8_T)Controller_B.NOut_m;
+    if (Controller_B.NOut_e < 128.0) {
+      Controller_B.rtb_DataTypeConv2_c_p = (int8_T)Controller_B.NOut_e;
     } else {
-      Controller_B.rtb_DataTypeConv2_c_b = MAX_int8_T;
+      Controller_B.rtb_DataTypeConv2_c_p = MAX_int8_T;
     }
 
     // End of DataTypeConversion: '<S27>/DataTypeConv1'
 
     // DataTypeConversion: '<S27>/DataTypeConv2'
     if (Controller_B.spsi < 128.0) {
-      Controller_B.i1 = (int8_T)Controller_B.spsi;
+      Controller_B.i0 = (int8_T)Controller_B.spsi;
     } else {
-      Controller_B.i1 = MAX_int8_T;
+      Controller_B.i0 = MAX_int8_T;
     }
 
     // Switch: '<S25>/Switch' incorporates:
@@ -3258,41 +3339,46 @@ void ControllerModelClass::step()
     //   Logic: '<S27>/AND'
     //   RelationalOperator: '<S27>/Equal'
 
-    if (Controller_B.NotEqual && (Controller_B.rtb_DataTypeConv2_c_b ==
-         Controller_B.i1)) {
-      Controller_B.Switch_o = Controller_P.Constant_Value_g;
+    if (Controller_B.NotEqual && (Controller_B.rtb_DataTypeConv2_c_p ==
+         Controller_B.i0)) {
+      Controller_B.NOut_e = Controller_P.Constant_Value_g;
     } else {
-      Controller_B.Switch_o = Controller_B.sfi;
+      Controller_B.NOut_e = Controller_B.ZeroGain_e;
     }
 
     // End of Switch: '<S25>/Switch'
 
     // Gain: '<S30>/ZeroGain'
-    Controller_B.sfi = Controller_P.ZeroGain_Gain_n * Controller_B.SumI1_d;
+    Controller_B.ZeroGain_e = Controller_P.ZeroGain_Gain_n *
+      Controller_B.ChooseControllersignal_c;
 
     // DeadZone: '<S30>/DeadZone'
-    if (Controller_B.SumI1_d > Controller_P.PIDController_UpperSaturation_j) {
-      Controller_B.SumI1_d -= Controller_P.PIDController_UpperSaturation_j;
-    } else if (Controller_B.SumI1_d >=
+    if (Controller_B.ChooseControllersignal_c >
+        Controller_P.PIDController_UpperSaturation_j) {
+      Controller_B.ChooseControllersignal_c -=
+        Controller_P.PIDController_UpperSaturation_j;
+    } else if (Controller_B.ChooseControllersignal_c >=
                Controller_P.PIDController_LowerSaturation_e) {
-      Controller_B.SumI1_d = 0.0;
+      Controller_B.ChooseControllersignal_c = 0.0;
     } else {
-      Controller_B.SumI1_d -= Controller_P.PIDController_LowerSaturation_e;
+      Controller_B.ChooseControllersignal_c -=
+        Controller_P.PIDController_LowerSaturation_e;
     }
 
     // End of DeadZone: '<S30>/DeadZone'
 
     // RelationalOperator: '<S30>/NotEqual'
-    Controller_B.NotEqual = (Controller_B.sfi != Controller_B.SumI1_d);
+    Controller_B.NotEqual = (Controller_B.ZeroGain_e !=
+      Controller_B.ChooseControllersignal_c);
 
     // Signum: '<S30>/SignDeltaU'
-    if (Controller_B.SumI1_d < 0.0) {
-      Controller_B.SumI1_d = -1.0;
-    } else if (Controller_B.SumI1_d > 0.0) {
-      Controller_B.SumI1_d = 1.0;
+    if (Controller_B.ChooseControllersignal_c < 0.0) {
+      Controller_B.ChooseControllersignal_c = -1.0;
+    } else if (Controller_B.ChooseControllersignal_c > 0.0) {
+      Controller_B.ChooseControllersignal_c = 1.0;
     } else {
-      if (Controller_B.SumI1_d == 0.0) {
-        Controller_B.SumI1_d = 0.0;
+      if (Controller_B.ChooseControllersignal_c == 0.0) {
+        Controller_B.ChooseControllersignal_c = 0.0;
       }
     }
 
@@ -3302,13 +3388,13 @@ void ControllerModelClass::step()
     //   MATLABSystem: '<S29>/I_yaw'
 
     Controller_B.p = false;
-    Controller_B.p_p = true;
+    Controller_B.p_c = true;
     if (!(Controller_DWork.obj_om.SampleTime == Controller_P.I_yaw_SampleTime))
     {
-      Controller_B.p_p = false;
+      Controller_B.p_c = false;
     }
 
-    if (Controller_B.p_p) {
+    if (Controller_B.p_c) {
       Controller_B.p = true;
     }
 
@@ -3316,7 +3402,7 @@ void ControllerModelClass::step()
       Controller_DWork.obj_om.SampleTime = Controller_P.I_yaw_SampleTime;
     }
 
-    ParamGet_Controller_938.get_parameter(&Controller_B.sfi);
+    ParamGet_Controller_938.get_parameter(&Controller_B.ZeroGain_e);
 
     // Sum: '<S28>/SumI1' incorporates:
     //   Constant: '<S5>/Constant'
@@ -3326,12 +3412,13 @@ void ControllerModelClass::step()
     //   Product: '<S28>/IOut'
     //   Sum: '<S28>/SumI3'
 
-    Controller_B.sfi = (Controller_P.Constant_Value_b - Controller_B.NOut_b) *
-      Controller_P.PIDController_Kt_j + Controller_B.NOut_e * Controller_B.sfi;
+    Controller_B.ZeroGain_e = (Controller_P.Constant_Value_b -
+      Controller_B.NOut_m) * Controller_P.PIDController_Kt_j +
+      Controller_B.Errorx1 * Controller_B.ZeroGain_e;
 
     // Update for DiscreteIntegrator: '<S25>/Integrator'
     Controller_DWork.Integrator_DSTATE_nm += Controller_P.Integrator_gainval *
-      Controller_B.Switch_o;
+      Controller_B.NOut_e;
 
     // Update for DiscreteIntegrator: '<S25>/Filter'
     Controller_DWork.Filter_DSTATE_gs += Controller_P.Filter_gainval *
@@ -3339,43 +3426,44 @@ void ControllerModelClass::step()
 
     // Update for DiscreteIntegrator: '<S22>/Integrator'
     Controller_DWork.Integrator_DSTATE_c += Controller_P.Integrator_gainval_b *
-      Controller_B.Switch_e;
+      Controller_B.Switch_j;
 
     // Update for DiscreteIntegrator: '<S22>/Filter'
     Controller_DWork.Filter_DSTATE_fb += Controller_P.Filter_gainval_l *
       Controller_B.Switch;
 
     // Signum: '<S30>/SignPreIntegrator'
-    if (Controller_B.sfi < 0.0) {
+    if (Controller_B.ZeroGain_e < 0.0) {
       // DataTypeConversion: '<S30>/DataTypeConv2'
       Controller_B.spsi = -1.0;
-    } else if (Controller_B.sfi > 0.0) {
+    } else if (Controller_B.ZeroGain_e > 0.0) {
       // DataTypeConversion: '<S30>/DataTypeConv2'
       Controller_B.spsi = 1.0;
-    } else if (Controller_B.sfi == 0.0) {
+    } else if (Controller_B.ZeroGain_e == 0.0) {
       // DataTypeConversion: '<S30>/DataTypeConv2'
       Controller_B.spsi = 0.0;
     } else {
       // DataTypeConversion: '<S30>/DataTypeConv2'
-      Controller_B.spsi = Controller_B.sfi;
+      Controller_B.spsi = Controller_B.ZeroGain_e;
     }
 
     // End of Signum: '<S30>/SignPreIntegrator'
 
     // DataTypeConversion: '<S30>/DataTypeConv1'
-    if (Controller_B.SumI1_d < 128.0) {
-      Controller_B.rtb_DataTypeConv2_c_b = (int8_T)Controller_B.SumI1_d;
+    if (Controller_B.ChooseControllersignal_c < 128.0) {
+      Controller_B.rtb_DataTypeConv2_c_p = (int8_T)
+        Controller_B.ChooseControllersignal_c;
     } else {
-      Controller_B.rtb_DataTypeConv2_c_b = MAX_int8_T;
+      Controller_B.rtb_DataTypeConv2_c_p = MAX_int8_T;
     }
 
     // End of DataTypeConversion: '<S30>/DataTypeConv1'
 
     // DataTypeConversion: '<S30>/DataTypeConv2'
     if (Controller_B.spsi < 128.0) {
-      Controller_B.i1 = (int8_T)Controller_B.spsi;
+      Controller_B.i0 = (int8_T)Controller_B.spsi;
     } else {
-      Controller_B.i1 = MAX_int8_T;
+      Controller_B.i0 = MAX_int8_T;
     }
 
     // Switch: '<S28>/Switch' incorporates:
@@ -3383,22 +3471,23 @@ void ControllerModelClass::step()
     //   Logic: '<S30>/AND'
     //   RelationalOperator: '<S30>/Equal'
 
-    if (Controller_B.NotEqual && (Controller_B.rtb_DataTypeConv2_c_b ==
-         Controller_B.i1)) {
-      Controller_B.sfi = Controller_P.Constant_Value_e;
+    if (Controller_B.NotEqual && (Controller_B.rtb_DataTypeConv2_c_p ==
+         Controller_B.i0)) {
+      Controller_B.ZeroGain_e = Controller_P.Constant_Value_e;
     }
 
     // End of Switch: '<S28>/Switch'
 
     // Update for DiscreteIntegrator: '<S28>/Integrator'
     Controller_DWork.Integrator_DSTATE_ch += Controller_P.Integrator_gainval_l *
-      Controller_B.sfi;
+      Controller_B.ZeroGain_e;
 
     // Update for DiscreteIntegrator: '<S28>/Filter'
     Controller_DWork.Filter_DSTATE_l += Controller_P.Filter_gainval_e *
       Controller_B.SignPreIntegrator_k;
   }
 
+  // End of Logic: '<Root>/Logical Operator4'
   // End of Outputs for SubSystem: '<Root>/Subsystem'
   // MATLAB Function 'thrust alloc2': '<S15>:1'
   // '<S15>:1:39'
@@ -3456,10 +3545,11 @@ void ControllerModelClass::step()
 
        case 2:
         Controller_B.ChooseControllersignal[Controller_B.i] = 0.0;
-        for (Controller_B.i0 = 0; Controller_B.i0 < 6; Controller_B.i0++) {
+        for (Controller_B.value_c = 0; Controller_B.value_c < 6;
+             Controller_B.value_c++) {
           Controller_B.ChooseControllersignal[Controller_B.i] += a[6 *
-            Controller_B.i0 + Controller_B.i] *
-            Controller_B.OutportBufferForOut2[Controller_B.i0];
+            Controller_B.value_c + Controller_B.i] *
+            Controller_B.OutportBufferForOut2[Controller_B.value_c];
         }
         break;
 
@@ -3506,13 +3596,13 @@ void ControllerModelClass::step()
     //   MATLABSystem: '<S78>/Get Parameter'
 
     Controller_B.p = false;
-    Controller_B.p_p = true;
+    Controller_B.p_c = true;
     if (!(Controller_DWork.obj.SampleTime ==
           Controller_P.GetParameter_SampleTime_e)) {
-      Controller_B.p_p = false;
+      Controller_B.p_c = false;
     }
 
-    if (Controller_B.p_p) {
+    if (Controller_B.p_c) {
       Controller_B.p = true;
     }
 
@@ -3526,13 +3616,13 @@ void ControllerModelClass::step()
     //   MATLABSystem: '<S78>/Get Parameter1'
 
     Controller_B.p = false;
-    Controller_B.p_p = true;
+    Controller_B.p_c = true;
     if (!(Controller_DWork.obj_l.SampleTime ==
           Controller_P.GetParameter1_SampleTime_a)) {
-      Controller_B.p_p = false;
+      Controller_B.p_c = false;
     }
 
-    if (Controller_B.p_p) {
+    if (Controller_B.p_c) {
       Controller_B.p = true;
     }
 
@@ -3547,13 +3637,13 @@ void ControllerModelClass::step()
     //   MATLABSystem: '<S78>/Get Parameter2'
 
     Controller_B.p = false;
-    Controller_B.p_p = true;
+    Controller_B.p_c = true;
     if (!(Controller_DWork.obj_n.SampleTime ==
           Controller_P.GetParameter2_SampleTime_m)) {
-      Controller_B.p_p = false;
+      Controller_B.p_c = false;
     }
 
-    if (Controller_B.p_p) {
+    if (Controller_B.p_c) {
       Controller_B.p = true;
     }
 
@@ -3568,13 +3658,13 @@ void ControllerModelClass::step()
     //   MATLABSystem: '<S78>/Get Parameter3'
 
     Controller_B.p = false;
-    Controller_B.p_p = true;
+    Controller_B.p_c = true;
     if (!(Controller_DWork.obj_c.SampleTime ==
           Controller_P.GetParameter3_SampleTime_n)) {
-      Controller_B.p_p = false;
+      Controller_B.p_c = false;
     }
 
-    if (Controller_B.p_p) {
+    if (Controller_B.p_c) {
       Controller_B.p = true;
     }
 
@@ -3583,19 +3673,19 @@ void ControllerModelClass::step()
         Controller_P.GetParameter3_SampleTime_n;
     }
 
-    ParamGet_Controller_863.get_parameter(&Controller_B.value_c);
+    ParamGet_Controller_863.get_parameter(&Controller_B.value_f);
 
     // Start for MATLABSystem: '<S78>/Get Parameter4' incorporates:
     //   MATLABSystem: '<S78>/Get Parameter4'
 
     Controller_B.p = false;
-    Controller_B.p_p = true;
+    Controller_B.p_c = true;
     if (!(Controller_DWork.obj_nt.SampleTime ==
           Controller_P.GetParameter4_SampleTime_b)) {
-      Controller_B.p_p = false;
+      Controller_B.p_c = false;
     }
 
-    if (Controller_B.p_p) {
+    if (Controller_B.p_c) {
       Controller_B.p = true;
     }
 
@@ -3604,19 +3694,19 @@ void ControllerModelClass::step()
         Controller_P.GetParameter4_SampleTime_b;
     }
 
-    ParamGet_Controller_864.get_parameter(&Controller_B.value_f);
+    ParamGet_Controller_864.get_parameter(&Controller_B.value_g);
 
     // Start for MATLABSystem: '<S78>/Get Parameter5' incorporates:
     //   MATLABSystem: '<S78>/Get Parameter5'
 
     Controller_B.p = false;
-    Controller_B.p_p = true;
+    Controller_B.p_c = true;
     if (!(Controller_DWork.obj_ls.SampleTime ==
           Controller_P.GetParameter5_SampleTime_p)) {
-      Controller_B.p_p = false;
+      Controller_B.p_c = false;
     }
 
-    if (Controller_B.p_p) {
+    if (Controller_B.p_c) {
       Controller_B.p = true;
     }
 
@@ -3642,15 +3732,17 @@ void ControllerModelClass::step()
 
     // MATLAB Function 'toPWM/PWM assign': '<S79>:1'
     // '<S79>:1:4'
-    Controller_B.RandomSource = Controller_B.ChooseControllersignal[0] * (real_T)
-      Controller_B.NotEqual;
+    Controller_B.ChooseControllersignal_c = Controller_B.ChooseControllersignal
+      [0] * (real_T)Controller_B.NotEqual;
 
     // Saturate: '<S16>/Saturation'
-    if (Controller_B.RandomSource > Controller_P.Saturation_UpperSat) {
-      Controller_B.RandomSource = Controller_P.Saturation_UpperSat;
+    if (Controller_B.ChooseControllersignal_c > Controller_P.Saturation_UpperSat)
+    {
+      Controller_B.ChooseControllersignal_c = Controller_P.Saturation_UpperSat;
     } else {
-      if (Controller_B.RandomSource < Controller_P.Saturation_LowerSat) {
-        Controller_B.RandomSource = Controller_P.Saturation_LowerSat;
+      if (Controller_B.ChooseControllersignal_c <
+          Controller_P.Saturation_LowerSat) {
+        Controller_B.ChooseControllersignal_c = Controller_P.Saturation_LowerSat;
       }
     }
 
@@ -3658,7 +3750,8 @@ void ControllerModelClass::step()
     //   MATLAB Function: '<S16>/Calc pwm signal'
     //   Saturate: '<S16>/Saturation'
 
-    Controller_B.spsi = floor((Controller_B.RandomSource + 1.0) * 400.0 + 1100.0);
+    Controller_B.spsi = floor((Controller_B.ChooseControllersignal_c + 1.0) *
+      400.0 + 1100.0);
     if (rtIsNaN(Controller_B.spsi) || rtIsInf(Controller_B.spsi)) {
       Controller_B.spsi = 0.0;
     } else {
@@ -3676,15 +3769,17 @@ void ControllerModelClass::step()
     //   MATLABSystem: '<S78>/Get Parameter1'
     //   Start for MATLABSystem: '<S78>/Get Parameter1'
 
-    Controller_B.RandomSource = Controller_B.ChooseControllersignal[1] * (real_T)
-      Controller_B.Compare;
+    Controller_B.ChooseControllersignal_c = Controller_B.ChooseControllersignal
+      [1] * (real_T)Controller_B.Compare;
 
     // Saturate: '<S16>/Saturation'
-    if (Controller_B.RandomSource > Controller_P.Saturation_UpperSat) {
-      Controller_B.RandomSource = Controller_P.Saturation_UpperSat;
+    if (Controller_B.ChooseControllersignal_c > Controller_P.Saturation_UpperSat)
+    {
+      Controller_B.ChooseControllersignal_c = Controller_P.Saturation_UpperSat;
     } else {
-      if (Controller_B.RandomSource < Controller_P.Saturation_LowerSat) {
-        Controller_B.RandomSource = Controller_P.Saturation_LowerSat;
+      if (Controller_B.ChooseControllersignal_c <
+          Controller_P.Saturation_LowerSat) {
+        Controller_B.ChooseControllersignal_c = Controller_P.Saturation_LowerSat;
       }
     }
 
@@ -3692,7 +3787,8 @@ void ControllerModelClass::step()
     //   MATLAB Function: '<S16>/Calc pwm signal'
     //   Saturate: '<S16>/Saturation'
 
-    Controller_B.spsi = floor((Controller_B.RandomSource + 1.0) * 400.0 + 1100.0);
+    Controller_B.spsi = floor((Controller_B.ChooseControllersignal_c + 1.0) *
+      400.0 + 1100.0);
     if (rtIsNaN(Controller_B.spsi) || rtIsInf(Controller_B.spsi)) {
       Controller_B.spsi = 0.0;
     } else {
@@ -3710,15 +3806,17 @@ void ControllerModelClass::step()
     //   MATLABSystem: '<S78>/Get Parameter2'
     //   Start for MATLABSystem: '<S78>/Get Parameter2'
 
-    Controller_B.RandomSource = Controller_B.ChooseControllersignal[2] * (real_T)
-      Controller_B.LogicalOperator;
+    Controller_B.ChooseControllersignal_c = Controller_B.ChooseControllersignal
+      [2] * (real_T)Controller_B.LogicalOperator;
 
     // Saturate: '<S16>/Saturation'
-    if (Controller_B.RandomSource > Controller_P.Saturation_UpperSat) {
-      Controller_B.RandomSource = Controller_P.Saturation_UpperSat;
+    if (Controller_B.ChooseControllersignal_c > Controller_P.Saturation_UpperSat)
+    {
+      Controller_B.ChooseControllersignal_c = Controller_P.Saturation_UpperSat;
     } else {
-      if (Controller_B.RandomSource < Controller_P.Saturation_LowerSat) {
-        Controller_B.RandomSource = Controller_P.Saturation_LowerSat;
+      if (Controller_B.ChooseControllersignal_c <
+          Controller_P.Saturation_LowerSat) {
+        Controller_B.ChooseControllersignal_c = Controller_P.Saturation_LowerSat;
       }
     }
 
@@ -3726,7 +3824,8 @@ void ControllerModelClass::step()
     //   MATLAB Function: '<S16>/Calc pwm signal'
     //   Saturate: '<S16>/Saturation'
 
-    Controller_B.spsi = floor((Controller_B.RandomSource + 1.0) * 400.0 + 1100.0);
+    Controller_B.spsi = floor((Controller_B.ChooseControllersignal_c + 1.0) *
+      400.0 + 1100.0);
     if (rtIsNaN(Controller_B.spsi) || rtIsInf(Controller_B.spsi)) {
       Controller_B.spsi = 0.0;
     } else {
@@ -3744,15 +3843,17 @@ void ControllerModelClass::step()
     //   MATLABSystem: '<S78>/Get Parameter3'
     //   Start for MATLABSystem: '<S78>/Get Parameter3'
 
-    Controller_B.RandomSource = Controller_B.ChooseControllersignal[3] * (real_T)
-      Controller_B.value_c;
+    Controller_B.ChooseControllersignal_c = Controller_B.ChooseControllersignal
+      [3] * (real_T)Controller_B.value_f;
 
     // Saturate: '<S16>/Saturation'
-    if (Controller_B.RandomSource > Controller_P.Saturation_UpperSat) {
-      Controller_B.RandomSource = Controller_P.Saturation_UpperSat;
+    if (Controller_B.ChooseControllersignal_c > Controller_P.Saturation_UpperSat)
+    {
+      Controller_B.ChooseControllersignal_c = Controller_P.Saturation_UpperSat;
     } else {
-      if (Controller_B.RandomSource < Controller_P.Saturation_LowerSat) {
-        Controller_B.RandomSource = Controller_P.Saturation_LowerSat;
+      if (Controller_B.ChooseControllersignal_c <
+          Controller_P.Saturation_LowerSat) {
+        Controller_B.ChooseControllersignal_c = Controller_P.Saturation_LowerSat;
       }
     }
 
@@ -3760,7 +3861,8 @@ void ControllerModelClass::step()
     //   MATLAB Function: '<S16>/Calc pwm signal'
     //   Saturate: '<S16>/Saturation'
 
-    Controller_B.spsi = floor((Controller_B.RandomSource + 1.0) * 400.0 + 1100.0);
+    Controller_B.spsi = floor((Controller_B.ChooseControllersignal_c + 1.0) *
+      400.0 + 1100.0);
     if (rtIsNaN(Controller_B.spsi) || rtIsInf(Controller_B.spsi)) {
       Controller_B.spsi = 0.0;
     } else {
@@ -3778,15 +3880,17 @@ void ControllerModelClass::step()
     //   MATLABSystem: '<S78>/Get Parameter4'
     //   Start for MATLABSystem: '<S78>/Get Parameter4'
 
-    Controller_B.RandomSource = Controller_B.ChooseControllersignal[4] * (real_T)
-      Controller_B.value_f;
+    Controller_B.ChooseControllersignal_c = Controller_B.ChooseControllersignal
+      [4] * (real_T)Controller_B.value_g;
 
     // Saturate: '<S16>/Saturation'
-    if (Controller_B.RandomSource > Controller_P.Saturation_UpperSat) {
-      Controller_B.RandomSource = Controller_P.Saturation_UpperSat;
+    if (Controller_B.ChooseControllersignal_c > Controller_P.Saturation_UpperSat)
+    {
+      Controller_B.ChooseControllersignal_c = Controller_P.Saturation_UpperSat;
     } else {
-      if (Controller_B.RandomSource < Controller_P.Saturation_LowerSat) {
-        Controller_B.RandomSource = Controller_P.Saturation_LowerSat;
+      if (Controller_B.ChooseControllersignal_c <
+          Controller_P.Saturation_LowerSat) {
+        Controller_B.ChooseControllersignal_c = Controller_P.Saturation_LowerSat;
       }
     }
 
@@ -3794,7 +3898,8 @@ void ControllerModelClass::step()
     //   MATLAB Function: '<S16>/Calc pwm signal'
     //   Saturate: '<S16>/Saturation'
 
-    Controller_B.spsi = floor((Controller_B.RandomSource + 1.0) * 400.0 + 1100.0);
+    Controller_B.spsi = floor((Controller_B.ChooseControllersignal_c + 1.0) *
+      400.0 + 1100.0);
     if (rtIsNaN(Controller_B.spsi) || rtIsInf(Controller_B.spsi)) {
       Controller_B.spsi = 0.0;
     } else {
@@ -3812,15 +3917,17 @@ void ControllerModelClass::step()
     //   MATLABSystem: '<S78>/Get Parameter5'
     //   Start for MATLABSystem: '<S78>/Get Parameter5'
 
-    Controller_B.RandomSource = Controller_B.ChooseControllersignal[5] * (real_T)
-      Controller_B.p;
+    Controller_B.ChooseControllersignal_c = Controller_B.ChooseControllersignal
+      [5] * (real_T)Controller_B.p;
 
     // Saturate: '<S16>/Saturation'
-    if (Controller_B.RandomSource > Controller_P.Saturation_UpperSat) {
-      Controller_B.RandomSource = Controller_P.Saturation_UpperSat;
+    if (Controller_B.ChooseControllersignal_c > Controller_P.Saturation_UpperSat)
+    {
+      Controller_B.ChooseControllersignal_c = Controller_P.Saturation_UpperSat;
     } else {
-      if (Controller_B.RandomSource < Controller_P.Saturation_LowerSat) {
-        Controller_B.RandomSource = Controller_P.Saturation_LowerSat;
+      if (Controller_B.ChooseControllersignal_c <
+          Controller_P.Saturation_LowerSat) {
+        Controller_B.ChooseControllersignal_c = Controller_P.Saturation_LowerSat;
       }
     }
 
@@ -3828,7 +3935,8 @@ void ControllerModelClass::step()
     //   MATLAB Function: '<S16>/Calc pwm signal'
     //   Saturate: '<S16>/Saturation'
 
-    Controller_B.spsi = floor((Controller_B.RandomSource + 1.0) * 400.0 + 1100.0);
+    Controller_B.spsi = floor((Controller_B.ChooseControllersignal_c + 1.0) *
+      400.0 + 1100.0);
     if (rtIsNaN(Controller_B.spsi) || rtIsInf(Controller_B.spsi)) {
       Controller_B.spsi = 0.0;
     } else {
@@ -3871,13 +3979,13 @@ void ControllerModelClass::step()
   //   MATLABSystem: '<S8>/Get alpha'
 
   Controller_B.p = false;
-  Controller_B.p_p = true;
+  Controller_B.p_c = true;
   if (!(Controller_DWork.obj_hx.SampleTime == Controller_P.Getalpha_SampleTime))
   {
-    Controller_B.p_p = false;
+    Controller_B.p_c = false;
   }
 
-  if (Controller_B.p_p) {
+  if (Controller_B.p_c) {
     Controller_B.p = true;
   }
 
@@ -3885,7 +3993,7 @@ void ControllerModelClass::step()
     Controller_DWork.obj_hx.SampleTime = Controller_P.Getalpha_SampleTime;
   }
 
-  ParamGet_Controller_687.get_parameter(&Controller_B.sfi);
+  ParamGet_Controller_687.get_parameter(&Controller_B.ZeroGain_e);
 
   // SignalConversion: '<S8>/TmpSignal ConversionAtDiscrete FilterInport2' incorporates:
   //   Constant: '<S8>/Constant'
@@ -3894,21 +4002,21 @@ void ControllerModelClass::step()
 
   Controller_B.TmpSignalConversionAtDiscreteFi[0] =
     Controller_P.Constant_Value_ay;
-  Controller_B.TmpSignalConversionAtDiscreteFi[1] = Controller_B.sfi;
+  Controller_B.TmpSignalConversionAtDiscreteFi[1] = Controller_B.ZeroGain_e;
 
   // DiscreteFilter: '<S8>/Discrete Filter'
-  Controller_B.RandomSource = Controller_P.DiscreteFilter_NumCoef *
+  Controller_B.ChooseControllersignal_c = Controller_P.DiscreteFilter_NumCoef *
     Controller_B.OutportBufferForaccXms2 -
     Controller_B.TmpSignalConversionAtDiscreteFi[1] *
     Controller_DWork.DiscreteFilter_denStates;
-  Controller_DWork.DiscreteFilter_tmp = Controller_B.RandomSource;
+  Controller_DWork.DiscreteFilter_tmp = Controller_B.ChooseControllersignal_c;
 
   // DiscreteFilter: '<S8>/Discrete Filter1'
-  Controller_B.sfi = Controller_P.DiscreteFilter1_NumCoef *
+  Controller_B.ZeroGain_e = Controller_P.DiscreteFilter1_NumCoef *
     Controller_B.OutportBufferForaccYms2 -
     Controller_B.TmpSignalConversionAtDiscreteFi[1] *
     Controller_DWork.DiscreteFilter1_denStates;
-  Controller_DWork.DiscreteFilter1_tmp = Controller_B.sfi;
+  Controller_DWork.DiscreteFilter1_tmp = Controller_B.ZeroGain_e;
 
   // DiscreteFilter: '<S8>/Discrete Filter2'
   Controller_B.SignPreIntegrator_k = Controller_P.DiscreteFilter2_NumCoef *
@@ -3919,11 +4027,12 @@ void ControllerModelClass::step()
 
   // Update for DiscreteIntegrator: '<S8>/Discrete-Time Integrator'
   Controller_DWork.DiscreteTimeIntegrator_DSTATE +=
-    Controller_P.DiscreteTimeIntegrator_gainval * Controller_B.RandomSource;
+    Controller_P.DiscreteTimeIntegrator_gainval *
+    Controller_B.ChooseControllersignal_c;
 
   // Update for DiscreteIntegrator: '<S8>/Discrete-Time Integrator1'
   Controller_DWork.DiscreteTimeIntegrator1_DSTATE +=
-    Controller_P.DiscreteTimeIntegrator1_gainval * Controller_B.sfi;
+    Controller_P.DiscreteTimeIntegrator1_gainval * Controller_B.ZeroGain_e;
 
   // Update for DiscreteIntegrator: '<S8>/Discrete-Time Integrator2'
   Controller_DWork.DiscreteTimeIntegrator2_DSTATE +=
@@ -4024,160 +4133,160 @@ void ControllerModelClass::initialize()
     };
 
     static const char_T tmp_e[25] = { '/', 'M', 'a', 't', 'l', 'a', 'b', 'C',
-      'o', 'n', 't', 'r', 'o', 'l', 'l', 'e', 'r', '/', 'y', 'a', 'w', '_', 'r',
-      'e', 'f' };
-
-    static const char_T tmp_f[25] = { '/', 'M', 'a', 't', 'l', 'a', 'b', 'C',
       'o', 'n', 't', 'r', 'o', 'l', 'l', 'e', 'r', '/', 'N', '_', 'p', 'i', 't',
       'c', 'h' };
 
-    static const char_T tmp_g[25] = { '/', 'M', 'a', 't', 'l', 'a', 'b', 'C',
+    static const char_T tmp_f[25] = { '/', 'M', 'a', 't', 'l', 'a', 'b', 'C',
       'o', 'n', 't', 'r', 'o', 'l', 'l', 'e', 'r', '/', 'D', '_', 'p', 'i', 't',
       'c', 'h' };
 
-    static const char_T tmp_h[25] = { '/', 'M', 'a', 't', 'l', 'a', 'b', 'C',
+    static const char_T tmp_g[25] = { '/', 'M', 'a', 't', 'l', 'a', 'b', 'C',
       'o', 'n', 't', 'r', 'o', 'l', 'l', 'e', 'r', '/', 'P', '_', 'p', 'i', 't',
       'c', 'h' };
 
-    static const char_T tmp_i[27] = { '/', 'M', 'a', 't', 'l', 'a', 'b', 'C',
-      'o', 'n', 't', 'r', 'o', 'l', 'l', 'e', 'r', '/', 'p', 'i', 't', 'c', 'h',
-      '_', 'r', 'e', 'f' };
-
-    static const char_T tmp_j[24] = { '/', 'M', 'a', 't', 'l', 'a', 'b', 'C',
+    static const char_T tmp_h[24] = { '/', 'M', 'a', 't', 'l', 'a', 'b', 'C',
       'o', 'n', 't', 'r', 'o', 'l', 'l', 'e', 'r', '/', 'N', '_', 'r', 'o', 'l',
       'l' };
 
-    static const char_T tmp_k[24] = { '/', 'M', 'a', 't', 'l', 'a', 'b', 'C',
+    static const char_T tmp_i[24] = { '/', 'M', 'a', 't', 'l', 'a', 'b', 'C',
       'o', 'n', 't', 'r', 'o', 'l', 'l', 'e', 'r', '/', 'D', '_', 'r', 'o', 'l',
       'l' };
 
-    static const char_T tmp_l[24] = { '/', 'M', 'a', 't', 'l', 'a', 'b', 'C',
+    static const char_T tmp_j[24] = { '/', 'M', 'a', 't', 'l', 'a', 'b', 'C',
       'o', 'n', 't', 'r', 'o', 'l', 'l', 'e', 'r', '/', 'P', '_', 'r', 'o', 'l',
       'l' };
 
-    static const char_T tmp_m[26] = { '/', 'M', 'a', 't', 'l', 'a', 'b', 'C',
-      'o', 'n', 't', 'r', 'o', 'l', 'l', 'e', 'r', '/', 'r', 'o', 'l', 'l', '_',
-      'r', 'e', 'f' };
+    static const char_T tmp_k[26] = { '/', 'm', 'a', 't', 'l', 'a', 'b', '_',
+      'c', 'o', 'n', 't', 'r', 'o', 'l', 'l', 'e', 'r', '/', 'I', '_', 'v', 'e',
+      'l', '_', 'z' };
+
+    static const char_T tmp_l[26] = { '/', 'm', 'a', 't', 'l', 'a', 'b', '_',
+      'c', 'o', 'n', 't', 'r', 'o', 'l', 'l', 'e', 'r', '/', 'N', '_', 'v', 'e',
+      'l', '_', 'z' };
+
+    static const char_T tmp_m[26] = { '/', 'm', 'a', 't', 'l', 'a', 'b', '_',
+      'c', 'o', 'n', 't', 'r', 'o', 'l', 'l', 'e', 'r', '/', 'D', '_', 'v', 'e',
+      'l', '_', 'z' };
 
     static const char_T tmp_n[26] = { '/', 'm', 'a', 't', 'l', 'a', 'b', '_',
-      'c', 'o', 'n', 't', 'r', 'o', 'l', 'l', 'e', 'r', '/', 'I', '_', 'v', 'e',
+      'c', 'o', 'n', 't', 'r', 'o', 'l', 'l', 'e', 'r', '/', 'P', '_', 'v', 'e',
       'l', '_', 'z' };
 
     static const char_T tmp_o[26] = { '/', 'm', 'a', 't', 'l', 'a', 'b', '_',
-      'c', 'o', 'n', 't', 'r', 'o', 'l', 'l', 'e', 'r', '/', 'N', '_', 'v', 'e',
-      'l', '_', 'z' };
+      'c', 'o', 'n', 't', 'r', 'o', 'l', 'l', 'e', 'r', '/', 'I', '_', 'v', 'e',
+      'l', '_', 'y' };
 
     static const char_T tmp_p[26] = { '/', 'm', 'a', 't', 'l', 'a', 'b', '_',
-      'c', 'o', 'n', 't', 'r', 'o', 'l', 'l', 'e', 'r', '/', 'D', '_', 'v', 'e',
-      'l', '_', 'z' };
+      'c', 'o', 'n', 't', 'r', 'o', 'l', 'l', 'e', 'r', '/', 'N', '_', 'v', 'e',
+      'l', '_', 'y' };
 
     static const char_T tmp_q[26] = { '/', 'm', 'a', 't', 'l', 'a', 'b', '_',
-      'c', 'o', 'n', 't', 'r', 'o', 'l', 'l', 'e', 'r', '/', 'P', '_', 'v', 'e',
-      'l', '_', 'z' };
+      'c', 'o', 'n', 't', 'r', 'o', 'l', 'l', 'e', 'r', '/', 'D', '_', 'v', 'e',
+      'l', '_', 'y' };
 
     static const char_T tmp_r[26] = { '/', 'm', 'a', 't', 'l', 'a', 'b', '_',
-      'c', 'o', 'n', 't', 'r', 'o', 'l', 'l', 'e', 'r', '/', 'I', '_', 'v', 'e',
+      'c', 'o', 'n', 't', 'r', 'o', 'l', 'l', 'e', 'r', '/', 'P', '_', 'v', 'e',
       'l', '_', 'y' };
 
     static const char_T tmp_s[26] = { '/', 'm', 'a', 't', 'l', 'a', 'b', '_',
-      'c', 'o', 'n', 't', 'r', 'o', 'l', 'l', 'e', 'r', '/', 'N', '_', 'v', 'e',
-      'l', '_', 'y' };
-
-    static const char_T tmp_t[26] = { '/', 'm', 'a', 't', 'l', 'a', 'b', '_',
-      'c', 'o', 'n', 't', 'r', 'o', 'l', 'l', 'e', 'r', '/', 'D', '_', 'v', 'e',
-      'l', '_', 'y' };
-
-    static const char_T tmp_u[26] = { '/', 'm', 'a', 't', 'l', 'a', 'b', '_',
-      'c', 'o', 'n', 't', 'r', 'o', 'l', 'l', 'e', 'r', '/', 'P', '_', 'v', 'e',
-      'l', '_', 'y' };
-
-    static const char_T tmp_v[26] = { '/', 'm', 'a', 't', 'l', 'a', 'b', '_',
       'c', 'o', 'n', 't', 'r', 'o', 'l', 'l', 'e', 'r', '/', 'I', '_', 'v', 'e',
       'l', '_', 'x' };
 
-    static const char_T tmp_w[26] = { '/', 'm', 'a', 't', 'l', 'a', 'b', '_',
+    static const char_T tmp_t[26] = { '/', 'm', 'a', 't', 'l', 'a', 'b', '_',
       'c', 'o', 'n', 't', 'r', 'o', 'l', 'l', 'e', 'r', '/', 'N', '_', 'v', 'e',
       'l', '_', 'x' };
 
-    static const char_T tmp_x[26] = { '/', 'm', 'a', 't', 'l', 'a', 'b', '_',
+    static const char_T tmp_u[26] = { '/', 'm', 'a', 't', 'l', 'a', 'b', '_',
       'c', 'o', 'n', 't', 'r', 'o', 'l', 'l', 'e', 'r', '/', 'D', '_', 'v', 'e',
       'l', '_', 'x' };
 
-    static const char_T tmp_y[26] = { '/', 'm', 'a', 't', 'l', 'a', 'b', '_',
+    static const char_T tmp_v[26] = { '/', 'm', 'a', 't', 'l', 'a', 'b', '_',
       'c', 'o', 'n', 't', 'r', 'o', 'l', 'l', 'e', 'r', '/', 'P', '_', 'v', 'e',
       'l', '_', 'x' };
 
-    static const char_T tmp_z[34] = { '/', 'm', 'a', 't', 'l', 'a', 'b', '_',
+    static const char_T tmp_w[34] = { '/', 'm', 'a', 't', 'l', 'a', 'b', '_',
       'c', 'o', 'n', 't', 'r', 'o', 'l', 'l', 'e', 'r', '/', 'I', '_', 'a', 'n',
+      'g', 'u', 'l', 'a', 'r', '_', 'v', 'e', 'l', '_', 'z' };
+
+    static const char_T tmp_x[34] = { '/', 'm', 'a', 't', 'l', 'a', 'b', '_',
+      'c', 'o', 'n', 't', 'r', 'o', 'l', 'l', 'e', 'r', '/', 'N', '_', 'a', 'n',
+      'g', 'u', 'l', 'a', 'r', '_', 'v', 'e', 'l', '_', 'z' };
+
+    static const char_T tmp_y[34] = { '/', 'm', 'a', 't', 'l', 'a', 'b', '_',
+      'c', 'o', 'n', 't', 'r', 'o', 'l', 'l', 'e', 'r', '/', 'D', '_', 'a', 'n',
+      'g', 'u', 'l', 'a', 'r', '_', 'v', 'e', 'l', '_', 'z' };
+
+    static const char_T tmp_z[34] = { '/', 'm', 'a', 't', 'l', 'a', 'b', '_',
+      'c', 'o', 'n', 't', 'r', 'o', 'l', 'l', 'e', 'r', '/', 'P', '_', 'a', 'n',
       'g', 'u', 'l', 'a', 'r', '_', 'v', 'e', 'l', '_', 'z' };
 
     static const char_T tmp_10[34] = { '/', 'm', 'a', 't', 'l', 'a', 'b', '_',
-      'c', 'o', 'n', 't', 'r', 'o', 'l', 'l', 'e', 'r', '/', 'N', '_', 'a', 'n',
-      'g', 'u', 'l', 'a', 'r', '_', 'v', 'e', 'l', '_', 'z' };
+      'c', 'o', 'n', 't', 'r', 'o', 'l', 'l', 'e', 'r', '/', 'I', '_', 'a', 'n',
+      'g', 'u', 'l', 'a', 'r', '_', 'v', 'e', 'l', '_', 'y' };
 
     static const char_T tmp_11[34] = { '/', 'm', 'a', 't', 'l', 'a', 'b', '_',
-      'c', 'o', 'n', 't', 'r', 'o', 'l', 'l', 'e', 'r', '/', 'D', '_', 'a', 'n',
-      'g', 'u', 'l', 'a', 'r', '_', 'v', 'e', 'l', '_', 'z' };
+      'c', 'o', 'n', 't', 'r', 'o', 'l', 'l', 'e', 'r', '/', 'N', '_', 'a', 'n',
+      'g', 'u', 'l', 'a', 'r', '_', 'v', 'e', 'l', '_', 'y' };
 
     static const char_T tmp_12[34] = { '/', 'm', 'a', 't', 'l', 'a', 'b', '_',
-      'c', 'o', 'n', 't', 'r', 'o', 'l', 'l', 'e', 'r', '/', 'P', '_', 'a', 'n',
-      'g', 'u', 'l', 'a', 'r', '_', 'v', 'e', 'l', '_', 'z' };
+      'c', 'o', 'n', 't', 'r', 'o', 'l', 'l', 'e', 'r', '/', 'D', '_', 'a', 'n',
+      'g', 'u', 'l', 'a', 'r', '_', 'v', 'e', 'l', '_', 'y' };
 
     static const char_T tmp_13[34] = { '/', 'm', 'a', 't', 'l', 'a', 'b', '_',
-      'c', 'o', 'n', 't', 'r', 'o', 'l', 'l', 'e', 'r', '/', 'I', '_', 'a', 'n',
+      'c', 'o', 'n', 't', 'r', 'o', 'l', 'l', 'e', 'r', '/', 'P', '_', 'a', 'n',
       'g', 'u', 'l', 'a', 'r', '_', 'v', 'e', 'l', '_', 'y' };
 
     static const char_T tmp_14[34] = { '/', 'm', 'a', 't', 'l', 'a', 'b', '_',
-      'c', 'o', 'n', 't', 'r', 'o', 'l', 'l', 'e', 'r', '/', 'N', '_', 'a', 'n',
-      'g', 'u', 'l', 'a', 'r', '_', 'v', 'e', 'l', '_', 'y' };
-
-    static const char_T tmp_15[34] = { '/', 'm', 'a', 't', 'l', 'a', 'b', '_',
-      'c', 'o', 'n', 't', 'r', 'o', 'l', 'l', 'e', 'r', '/', 'D', '_', 'a', 'n',
-      'g', 'u', 'l', 'a', 'r', '_', 'v', 'e', 'l', '_', 'y' };
-
-    static const char_T tmp_16[34] = { '/', 'm', 'a', 't', 'l', 'a', 'b', '_',
-      'c', 'o', 'n', 't', 'r', 'o', 'l', 'l', 'e', 'r', '/', 'P', '_', 'a', 'n',
-      'g', 'u', 'l', 'a', 'r', '_', 'v', 'e', 'l', '_', 'y' };
-
-    static const char_T tmp_17[34] = { '/', 'm', 'a', 't', 'l', 'a', 'b', '_',
       'c', 'o', 'n', 't', 'r', 'o', 'l', 'l', 'e', 'r', '/', 'I', '_', 'a', 'n',
       'g', 'u', 'l', 'a', 'r', '_', 'v', 'e', 'l', '_', 'x' };
 
-    static const char_T tmp_18[34] = { '/', 'm', 'a', 't', 'l', 'a', 'b', '_',
+    static const char_T tmp_15[34] = { '/', 'm', 'a', 't', 'l', 'a', 'b', '_',
       'c', 'o', 'n', 't', 'r', 'o', 'l', 'l', 'e', 'r', '/', 'N', '_', 'a', 'n',
       'g', 'u', 'l', 'a', 'r', '_', 'v', 'e', 'l', '_', 'x' };
 
-    static const char_T tmp_19[34] = { '/', 'm', 'a', 't', 'l', 'a', 'b', '_',
+    static const char_T tmp_16[34] = { '/', 'm', 'a', 't', 'l', 'a', 'b', '_',
       'c', 'o', 'n', 't', 'r', 'o', 'l', 'l', 'e', 'r', '/', 'D', '_', 'a', 'n',
       'g', 'u', 'l', 'a', 'r', '_', 'v', 'e', 'l', '_', 'x' };
 
-    static const char_T tmp_1a[34] = { '/', 'm', 'a', 't', 'l', 'a', 'b', '_',
+    static const char_T tmp_17[34] = { '/', 'm', 'a', 't', 'l', 'a', 'b', '_',
       'c', 'o', 'n', 't', 'r', 'o', 'l', 'l', 'e', 'r', '/', 'P', '_', 'a', 'n',
       'g', 'u', 'l', 'a', 'r', '_', 'v', 'e', 'l', '_', 'x' };
 
-    static const char_T tmp_1b[37] = { '/', 'm', 'a', 't', 'l', 'a', 'b', '_',
+    static const char_T tmp_18[37] = { '/', 'm', 'a', 't', 'l', 'a', 'b', '_',
       'c', 'o', 'n', 't', 'r', 'o', 'l', 'l', 'e', 'r', '/', 'e', 'n', 'a', 'b',
       'l', 'e', '_', 'i', 'n', 't', 'e', 'g', 'r', 'a', 't', 'i', 'o', 'n' };
 
-    static const char_T tmp_1c[37] = { '/', 'm', 'a', 't', 'l', 'a', 'b', '_',
+    static const char_T tmp_19[37] = { '/', 'm', 'a', 't', 'l', 'a', 'b', '_',
       'c', 'o', 'n', 't', 'r', 'o', 'l', 'l', 'e', 'r', '/', 'v', 'e', 'l', 'o',
       'c', 'i', 't', 'y', '_', 'z', '_', 's', 'c', 'a', 'l', 'i', 'n', 'g' };
 
-    static const char_T tmp_1d[37] = { '/', 'm', 'a', 't', 'l', 'a', 'b', '_',
+    static const char_T tmp_1a[37] = { '/', 'm', 'a', 't', 'l', 'a', 'b', '_',
       'c', 'o', 'n', 't', 'r', 'o', 'l', 'l', 'e', 'r', '/', 'v', 'e', 'l', 'o',
       'c', 'i', 't', 'y', '_', 'y', '_', 's', 'c', 'a', 'l', 'i', 'n', 'g' };
 
-    static const char_T tmp_1e[37] = { '/', 'm', 'a', 't', 'l', 'a', 'b', '_',
+    static const char_T tmp_1b[37] = { '/', 'm', 'a', 't', 'l', 'a', 'b', '_',
       'c', 'o', 'n', 't', 'r', 'o', 'l', 'l', 'e', 'r', '/', 'v', 'e', 'l', 'o',
       'c', 'i', 't', 'y', '_', 'x', '_', 's', 'c', 'a', 'l', 'i', 'n', 'g' };
 
-    static const char_T tmp_1f[36] = { '/', 'm', 'a', 't', 'l', 'a', 'b', '_',
+    static const char_T tmp_1c[36] = { '/', 'm', 'a', 't', 'l', 'a', 'b', '_',
       'c', 'o', 'n', 't', 'r', 'o', 'l', 'l', 'e', 'r', '/', 'a', 'n', 'g', 'u',
       'l', 'a', 'r', '_', 'z', '_', 's', 'c', 'a', 'l', 'i', 'n', 'g' };
 
-    static const char_T tmp_1g[36] = { '/', 'm', 'a', 't', 'l', 'a', 'b', '_',
+    static const char_T tmp_1d[36] = { '/', 'm', 'a', 't', 'l', 'a', 'b', '_',
       'c', 'o', 'n', 't', 'r', 'o', 'l', 'l', 'e', 'r', '/', 'a', 'n', 'g', 'u',
       'l', 'a', 'r', '_', 'x', '_', 's', 'c', 'a', 'l', 'i', 'n', 'g' };
+
+    static const char_T tmp_1e[26] = { '/', 'M', 'a', 't', 'l', 'a', 'b', 'C',
+      'o', 'n', 't', 'r', 'o', 'l', 'l', 'e', 'r', '/', 'r', 'o', 'l', 'l', '_',
+      'r', 'e', 'f' };
+
+    static const char_T tmp_1f[27] = { '/', 'M', 'a', 't', 'l', 'a', 'b', 'C',
+      'o', 'n', 't', 'r', 'o', 'l', 'l', 'e', 'r', '/', 'p', 'i', 't', 'c', 'h',
+      '_', 'r', 'e', 'f' };
+
+    static const char_T tmp_1g[25] = { '/', 'M', 'a', 't', 'l', 'a', 'b', 'C',
+      'o', 'n', 't', 'r', 'o', 'l', 'l', 'e', 'r', '/', 'y', 'a', 'w', '_', 'r',
+      'e', 'f' };
 
     static const char_T tmp_1h[21] = { '/', 's', 'e', 'n', 's', 'o', 'r', '_',
       'f', 'u', 's', 'i', 'o', 'n', '/', 's', 't', 'a', 't', 'e', 's' };
@@ -4260,7 +4369,11 @@ void ControllerModelClass::initialize()
       'c', 'o', 'n', 't', 'r', 'o', 'l', 'l', 'e', 'r', '/', 's', 'w', 'i', 't',
       'c', 'h', '_', 'f', 'a', 'c', 't', 'o', 'r', '1' };
 
-    static const char_T tmp_22[23] = { '/', 'm', 'a', 't', 'l', 'a', 'b', '_',
+    static const char_T tmp_22[29] = { '/', 'm', 'a', 't', 'l', 'a', 'b', '_',
+      'c', 'o', 'n', 't', 'r', 'o', 'l', 'l', 'e', 'r', '/', 'l', 'o', 'c', 'k',
+      '_', 't', '1', '_', 't', '2' };
+
+    static const char_T tmp_23[23] = { '/', 'm', 'a', 't', 'l', 'a', 'b', '_',
       'c', 'o', 'n', 't', 'r', 'o', 'l', 'l', 'e', 'r', '/', 't', 'e', 's', 't'
     };
 
@@ -4270,17 +4383,33 @@ void ControllerModelClass::initialize()
     Controller_DWork.obj_h2.SampleTime = Controller_P.Gettest_SampleTime;
     Controller_DWork.obj_h2.isInitialized = 1;
     for (i = 0; i < 23; i++) {
-      Controller_B.cv10[i] = tmp_22[i];
+      Controller_B.cv10[i] = tmp_23[i];
     }
 
     Controller_B.cv10[23] = '\x00';
     ParamGet_Controller_823.initialize(Controller_B.cv10);
     ParamGet_Controller_823.initialize_error_codes(0U, 1U, 2U, 3U);
-    ParamGet_Controller_823.set_initial_value(Control_ParameterInitialValue_l);
+    ParamGet_Controller_823.set_initial_value(Contro_ParameterInitialValue_l5);
 
     // End of Start for MATLABSystem: '<Root>/Get test'
 
     // Start for Enabled SubSystem: '<Root>/Telegraph'
+    // Start for MATLABSystem: '<S6>/Get Parameter'
+    Controller_DWork.obj_fg.isInitialized = 0;
+    Controller_DWork.objisempty_ni = true;
+    Controller_DWork.obj_fg.SampleTime = Controller_P.GetParameter_SampleTime_g;
+    Controller_DWork.obj_fg.isInitialized = 1;
+    for (i = 0; i < 29; i++) {
+      Controller_B.cv5[i] = tmp_22[i];
+    }
+
+    Controller_B.cv5[29] = '\x00';
+    ParamGet_Controller_1018.initialize(Controller_B.cv5);
+    ParamGet_Controller_1018.initialize_error_codes(0U, 1U, 2U, 3U);
+    ParamGet_Controller_1018.set_initial_value(Control_ParameterInitialValue_l);
+
+    // End of Start for MATLABSystem: '<S6>/Get Parameter'
+
     // Start for S-Function (sdsprandsrc2): '<S31>/Random Source'
     Controlle_RandSrcCreateSeeds_64((uint32_T)(100000 * rand()),
       &Controller_DWork.RandomSource_SEED_DWORK, 1);
@@ -4299,7 +4428,7 @@ void ControllerModelClass::initialize()
     Controller_B.cv4[33] = '\x00';
     ParamGet_Controller_714.initialize(Controller_B.cv4);
     ParamGet_Controller_714.initialize_error_codes(0U, 1U, 2U, 3U);
-    ParamGet_Controller_714.set_initial_value(Controlle_ParameterInitialValue);
+    ParamGet_Controller_714.set_initial_value(Control_ParameterInitialValue_l);
 
     // End of Start for MATLABSystem: '<S31>/Swtiching factor'
 
@@ -4356,7 +4485,7 @@ void ControllerModelClass::initialize()
     Controller_B.cv4[33] = '\x00';
     ParamGet_Controller_724.initialize(Controller_B.cv4);
     ParamGet_Controller_724.initialize_error_codes(0U, 1U, 2U, 3U);
-    ParamGet_Controller_724.set_initial_value(Controlle_ParameterInitialValue);
+    ParamGet_Controller_724.set_initial_value(Control_ParameterInitialValue_l);
 
     // End of Start for MATLABSystem: '<S32>/Swtiching factor'
 
@@ -4413,7 +4542,7 @@ void ControllerModelClass::initialize()
     Controller_B.cv4[33] = '\x00';
     ParamGet_Controller_734.initialize(Controller_B.cv4);
     ParamGet_Controller_734.initialize_error_codes(0U, 1U, 2U, 3U);
-    ParamGet_Controller_734.set_initial_value(Controlle_ParameterInitialValue);
+    ParamGet_Controller_734.set_initial_value(Control_ParameterInitialValue_l);
 
     // End of Start for MATLABSystem: '<S33>/Swtiching factor'
 
@@ -4470,7 +4599,7 @@ void ControllerModelClass::initialize()
     Controller_B.cv4[33] = '\x00';
     ParamGet_Controller_744.initialize(Controller_B.cv4);
     ParamGet_Controller_744.initialize_error_codes(0U, 1U, 2U, 3U);
-    ParamGet_Controller_744.set_initial_value(Controlle_ParameterInitialValue);
+    ParamGet_Controller_744.set_initial_value(Control_ParameterInitialValue_l);
 
     // End of Start for MATLABSystem: '<S34>/Swtiching factor'
 
@@ -4527,7 +4656,7 @@ void ControllerModelClass::initialize()
     Controller_B.cv4[33] = '\x00';
     ParamGet_Controller_850.initialize(Controller_B.cv4);
     ParamGet_Controller_850.initialize_error_codes(0U, 1U, 2U, 3U);
-    ParamGet_Controller_850.set_initial_value(Controlle_ParameterInitialValue);
+    ParamGet_Controller_850.set_initial_value(Control_ParameterInitialValue_l);
 
     // End of Start for MATLABSystem: '<S35>/Swtiching factor'
 
@@ -4584,7 +4713,7 @@ void ControllerModelClass::initialize()
     Controller_B.cv4[33] = '\x00';
     ParamGet_Controller_764.initialize(Controller_B.cv4);
     ParamGet_Controller_764.initialize_error_codes(0U, 1U, 2U, 3U);
-    ParamGet_Controller_764.set_initial_value(Controlle_ParameterInitialValue);
+    ParamGet_Controller_764.set_initial_value(Control_ParameterInitialValue_l);
 
     // End of Start for MATLABSystem: '<S36>/Swtiching factor'
 
@@ -4636,7 +4765,7 @@ void ControllerModelClass::initialize()
     Controller_B.cv5[29] = '\x00';
     ParamGet_Controller_106.initialize(Controller_B.cv5);
     ParamGet_Controller_106.initialize_error_codes(0U, 1U, 2U, 3U);
-    ParamGet_Controller_106.set_initial_value(Controlle_ParameterInitialValue);
+    ParamGet_Controller_106.set_initial_value(Control_ParameterInitialValue_l);
 
     // End of Start for MATLABSystem: '<Root>/Get controller type'
 
@@ -4672,6 +4801,54 @@ void ControllerModelClass::initialize()
     // End of Start for MATLABSystem: '<S11>/SourceBlock'
     // End of Start for SubSystem: '<Root>/imu_data'
 
+    // Start for MATLABSystem: '<Root>/yaw_ref'
+    Controller_DWork.obj_o5.isInitialized = 0;
+    Controller_DWork.objisempty_j5 = true;
+    Controller_DWork.obj_o5.SampleTime = Controller_P.yaw_ref_SampleTime;
+    Controller_DWork.obj_o5.isInitialized = 1;
+    for (i = 0; i < 25; i++) {
+      Controller_B.cv8[i] = tmp_1g[i];
+    }
+
+    Controller_B.cv8[25] = '\x00';
+    ParamGet_Controller_981.initialize(Controller_B.cv8);
+    ParamGet_Controller_981.initialize_error_codes(0U, 1U, 2U, 3U);
+    ParamGet_Controller_981.set_initial_value(Controlle_ParameterInitialValue);
+
+    // End of Start for MATLABSystem: '<Root>/yaw_ref'
+
+    // Start for MATLABSystem: '<Root>/pitch_ref'
+    Controller_DWork.obj_mbl.isInitialized = 0;
+    Controller_DWork.objisempty_ho = true;
+    Controller_DWork.obj_mbl.SampleTime = Controller_P.pitch_ref_SampleTime;
+    Controller_DWork.obj_mbl.isInitialized = 1;
+    for (i = 0; i < 27; i++) {
+      Controller_B.cv6[i] = tmp_1f[i];
+    }
+
+    Controller_B.cv6[27] = '\x00';
+    ParamGet_Controller_982.initialize(Controller_B.cv6);
+    ParamGet_Controller_982.initialize_error_codes(0U, 1U, 2U, 3U);
+    ParamGet_Controller_982.set_initial_value(Controlle_ParameterInitialValue);
+
+    // End of Start for MATLABSystem: '<Root>/pitch_ref'
+
+    // Start for MATLABSystem: '<Root>/roll_ref'
+    Controller_DWork.obj_pk.isInitialized = 0;
+    Controller_DWork.objisempty_lg = true;
+    Controller_DWork.obj_pk.SampleTime = Controller_P.roll_ref_SampleTime;
+    Controller_DWork.obj_pk.isInitialized = 1;
+    for (i = 0; i < 26; i++) {
+      Controller_B.cv7[i] = tmp_1e[i];
+    }
+
+    Controller_B.cv7[26] = '\x00';
+    ParamGet_Controller_980.initialize(Controller_B.cv7);
+    ParamGet_Controller_980.initialize_error_codes(0U, 1U, 2U, 3U);
+    ParamGet_Controller_980.set_initial_value(Controlle_ParameterInitialValue);
+
+    // End of Start for MATLABSystem: '<Root>/roll_ref'
+
     // Start for Enabled SubSystem: '<Root>/Enabled Subsystem'
     // Start for MATLABSystem: '<S4>/Get Parameter'
     Controller_DWork.obj_km.isInitialized = 0;
@@ -4679,7 +4856,7 @@ void ControllerModelClass::initialize()
     Controller_DWork.obj_km.SampleTime = Controller_P.GetParameter_SampleTime;
     Controller_DWork.obj_km.isInitialized = 1;
     for (i = 0; i < 36; i++) {
-      Controller_B.cv1[i] = tmp_1g[i];
+      Controller_B.cv1[i] = tmp_1d[i];
     }
 
     Controller_B.cv1[36] = '\x00';
@@ -4695,7 +4872,7 @@ void ControllerModelClass::initialize()
     Controller_DWork.obj_oz.SampleTime = Controller_P.GetParameter1_SampleTime;
     Controller_DWork.obj_oz.isInitialized = 1;
     for (i = 0; i < 34; i++) {
-      Controller_B.cv3[i] = tmp_15[i];
+      Controller_B.cv3[i] = tmp_12[i];
     }
 
     Controller_B.cv3[34] = '\x00';
@@ -4711,7 +4888,7 @@ void ControllerModelClass::initialize()
     Controller_DWork.obj_iv.SampleTime = Controller_P.GetParameter2_SampleTime;
     Controller_DWork.obj_iv.isInitialized = 1;
     for (i = 0; i < 36; i++) {
-      Controller_B.cv1[i] = tmp_1f[i];
+      Controller_B.cv1[i] = tmp_1c[i];
     }
 
     Controller_B.cv1[36] = '\x00';
@@ -4727,7 +4904,7 @@ void ControllerModelClass::initialize()
     Controller_DWork.obj_dy.SampleTime = Controller_P.GetParameter3_SampleTime;
     Controller_DWork.obj_dy.isInitialized = 1;
     for (i = 0; i < 37; i++) {
-      Controller_B.cv0[i] = tmp_1e[i];
+      Controller_B.cv0[i] = tmp_1b[i];
     }
 
     Controller_B.cv0[37] = '\x00';
@@ -4743,7 +4920,7 @@ void ControllerModelClass::initialize()
     Controller_DWork.obj_kg.SampleTime = Controller_P.GetParameter4_SampleTime;
     Controller_DWork.obj_kg.isInitialized = 1;
     for (i = 0; i < 37; i++) {
-      Controller_B.cv0[i] = tmp_1d[i];
+      Controller_B.cv0[i] = tmp_1a[i];
     }
 
     Controller_B.cv0[37] = '\x00';
@@ -4759,13 +4936,13 @@ void ControllerModelClass::initialize()
     Controller_DWork.obj_ku.SampleTime = Controller_P.GetParameter5_SampleTime;
     Controller_DWork.obj_ku.isInitialized = 1;
     for (i = 0; i < 37; i++) {
-      Controller_B.cv0[i] = tmp_1c[i];
+      Controller_B.cv0[i] = tmp_19[i];
     }
 
     Controller_B.cv0[37] = '\x00';
     ParamGet_Controller_913.initialize(Controller_B.cv0);
     ParamGet_Controller_913.initialize_error_codes(0U, 1U, 2U, 3U);
-    ParamGet_Controller_913.set_initial_value(Contro_ParameterInitialValue_l5);
+    ParamGet_Controller_913.set_initial_value(Controlle_ParameterInitialValue);
 
     // End of Start for MATLABSystem: '<S4>/Get Parameter5'
     // End of Start for SubSystem: '<Root>/Enabled Subsystem'
@@ -4777,7 +4954,7 @@ void ControllerModelClass::initialize()
       Controller_P.Enableintegration_SampleTime;
     Controller_DWork.obj_g0.isInitialized = 1;
     for (i = 0; i < 37; i++) {
-      Controller_B.cv0[i] = tmp_1b[i];
+      Controller_B.cv0[i] = tmp_18[i];
     }
 
     Controller_B.cv0[37] = '\x00';
@@ -4794,13 +4971,13 @@ void ControllerModelClass::initialize()
     Controller_DWork.obj_bm.SampleTime = Controller_P.P_angular_vel_x_SampleTime;
     Controller_DWork.obj_bm.isInitialized = 1;
     for (i = 0; i < 34; i++) {
-      Controller_B.cv3[i] = tmp_1a[i];
+      Controller_B.cv3[i] = tmp_17[i];
     }
 
     Controller_B.cv3[34] = '\x00';
     ParamGet_Controller_508.initialize(Controller_B.cv3);
     ParamGet_Controller_508.initialize_error_codes(0U, 1U, 2U, 3U);
-    ParamGet_Controller_508.set_initial_value(Contro_ParameterInitialValue_l5);
+    ParamGet_Controller_508.set_initial_value(Controlle_ParameterInitialValue);
 
     // End of Start for MATLABSystem: '<S57>/P_angular_vel_x'
 
@@ -4810,13 +4987,13 @@ void ControllerModelClass::initialize()
     Controller_DWork.obj_be.SampleTime = Controller_P.D_angular_vel_x_SampleTime;
     Controller_DWork.obj_be.isInitialized = 1;
     for (i = 0; i < 34; i++) {
-      Controller_B.cv3[i] = tmp_19[i];
+      Controller_B.cv3[i] = tmp_16[i];
     }
 
     Controller_B.cv3[34] = '\x00';
     ParamGet_Controller_505.initialize(Controller_B.cv3);
     ParamGet_Controller_505.initialize_error_codes(0U, 1U, 2U, 3U);
-    ParamGet_Controller_505.set_initial_value(Contro_ParameterInitialValue_l5);
+    ParamGet_Controller_505.set_initial_value(Controlle_ParameterInitialValue);
 
     // End of Start for MATLABSystem: '<S57>/D_angular_vel_x'
 
@@ -4826,13 +5003,13 @@ void ControllerModelClass::initialize()
     Controller_DWork.obj_lb.SampleTime = Controller_P.N_angular_vel_x_SampleTime;
     Controller_DWork.obj_lb.isInitialized = 1;
     for (i = 0; i < 34; i++) {
-      Controller_B.cv3[i] = tmp_18[i];
+      Controller_B.cv3[i] = tmp_15[i];
     }
 
     Controller_B.cv3[34] = '\x00';
     ParamGet_Controller_507.initialize(Controller_B.cv3);
     ParamGet_Controller_507.initialize_error_codes(0U, 1U, 2U, 3U);
-    ParamGet_Controller_507.set_initial_value(Contro_ParameterInitialValue_l5);
+    ParamGet_Controller_507.set_initial_value(Controlle_ParameterInitialValue);
 
     // End of Start for MATLABSystem: '<S57>/N_angular_vel_x '
 
@@ -4842,13 +5019,13 @@ void ControllerModelClass::initialize()
     Controller_DWork.obj_pb.SampleTime = Controller_P.I_angular_vel_x_SampleTime;
     Controller_DWork.obj_pb.isInitialized = 1;
     for (i = 0; i < 34; i++) {
-      Controller_B.cv3[i] = tmp_17[i];
+      Controller_B.cv3[i] = tmp_14[i];
     }
 
     Controller_B.cv3[34] = '\x00';
     ParamGet_Controller_506.initialize(Controller_B.cv3);
     ParamGet_Controller_506.initialize_error_codes(0U, 1U, 2U, 3U);
-    ParamGet_Controller_506.set_initial_value(Contro_ParameterInitialValue_l5);
+    ParamGet_Controller_506.set_initial_value(Controlle_ParameterInitialValue);
 
     // End of Start for MATLABSystem: '<S57>/I_angular_vel_x'
 
@@ -4858,13 +5035,13 @@ void ControllerModelClass::initialize()
     Controller_DWork.obj_b.SampleTime = Controller_P.P_angular_vel_y_SampleTime;
     Controller_DWork.obj_b.isInitialized = 1;
     for (i = 0; i < 34; i++) {
-      Controller_B.cv3[i] = tmp_16[i];
+      Controller_B.cv3[i] = tmp_13[i];
     }
 
     Controller_B.cv3[34] = '\x00';
     ParamGet_Controller_522.initialize(Controller_B.cv3);
     ParamGet_Controller_522.initialize_error_codes(0U, 1U, 2U, 3U);
-    ParamGet_Controller_522.set_initial_value(Contro_ParameterInitialValue_l5);
+    ParamGet_Controller_522.set_initial_value(Controlle_ParameterInitialValue);
 
     // End of Start for MATLABSystem: '<S60>/P_angular_vel_y'
 
@@ -4874,13 +5051,13 @@ void ControllerModelClass::initialize()
     Controller_DWork.obj_m.SampleTime = Controller_P.D_angular_vel_y_SampleTime;
     Controller_DWork.obj_m.isInitialized = 1;
     for (i = 0; i < 34; i++) {
-      Controller_B.cv3[i] = tmp_15[i];
+      Controller_B.cv3[i] = tmp_12[i];
     }
 
     Controller_B.cv3[34] = '\x00';
     ParamGet_Controller_519.initialize(Controller_B.cv3);
     ParamGet_Controller_519.initialize_error_codes(0U, 1U, 2U, 3U);
-    ParamGet_Controller_519.set_initial_value(Contro_ParameterInitialValue_l5);
+    ParamGet_Controller_519.set_initial_value(Controlle_ParameterInitialValue);
 
     // End of Start for MATLABSystem: '<S60>/D_angular_vel_y'
 
@@ -4890,13 +5067,13 @@ void ControllerModelClass::initialize()
     Controller_DWork.obj_dp.SampleTime = Controller_P.N_angular_vel_y_SampleTime;
     Controller_DWork.obj_dp.isInitialized = 1;
     for (i = 0; i < 34; i++) {
-      Controller_B.cv3[i] = tmp_14[i];
+      Controller_B.cv3[i] = tmp_11[i];
     }
 
     Controller_B.cv3[34] = '\x00';
     ParamGet_Controller_521.initialize(Controller_B.cv3);
     ParamGet_Controller_521.initialize_error_codes(0U, 1U, 2U, 3U);
-    ParamGet_Controller_521.set_initial_value(Contro_ParameterInitialValue_l5);
+    ParamGet_Controller_521.set_initial_value(Controlle_ParameterInitialValue);
 
     // End of Start for MATLABSystem: '<S60>/N_angular_vel_y '
 
@@ -4906,13 +5083,13 @@ void ControllerModelClass::initialize()
     Controller_DWork.obj_ep.SampleTime = Controller_P.I_angular_vel_y_SampleTime;
     Controller_DWork.obj_ep.isInitialized = 1;
     for (i = 0; i < 34; i++) {
-      Controller_B.cv3[i] = tmp_13[i];
+      Controller_B.cv3[i] = tmp_10[i];
     }
 
     Controller_B.cv3[34] = '\x00';
     ParamGet_Controller_520.initialize(Controller_B.cv3);
     ParamGet_Controller_520.initialize_error_codes(0U, 1U, 2U, 3U);
-    ParamGet_Controller_520.set_initial_value(Contro_ParameterInitialValue_l5);
+    ParamGet_Controller_520.set_initial_value(Controlle_ParameterInitialValue);
 
     // End of Start for MATLABSystem: '<S60>/I_angular_vel_y'
 
@@ -4922,13 +5099,13 @@ void ControllerModelClass::initialize()
     Controller_DWork.obj_e.SampleTime = Controller_P.P_angular_vel_z_SampleTime;
     Controller_DWork.obj_e.isInitialized = 1;
     for (i = 0; i < 34; i++) {
-      Controller_B.cv3[i] = tmp_12[i];
+      Controller_B.cv3[i] = tmp_z[i];
     }
 
     Controller_B.cv3[34] = '\x00';
     ParamGet_Controller_536.initialize(Controller_B.cv3);
     ParamGet_Controller_536.initialize_error_codes(0U, 1U, 2U, 3U);
-    ParamGet_Controller_536.set_initial_value(Contro_ParameterInitialValue_l5);
+    ParamGet_Controller_536.set_initial_value(Controlle_ParameterInitialValue);
 
     // End of Start for MATLABSystem: '<S63>/P_angular_vel_z'
 
@@ -4938,13 +5115,13 @@ void ControllerModelClass::initialize()
     Controller_DWork.obj_jg.SampleTime = Controller_P.D_angular_vel_z_SampleTime;
     Controller_DWork.obj_jg.isInitialized = 1;
     for (i = 0; i < 34; i++) {
-      Controller_B.cv3[i] = tmp_11[i];
+      Controller_B.cv3[i] = tmp_y[i];
     }
 
     Controller_B.cv3[34] = '\x00';
     ParamGet_Controller_533.initialize(Controller_B.cv3);
     ParamGet_Controller_533.initialize_error_codes(0U, 1U, 2U, 3U);
-    ParamGet_Controller_533.set_initial_value(Contro_ParameterInitialValue_l5);
+    ParamGet_Controller_533.set_initial_value(Controlle_ParameterInitialValue);
 
     // End of Start for MATLABSystem: '<S63>/D_angular_vel_z'
 
@@ -4954,13 +5131,13 @@ void ControllerModelClass::initialize()
     Controller_DWork.obj_g.SampleTime = Controller_P.N_angular_vel_z_SampleTime;
     Controller_DWork.obj_g.isInitialized = 1;
     for (i = 0; i < 34; i++) {
-      Controller_B.cv3[i] = tmp_10[i];
+      Controller_B.cv3[i] = tmp_x[i];
     }
 
     Controller_B.cv3[34] = '\x00';
     ParamGet_Controller_535.initialize(Controller_B.cv3);
     ParamGet_Controller_535.initialize_error_codes(0U, 1U, 2U, 3U);
-    ParamGet_Controller_535.set_initial_value(Contro_ParameterInitialValue_l5);
+    ParamGet_Controller_535.set_initial_value(Controlle_ParameterInitialValue);
 
     // End of Start for MATLABSystem: '<S63>/N_angular_vel_z '
 
@@ -4970,13 +5147,13 @@ void ControllerModelClass::initialize()
     Controller_DWork.obj_p.SampleTime = Controller_P.I_angular_vel_z_SampleTime;
     Controller_DWork.obj_p.isInitialized = 1;
     for (i = 0; i < 34; i++) {
-      Controller_B.cv3[i] = tmp_z[i];
+      Controller_B.cv3[i] = tmp_w[i];
     }
 
     Controller_B.cv3[34] = '\x00';
     ParamGet_Controller_534.initialize(Controller_B.cv3);
     ParamGet_Controller_534.initialize_error_codes(0U, 1U, 2U, 3U);
-    ParamGet_Controller_534.set_initial_value(Contro_ParameterInitialValue_l5);
+    ParamGet_Controller_534.set_initial_value(Controlle_ParameterInitialValue);
 
     // End of Start for MATLABSystem: '<S63>/I_angular_vel_z'
 
@@ -4986,13 +5163,13 @@ void ControllerModelClass::initialize()
     Controller_DWork.obj_ns.SampleTime = Controller_P.P_vel_x_SampleTime;
     Controller_DWork.obj_ns.isInitialized = 1;
     for (i = 0; i < 26; i++) {
-      Controller_B.cv7[i] = tmp_y[i];
+      Controller_B.cv7[i] = tmp_v[i];
     }
 
     Controller_B.cv7[26] = '\x00';
     ParamGet_Controller_550.initialize(Controller_B.cv7);
     ParamGet_Controller_550.initialize_error_codes(0U, 1U, 2U, 3U);
-    ParamGet_Controller_550.set_initial_value(Contro_ParameterInitialValue_l5);
+    ParamGet_Controller_550.set_initial_value(Controlle_ParameterInitialValue);
 
     // End of Start for MATLABSystem: '<S66>/P_vel_x'
 
@@ -5002,13 +5179,13 @@ void ControllerModelClass::initialize()
     Controller_DWork.obj_d.SampleTime = Controller_P.D_vel_x_SampleTime;
     Controller_DWork.obj_d.isInitialized = 1;
     for (i = 0; i < 26; i++) {
-      Controller_B.cv7[i] = tmp_x[i];
+      Controller_B.cv7[i] = tmp_u[i];
     }
 
     Controller_B.cv7[26] = '\x00';
     ParamGet_Controller_547.initialize(Controller_B.cv7);
     ParamGet_Controller_547.initialize_error_codes(0U, 1U, 2U, 3U);
-    ParamGet_Controller_547.set_initial_value(Contro_ParameterInitialValue_l5);
+    ParamGet_Controller_547.set_initial_value(Controlle_ParameterInitialValue);
 
     // End of Start for MATLABSystem: '<S66>/D_vel_x'
 
@@ -5018,13 +5195,13 @@ void ControllerModelClass::initialize()
     Controller_DWork.obj_a3.SampleTime = Controller_P.N_vel_x_SampleTime;
     Controller_DWork.obj_a3.isInitialized = 1;
     for (i = 0; i < 26; i++) {
-      Controller_B.cv7[i] = tmp_w[i];
+      Controller_B.cv7[i] = tmp_t[i];
     }
 
     Controller_B.cv7[26] = '\x00';
     ParamGet_Controller_549.initialize(Controller_B.cv7);
     ParamGet_Controller_549.initialize_error_codes(0U, 1U, 2U, 3U);
-    ParamGet_Controller_549.set_initial_value(Contro_ParameterInitialValue_l5);
+    ParamGet_Controller_549.set_initial_value(Controlle_ParameterInitialValue);
 
     // End of Start for MATLABSystem: '<S66>/N_vel_x '
 
@@ -5034,13 +5211,13 @@ void ControllerModelClass::initialize()
     Controller_DWork.obj_cv.SampleTime = Controller_P.I_vel_x_SampleTime;
     Controller_DWork.obj_cv.isInitialized = 1;
     for (i = 0; i < 26; i++) {
-      Controller_B.cv7[i] = tmp_v[i];
+      Controller_B.cv7[i] = tmp_s[i];
     }
 
     Controller_B.cv7[26] = '\x00';
     ParamGet_Controller_548.initialize(Controller_B.cv7);
     ParamGet_Controller_548.initialize_error_codes(0U, 1U, 2U, 3U);
-    ParamGet_Controller_548.set_initial_value(Contro_ParameterInitialValue_l5);
+    ParamGet_Controller_548.set_initial_value(Controlle_ParameterInitialValue);
 
     // End of Start for MATLABSystem: '<S66>/I_vel_x'
 
@@ -5050,13 +5227,13 @@ void ControllerModelClass::initialize()
     Controller_DWork.obj_ji.SampleTime = Controller_P.P_vel_y_SampleTime;
     Controller_DWork.obj_ji.isInitialized = 1;
     for (i = 0; i < 26; i++) {
-      Controller_B.cv7[i] = tmp_u[i];
+      Controller_B.cv7[i] = tmp_r[i];
     }
 
     Controller_B.cv7[26] = '\x00';
     ParamGet_Controller_564.initialize(Controller_B.cv7);
     ParamGet_Controller_564.initialize_error_codes(0U, 1U, 2U, 3U);
-    ParamGet_Controller_564.set_initial_value(Contro_ParameterInitialValue_l5);
+    ParamGet_Controller_564.set_initial_value(Controlle_ParameterInitialValue);
 
     // End of Start for MATLABSystem: '<S69>/P_vel_y'
 
@@ -5066,13 +5243,13 @@ void ControllerModelClass::initialize()
     Controller_DWork.obj_ny.SampleTime = Controller_P.D_vel_y_SampleTime;
     Controller_DWork.obj_ny.isInitialized = 1;
     for (i = 0; i < 26; i++) {
-      Controller_B.cv7[i] = tmp_t[i];
+      Controller_B.cv7[i] = tmp_q[i];
     }
 
     Controller_B.cv7[26] = '\x00';
     ParamGet_Controller_561.initialize(Controller_B.cv7);
     ParamGet_Controller_561.initialize_error_codes(0U, 1U, 2U, 3U);
-    ParamGet_Controller_561.set_initial_value(Contro_ParameterInitialValue_l5);
+    ParamGet_Controller_561.set_initial_value(Controlle_ParameterInitialValue);
 
     // End of Start for MATLABSystem: '<S69>/D_vel_y'
 
@@ -5082,13 +5259,13 @@ void ControllerModelClass::initialize()
     Controller_DWork.obj_cb.SampleTime = Controller_P.N_vel_y_SampleTime;
     Controller_DWork.obj_cb.isInitialized = 1;
     for (i = 0; i < 26; i++) {
-      Controller_B.cv7[i] = tmp_s[i];
+      Controller_B.cv7[i] = tmp_p[i];
     }
 
     Controller_B.cv7[26] = '\x00';
     ParamGet_Controller_563.initialize(Controller_B.cv7);
     ParamGet_Controller_563.initialize_error_codes(0U, 1U, 2U, 3U);
-    ParamGet_Controller_563.set_initial_value(Contro_ParameterInitialValue_l5);
+    ParamGet_Controller_563.set_initial_value(Controlle_ParameterInitialValue);
 
     // End of Start for MATLABSystem: '<S69>/N_vel_y '
 
@@ -5098,13 +5275,13 @@ void ControllerModelClass::initialize()
     Controller_DWork.obj_jx.SampleTime = Controller_P.I_vel_y_SampleTime;
     Controller_DWork.obj_jx.isInitialized = 1;
     for (i = 0; i < 26; i++) {
-      Controller_B.cv7[i] = tmp_r[i];
+      Controller_B.cv7[i] = tmp_o[i];
     }
 
     Controller_B.cv7[26] = '\x00';
     ParamGet_Controller_562.initialize(Controller_B.cv7);
     ParamGet_Controller_562.initialize_error_codes(0U, 1U, 2U, 3U);
-    ParamGet_Controller_562.set_initial_value(Contro_ParameterInitialValue_l5);
+    ParamGet_Controller_562.set_initial_value(Controlle_ParameterInitialValue);
 
     // End of Start for MATLABSystem: '<S69>/I_vel_y'
 
@@ -5114,13 +5291,13 @@ void ControllerModelClass::initialize()
     Controller_DWork.obj_j.SampleTime = Controller_P.P_vel_z_SampleTime;
     Controller_DWork.obj_j.isInitialized = 1;
     for (i = 0; i < 26; i++) {
-      Controller_B.cv7[i] = tmp_q[i];
+      Controller_B.cv7[i] = tmp_n[i];
     }
 
     Controller_B.cv7[26] = '\x00';
     ParamGet_Controller_578.initialize(Controller_B.cv7);
     ParamGet_Controller_578.initialize_error_codes(0U, 1U, 2U, 3U);
-    ParamGet_Controller_578.set_initial_value(Contro_ParameterInitialValue_l5);
+    ParamGet_Controller_578.set_initial_value(Controlle_ParameterInitialValue);
 
     // End of Start for MATLABSystem: '<S72>/P_vel_z'
 
@@ -5130,13 +5307,13 @@ void ControllerModelClass::initialize()
     Controller_DWork.obj_a.SampleTime = Controller_P.D_vel_z_SampleTime;
     Controller_DWork.obj_a.isInitialized = 1;
     for (i = 0; i < 26; i++) {
-      Controller_B.cv7[i] = tmp_p[i];
+      Controller_B.cv7[i] = tmp_m[i];
     }
 
     Controller_B.cv7[26] = '\x00';
     ParamGet_Controller_575.initialize(Controller_B.cv7);
     ParamGet_Controller_575.initialize_error_codes(0U, 1U, 2U, 3U);
-    ParamGet_Controller_575.set_initial_value(Contro_ParameterInitialValue_l5);
+    ParamGet_Controller_575.set_initial_value(Controlle_ParameterInitialValue);
 
     // End of Start for MATLABSystem: '<S72>/D_vel_z'
 
@@ -5146,13 +5323,13 @@ void ControllerModelClass::initialize()
     Controller_DWork.obj_h.SampleTime = Controller_P.N_vel_z_SampleTime;
     Controller_DWork.obj_h.isInitialized = 1;
     for (i = 0; i < 26; i++) {
-      Controller_B.cv7[i] = tmp_o[i];
+      Controller_B.cv7[i] = tmp_l[i];
     }
 
     Controller_B.cv7[26] = '\x00';
     ParamGet_Controller_577.initialize(Controller_B.cv7);
     ParamGet_Controller_577.initialize_error_codes(0U, 1U, 2U, 3U);
-    ParamGet_Controller_577.set_initial_value(Contro_ParameterInitialValue_l5);
+    ParamGet_Controller_577.set_initial_value(Controlle_ParameterInitialValue);
 
     // End of Start for MATLABSystem: '<S72>/N_vel_z '
 
@@ -5162,47 +5339,31 @@ void ControllerModelClass::initialize()
     Controller_DWork.obj_js.SampleTime = Controller_P.I_vel_z_SampleTime;
     Controller_DWork.obj_js.isInitialized = 1;
     for (i = 0; i < 26; i++) {
-      Controller_B.cv7[i] = tmp_n[i];
+      Controller_B.cv7[i] = tmp_k[i];
     }
 
     Controller_B.cv7[26] = '\x00';
     ParamGet_Controller_576.initialize(Controller_B.cv7);
     ParamGet_Controller_576.initialize_error_codes(0U, 1U, 2U, 3U);
-    ParamGet_Controller_576.set_initial_value(Contro_ParameterInitialValue_l5);
+    ParamGet_Controller_576.set_initial_value(Controlle_ParameterInitialValue);
 
     // End of Start for MATLABSystem: '<S72>/I_vel_z'
     // End of Start for SubSystem: '<Root>/decController'
 
     // Start for Enabled SubSystem: '<Root>/Subsystem'
-    // Start for MATLABSystem: '<S5>/roll_ref'
-    Controller_DWork.obj_pk.isInitialized = 0;
-    Controller_DWork.objisempty_lg = true;
-    Controller_DWork.obj_pk.SampleTime = Controller_P.roll_ref_SampleTime;
-    Controller_DWork.obj_pk.isInitialized = 1;
-    for (i = 0; i < 26; i++) {
-      Controller_B.cv7[i] = tmp_m[i];
-    }
-
-    Controller_B.cv7[26] = '\x00';
-    ParamGet_Controller_980.initialize(Controller_B.cv7);
-    ParamGet_Controller_980.initialize_error_codes(0U, 1U, 2U, 3U);
-    ParamGet_Controller_980.set_initial_value(Contro_ParameterInitialValue_l5);
-
-    // End of Start for MATLABSystem: '<S5>/roll_ref'
-
     // Start for MATLABSystem: '<S26>/P_roll'
     Controller_DWork.obj_jp.isInitialized = 0;
     Controller_DWork.objisempty_kq = true;
     Controller_DWork.obj_jp.SampleTime = Controller_P.P_roll_SampleTime;
     Controller_DWork.obj_jp.isInitialized = 1;
     for (i = 0; i < 24; i++) {
-      Controller_B.cv9[i] = tmp_l[i];
+      Controller_B.cv9[i] = tmp_j[i];
     }
 
     Controller_B.cv9[24] = '\x00';
     ParamGet_Controller_968.initialize(Controller_B.cv9);
     ParamGet_Controller_968.initialize_error_codes(0U, 1U, 2U, 3U);
-    ParamGet_Controller_968.set_initial_value(Contro_ParameterInitialValue_l5);
+    ParamGet_Controller_968.set_initial_value(Controlle_ParameterInitialValue);
 
     // End of Start for MATLABSystem: '<S26>/P_roll'
 
@@ -5212,13 +5373,13 @@ void ControllerModelClass::initialize()
     Controller_DWork.obj_k.SampleTime = Controller_P.D_roll_SampleTime;
     Controller_DWork.obj_k.isInitialized = 1;
     for (i = 0; i < 24; i++) {
-      Controller_B.cv9[i] = tmp_k[i];
+      Controller_B.cv9[i] = tmp_i[i];
     }
 
     Controller_B.cv9[24] = '\x00';
     ParamGet_Controller_965.initialize(Controller_B.cv9);
     ParamGet_Controller_965.initialize_error_codes(0U, 1U, 2U, 3U);
-    ParamGet_Controller_965.set_initial_value(Contro_ParameterInitialValue_l5);
+    ParamGet_Controller_965.set_initial_value(Controlle_ParameterInitialValue);
 
     // End of Start for MATLABSystem: '<S26>/D_roll'
 
@@ -5228,31 +5389,15 @@ void ControllerModelClass::initialize()
     Controller_DWork.obj_dp3.SampleTime = Controller_P.N_roll_SampleTime;
     Controller_DWork.obj_dp3.isInitialized = 1;
     for (i = 0; i < 24; i++) {
-      Controller_B.cv9[i] = tmp_j[i];
+      Controller_B.cv9[i] = tmp_h[i];
     }
 
     Controller_B.cv9[24] = '\x00';
     ParamGet_Controller_967.initialize(Controller_B.cv9);
     ParamGet_Controller_967.initialize_error_codes(0U, 1U, 2U, 3U);
-    ParamGet_Controller_967.set_initial_value(Contro_ParameterInitialValue_l5);
+    ParamGet_Controller_967.set_initial_value(Controlle_ParameterInitialValue);
 
     // End of Start for MATLABSystem: '<S26>/N_roll '
-
-    // Start for MATLABSystem: '<S5>/pitch_ref'
-    Controller_DWork.obj_mbl.isInitialized = 0;
-    Controller_DWork.objisempty_ho = true;
-    Controller_DWork.obj_mbl.SampleTime = Controller_P.pitch_ref_SampleTime;
-    Controller_DWork.obj_mbl.isInitialized = 1;
-    for (i = 0; i < 27; i++) {
-      Controller_B.cv6[i] = tmp_i[i];
-    }
-
-    Controller_B.cv6[27] = '\x00';
-    ParamGet_Controller_982.initialize(Controller_B.cv6);
-    ParamGet_Controller_982.initialize_error_codes(0U, 1U, 2U, 3U);
-    ParamGet_Controller_982.set_initial_value(Contro_ParameterInitialValue_l5);
-
-    // End of Start for MATLABSystem: '<S5>/pitch_ref'
 
     // Start for MATLABSystem: '<S23>/P_pitch'
     Controller_DWork.obj_m1.isInitialized = 0;
@@ -5260,13 +5405,13 @@ void ControllerModelClass::initialize()
     Controller_DWork.obj_m1.SampleTime = Controller_P.P_pitch_SampleTime;
     Controller_DWork.obj_m1.isInitialized = 1;
     for (i = 0; i < 25; i++) {
-      Controller_B.cv8[i] = tmp_h[i];
+      Controller_B.cv8[i] = tmp_g[i];
     }
 
     Controller_B.cv8[25] = '\x00';
     ParamGet_Controller_954.initialize(Controller_B.cv8);
     ParamGet_Controller_954.initialize_error_codes(0U, 1U, 2U, 3U);
-    ParamGet_Controller_954.set_initial_value(Contro_ParameterInitialValue_l5);
+    ParamGet_Controller_954.set_initial_value(Controlle_ParameterInitialValue);
 
     // End of Start for MATLABSystem: '<S23>/P_pitch'
 
@@ -5276,13 +5421,13 @@ void ControllerModelClass::initialize()
     Controller_DWork.obj_b4.SampleTime = Controller_P.D_pitch_SampleTime;
     Controller_DWork.obj_b4.isInitialized = 1;
     for (i = 0; i < 25; i++) {
-      Controller_B.cv8[i] = tmp_g[i];
+      Controller_B.cv8[i] = tmp_f[i];
     }
 
     Controller_B.cv8[25] = '\x00';
     ParamGet_Controller_951.initialize(Controller_B.cv8);
     ParamGet_Controller_951.initialize_error_codes(0U, 1U, 2U, 3U);
-    ParamGet_Controller_951.set_initial_value(Contro_ParameterInitialValue_l5);
+    ParamGet_Controller_951.set_initial_value(Controlle_ParameterInitialValue);
 
     // End of Start for MATLABSystem: '<S23>/D_pitch'
 
@@ -5292,31 +5437,15 @@ void ControllerModelClass::initialize()
     Controller_DWork.obj_fq.SampleTime = Controller_P.N_pitch_SampleTime;
     Controller_DWork.obj_fq.isInitialized = 1;
     for (i = 0; i < 25; i++) {
-      Controller_B.cv8[i] = tmp_f[i];
+      Controller_B.cv8[i] = tmp_e[i];
     }
 
     Controller_B.cv8[25] = '\x00';
     ParamGet_Controller_953.initialize(Controller_B.cv8);
     ParamGet_Controller_953.initialize_error_codes(0U, 1U, 2U, 3U);
-    ParamGet_Controller_953.set_initial_value(Contro_ParameterInitialValue_l5);
+    ParamGet_Controller_953.set_initial_value(Controlle_ParameterInitialValue);
 
     // End of Start for MATLABSystem: '<S23>/N_pitch '
-
-    // Start for MATLABSystem: '<S5>/yaw_ref'
-    Controller_DWork.obj_o5.isInitialized = 0;
-    Controller_DWork.objisempty_j5 = true;
-    Controller_DWork.obj_o5.SampleTime = Controller_P.yaw_ref_SampleTime;
-    Controller_DWork.obj_o5.isInitialized = 1;
-    for (i = 0; i < 25; i++) {
-      Controller_B.cv8[i] = tmp_e[i];
-    }
-
-    Controller_B.cv8[25] = '\x00';
-    ParamGet_Controller_981.initialize(Controller_B.cv8);
-    ParamGet_Controller_981.initialize_error_codes(0U, 1U, 2U, 3U);
-    ParamGet_Controller_981.set_initial_value(Contro_ParameterInitialValue_l5);
-
-    // End of Start for MATLABSystem: '<S5>/yaw_ref'
 
     // Start for MATLABSystem: '<S29>/P_yaw'
     Controller_DWork.obj_hn.isInitialized = 0;
@@ -5330,7 +5459,7 @@ void ControllerModelClass::initialize()
     Controller_B.cv10[23] = '\x00';
     ParamGet_Controller_940.initialize(Controller_B.cv10);
     ParamGet_Controller_940.initialize_error_codes(0U, 1U, 2U, 3U);
-    ParamGet_Controller_940.set_initial_value(Contro_ParameterInitialValue_l5);
+    ParamGet_Controller_940.set_initial_value(Controlle_ParameterInitialValue);
 
     // End of Start for MATLABSystem: '<S29>/P_yaw'
 
@@ -5346,7 +5475,7 @@ void ControllerModelClass::initialize()
     Controller_B.cv10[23] = '\x00';
     ParamGet_Controller_937.initialize(Controller_B.cv10);
     ParamGet_Controller_937.initialize_error_codes(0U, 1U, 2U, 3U);
-    ParamGet_Controller_937.set_initial_value(Contro_ParameterInitialValue_l5);
+    ParamGet_Controller_937.set_initial_value(Controlle_ParameterInitialValue);
 
     // End of Start for MATLABSystem: '<S29>/D_yaw'
 
@@ -5362,7 +5491,7 @@ void ControllerModelClass::initialize()
     Controller_B.cv10[23] = '\x00';
     ParamGet_Controller_939.initialize(Controller_B.cv10);
     ParamGet_Controller_939.initialize_error_codes(0U, 1U, 2U, 3U);
-    ParamGet_Controller_939.set_initial_value(Contro_ParameterInitialValue_l5);
+    ParamGet_Controller_939.set_initial_value(Controlle_ParameterInitialValue);
 
     // End of Start for MATLABSystem: '<S29>/N_yaw '
 
@@ -5378,7 +5507,7 @@ void ControllerModelClass::initialize()
     Controller_B.cv8[25] = '\x00';
     ParamGet_Controller_952.initialize(Controller_B.cv8);
     ParamGet_Controller_952.initialize_error_codes(0U, 1U, 2U, 3U);
-    ParamGet_Controller_952.set_initial_value(Contro_ParameterInitialValue_l5);
+    ParamGet_Controller_952.set_initial_value(Controlle_ParameterInitialValue);
 
     // End of Start for MATLABSystem: '<S23>/I_pitch'
 
@@ -5394,7 +5523,7 @@ void ControllerModelClass::initialize()
     Controller_B.cv9[24] = '\x00';
     ParamGet_Controller_966.initialize(Controller_B.cv9);
     ParamGet_Controller_966.initialize_error_codes(0U, 1U, 2U, 3U);
-    ParamGet_Controller_966.set_initial_value(Contro_ParameterInitialValue_l5);
+    ParamGet_Controller_966.set_initial_value(Controlle_ParameterInitialValue);
 
     // End of Start for MATLABSystem: '<S26>/I_roll'
 
@@ -5410,7 +5539,7 @@ void ControllerModelClass::initialize()
     Controller_B.cv10[23] = '\x00';
     ParamGet_Controller_938.initialize(Controller_B.cv10);
     ParamGet_Controller_938.initialize_error_codes(0U, 1U, 2U, 3U);
-    ParamGet_Controller_938.set_initial_value(Contro_ParameterInitialValue_l5);
+    ParamGet_Controller_938.set_initial_value(Controlle_ParameterInitialValue);
 
     // End of Start for MATLABSystem: '<S29>/I_yaw'
     // End of Start for SubSystem: '<Root>/Subsystem'
@@ -5557,7 +5686,7 @@ void ControllerModelClass::initialize()
     Controller_B.cv9[24] = '\x00';
     ParamGet_Controller_687.initialize(Controller_B.cv9);
     ParamGet_Controller_687.initialize_error_codes(0U, 1U, 2U, 3U);
-    ParamGet_Controller_687.set_initial_value(Contro_ParameterInitialValue_l5);
+    ParamGet_Controller_687.set_initial_value(Controlle_ParameterInitialValue);
 
     // End of Start for MATLABSystem: '<S8>/Get alpha'
 
@@ -5667,7 +5796,7 @@ void ControllerModelClass::initialize()
 
     // SystemInitialize for Enabled SubSystem: '<Root>/states'
     // SystemInitialize for Outport: '<S12>/<yaw [radians]>'
-    Controller_B.Data[0] = Controller_P.yawradians_Y0;
+    Controller_B.Data[2] = Controller_P.yawradians_Y0;
 
     // SystemInitialize for Outport: '<S12>/<pitch [radians]>'
     Controller_B.OutportBufferForpitchradians = Controller_P.pitchradians_Y0;
@@ -5697,6 +5826,15 @@ void ControllerModelClass::initialize()
     // End of SystemInitialize for SubSystem: '<Root>/states'
 
     // SystemInitialize for Enabled SubSystem: '<Root>/Create errors'
+    // SystemInitialize for Outport: '<S2>/yaw error [radians]'
+    Controller_B.Errorx1 = Controller_P.yawerrorradians_Y0;
+
+    // SystemInitialize for Outport: '<S2>/pitch error [radians]'
+    Controller_B.Errory1 = Controller_P.pitcherrorradians_Y0;
+
+    // SystemInitialize for Outport: '<S2>/roll error [radians]'
+    Controller_B.Errorz4 = Controller_P.rollerrorradians_Y0;
+
     // SystemInitialize for Outport: '<S2>/angular_vel x error [radians]'
     Controller_B.Errorx = Controller_P.angular_velxerrorradians_Y0;
 
@@ -5818,6 +5956,15 @@ void ControllerModelClass::terminate()
   // End of Start for MATLABSystem: '<Root>/Get test'
 
   // Terminate for Enabled SubSystem: '<Root>/Telegraph'
+  // Start for MATLABSystem: '<S6>/Get Parameter' incorporates:
+  //   Terminate for MATLABSystem: '<S6>/Get Parameter'
+
+  if (Controller_DWork.obj_fg.isInitialized == 1) {
+    Controller_DWork.obj_fg.isInitialized = 2;
+  }
+
+  // End of Start for MATLABSystem: '<S6>/Get Parameter'
+
   // Start for MATLABSystem: '<S31>/Swtiching factor' incorporates:
   //   Terminate for MATLABSystem: '<S31>/Swtiching factor'
 
@@ -6011,6 +6158,33 @@ void ControllerModelClass::terminate()
 
   // End of Start for MATLABSystem: '<S11>/SourceBlock'
   // End of Terminate for SubSystem: '<Root>/imu_data'
+
+  // Start for MATLABSystem: '<Root>/yaw_ref' incorporates:
+  //   Terminate for MATLABSystem: '<Root>/yaw_ref'
+
+  if (Controller_DWork.obj_o5.isInitialized == 1) {
+    Controller_DWork.obj_o5.isInitialized = 2;
+  }
+
+  // End of Start for MATLABSystem: '<Root>/yaw_ref'
+
+  // Start for MATLABSystem: '<Root>/pitch_ref' incorporates:
+  //   Terminate for MATLABSystem: '<Root>/pitch_ref'
+
+  if (Controller_DWork.obj_mbl.isInitialized == 1) {
+    Controller_DWork.obj_mbl.isInitialized = 2;
+  }
+
+  // End of Start for MATLABSystem: '<Root>/pitch_ref'
+
+  // Start for MATLABSystem: '<Root>/roll_ref' incorporates:
+  //   Terminate for MATLABSystem: '<Root>/roll_ref'
+
+  if (Controller_DWork.obj_pk.isInitialized == 1) {
+    Controller_DWork.obj_pk.isInitialized = 2;
+  }
+
+  // End of Start for MATLABSystem: '<Root>/roll_ref'
 
   // Terminate for Enabled SubSystem: '<Root>/Enabled Subsystem'
   // Start for MATLABSystem: '<S4>/Get Parameter' incorporates:
@@ -6296,15 +6470,6 @@ void ControllerModelClass::terminate()
   // End of Terminate for SubSystem: '<Root>/decController'
 
   // Terminate for Enabled SubSystem: '<Root>/Subsystem'
-  // Start for MATLABSystem: '<S5>/roll_ref' incorporates:
-  //   Terminate for MATLABSystem: '<S5>/roll_ref'
-
-  if (Controller_DWork.obj_pk.isInitialized == 1) {
-    Controller_DWork.obj_pk.isInitialized = 2;
-  }
-
-  // End of Start for MATLABSystem: '<S5>/roll_ref'
-
   // Start for MATLABSystem: '<S26>/P_roll' incorporates:
   //   Terminate for MATLABSystem: '<S26>/P_roll'
 
@@ -6332,15 +6497,6 @@ void ControllerModelClass::terminate()
 
   // End of Start for MATLABSystem: '<S26>/N_roll '
 
-  // Start for MATLABSystem: '<S5>/pitch_ref' incorporates:
-  //   Terminate for MATLABSystem: '<S5>/pitch_ref'
-
-  if (Controller_DWork.obj_mbl.isInitialized == 1) {
-    Controller_DWork.obj_mbl.isInitialized = 2;
-  }
-
-  // End of Start for MATLABSystem: '<S5>/pitch_ref'
-
   // Start for MATLABSystem: '<S23>/P_pitch' incorporates:
   //   Terminate for MATLABSystem: '<S23>/P_pitch'
 
@@ -6367,15 +6523,6 @@ void ControllerModelClass::terminate()
   }
 
   // End of Start for MATLABSystem: '<S23>/N_pitch '
-
-  // Start for MATLABSystem: '<S5>/yaw_ref' incorporates:
-  //   Terminate for MATLABSystem: '<S5>/yaw_ref'
-
-  if (Controller_DWork.obj_o5.isInitialized == 1) {
-    Controller_DWork.obj_o5.isInitialized = 2;
-  }
-
-  // End of Start for MATLABSystem: '<S5>/yaw_ref'
 
   // Start for MATLABSystem: '<S29>/P_yaw' incorporates:
   //   Terminate for MATLABSystem: '<S29>/P_yaw'
@@ -7660,6 +7807,15 @@ ControllerModelClass::ControllerModelClass()
 
     { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
     -1.0,                              // Expression: SampleTime
+                                       //  Referenced by: '<Root>/roll_ref'
+
+    -1.0,                              // Expression: SampleTime
+                                       //  Referenced by: '<Root>/pitch_ref'
+
+    -1.0,                              // Expression: SampleTime
+                                       //  Referenced by: '<Root>/yaw_ref'
+
+    -1.0,                              // Expression: SampleTime
                                        //  Referenced by: '<Root>/Get controller type'
 
     -1.0,                              // Expression: SampleTime
@@ -7747,15 +7903,6 @@ ControllerModelClass::ControllerModelClass()
                                        //  Referenced by: '<S4>/<velocity Z>'
 
     -1.0,                              // Expression: SampleTime
-                                       //  Referenced by: '<S5>/yaw_ref'
-
-    -1.0,                              // Expression: SampleTime
-                                       //  Referenced by: '<S5>/pitch_ref'
-
-    -1.0,                              // Expression: SampleTime
-                                       //  Referenced by: '<S5>/roll_ref'
-
-    -1.0,                              // Expression: SampleTime
                                        //  Referenced by: '<S23>/I_pitch'
 
     -1.0,                              // Expression: SampleTime
@@ -7797,37 +7944,37 @@ ControllerModelClass::ControllerModelClass()
     0.0,                               // Expression: 0
                                        //  Referenced by: '<S5>/Constant'
 
-    0.05,                              // Computed Parameter: Integrator_gainval
+    0.01,                              // Computed Parameter: Integrator_gainval
                                        //  Referenced by: '<S25>/Integrator'
 
     0.0,                               // Expression: InitialConditionForIntegrator
                                        //  Referenced by: '<S25>/Integrator'
 
-    0.05,                              // Computed Parameter: Filter_gainval
+    0.01,                              // Computed Parameter: Filter_gainval
                                        //  Referenced by: '<S25>/Filter'
 
     0.0,                               // Expression: InitialConditionForFilter
                                        //  Referenced by: '<S25>/Filter'
 
-    0.05,                              // Computed Parameter: Integrator_gainval_b
+    0.01,                              // Computed Parameter: Integrator_gainval_b
                                        //  Referenced by: '<S22>/Integrator'
 
     0.0,                               // Expression: InitialConditionForIntegrator
                                        //  Referenced by: '<S22>/Integrator'
 
-    0.05,                              // Computed Parameter: Filter_gainval_l
+    0.01,                              // Computed Parameter: Filter_gainval_l
                                        //  Referenced by: '<S22>/Filter'
 
     0.0,                               // Expression: InitialConditionForFilter
                                        //  Referenced by: '<S22>/Filter'
 
-    0.05,                              // Computed Parameter: Integrator_gainval_l
+    0.01,                              // Computed Parameter: Integrator_gainval_l
                                        //  Referenced by: '<S28>/Integrator'
 
     0.0,                               // Expression: InitialConditionForIntegrator
                                        //  Referenced by: '<S28>/Integrator'
 
-    0.05,                              // Computed Parameter: Filter_gainval_e
+    0.01,                              // Computed Parameter: Filter_gainval_e
                                        //  Referenced by: '<S28>/Filter'
 
     0.0,                               // Expression: InitialConditionForFilter
@@ -7850,6 +7997,9 @@ ControllerModelClass::ControllerModelClass()
 
     0.0,                               // Expression: 0
                                        //  Referenced by: '<S28>/Constant'
+
+    -1.0,                              // Expression: SampleTime
+                                       //  Referenced by: '<S6>/Get Parameter'
 
     -1.0,                              // Expression: SampleTime
                                        //  Referenced by: '<S31>/Swtiching factor2'
@@ -8025,13 +8175,13 @@ ControllerModelClass::ControllerModelClass()
     0.0,                               // Computed Parameter: velociteslinearxyzangularxyz_Y0
                                        //  Referenced by: '<S10>/velocites [linear xyz, angular xyz]'
 
-    0.05,                              // Computed Parameter: Integrator_gainval_h
+    0.01,                              // Computed Parameter: Integrator_gainval_h
                                        //  Referenced by: '<S56>/Integrator'
 
     0.0,                               // Expression: InitialConditionForIntegrator
                                        //  Referenced by: '<S56>/Integrator'
 
-    0.05,                              // Computed Parameter: Filter_gainval_n
+    0.01,                              // Computed Parameter: Filter_gainval_n
                                        //  Referenced by: '<S56>/Filter'
 
     0.0,                               // Expression: InitialConditionForFilter
@@ -8043,13 +8193,13 @@ ControllerModelClass::ControllerModelClass()
     0.0,                               // Expression: 0
                                        //  Referenced by: '<S56>/Constant'
 
-    0.05,                              // Computed Parameter: Integrator_gainval_c
+    0.01,                              // Computed Parameter: Integrator_gainval_c
                                        //  Referenced by: '<S59>/Integrator'
 
     0.0,                               // Expression: InitialConditionForIntegrator
                                        //  Referenced by: '<S59>/Integrator'
 
-    0.05,                              // Computed Parameter: Filter_gainval_i
+    0.01,                              // Computed Parameter: Filter_gainval_i
                                        //  Referenced by: '<S59>/Filter'
 
     0.0,                               // Expression: InitialConditionForFilter
@@ -8061,13 +8211,13 @@ ControllerModelClass::ControllerModelClass()
     0.0,                               // Expression: 0
                                        //  Referenced by: '<S59>/Constant'
 
-    0.05,                              // Computed Parameter: Integrator_gainval_n
+    0.01,                              // Computed Parameter: Integrator_gainval_n
                                        //  Referenced by: '<S62>/Integrator'
 
     0.0,                               // Expression: InitialConditionForIntegrator
                                        //  Referenced by: '<S62>/Integrator'
 
-    0.05,                              // Computed Parameter: Filter_gainval_k
+    0.01,                              // Computed Parameter: Filter_gainval_k
                                        //  Referenced by: '<S62>/Filter'
 
     0.0,                               // Expression: InitialConditionForFilter
@@ -8079,13 +8229,13 @@ ControllerModelClass::ControllerModelClass()
     0.0,                               // Expression: 0
                                        //  Referenced by: '<S62>/Constant'
 
-    0.05,                              // Computed Parameter: Integrator_gainval_j
+    0.01,                              // Computed Parameter: Integrator_gainval_j
                                        //  Referenced by: '<S65>/Integrator'
 
     0.0,                               // Expression: InitialConditionForIntegrator
                                        //  Referenced by: '<S65>/Integrator'
 
-    0.05,                              // Computed Parameter: Filter_gainval_h
+    0.01,                              // Computed Parameter: Filter_gainval_h
                                        //  Referenced by: '<S65>/Filter'
 
     0.0,                               // Expression: InitialConditionForFilter
@@ -8097,13 +8247,13 @@ ControllerModelClass::ControllerModelClass()
     0.0,                               // Expression: 0
                                        //  Referenced by: '<S65>/Constant'
 
-    0.05,                              // Computed Parameter: Integrator_gainval_np
+    0.01,                              // Computed Parameter: Integrator_gainval_np
                                        //  Referenced by: '<S68>/Integrator'
 
     0.0,                               // Expression: InitialConditionForIntegrator
                                        //  Referenced by: '<S68>/Integrator'
 
-    0.05,                              // Computed Parameter: Filter_gainval_h0
+    0.01,                              // Computed Parameter: Filter_gainval_h0
                                        //  Referenced by: '<S68>/Filter'
 
     0.0,                               // Expression: InitialConditionForFilter
@@ -8115,13 +8265,13 @@ ControllerModelClass::ControllerModelClass()
     0.0,                               // Expression: 0
                                        //  Referenced by: '<S68>/Constant'
 
-    0.05,                              // Computed Parameter: Integrator_gainval_m
+    0.01,                              // Computed Parameter: Integrator_gainval_m
                                        //  Referenced by: '<S71>/Integrator'
 
     0.0,                               // Expression: InitialConditionForIntegrator
                                        //  Referenced by: '<S71>/Integrator'
 
-    0.05,                              // Computed Parameter: Filter_gainval_b
+    0.01,                              // Computed Parameter: Filter_gainval_b
                                        //  Referenced by: '<S71>/Filter'
 
     0.0,                               // Expression: InitialConditionForFilter
@@ -8187,23 +8337,29 @@ ControllerModelClass::ControllerModelClass()
     -1.0,                              // Expression: -1
                                        //  Referenced by: '<S16>/Saturation'
 
-    0.05,                              // Computed Parameter: DiscreteTimeIntegrator_gainval
+    0.01,                              // Computed Parameter: DiscreteTimeIntegrator_gainval
                                        //  Referenced by: '<S8>/Discrete-Time Integrator'
 
     0.0,                               // Expression: 0
                                        //  Referenced by: '<S8>/Discrete-Time Integrator'
 
-    0.05,                              // Computed Parameter: DiscreteTimeIntegrator1_gainval
+    0.01,                              // Computed Parameter: DiscreteTimeIntegrator1_gainval
                                        //  Referenced by: '<S8>/Discrete-Time Integrator1'
 
     0.0,                               // Expression: 0
                                        //  Referenced by: '<S8>/Discrete-Time Integrator1'
 
-    0.05,                              // Computed Parameter: DiscreteTimeIntegrator2_gainval
+    0.01,                              // Computed Parameter: DiscreteTimeIntegrator2_gainval
                                        //  Referenced by: '<S8>/Discrete-Time Integrator2'
 
     0.0,                               // Expression: 0
                                        //  Referenced by: '<S8>/Discrete-Time Integrator2'
+
+    1.0,                               // Expression: 1
+                                       //  Referenced by: '<Root>/control 1'
+
+    2.0,                               // Expression: 2
+                                       //  Referenced by: '<Root>/2'
 
     1.0,                               // Expression: 1
                                        //  Referenced by: '<S8>/Constant'

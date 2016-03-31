@@ -55,9 +55,6 @@ extern SimulinkParameterGetter<real64_T, double> ParamGet_Controller_953;
 // For Block Controller/Subsystem/pitch_control/Retrive PID-Parameters/P_pitch
 extern SimulinkParameterGetter<real64_T, double> ParamGet_Controller_954;
 
-// For Block Controller/Subsystem/pitch_ref
-extern SimulinkParameterGetter<real64_T, double> ParamGet_Controller_982;
-
 // For Block Controller/Subsystem/roll_control/Retrive PID-Parameters/D_roll
 extern SimulinkParameterGetter<real64_T, double> ParamGet_Controller_965;
 
@@ -69,9 +66,6 @@ extern SimulinkParameterGetter<real64_T, double> ParamGet_Controller_967;
 
 // For Block Controller/Subsystem/roll_control/Retrive PID-Parameters/P_roll
 extern SimulinkParameterGetter<real64_T, double> ParamGet_Controller_968;
-
-// For Block Controller/Subsystem/roll_ref
-extern SimulinkParameterGetter<real64_T, double> ParamGet_Controller_980;
 
 // For Block Controller/Subsystem/yaw_control/Retrive PID-Parameters/D_yaw
 extern SimulinkParameterGetter<real64_T, double> ParamGet_Controller_937;
@@ -85,8 +79,8 @@ extern SimulinkParameterGetter<real64_T, double> ParamGet_Controller_939;
 // For Block Controller/Subsystem/yaw_control/Retrive PID-Parameters/P_yaw
 extern SimulinkParameterGetter<real64_T, double> ParamGet_Controller_940;
 
-// For Block Controller/Subsystem/yaw_ref
-extern SimulinkParameterGetter<real64_T, double> ParamGet_Controller_981;
+// For Block Controller/Telegraph/Get Parameter
+extern SimulinkParameterGetter<int32_T, int> ParamGet_Controller_1018;
 
 // For Block Controller/Telegraph/Thruster1 block/Swtiching factor
 extern SimulinkParameterGetter<int32_T, int> ParamGet_Controller_714;
@@ -220,6 +214,12 @@ extern SimulinkParameterGetter<real64_T, double> ParamGet_Controller_577;
 // For Block Controller/decController/vel z/Retrive PID-Parameters/P_vel_z
 extern SimulinkParameterGetter<real64_T, double> ParamGet_Controller_578;
 
+// For Block Controller/pitch_ref
+extern SimulinkParameterGetter<real64_T, double> ParamGet_Controller_982;
+
+// For Block Controller/roll_ref
+extern SimulinkParameterGetter<real64_T, double> ParamGet_Controller_980;
+
 // For Block Controller/toPWM/Enable thrusters /Get Parameter
 extern SimulinkParameterGetter<boolean_T, bool> ParamGet_Controller_858;
 
@@ -237,6 +237,9 @@ extern SimulinkParameterGetter<boolean_T, bool> ParamGet_Controller_864;
 
 // For Block Controller/toPWM/Enable thrusters /Get Parameter5
 extern SimulinkParameterGetter<boolean_T, bool> ParamGet_Controller_865;
+
+// For Block Controller/yaw_ref
+extern SimulinkParameterGetter<real64_T, double> ParamGet_Controller_981;
 
 void slros_node_init(int argc, char** argv);
 

@@ -51,9 +51,6 @@ SimulinkParameterGetter<real64_T, double> ParamGet_Controller_953;
 // For Block Controller/Subsystem/pitch_control/Retrive PID-Parameters/P_pitch
 SimulinkParameterGetter<real64_T, double> ParamGet_Controller_954;
 
-// For Block Controller/Subsystem/pitch_ref
-SimulinkParameterGetter<real64_T, double> ParamGet_Controller_982;
-
 // For Block Controller/Subsystem/roll_control/Retrive PID-Parameters/D_roll
 SimulinkParameterGetter<real64_T, double> ParamGet_Controller_965;
 
@@ -65,9 +62,6 @@ SimulinkParameterGetter<real64_T, double> ParamGet_Controller_967;
 
 // For Block Controller/Subsystem/roll_control/Retrive PID-Parameters/P_roll
 SimulinkParameterGetter<real64_T, double> ParamGet_Controller_968;
-
-// For Block Controller/Subsystem/roll_ref
-SimulinkParameterGetter<real64_T, double> ParamGet_Controller_980;
 
 // For Block Controller/Subsystem/yaw_control/Retrive PID-Parameters/D_yaw
 SimulinkParameterGetter<real64_T, double> ParamGet_Controller_937;
@@ -81,8 +75,8 @@ SimulinkParameterGetter<real64_T, double> ParamGet_Controller_939;
 // For Block Controller/Subsystem/yaw_control/Retrive PID-Parameters/P_yaw
 SimulinkParameterGetter<real64_T, double> ParamGet_Controller_940;
 
-// For Block Controller/Subsystem/yaw_ref
-SimulinkParameterGetter<real64_T, double> ParamGet_Controller_981;
+// For Block Controller/Telegraph/Get Parameter
+SimulinkParameterGetter<int32_T, int> ParamGet_Controller_1018;
 
 // For Block Controller/Telegraph/Thruster1 block/Swtiching factor
 SimulinkParameterGetter<int32_T, int> ParamGet_Controller_714;
@@ -216,6 +210,12 @@ SimulinkParameterGetter<real64_T, double> ParamGet_Controller_577;
 // For Block Controller/decController/vel z/Retrive PID-Parameters/P_vel_z
 SimulinkParameterGetter<real64_T, double> ParamGet_Controller_578;
 
+// For Block Controller/pitch_ref
+SimulinkParameterGetter<real64_T, double> ParamGet_Controller_982;
+
+// For Block Controller/roll_ref
+SimulinkParameterGetter<real64_T, double> ParamGet_Controller_980;
+
 // For Block Controller/toPWM/Enable thrusters /Get Parameter
 SimulinkParameterGetter<boolean_T, bool> ParamGet_Controller_858;
 
@@ -233,6 +233,9 @@ SimulinkParameterGetter<boolean_T, bool> ParamGet_Controller_864;
 
 // For Block Controller/toPWM/Enable thrusters /Get Parameter5
 SimulinkParameterGetter<boolean_T, bool> ParamGet_Controller_865;
+
+// For Block Controller/yaw_ref
+SimulinkParameterGetter<real64_T, double> ParamGet_Controller_981;
 
 void slros_node_init(int argc, char** argv)
 {
