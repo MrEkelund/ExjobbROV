@@ -1,35 +1,47 @@
-function [nonlinear_greybox_model, input_data, output_data, Ts] = setupEstimation(parameters, parameter_strings, estimation_mode, simulation, filepath, plotting)
+function [nonlinear_greybox_model, data] = setupEstimation(parameters, parameter_strings, estimation_mode, simulation, filepath, plotting)
 %setupEstimation Setups the nonlinear model of the rov and reads data
 %   Detailed explanation goes here
 
 %% Read from data files
 switch simulation
-    case 0
-        disp(sprintf('Loading test data from %s',filepath));
-       [lin_vel_data ,lin_acc_data, ang_vel_data, thrusters_data, states, time,Ts]= ...
-            getTestData(filepath, plotting);
-    case 1
+    case 0 % Test
+        switch filepath
+            case 'Yaw0321'
+                disp('Loading yaw test data from 2016-03-21');
+                data = loadYaw0321();
+            case 'RollPitch0321'
+                disp('Loading roll pitch test data from 2016-03-21');
+                data = loadRollPitch0321();
+            case 'Pitch0321'
+                disp('Loading pitch test data from 2016-03-21');
+                data = loadPitch0321();
+            otherwise
+                disp(sprintf('Loading test data from %s',filepath));
+                [lin_vel_data ,lin_acc_data, ang_vel_data, thrusters_data, states, time,Ts]= ...
+                    getTestData(filepath, plotting);
+                output_data = [zeros(size(ang_vel_data)), ang_vel_data , states(:,1:2)];
+                input_data = thrusters_data;
+                data = iddata(input_data, output_data, Ts);
+        end
+    case 1 % simulation
         disp(sprintf('Loading simulated data from %s',filepath));
         [lin_vel_data ,lin_acc_data, ang_vel_data, thrusters_data, states, time,Ts] = ...
             getSimulationData(filepath,plotting);
+        output_data = [zeros(size(ang_vel_data)), ang_vel_data , states(:,1:2)];
+        input_data = thrusters_data;
+        data = iddata(input_data, output_data, Ts);
     otherwise
         error('Simulation can only be 0 or 1');
 end
 
-output_data = [zeros(size(ang_vel_data)), ang_vel_data , states(:,1:2)];
-input_data = thrusters_data;
-
 %% Setup the non linear greybox model
 Ts_model = 0;      % Sample time [s].  
-% Initial states
-u_init = 0;
-v_init = 0;
-w_init = 0;
-p_init = ang_vel_data(1,1);
-q_init = ang_vel_data(1,2);
-r_init = ang_vel_data(1,3);
-fi_init = states(1,1);
-theta_init = states(1,2);
+
+initial_states = zeros(8,length(data.OutputData));
+for i = 1:length(data.OutputData)
+    temp_data = getexp(data, i);
+    initial_states(:,i) = temp_data.OutputData(1,:);
+end
 
 file_name  = strcat('rovMotionModel',estimation_mode); % File describing the model structure.
 
@@ -37,10 +49,10 @@ disp(sprintf('Using %s %s',file_name,'as model file'));
 
 order = [8 6 8]; % Model orders [ny nu nx].
 
-initial_states = [u_init; v_init; w_init; p_init; q_init; r_init;     % Initial initial states.
-    fi_init; theta_init];
+% initial_states = [u_init; v_init; w_init; p_init; q_init; r_init;     % Initial initial states.
+%     fi_init; theta_init];
 
-nonlinear_greybox_model = idnlgrey(file_name, order, parameters', initial_states, Ts_model, ...
+nonlinear_greybox_model = idnlgrey(file_name, order, parameters, initial_states, Ts_model, ...
     'Name', 'Rov Model', 'TimeUnit', 's');
 
 %% Setup names for the nonlinear greybox
@@ -126,6 +138,11 @@ end
 for i = 1:size(negative_parameters,2)
     nonlinear_greybox_model.Parameters(negative_parameters(i)).Maximum = 0;
 end
+
+data.InputName = nonlinear_greybox_model.InputName;
+data.InputUnit = nonlinear_greybox_model.InputUnit;
+data.OutputName = nonlinear_greybox_model.OutputName;
+data.OutputUnit = nonlinear_greybox_model.OutputUnit;
 
 end
 

@@ -1,5 +1,5 @@
-function [lin_vel_data ,lin_acc_data, ang_vel_data, thrusters_data, states, time, Ts] = retriveData(filepath,plotting)
-    %retriveData
+function [lin_vel_data ,lin_acc_data, ang_vel_data, thrusters_data, states, time, Ts] = getTestData(filepath,plotting)
+    %getTestData
     %   Input: filepath - Fullfilepath or relative.
     %   Input: plotting - 1 for subplots of the data. 0 for no plots
     %
@@ -14,7 +14,6 @@ function [lin_vel_data ,lin_acc_data, ang_vel_data, thrusters_data, states, time
     bag = rosbag(filepath);
     %% States
     states_bag = select(bag,'Topic','/sensor_fusion/states');
-    
     states_msgs = readMessages(states_bag);
     
     states_data = zeros(size(states_msgs,1),size(states_msgs{1}.Data',2));
@@ -65,15 +64,15 @@ function [lin_vel_data ,lin_acc_data, ang_vel_data, thrusters_data, states, time
 %     thrusters_time = thrusters_time(2:end-1,:);
 %
 [thrusters_data, states_data, time, Ts] = resampleControlSignals(thrusters_data, thrusters_time, states_data, states_time);
-states = states_data(:,[3 2 1 7]); % Angels and depth
-states(:,1:3) = states(:,1:3)*pi/180;
-ang_vel_data = states_data(:,4:6)*pi/180.0;
+states = states_data(:,[1 2 3 7]); % Angels and depth
+states(:,1:3) = states(:,1:3);
+ang_vel_data = states_data(:,4:6);
 lin_acc_data = states_data(:,8:10);
 lin_vel_data = 0;
 
 
 if plotting
-    plotData(states, ang_vel_data, lin_vel_data,lin_acc_data, thrusters_data, time);
+    plotData(states, ang_vel_data, lin_vel_data,lin_acc_data, thrusters_data, time, filepath);
 end
 
 end

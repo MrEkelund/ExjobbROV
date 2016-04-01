@@ -41,9 +41,9 @@ if isempty(files)
     Nr_init = -1;
     Nr_dot_init = -1;
     Nr_abs_r_init = -1;
-    Ix_init = 13;
-    Iy_init = 13;
-    Iz_init = 13;
+    Ix_init = 1;
+    Iy_init = 1;
+    Iz_init = 1;
     Ix_Kp_dot = 1;
     Iy_Mq_dot = 1;
     Kp_Ix_Kp_dot = -1;
