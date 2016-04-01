@@ -36,20 +36,11 @@ end
 
 %% Setup the non linear greybox model
 Ts_model = 0;      % Sample time [s].  
-% % Initial states
-% u_init = 0;
-% v_init = 0;
-% w_init = 0;
-% p_init = ang_vel_data(1,1);
-% q_init = ang_vel_data(1,2);
-% r_init = ang_vel_data(1,3);
-% fi_init = states(1,1);
-% theta_init = states(1,2);
 
 initial_states = zeros(8,length(data.OutputData));
 for i = 1:length(data.OutputData)
     temp_data = getexp(data, i);
-    initial_states(:,i) = temp_data.OutputData(1,:)';
+    initial_states(:,i) = temp_data.OutputData(1,:);
 end
 
 file_name  = strcat('rovMotionModel',estimation_mode); % File describing the model structure.

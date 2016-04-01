@@ -1,6 +1,7 @@
 %% Yaw estimation
-clear;
-close all;
+clear
+close all
+clc
 simulation = 0;
 plotting = 0;
 estimation_mode = 'Yaw';
@@ -16,28 +17,28 @@ displayTable(parameters, parameter_strings);
     setupEstimation(parameters, parameter_strings, estimation_mode, simulation, yaw_filepath, plotting);
 
 %%
-yaw_val_data = getexp(yaw_data,1);
-yaw_est_data = getexp(yaw_data,[2:length(yaw_data.OutputData)]);
+% yaw_val_data = getexp(yaw_data,1);
+% yaw_est_data = getexp(yaw_data,[2:length(yaw_data.OutputData)]);
 
 opt = nlgreyestOptions;
 opt.Display = 'on';
 opt.SearchOption.MaxIter = 50;
 tic
 %yaw_estimation = pem(yaw_data, yaw_nonlinear_greybox_model,opt);
-yaw_estimation = nlgreyest(yaw_est_data, yaw_nonlinear_greybox_model,opt);
+yaw_estimation = nlgreyest(yaw_data, yaw_nonlinear_greybox_model,opt);
 toc
 displayTable(parameters, parameter_strings, yaw_estimation)
 
-figure(1)
-compare(yaw_val_data, yaw_estimation, inf);
+% figure(1)
+% compare(yaw_val_data, yaw_estimation, inf);
 %%
-% save(yaw_estimation.Report.Parameters.ParVector, yaw_estimation.Report.Parameters.Free)
+% saveParameters(yaw_estimation.Report.Parameters.ParVector, yaw_estimation.Report.Parameters.Free)
 temp_parameters = yaw_estimation.Report.Parameters.ParVector;
 save('yawparameters.mat','temp_parameters', 'yaw_estimation')
 %% RollPitch estimation
 % clear;
 % close all;
-estimation_mode = 'RollPitch';
+estimation_mode = 'RollPitchCongregated';
 %roll_pitch_filepath = fullfile('bag','act_1_2_5_6_test_1_2016-03-21-15-23-37.bag');
 %roll_pitch_filepath = fullfile('bag','act_1_2_5_6_test_2_2016-03-21-15-26-12.bag');
 %roll_pitch_filepath = fullfile('bag','act_1_2_5_6_test_3_2016-03-21-15-28-14.bag');
@@ -53,19 +54,19 @@ plotting = 0;
     setupEstimation(parameters, parameter_strings, estimation_mode, simulation, roll_pitch_filepath, plotting);
 
 %%
-roll_pitch_val_data = getexp(roll_pitch_data,1);
-roll_pitch_est_data = getexp(roll_pitch_data,[2:length(roll_pitch_data.OutputData)]);
+% roll_pitch_val_data = getexp(roll_pitch_data,1);
+% roll_pitch_est_data = getexp(roll_pitch_data,[2:length(roll_pitch_data.OutputData)]);
 
 opt = nlgreyestOptions;
 opt.Display = 'on';
 opt.SearchOption.MaxIter = 50;
 tic
-roll_pitch_estimation = nlgreyest(roll_pitch_est_data, roll_pitch_nonlinear_greybox_model,opt);
+roll_pitch_estimation = nlgreyest(roll_pitch_data, roll_pitch_nonlinear_greybox_model,opt);
 toc
-displayTable(roll_pitch_estimation, parameters, parameter_strings)
+displayTable(parameters, parameter_strings, roll_pitch_estimation)
 
-figure(2)
-compare(roll_pitch_val_data, roll_pitch_estimation, inf);
+% figure(2)
+% compare(roll_pitch_val_data, roll_pitch_estimation, inf);
 %%
 temp_parameters = roll_pitch_estimation.Report.Parameters.ParVector;
 save('rollpitchparameters.mat','temp_parameters', 'roll_pitch_estimation')
@@ -87,20 +88,20 @@ plotting = 0;
     setupEstimation(parameters, parameter_strings, estimation_mode, simulation,pitch_filepath, plotting);
 
 %%
-pitch_val_data = getexp(pitch_data,1);
-pitch_est_data = getexp(pitch_data,[2:length(pitch_data.OutputData)]);
+% pitch_val_data = getexp(pitch_data,1);
+% pitch_est_data = getexp(pitch_data,[2:length(pitch_data.OutputData)]);
 
 opt = nlgreyestOptions;
 opt.Display = 'on';
 opt.SearchOption.MaxIter = 50;
 tic
-pitch_estimation = nlgreyest(pitch_est_data, pitch_nonlinear_greybox_model,opt);
+pitch_estimation = nlgreyest(pitch_data, pitch_nonlinear_greybox_model,opt);
 %pitch_estimation = pem(pitch_data, pitch_nonlinear_greybox_model,opt);
 toc
-displayTable(pitch_estimation, parameters, parameter_strings)
+displayTable(parameters, parameter_strings,pitch_estimation)
 
-figure(3)
-compare(pitch_val_data, pitch_estimation, inf);
+% figure(3)
+% compare(pitch_val_data, pitch_estimation, inf);
 
 %%
 temp_parameters = pitch_estimation.Report.Parameters.ParVector;
