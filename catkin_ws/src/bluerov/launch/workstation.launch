@@ -9,5 +9,7 @@
 
   <!-- start rqt -->
   <include file="$(find bluerov)/launch/rqt.launch" />
+  <!-- start Sensorfusion -->
+  <include file="$(find bluerov)/launch/sensorfusion.launch" />
 
 </launch>

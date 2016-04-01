@@ -45,9 +45,7 @@ void Ekf::restartFilter(){
   new_mag_data = false;
   new_imu_data = false;
   new_pressure_data = false;
-
   imu_first_data = true;
-
   any_updates = false;
 }
 
@@ -262,6 +260,7 @@ void Ekf::accUpdate(){
 
     Eigen::Matrix<double, 5, 5> p_new = p - k*H_acc*p;
     p = p_new;
+
     normQuaternions();
     any_updates = true;
   }
@@ -381,7 +380,7 @@ void Ekf::timeUpdate(double T){
     // time update
     Eigen::Matrix<double, 5, 1> new_states = f*states;
     states = new_states;
-
+    normQuaternions();
     //update P
     Eigen::Matrix<double, 5, 5> p_new = f*p*f.transpose() + gv*q*gv.transpose();
     p  = p_new;
