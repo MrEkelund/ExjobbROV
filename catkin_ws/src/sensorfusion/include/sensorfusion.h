@@ -78,8 +78,6 @@ private:
   double store_t;
   bool any_updates;
 
-  //
-
   //storage vectors for measurements
   Eigen::Matrix<double, 3, 1> meas_acc;
   Eigen::Matrix<double, 3, 1> meas_mag;
