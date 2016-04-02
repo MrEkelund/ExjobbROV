@@ -31,7 +31,7 @@ ang_vel_data = ang_vel_data*pi/180;
 output_data = [zeros(size(ang_vel_data)), ang_vel_data, states(:,1:2)];
 input_data = thrusters_data;
 roll_pitch_data3 = iddata(output_data, input_data,Ts);
-roll_pitch_data3 = merge(roll_pitch_data3(1:2140),roll_pitch_data3(2200:2690), roll_pitch_data3(2780:end));
+roll_pitch_data3 = merge(roll_pitch_data3(1:2140), roll_pitch_data3(2780:end));
 %%
 roll_pitch_filepath = fullfile('bag','act_1_2_5_6_test_4_2016-03-21-15-29-25.bag');
 [lin_vel_data ,lin_acc_data, ang_vel_data, thrusters_data, states, time, ~]= ...

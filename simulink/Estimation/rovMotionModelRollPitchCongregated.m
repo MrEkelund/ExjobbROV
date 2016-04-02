@@ -5,7 +5,7 @@ function [x_dot, y] = rovMotionModelRollPitchCongregated( t, x, control, ...
     Nr, Nr_dot, Nr_abs_r, Ix, Iy, Iz, Ix_Kp_dot, Iy_Mq_dot,...
     Kp_Ix_Kp_dot, Kp_abs_p_Ix_Kp_dot, Mq_dot_Ix_Kp_dot,...
     Nr_dot_Ix_Kp_dot, Mq_Iy_Mq_dot, Mq_abs_q_Iy_Mq_dot,...
-    Kp_dot_Iy_Mq_dot, Nr_dot_Iy_Mq_dot, varargin)
+    Kp_dot_Iy_Mq_dot, Nr_dot_Iy_Mq_dot, Iy_Iz_Ix_Kp_dot, Ix_Iz_Iy_Mq_dot, varargin)
 % if length(parameters) == 1
 %     parameters(2:length(varargin)) = cell2mat(varargin(1:end-1));
 % end
@@ -170,8 +170,8 @@ f6 = forces(6);
 % Mq_abs_q_Iy_Mq_dot = parameters(42);
 % Kp_dot_Iy_Mq_dot = parameters(43);
 % Nr_dot_Iy_Mq_dot = parameters(44);
-
-
+% Iy_Iz_Ix_Kp_dot = parameters(45);
+% Ix_Iz_Iy_Mq_dot = parameters(46);
 
 
 % 14, 16, 18, 21, 15 %u_dot
@@ -198,16 +198,16 @@ w_dot =0;%...
 %     (f1*ly1 - f2*ly2 + f6*lz6 + p*(Kp + Kp_abs_p*abs(p)) - Mq_dot*q*r + Nr_dot*q*r + q*r*(Iy - Iz) + B*ct*sf*zb )/(Ix - Kp_dot); %- Yv_dot*v*w + Zw_dot*v*w 
  
 p_dot =...
-    (f1*ly1 - f2*ly2 + f6*lz6 + q*r*(Iy - Iz) + B*ct*sf*zb )/Ix_Kp_dot + p*(Kp_Ix_Kp_dot + Kp_abs_p_Ix_Kp_dot*abs(p)) - Mq_dot_Ix_Kp_dot*q*r + Nr_dot_Ix_Kp_dot*q*r; 
+    (f1*ly1 - f2*ly2 + f6*lz6 + B*ct*sf*zb )/Ix_Kp_dot + q*r*Iy_Iz_Ix_Kp_dot + p*(Kp_Ix_Kp_dot + Kp_abs_p_Ix_Kp_dot*abs(p)) - Mq_dot_Ix_Kp_dot*q*r + Nr_dot_Ix_Kp_dot*q*r; 
  
 % q_dot =...
 %     (f1*lx1 + f2*lx2 - f5*lx5 + q*(Mq + Mq_abs_q*abs(q)) + Kp_dot*p*r + B*st*zb - Nr_dot*p*r - p*r*(Ix - Iz)  )/(Iy - Mq_dot); %+ Xu_dot*u*w - Zw_dot*u*w 
 
 q_dot =...
-    (f1*lx1 + f2*lx2 - f5*lx5 + B*st*zb  - p*r*(Ix - Iz))/Iy_Mq_dot + q*(Mq_Iy_Mq_dot + Mq_abs_q_Iy_Mq_dot*abs(q)) + Kp_dot_Iy_Mq_dot*p*r - Nr_dot_Iy_Mq_dot*p*r; 
+    (f1*lx1 + f2*lx2 - f5*lx5 + B*st*zb)/Iy_Mq_dot -  p*r*Ix_Iz_Iy_Mq_dot + q*(Mq_Iy_Mq_dot + Mq_abs_q_Iy_Mq_dot*abs(q)) + Kp_dot_Iy_Mq_dot*p*r - Nr_dot_Iy_Mq_dot*p*r; 
  
-r_dot =...
-    (r*(Nr + Nr_abs_r*abs(r)) + f3*ly3 - f4*ly4 - Kp_dot*p*q + Mq_dot*p*q + p*q*(Ix - Iy) - Xu_dot*u*v + Yv_dot*u*v)/(Iz - Nr_dot);
+ r_dot =...
+      (r*(Nr + Nr_abs_r*abs(r)) + f3*ly3 - f4*ly4 - Kp_dot*p*q + Mq_dot*p*q + p*q*(Ix - Iy) - Xu_dot*u*v + Yv_dot*u*v)/(Iz - Nr_dot);
  
 
 fi_dot = p + q*sf*st/ct + r*cf*st/ct;

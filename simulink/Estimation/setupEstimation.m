@@ -86,9 +86,8 @@ w_dot_estimate_parameter_index = [20, 22, 15, 18, 21]; % Parameters w_dot estima
 
 
 % Congregated parameters
-p_dot_congregated_estimate_parameter_index = [33, 34, 35, 37, 38, 39, 40];
-%q_dot_congregated_estimate_parameter_index = [32, 34, 36, 41, 42, 43, 44];
-q_dot_congregated_estimate_parameter_index = [36, 41, 42, 43, 44];
+p_dot_congregated_estimate_parameter_index = [35, 37, 38, 39, 40, 45];
+q_dot_congregated_estimate_parameter_index = [36, 41, 42, 43, 44, 46];
 
 % Without translation dynamics
 p_dot_estimate_parameter_index = [23, 25, 33, 34, 27, 30, 32, 24]; % Parameters p_dot estimates

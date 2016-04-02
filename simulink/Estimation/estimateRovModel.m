@@ -29,8 +29,8 @@ yaw_estimation = nlgreyest(yaw_data, yaw_nonlinear_greybox_model,opt);
 toc
 displayTable(parameters, parameter_strings, yaw_estimation)
 
-% figure(1)
-% compare(yaw_val_data, yaw_estimation, inf);
+figure(1)
+compare(yaw_val_data, yaw_estimation, inf);
 %%
 % saveParameters(yaw_estimation.Report.Parameters.ParVector, yaw_estimation.Report.Parameters.Free)
 temp_parameters = yaw_estimation.Report.Parameters.ParVector;
@@ -65,8 +65,8 @@ roll_pitch_estimation = nlgreyest(roll_pitch_data, roll_pitch_nonlinear_greybox_
 toc
 displayTable(parameters, parameter_strings, roll_pitch_estimation)
 
-% figure(2)
-% compare(roll_pitch_val_data, roll_pitch_estimation, inf);
+figure(2)
+compare(roll_pitch_val_data, roll_pitch_estimation, inf);
 %%
 temp_parameters = roll_pitch_estimation.Report.Parameters.ParVector;
 save('rollpitchparameters.mat','temp_parameters', 'roll_pitch_estimation')
@@ -100,8 +100,8 @@ pitch_estimation = nlgreyest(pitch_data, pitch_nonlinear_greybox_model,opt);
 toc
 displayTable(parameters, parameter_strings,pitch_estimation)
 
-% figure(3)
-% compare(pitch_val_data, pitch_estimation, inf);
+figure(3)
+compare(pitch_val_data, pitch_estimation, inf);
 
 %%
 temp_parameters = pitch_estimation.Report.Parameters.ParVector;
