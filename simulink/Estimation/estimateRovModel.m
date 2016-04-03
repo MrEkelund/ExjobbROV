@@ -30,7 +30,7 @@ toc
 displayTable(parameters, parameter_strings, yaw_estimation)
 
 figure(1)
-compare(yaw_val_data, yaw_estimation, inf);
+compare(yaw_data, yaw_estimation, inf);
 %%
 % saveParameters(yaw_estimation.Report.Parameters.ParVector, yaw_estimation.Report.Parameters.Free)
 temp_parameters = yaw_estimation.Report.Parameters.ParVector;
@@ -38,7 +38,7 @@ save('yawparameters.mat','temp_parameters', 'yaw_estimation')
 %% RollPitch estimation
 % clear;
 % close all;
-estimation_mode = 'RollPitchCongregated';
+estimation_mode = 'RollPitch';
 %roll_pitch_filepath = fullfile('bag','act_1_2_5_6_test_1_2016-03-21-15-23-37.bag');
 %roll_pitch_filepath = fullfile('bag','act_1_2_5_6_test_2_2016-03-21-15-26-12.bag');
 %roll_pitch_filepath = fullfile('bag','act_1_2_5_6_test_3_2016-03-21-15-28-14.bag');
@@ -66,7 +66,7 @@ toc
 displayTable(parameters, parameter_strings, roll_pitch_estimation)
 
 figure(2)
-compare(roll_pitch_val_data, roll_pitch_estimation, inf);
+compare(roll_pitch_data, roll_pitch_estimation, inf);
 %%
 temp_parameters = roll_pitch_estimation.Report.Parameters.ParVector;
 save('rollpitchparameters.mat','temp_parameters', 'roll_pitch_estimation')
@@ -101,7 +101,7 @@ toc
 displayTable(parameters, parameter_strings,pitch_estimation)
 
 figure(3)
-compare(pitch_val_data, pitch_estimation, inf);
+compare(pitch_data, pitch_estimation, inf);
 
 %%
 temp_parameters = pitch_estimation.Report.Parameters.ParVector;
