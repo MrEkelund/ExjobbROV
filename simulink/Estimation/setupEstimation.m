@@ -21,7 +21,7 @@ switch simulation
                     getTestData(filepath, plotting);
                 output_data = [zeros(size(ang_vel_data)), ang_vel_data , states(:,1:2)];
                 input_data = thrusters_data;
-                data = iddata(input_data, output_data, Ts);
+                data = iddata(output_data, input_data,  Ts);
         end
     case 1 % simulation
         disp(sprintf('Loading simulated data from %s',filepath));
@@ -29,16 +29,15 @@ switch simulation
             getSimulationData(filepath,plotting);
         output_data = [zeros(size(ang_vel_data)), ang_vel_data , states(:,1:2)];
         input_data = thrusters_data;
-        data = iddata(input_data, output_data, Ts);
+        data = iddata(output_data, input_data, Ts);
     otherwise
         error('Simulation can only be 0 or 1');
 end
 
 %% Setup the non linear greybox model
 Ts_model = 0;      % Sample time [s].  
-
-initial_states = zeros(8,length(data.OutputData));
-for i = 1:length(data.OutputData)
+initial_states = zeros(8,length(data.ExperimentName));
+for i = 1:length(data.ExperimentName)
     temp_data = getexp(data, i);
     initial_states(:,i) = temp_data.OutputData(1,:);
 end
