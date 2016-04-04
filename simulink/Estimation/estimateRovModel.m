@@ -3,14 +3,15 @@ clear
 close all
 clc
 simulation = 0;
-plotting = 0;
+plotting = 1;
 estimation_mode = 'Yaw';
 % yaw_filepath = fullfile('bag','act_3_4_test_1_2016-03-21-15-03-06.bag');
 %yaw_filepath = fullfile('bag','act_3_4_test_2_2016-03-21-15-06-06.bag');
 % yaw_filepath = fullfile('bag','act_3_4_test_3_2016-03-21-15-09-30.bag');
 % yaw_filepath = fullfile('bag','act_3_4_test_4_2016-03-21-15-14-04.bag');
 %yaw_filepath = fullfile('bag','act_3_4_test_5_2016-03-21-15-15-26.bag');
-yaw_filepath = 'Yaw0321';
+yaw_filepath =  fullfile('~','Desktop','test2_t1_lock_t2_2016-04-04-14-36-20.bag');
+%yaw_filepath = 'Yaw0321';
 [parameters, parameter_strings]= initROVParameters();
 displayTable(parameters, parameter_strings);
 [yaw_nonlinear_greybox_model, yaw_data] =...
