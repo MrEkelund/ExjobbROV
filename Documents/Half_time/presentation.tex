@@ -98,6 +98,60 @@
 BILD FRAN COMPARE
 \end{frame}
 
+\begin{frame}{Roll and Pitch}
+\begin{table}
+\begin{tabular}{l l}
+\toprule
+\textbf{Parameters} & \textbf{Values}\\
+\midrule
+\Kp		&    \\  
+\Kpdot	&    \\  
+\Kpabsp	&    \\  
+\Mq		&    \\  
+\Mqdot	&    \\  
+\Mqabsq 	&    \\ 
+\Nrdot 	&    \\ 
+\Ix  	&    \\
+\Iy 		&    \\ 
+\Iz  	&    \\
+\bottomrule
+\end{tabular}
+\caption{Estimated roll and pitch parameters}
+\end{table}
+\end{frame}
+
+\begin{frame}[shrink]{Roll and Pitch}
+\begin{multline*}
+\dot{p} = \frac{\thrusterfun{1} \distance{y}{1} - \thrusterfun{2} \distance{y}{2} + \thrusterfun{6} \distance{z}{6}}{\Ix - \Kpdot} + \frac{p (Kp + \Kpabsp \abs{p})}{\Ix - \Kpdot} + \frac{-\Mqdot q r}{\Ix - \Kpdot} + \\ \frac{\Nrdot q r}{\Ix - \Kpdot} + \frac{q r (\Iy - \Iz)}{\Ix - \Kpdot} + \textcolor{red}{\frac{- \Yvdot v w}{\Ix - \Kpdot} + \frac{\Zwdot v w}{\Ix - \Kpdot}} + \frac{B \cos{\theta} \sin{\phi} z_B}{\Ix - \Kpdot}
+\end{multline*}
+
+\begin{multline*}
+\dot{q} =\frac{\thrusterfun{1} \distance{x}{1} + \thrusterfun{2} \distance{x}{2} - \thrusterfun{5} \distance{x}{5}}{\Iy - \Mqdot} + \frac{q (\Mq + \Mqabsq \abs{q})}{\Iy - \Mqdot} + \frac{\Kpdot p r}{\Iy - \Mqdot} +\\ \frac{-\Nrdot p r}{\Iy - \Mqdot} + \frac{p r (\Iz - \Ix)}{\Iy - \Mqdot} + \textcolor{red}{\frac{-\Zwdot u w}{\Iy - \Mqdot} + \frac{\Xudot u w}{\Iy - \Mqdot}} + \frac{B \sin{\theta} z_B}{\Iy - \Mqdot} 
+\end{multline*}
+\end{frame}
+
+\begin{frame}{Roll and Pitch}
+BILD FRAN COMPARE
+\end{frame}
+
+\begin{frame}{Roll and Pitch}
+\begin{table}
+\begin{tabular}{l l}
+\toprule
+\textbf{Parameters} & \textbf{Values}\\
+\midrule
+$\Ix - \Kpdot$ 						& 	\\
+$\frac{\Kp}{\Ix - \Kpdot}$ 			& 	\\
+$\frac{\Kpabsp}{\Ix - \Kpdot}$ 		&	\\
+$\frac{\Mqdot}{\Ix - \Kpdot}$ 		&  	\\
+$\frac{\Nrdot}{\Ix - \Kpdot}$ 		& 	\\
+$\frac{\Iy - \Iz}{\Ix - \Kpdot}$ 	&  	\\
+\bottomrule
+\end{tabular}
+\caption{Estimated roll and pitch parameters}
+\end{table}
+\end{frame}
+
 \begin{frame}{Yaw}
 \begin{multline*}
 \dot{r} = \frac{\thrusterfun{3} \distance{y}{3} - \thrusterfun{4} \distance{y}{4}}{\Iz - \Nrdot} + \frac{r (\Nr + \Nrabsr \abs{r})}{\Iz - \Nrdot} + \frac{-\Kpdot p q}{\Iz - \Nrdot} + \frac{\Mqdot p q}{\Iz - \Nrdot} +\\
@@ -158,6 +212,16 @@ BILD FRAN COMPARE
 \toprule
 \textbf{Parameters} & \textbf{Values}\\
 \midrule
+\Kp		&    \\  
+\Kpdot	&    \\  
+\Kpabsp	&    \\  
+\Mq		&    \\  
+\Mqdot	&    \\  
+\Mqabsq 	&    \\ 
+\Nrdot 	&    \\ 
+\Ix  	&    \\
+\Iy 		&    \\ 
+\Iz  	&    \\
 \bottomrule
 \end{tabular}
 \caption{Estimated roll and pitch parameters}
