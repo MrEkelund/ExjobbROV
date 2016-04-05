@@ -3,14 +3,19 @@ clear
 close all
 clc
 simulation = 0;
-plotting = 0;
+plotting = 1;
 estimation_mode = 'Yaw';
 % yaw_filepath = fullfile('bag','act_3_4_test_1_2016-03-21-15-03-06.bag');
 %yaw_filepath = fullfile('bag','act_3_4_test_2_2016-03-21-15-06-06.bag');
 % yaw_filepath = fullfile('bag','act_3_4_test_3_2016-03-21-15-09-30.bag');
 % yaw_filepath = fullfile('bag','act_3_4_test_4_2016-03-21-15-14-04.bag');
 %yaw_filepath = fullfile('bag','act_3_4_test_5_2016-03-21-15-15-26.bag');
-yaw_filepath = 'Yaw0321';
+yaw_filepath = fullfile('bag','test1_t3_t4_2016-04-04-14-57-52.bag');
+yaw_filepath = fullfile('bag','test2_t3_t4_2016-04-04-14-59-57.bag');
+yaw_filepath = fullfile('bag','test3_t3_t4_2016-04-04-15-02-24.bag');
+
+%yaw_filepath = 'Yaw0321';
+
 [parameters, parameter_strings]= initROVParameters();
 displayTable(parameters, parameter_strings);
 [yaw_nonlinear_greybox_model, yaw_data] =...
@@ -44,11 +49,17 @@ estimation_mode = 'RollPitch';
 %roll_pitch_filepath = fullfile('bag','act_1_2_5_6_test_3_2016-03-21-15-28-14.bag');
 %roll_pitch_filepath = fullfile('bag','act_1_2_5_6_test_4_2016-03-21-15-29-25.bag');
 %roll_pitch_filepath = fullfile('bag','act_1_2_5_6_test_5_2016-03-21-15-32-03.bag');
-roll_pitch_filepath = 'RollPitch0321';
+
+% roll_pitch_filepath = fullfile('bag','test1_roll_pitch_2016-04-04-15-11-53.bag');
+% roll_pitch_filepath = fullfile('bag','test2_roll_pitch_2016-04-04-15-14-44.bag');
+% roll_pitch_filepath = fullfile('bag','test3_roll_pitch_2016-04-04-15-16-43.bag');
+roll_pitch_filepath = fullfile('bag','test4_roll_pitch_2016-04-04-15-18-34.bag');
+
+% roll_pitch_filepath = 'RollPitch0321';
 [parameters, parameter_strings]= initROVParameters();
 displayTable(parameters, parameter_strings);
 simulation = 0;
-plotting = 0;
+plotting = 1;
 
 [roll_pitch_nonlinear_greybox_model, roll_pitch_data] =...
     setupEstimation(parameters, parameter_strings, estimation_mode, simulation, roll_pitch_filepath, plotting);
@@ -75,9 +86,18 @@ save('rollpitchparameters.mat','temp_parameters', 'roll_pitch_estimation')
 % clear;
 % close all;
 estimation_mode = 'Pitch';
-%pitch_filepath = fullfile('bag','act_5_test_1_2016-03-21-15-36-48.bag');
+% pitch_filepath = fullfile('bag','act_5_test_1_2016-03-21-15-36-48.bag');
 % pitch_filepath = fullfile('bag','act_5_test_2_2016-03-21-15-37-53.bag');
-pitch_filepath = 'Pitch0321';
+
+% pitch_filepath = fullfile('bag','test1_t1_lock_t2_2016-04-04-14-24-09.bag');
+% pitch_filepath = fullfile('bag','test2_t1_lock_t2_2016-04-04-14-36-20.bag');
+% pitch_filepath = fullfile('bag','test3_t1_lock_t2_2016-04-04-14-40-15.bag');
+% pitch_filepath = fullfile('bag','test4_t1_lock_t2_2016-04-04-14-46-48.bag');
+% pitch_filepath = fullfile('bag','test5_t1_lock_t2_2016-04-04-14-48-38.bag');
+% pitch_filepath = fullfile('bag','test6_t1_lock_t2_2016-04-04-14-50-33.bag');
+
+% pitch_filepath = 'Pitch0321';
+pitch_filepath = 'Pitch0404';
 
 [parameters, parameter_strings]= initROVParameters();
 displayTable(parameters, parameter_strings);
@@ -106,3 +126,47 @@ compare(pitch_data, pitch_estimation, inf);
 %%
 temp_parameters = pitch_estimation.Report.Parameters.ParVector;
 save('pitchparameters.mat','temp_parameters', 'pitch_estimation')
+%% All estimation
+% clear;
+% close all;
+estimation_mode = 'All';
+
+All_filepath = fullfile('bag','test1_all_2016-04-04-15-23-32.bag');
+% All_filepath = fullfile('bag','test2_all_2016-04-04-15-27-58.bag');
+
+% All_filepath = 'All0404';
+
+[parameters, parameter_strings]= initROVParameters();
+displayTable(parameters, parameter_strings);
+simulation = 0;
+plotting = 1;
+
+[All_nonlinear_greybox_model, All_data] =...
+    setupEstimation(parameters, parameter_strings, estimation_mode, simulation,All_filepath, plotting);
+
+%%
+% All_val_data = getexp(All_data,1);
+% All_est_data = getexp(All_data,[2:length(All_data.OutputData)]);
+
+opt = nlgreyestOptions;
+opt.Display = 'on';
+opt.SearchOption.MaxIter = 50;
+tic
+All_estimation = nlgreyest(All_data, All_nonlinear_greybox_model,opt);
+%All_estimation = pem(All_data, All_nonlinear_greybox_model,opt);
+toc
+displayTable(parameters, parameter_strings,All_estimation)
+
+figure(3)
+compare(All_data, All_estimation, inf);
+
+%%
+temp_parameters = All_estimation.Report.Parameters.ParVector;
+save('Allparameters.mat','temp_parameters', 'All_estimation')
+
+%% Inertia test
+
+inertia_filepath = fullfile('bag','test1_pitch_inertia_2016-04-04-15-37-52.bag');
+
+inertia_filepath = fullfile('bag','test1_roll_inertia_2016-04-04-15-34-25.bag');
+inertia_filepath = fullfile('bag','test2_roll_inertia_2016-04-04-15-36-20.bag');
