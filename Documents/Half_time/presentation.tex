@@ -29,16 +29,16 @@
 \begin{frame}{Outline}
 \tableofcontents
 \end{frame}
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Software}
 \begin{frame}{Controllers}
-
-
+\begin{itemize}
+\item Dynamic reconfigure for parameter trimming and change of controllers
+\item Easy structure for expansion
+\end{itemize}
 \end{frame}
 
 \begin{frame}{Sensor fusion}
-
-
 \end{frame}
 
 \begin{frame}{Arduino}
@@ -49,12 +49,16 @@
 \item MS5837-30BA - Pressure sensor
 \end{itemize}
 \end{frame}
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{ROV Assembly}
-\begin{frame}{}
-
+\begin{frame}{Assembly}
+\begin{itemize}
+\item Simple assembly
+\item Epoxying cables
+\item Watertight proofing
+\end{itemize}
 \end{frame}
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Parameter Estimation}
 \begin{frame}[shrink]{Translation dynamics}
 \begin{multline} \label{eq:u_dot}
@@ -74,11 +78,11 @@
 \begin{multline} \label{eq:p_dot}
 \dot{p} = \frac{\thrusterfun{1} \distance{y}{1} - \thrusterfun{2} \distance{y}{2} + \thrusterfun{6} \distance{z}{6}}{\Ix - \Kpdot} + \frac{p (Kp + \Kpabsp \abs{p})}{\Ix - \Kpdot} + \frac{-\Mqdot q r}{\Ix - \Kpdot} + \frac{\Nrdot q r}{\Ix - \Kpdot} +\\
 \frac{q r (\Iy - \Iz)}{\Ix - \Kpdot} + \frac{- \Yvdot v w}{\Ix - \Kpdot} + \frac{\Zwdot v w}{\Ix - \Kpdot} + \frac{B \cos{\theta} \sin{\phi} z_B}{\Ix - \Kpdot}
-\end{multline},
+\end{multline}
 \begin{multline} \label{eq:q_dot}
 \dot{q} =\frac{\thrusterfun{1} \distance{x}{1} + \thrusterfun{2} \distance{x}{2} - \thrusterfun{5} \distance{x}{5}}{\Iy - \Mqdot} + \frac{q (\Mq + \Mqabsq \abs{q})}{\Iy - \Mqdot} + \frac{\Kpdot p r}{\Iy - \Mqdot} + \frac{-\Nrdot p r}{\Iy - \Mqdot} +\\
 \frac{p r (\Iz - \Ix)}{\Iy - \Mqdot} + \frac{-\Zwdot u w}{\Iy - \Mqdot} + \frac{\Xudot u w}{\Iy - \Mqdot} + \frac{B \sin{\theta} z_B}{\Iy - \Mqdot} 
-\end{multline},
+\end{multline}
 \begin{multline} \label{eq:r_dot}
 \dot{r} = \frac{\thrusterfun{3} \distance{y}{3} - \thrusterfun{4} \distance{y}{4}}{\Iz - \Nrdot} + \frac{r (\Nr + \Nrabsr \abs{r})}{\Iz - \Nrdot} + \frac{-\Kpdot p q}{\Iz - \Nrdot} + \frac{\Mqdot p q}{\Iz - \Nrdot} +\\
 \frac{p q (\Ix - \Iy)}{\Iz - \Nrdot} + \frac{- \Xudot u v}{\Iz - \Nrdot} + \frac{\Yvdot u v}{\Iz - \Nrdot}
@@ -228,19 +232,24 @@ $\frac{\Iy - \Iz}{\Ix - \Kpdot}$ 	&  	\\
 \end{table}
 \end{columns}
 \end{frame}
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Simulation}
 \begin{frame}{}
 
 \end{frame}
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Controllers}
-\begin{frame}{}
-
+\begin{frame}{Controller structure}
+\begin{itemize}
+\item 
+\end{itemize}
 \end{frame}
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Future Work}
-\begin{frame}{}
+\begin{frame}{Future work}
+\begin{itemize}
+\item 
+\end{itemize}
 
 \end{frame}
 

@@ -47,23 +47,30 @@ function [lin_vel_data ,lin_acc_data, ang_vel_data, thrusters_data, states, time
     
     thrusters_msgs = readMessages(thrusters_bag);
     
-    thrusters_data = zeros(size(thrusters_msgs,1),size(thrusters_msgs{1}.Data',2));
-    thrusters_time = zeros(size(thrusters_msgs,1),1);
-    for i = 1:size(thrusters_msgs,1)
-        data = double(thrusters_msgs{i}.Data');
-        thrusters_data(i,:) = (data(:) - 1500)/400;
-        thrusters_time(i) = thrusters_bag.MessageList{i,1};
-    end
-    
-       %{
+    if isempty(thrusters_msgs)
+        thrusters_data = zeros(size(states_data,1),6);
+        time = states_time;
+        Ts = 0.0045;
+    else
+        thrusters_data = zeros(size(thrusters_msgs,1),size(thrusters_msgs{1}.Data',2));
+        thrusters_time = zeros(size(thrusters_msgs,1),1);
+        for i = 1:size(thrusters_msgs,1)
+            data = double(thrusters_msgs{i}.Data');
+            thrusters_data(i,:) = (data(:) - 1500)/400;
+            thrusters_time(i) = thrusters_bag.MessageList{i,1};
+        end
+        
+        %{
      Remove the first and last sample  to get the same length vectors
      (this is due to integration of the acc)
-    %}
+        %}
+        
+        %     thrusters_data = thrusters_data(2:end-1,:%%);
+        %     thrusters_time = thrusters_time(2:end-1,:);
+        %
+        [thrusters_data, states_data, time, Ts] = resampleControlSignals(thrusters_data, thrusters_time, states_data, states_time);
+    end
     
-%     thrusters_data = thrusters_data(2:end-1,:%%);
-%     thrusters_time = thrusters_time(2:end-1,:);
-%
-[thrusters_data, states_data, time, Ts] = resampleControlSignals(thrusters_data, thrusters_time, states_data, states_time);
 states = states_data(:,[1 2 3 7]); % Angels and depth
 states(:,1:3) = states(:,1:3);
 ang_vel_data = states_data(:,4:6);
