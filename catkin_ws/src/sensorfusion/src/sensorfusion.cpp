@@ -472,7 +472,7 @@ void Ekf::sendStates(){
 }
 
 void Ekf::spin(){
-  //ros::Rate rate(150);
+  ros::Rate rate(300);
   while(ros::ok())
   {
     ros::spinOnce();
@@ -500,8 +500,7 @@ void Ekf::spin(){
       sendStates();
     }
 
-    //rate.sleep();
-    //caused problems NaNs in algorithm. Unkown reason
+    rate.sleep();
   }
 
 }
