@@ -10,11 +10,12 @@ estimation_mode = 'Yaw';
 % yaw_filepath = fullfile('bag','act_3_4_test_3_2016-03-21-15-09-30.bag');
 % yaw_filepath = fullfile('bag','act_3_4_test_4_2016-03-21-15-14-04.bag');
 %yaw_filepath = fullfile('bag','act_3_4_test_5_2016-03-21-15-15-26.bag');
-yaw_filepath = fullfile('bag','test1_t3_t4_2016-04-04-14-57-52.bag');
-yaw_filepath = fullfile('bag','test2_t3_t4_2016-04-04-14-59-57.bag');
-yaw_filepath = fullfile('bag','test3_t3_t4_2016-04-04-15-02-24.bag');
+% yaw_filepath = fullfile('bag','test1_t3_t4_2016-04-04-14-57-52.bag');
+% yaw_filepath = fullfile('bag','test2_t3_t4_2016-04-04-14-59-57.bag');
+% yaw_filepath = fullfile('bag','test3_t3_t4_2016-04-04-15-02-24.bag');
 
 %yaw_filepath = 'Yaw0321';
+yaw_filepath = 'Yaw0404';
 
 [parameters, parameter_strings]= initROVParameters();
 displayTable(parameters, parameter_strings);
@@ -38,8 +39,8 @@ figure(1)
 compare(yaw_data, yaw_estimation, inf);
 %%
 % saveParameters(yaw_estimation.Report.Parameters.ParVector, yaw_estimation.Report.Parameters.Free)
-temp_parameters = yaw_estimation.Report.Parameters.ParVector;
-save('yawparameters.mat','temp_parameters', 'yaw_estimation')
+% temp_parameters = yaw_estimation.Report.Parameters.ParVector;
+% save('yawparameters.mat','temp_parameters', 'yaw_estimation')
 %% RollPitch estimation
 % clear;
 % close all;
@@ -53,9 +54,10 @@ estimation_mode = 'RollPitch';
 % roll_pitch_filepath = fullfile('bag','test1_roll_pitch_2016-04-04-15-11-53.bag');
 % roll_pitch_filepath = fullfile('bag','test2_roll_pitch_2016-04-04-15-14-44.bag');
 % roll_pitch_filepath = fullfile('bag','test3_roll_pitch_2016-04-04-15-16-43.bag');
-roll_pitch_filepath = fullfile('bag','test4_roll_pitch_2016-04-04-15-18-34.bag');
+%roll_pitch_filepath = fullfile('bag','test4_roll_pitch_2016-04-04-15-18-34.bag');
 
 % roll_pitch_filepath = 'RollPitch0321';
+roll_pitch_filepath = 'RollPitch0404';
 [parameters, parameter_strings]= initROVParameters();
 displayTable(parameters, parameter_strings);
 simulation = 0;
@@ -126,7 +128,7 @@ compare(pitch_data, pitch_estimation, inf);
 %%
 temp_parameters = pitch_estimation.Report.Parameters.ParVector;
 save('pitchparameters.mat','temp_parameters', 'pitch_estimation')
-%% All estimation
+%% All rotational dynamics estimation
 % clear;
 % close all;
 estimation_mode = 'All';
@@ -134,7 +136,7 @@ estimation_mode = 'All';
 All_filepath = fullfile('bag','test1_all_2016-04-04-15-23-32.bag');
 % All_filepath = fullfile('bag','test2_all_2016-04-04-15-27-58.bag');
 
-% All_filepath = 'All0404';
+All_filepath = 'All0404';
 
 [parameters, parameter_strings]= initROVParameters();
 displayTable(parameters, parameter_strings);
@@ -163,10 +165,3 @@ compare(All_data, All_estimation, inf);
 %%
 temp_parameters = All_estimation.Report.Parameters.ParVector;
 save('Allparameters.mat','temp_parameters', 'All_estimation')
-
-%% Inertia test
-
-inertia_filepath = fullfile('bag','test1_pitch_inertia_2016-04-04-15-37-52.bag');
-
-inertia_filepath = fullfile('bag','test1_roll_inertia_2016-04-04-15-34-25.bag');
-inertia_filepath = fullfile('bag','test2_roll_inertia_2016-04-04-15-36-20.bag');

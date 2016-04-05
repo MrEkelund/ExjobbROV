@@ -6,6 +6,18 @@ function [nonlinear_greybox_model, data] = setupEstimation(parameters, parameter
 switch simulation
     case 0 % Test
         switch filepath
+            case 'Yaw0404'
+                disp('Loading yaw test data from 2016-04-04');
+                data = loadYaw0404();
+            case 'RollPitch0404'
+                disp('Loading roll pitch test data from 2016-04-04');
+                data = loadRollPitch0404();
+            case 'Pitch0404'
+                disp('Loading pitch test data from 2016-04-04');
+                data = loadPitch0404();
+            case 'All0404'
+                disp('Loading all test data from 2016-04-04');
+                data = loadAll0404();
             case 'Yaw0321'
                 disp('Loading yaw test data from 2016-03-21');
                 data = loadYaw0321();
@@ -102,7 +114,7 @@ r_dot_estimate_parameter_index = [29, 31, 32, 33, 24, 27, 34, 30]; % Parameters 
 switch estimation_mode
     case 'Yaw'
         disp('Yaw test')
-        fixed_parameters = setdiff(fixed_parameters,r_dot_estimate_parameter_index);
+        fixed_parameters = setdiff(fixed_parameters, r_dot_estimate_parameter_index);
     case 'RollPitch'
         disp('RollPitch test')
         fixed_parameters = setdiff(fixed_parameters, p_dot_estimate_parameter_index);
@@ -117,6 +129,11 @@ switch estimation_mode
     case 'PitchCongregated'
         disp('PitchCongreted test')
         fixed_parameters = setdiff(fixed_parameters, q_dot_congregated_estimate_parameter_index);
+    case 'All'
+        disp('All rotational dynamics test')
+        fixed_parameters = setdiff(fixed_parameters, p_dot_estimate_parameter_index);
+        fixed_parameters = setdiff(fixed_parameters, q_dot_estimate_parameter_index);
+        fixed_parameters = setdiff(fixed_parameters, r_dot_estimate_parameter_index);
     otherwise
         error('Unkown test: %s', estimation_mode);
 end
