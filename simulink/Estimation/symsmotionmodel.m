@@ -93,6 +93,9 @@ p_dot = nu_dot(4)
 q_dot = nu_dot(5)
 r_dot = nu_dot(6)
 
+% atempt at linearizing input. Missing effect of look-up table.
+syms u1 u2 u3 u4 u5 u6
+u_lin=[u1;u2;u3;u4;u5;u6]
+u_test = inv(T)*((M*u_lin)+C+D+gn)
 
-
-
+nu_dot = inv(M)*(T*u_test-C-D-gn);
