@@ -16,7 +16,7 @@
 %\institute{} 
 \date{\today} 
 %\subject{} 
-\beamerdefaultoverlayspecification{<+->}
+\setbeamertemplate{caption}{\insertcaption}
 \input{notation}
 
 \begin{document}
@@ -39,6 +39,10 @@
 \end{frame}
 
 \begin{frame}{Sensor fusion}
+\begin{itemize}
+\item Based on code from TSRT14
+\item Independent updates
+\end{itemize}
 \end{frame}
 
 \begin{frame}{Arduino}
@@ -100,7 +104,7 @@
 
 \begin{frame}{Roll and Pitch}
 BILD FRAN COMPARE
-\end{frame}
+\end{frame}                
 
 \begin{frame}{Roll and Pitch}
 \begin{table}
@@ -108,16 +112,16 @@ BILD FRAN COMPARE
 \toprule
 \textbf{Parameters} & \textbf{Values}\\
 \midrule
-\Kp		&    \\  
-\Kpdot	&    \\  
-\Kpabsp	&    \\  
-\Mq		&    \\  
-\Mqdot	&    \\  
-\Mqabsq 	&    \\ 
-\Nrdot 	&    \\ 
-\Ix  	&    \\
-\Iy 		&    \\ 
-\Iz  	&    \\
+\Kp		&  -0.98293  	\\  
+\Kpdot	&  -0.40441  	\\  
+\Kpabsp	&  -0.33417  	\\  
+\Mq		&  -0.79216  	\\  
+\Mqdot	&  -0.28726  	\\  
+\Mqabsq 	&  -0.70118  	\\ 
+\Nrdot 	&  -1.0965e-08 	\\ 
+\Ix  	&  0.40441     	\\
+\Iy 		&  0.28726    	\\ 
+\Iz  	&  1.1058e-08 	\\
 \bottomrule
 \end{tabular}
 \caption{Estimated roll and pitch parameters}
@@ -189,7 +193,7 @@ $\frac{\Iy - \Iz}{\Ix - \Kpdot}$ 	&  	\\
 \end{table}
 \end{frame}
 
-\begin{frame}
+\begin{frame}{Comparison}
 \begin{columns}[c] 
 \column{.45\textwidth} 
 \begin{table}
@@ -197,35 +201,34 @@ $\frac{\Iy - \Iz}{\Ix - \Kpdot}$ 	&  	\\
 \toprule
 \textbf{Parameters} & \textbf{Values}\\
 \midrule
-\Kpdot 	& -1.8347 	\\       
-\Mqdot 	& -0.85157	\\        
+\textcolor{red}{\Kpdot} 	& \textcolor{red}{-1.8347} 	\\       
+\textcolor{red}{\Mqdot} 	& \textcolor{red}{-0.85157}	\\        
 \Nr    	& -1.344    	\\    
-\Nrdot 	& -0.27111  	\\     
+\textcolor{red}{\Nrdot} 	& \textcolor{red}{-0.27111} 	\\     
 \Nrabsr & -1.0733   	\\    
-\Ix     &  1.8347   	\\     
-\Iy     &  0.85157	\\       
-\Iz     &  0.27111  	\\ 
+\textcolor{red}{\Ix}    	&  \textcolor{red}{1.8347}  	\\     
+\textcolor{red}{\Iy}	    &  \textcolor{red}{0.85157}	\\       
+\textcolor{red}{\Iz}	    &  \textcolor{red}{0.27111} 	\\ 
 \bottomrule
 \end{tabular}
 \caption{Estimated yaw parameters}
 \end{table}
-
 \column{.5\textwidth}
 \begin{table}
 \begin{tabular}{l l}
 \toprule
 \textbf{Parameters} & \textbf{Values}\\
 \midrule
-\Kp		&    \\  
-\Kpdot	&    \\  
-\Kpabsp	&    \\  
-\Mq		&    \\  
-\Mqdot	&    \\  
-\Mqabsq 	&    \\ 
-\Nrdot 	&    \\ 
-\Ix  	&    \\
-\Iy 		&    \\ 
-\Iz  	&    \\
+\Kp		&  -0.98293  	\\  
+\textcolor{red}{\Kpdot}	&  \textcolor{red}{-0.40441}  	\\  
+\Kpabsp	&  -0.33417  	\\  
+\Mq		&  -0.79216  	\\  
+\textcolor{red}{\Mqdot}	&  \textcolor{red}{-0.28726}  	\\  
+\Mqabsq 	&  -0.70118  	\\ 
+\textcolor{red}{\Nrdot} 	&  \textcolor{red}{-1.0965e-08} 	\\ 
+\textcolor{red}{\Ix}  	&  \textcolor{red}{0.40441}     	\\
+\textcolor{red}{\Iy} 	&  \textcolor{red}{0.28726}    	\\ 
+\textcolor{red}{\Iz}  	&  \textcolor{red}{1.1058e-08} 	\\
 \bottomrule
 \end{tabular}
 \caption{Estimated roll and pitch parameters}
@@ -248,9 +251,10 @@ $\frac{\Iy - \Iz}{\Ix - \Kpdot}$ 	&  	\\
 \section{Future Work}
 \begin{frame}{Future work}
 \begin{itemize}
-\item 
+\item Acoustic network
+\item More controllers
+\item Off diagonal parameters in dynamics
 \end{itemize}
-
 \end{frame}
 
 \end{document}
