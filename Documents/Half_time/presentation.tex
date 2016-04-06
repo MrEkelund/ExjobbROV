@@ -38,9 +38,6 @@
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Sensor fusion}
-\end{frame}
-
 \begin{frame}{Arduino}
 \begin{itemize}
 \item HMC5883L - Magnetometer
@@ -49,15 +46,61 @@
 \item MS5837-30BA - Pressure sensor
 \end{itemize}
 \end{frame}
+
+\begin{frame}{Sensor fusion}
+\begin{itemize}
+\item Extended Kalman filter
+\item Separate measurement updates
+\item Online parameter tweaking
+\item Gyro data used as model input
+\item 140Hz
+\end{itemize}
+\end{frame}
+\begin{frame}{Sensor fusion}
+\begin{figure}
+\includegraphics[width=0.9\textwidth]{fig/Fusion.pdf}
+\end{figure}
+\end{frame}
+
+\begin{frame}{GUI}
+\begin{itemize}
+\item Reconfigurable and module based GUI
+\item Real time plots
+\item Camera feed
+\item Graphical interface for reconfiguration
+\end{itemize}
+\end{frame}
+
+\begin{frame}{GUI}
+\begin{figure}
+\includegraphics[width=1\textwidth]{fig/GUI2.png}
+\end{figure}
+\end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{ROV Assembly}
-\begin{frame}{Assembly}
+\section{ROV and Assembly}
+\begin{frame}{ROV and Assembly}
+\begin{columns}[c] 
+\column{.45\textwidth}
+\begin{itemize}
+\item 6 thrusters
+\item Ethernet cat6 tether
+\item Acrylic enclosure
+\end{itemize}
+\begin{figure}
+\includegraphics[width=.8\textwidth]{fig/rov.eps}
+\end{figure}
+\column{.45\textwidth}
 \begin{itemize}
 \item Simple assembly
 \item Epoxying cables
-\item Watertight proofing
+\item Soldering
 \end{itemize}
+\begin{figure}
+\includegraphics[width=0.8\textwidth]{fig/potting.eps}
+\end{figure}
+\end{columns}
 \end{frame}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Parameter Estimation}
 \begin{frame}[shrink]{Translation dynamics}
@@ -234,21 +277,33 @@ $\frac{\Iy - \Iz}{\Ix - \Kpdot}$ 	&  	\\
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Simulation}
-\begin{frame}{}
-
+\begin{frame}{Simulation}
+\begin{itemize}
+\item Working simulator
+\item Matlab based
+\item Validate controller structure
+\item Needs parameter values
+\end{itemize}
+\includegraphics[width=0.9\textwidth]{fig/simulation.eps}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Controllers}
 \begin{frame}{Controller structure}
 \begin{itemize}
-\item 
+\item PID:s for yaw, pitch and roll
+\item PID:s for p, q and r
+\item Both use thrust allocation
 \end{itemize}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Future Work}
 \begin{frame}{Future work}
 \begin{itemize}
-\item 
+\item Piezo element hydrophones
+\item Increase roll and pitch fit
+\item Exact linearisation
+\item Model based controller
+\item Controller tests
 \end{itemize}
 
 \end{frame}
