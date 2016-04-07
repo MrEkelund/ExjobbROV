@@ -93,9 +93,20 @@ p_dot = nu_dot(4)
 q_dot = nu_dot(5)
 r_dot = nu_dot(6)
 
-% atempt at linearizing input. Missing effect of look-up table.
-syms u1 u2 u3 u4 u5 u6
-u_lin=[u1;u2;u3;u4;u5;u6]
-u_test = inv(T)*((M*u_lin)+C+D+gn)
+%% atempt at linearizing input. Missing effect of look-up table.
+syms a_b a_n a_n1 a_n2 a_n3 sphi cphi sth cth tth cphi phi_dot theta_dot J_dot J
+a_n=[a_n1;a_n2;a_n3];
+J  =...
+    [1 sphi*tth cphi*tth;
+    0 cphi -sphi;
+    0 sphi/cth cphi/cth];
+J_dot = ...
+    [0, cphi*tth*phi_dot + sphi*(1+tth*tth)*theta_dot, -sphi*tth*phi_dot+cphi*(1+tth*tth)*theta_dot;
+    0, -sphi*phi_dot, -cphi*phi_dot;
+    0, (cphi*cth*phi_dot+sphi*sth*theta_dot)/(cth*cth), (-sphi*cth*phi_dot+cphi*sth*theta_dot)/(cth*cth)];  
 
-nu_dot = inv(M)*(T*u_test-C-D-gn);
+a_b = inv(J)*(a_n - J_dot*[p;q;r]);
+%control law
+a_b=[0;0;0;a_b]
+tau = M*a_b+C+D+gn;
+
