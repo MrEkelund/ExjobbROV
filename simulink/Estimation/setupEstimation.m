@@ -1,4 +1,5 @@
-function [nonlinear_greybox_model, data] = setupEstimation(parameters, parameter_strings, estimation_mode, simulation, filepath, plotting)
+function [nonlinear_greybox_model, data, val_data] = ...
+    setupEstimation(parameters, parameter_strings, estimation_mode, simulation, filepath, plotting, detrend_enable)
 %setupEstimation Setups the nonlinear model of the rov and reads data
 %   Detailed explanation goes here
 
@@ -46,9 +47,69 @@ switch simulation
         error('Simulation can only be 0 or 1');
 end
 
+switch estimation_mode
+    case 'Yaw'
+        data = data(:,[3, 4, 5],[3, 4]);
+        data.InputName =  {'Thruster3'; 'Thruster4'};
+        data.InputUnit =  {'%';'%'};
+        data.OutputName = {'r','fi','theta'};
+        data.OutputUnit = {'rad/s','rad','rad'};
+    case 'RollPitch'
+        data = data(:,[1, 2, 4, 5],[1, 2, 5, 6]);
+        data.InputName =  {'Thruster1';'Thruster2';'Thruster5';'Thruster6'};
+        data.InputUnit =  {'%';'%';'%';'%'};
+        data.OutputName = {'p','q','fi','theta'};
+        data.OutputUnit = {'rad/s','rad/s','rad','rad'};
+    case 'RollPitchCongregated'
+        data = data(:,[1, 2, 4, 5],[1, 2, 5, 6]);
+        data.InputName =  {'Thruster1';'Thruster2';'Thruster5';'Thruster6'};
+        data.InputUnit =  {'%';'%';'%';'%'};
+        data.OutputName = {'p','q','fi','theta'};
+        data.OutputUnit = {'rad/s','rad/s','rad','rad'};
+    case 'Pitch'
+        data = data(:,[2, 5],[1, 2, 5]);
+        data.InputName =  {'Thruster1';'Thruster2';'Thruster5'};
+        data.InputUnit =  {'%';'%';'%'};
+        data.OutputName = {'q','theta'};
+        data.OutputUnit = {'rad/s','rad'};
+    case 'PitchCongregated'
+        data = data(:,[2, 5],[1, 2, 5]);
+        data.InputName =  {'Thruster1';'Thruster2';'Thruster5'};
+        data.InputUnit =  {'%';'%';'%'};
+        data.OutputName = {'q','theta'};
+        data.OutputUnit = {'rad/s','rad'};
+    case 'All'
+        data.InputName =  {'Thruster1';'Thruster2';'Thruster3';'Thruster4';'Thruster5';'Thruster6'};
+        data.InputUnit =  {'%';'%';'%';'%';'%';'%'};
+        data.OutputName = {'p','q','r','fi','theta','psi'};
+        data.OutputUnit = {'rad/s','rad/s','rad/s','rad','rad','rad'};
+    otherwise
+        error('Unkown test: %s', estimation_mode);
+end
+
+if detrend_enable
+    data = detrend(data);
+end
+
+ne = length(data.ExperimentName); % number of experiments
+
+if ne == 1
+    val_data = data(ceil(size(data.OutputData,1)/2):end)
+    data = data(1:ceil(size(data.OutputData,1)/2)-1)
+elseif ne == 2
+    val_data = getexp(data,2);
+    data = getexp(data,1);
+else
+    val_data = getexp(data, ceil(ne/2):ne);
+    data = getexp(data, 1:ceil(ne/2)-1);
+end
 %% Setup the non linear greybox model
-Ts_model = 0;      % Sample time [s].  
-initial_states = zeros(8,length(data.ExperimentName));
+Ts_model = 0;      % Sample time [s].
+ny = length(data.OutputName);
+nu = length(data.InputName);
+nx = length(data.OutputName);
+
+initial_states = zeros(nx,length(data.ExperimentName));
 for i = 1:length(data.ExperimentName)
     temp_data = getexp(data, i);
     initial_states(:,i) = temp_data.OutputData(1,:);
@@ -58,10 +119,7 @@ file_name  = strcat('rovMotionModel',estimation_mode); % File describing the mod
 
 disp(sprintf('Using %s %s',file_name,'as model file'));
 
-order = [8 6 8]; % Model orders [ny nu nx].
-
-% initial_states = [u_init; v_init; w_init; p_init; q_init; r_init;     % Initial initial states.
-%     fi_init; theta_init];
+order = [ny nu nx]; % Model orders [ny nu nx].
 
 nonlinear_greybox_model = idnlgrey(file_name, order, parameters, initial_states, Ts_model, ...
     'Name', 'Rov Model', 'TimeUnit', 's');
@@ -70,16 +128,15 @@ nonlinear_greybox_model = idnlgrey(file_name, order, parameters, initial_states,
 nonlinear_greybox_model.Name = estimation_mode;
 
 % Names on input
-nonlinear_greybox_model.InputName =  {'Thruster1'; 'Thruster2'; 'Thruster3';
-    'Thurster4'; 'Thruster5'; 'Thruster6'};
-nonlinear_greybox_model.InputUnit =  {'%'; '%'; '%'; '%'; '%';'%'};
+nonlinear_greybox_model.InputName =  data.InputName;
+nonlinear_greybox_model.InputUnit =  data.InputUnit;
 
-nonlinear_greybox_model.OutputName = {'u';'v';'w'; 'p'; 'q'; 'r';'fi';'theta'};
-nonlinear_greybox_model.OutputUnit = {'m/s'; 'm/s'; 'm/s';'rad/s'; 'rad/s'; 'rad/s';'rad';'rad'};
+nonlinear_greybox_model.OutputName = data.OutputName;
+nonlinear_greybox_model.OutputUnit = data.OutputUnit;
 
 % Names on initial states
-nonlinear_greybox_model = setinit(nonlinear_greybox_model, 'Name', {'u';'v';'w'; 'p'; 'q'; 'r';'fi';'theta'});
-nonlinear_greybox_model = setinit(nonlinear_greybox_model, 'Unit', {'m/s'; 'm/s'; 'm/s';'rad/s'; 'rad/s'; 'rad/s';'rad';'rad'});
+nonlinear_greybox_model = setinit(nonlinear_greybox_model, 'Name', data.OutputName);
+nonlinear_greybox_model = setinit(nonlinear_greybox_model, 'Unit', data.OutputUnit);
 
 % Set the parameter names
 nonlinear_greybox_model = setpar(nonlinear_greybox_model, 'Name', parameter_strings);
@@ -97,35 +154,40 @@ w_dot_estimate_parameter_index = [20, 22, 15, 18, 21]; % Parameters w_dot estima
 
 
 % Congregated parameters
-p_dot_congregated_estimate_parameter_index = [35, 37, 38, 39, 40, 45];
-q_dot_congregated_estimate_parameter_index = [36, 41, 42, 43, 44, 46];
+p_dot_congregated_estimate_parameter_index = [13, 35, 37, 38, 39, 40, 45];
+q_dot_congregated_estimate_parameter_index = [13, 36, 41, 42, 43, 44, 46];
 
 % Without translation dynamics
-p_dot_estimate_parameter_index = [23, 25, 33, 34, 27, 30, 32, 24]; % Parameters p_dot estimates
-q_dot_estimate_parameter_index = [26, 28, 32, 34, 24, 30, 33, 27]; % Parameters q_dot estimates
-r_dot_estimate_parameter_index = [29, 31, 32, 33, 24, 27, 34, 30]; % Parameters r_dot estimates
+p_dot_estimate_parameter_index = [24, 27, 30, 32, 33, 34]; % Parameters p_dot estimates
+q_dot_estimate_parameter_index = [24, 27, 30, 32, 33, 34]; % Parameters q_dot estimates
+r_dot_estimate_parameter_index = [24, 27, 30, 32, 33, 34]; % Parameters r_dot estimates
+
+
+r_dot_only_estimate_parameter_index = [29, 30, 31, 34]; % Parameters q_dot estimates
+q_dot_only_estimate_parameter_index = [13, 26, 27, 28, 33]; % Parameters q_dot estimates
+p_dot_only_estimate_parameter_index = [13, 23, 24, 25, 32]; % Parameters r_dot estimates
 
 % With translation dynamics
 %p_dot_estimate_parameter_index = [23, 25, 33, 34, 27, 30, 18, 21, 32, 24]; % Parameters p_dot estimates
 %q_dot_estimate_parameter_index = [26, 28, 32, 34, 24, 30, 15, 21, 33, 27]; % Parameters q_dot estimates
 %r_dot_estimate_parameter_index = [29, 31, 32, 33, 24, 27, 15, 18, 34, 30]; % Parameters r_dot estimates
 
-% Sets which parameters that will be estimated
+% Sets which parameters that will be estimated- Nr_dot*p*r - p*r*(Ix - Iz)  
 switch estimation_mode
     case 'Yaw'
         disp('Yaw test')
-        fixed_parameters = setdiff(fixed_parameters, r_dot_estimate_parameter_index);
+        fixed_parameters = setdiff(fixed_parameters, r_dot_only_estimate_parameter_index);
     case 'RollPitch'
         disp('RollPitch test')
-        fixed_parameters = setdiff(fixed_parameters, p_dot_estimate_parameter_index);
-        fixed_parameters = setdiff(fixed_parameters, q_dot_estimate_parameter_index);
+        fixed_parameters = setdiff(fixed_parameters, p_dot_only_estimate_parameter_index);
+        fixed_parameters = setdiff(fixed_parameters, q_dot_only_estimate_parameter_index);
     case 'RollPitchCongregated'
         disp('RollPitch test')
         fixed_parameters = setdiff(fixed_parameters, p_dot_congregated_estimate_parameter_index);
         fixed_parameters = setdiff(fixed_parameters, q_dot_congregated_estimate_parameter_index);
     case 'Pitch'
         disp('Pitch test')
-        fixed_parameters = setdiff(fixed_parameters, q_dot_estimate_parameter_index);
+        fixed_parameters = setdiff(fixed_parameters, q_dot_only_estimate_parameter_index);
     case 'PitchCongregated'
         disp('PitchCongreted test')
         fixed_parameters = setdiff(fixed_parameters, q_dot_congregated_estimate_parameter_index);
@@ -153,11 +215,6 @@ end
 for i = 1:size(negative_parameters,2)
     nonlinear_greybox_model.Parameters(negative_parameters(i)).Maximum = 0;
 end
-
-data.InputName = nonlinear_greybox_model.InputName;
-data.InputUnit = nonlinear_greybox_model.InputUnit;
-data.OutputName = nonlinear_greybox_model.OutputName;
-data.OutputUnit = nonlinear_greybox_model.OutputUnit;
 
 end
 
