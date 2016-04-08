@@ -28,7 +28,7 @@ if isempty(files)
     Xu_abs_u_init = -1;
     Yv_init = -1;
     Yv_dot_init = -1;
-    Yv_abs_v_init = 1;
+    Yv_abs_v_init = -1;
     Zw_init = -1;
     Zw_dot_init = -1;
     Zw_abs_w_init = -1;
