@@ -1,9 +1,10 @@
 %% Yaw estimation
-clear
-close all
-clc
+% clear
+% close all
+% clc
 simulation = 0;
 plotting = 1;
+detrend_enable = 1;
 estimation_mode = 'Yaw';
 % yaw_filepath = fullfile('bag','act_3_4_test_1_2016-03-21-15-03-06.bag');
 %yaw_filepath = fullfile('bag','act_3_4_test_2_2016-03-21-15-06-06.bag');
@@ -14,13 +15,13 @@ estimation_mode = 'Yaw';
 % yaw_filepath = fullfile('bag','test2_t3_t4_2016-04-04-14-59-57.bag');
 % yaw_filepath = fullfile('bag','test3_t3_t4_2016-04-04-15-02-24.bag');
 
-%yaw_filepath = 'Yaw0321';
-yaw_filepath = 'Yaw0404';
+yaw_filepath = 'Yaw0321';
+%yaw_filepath = 'Yaw0404';
 
 [parameters, parameter_strings]= initROVParameters();
 displayTable(parameters, parameter_strings);
-[yaw_nonlinear_greybox_model, yaw_data] =...
-    setupEstimation(parameters, parameter_strings, estimation_mode, simulation, yaw_filepath, plotting);
+[yaw_nonlinear_greybox_model, yaw_data, yaw_val_data] =...
+    setupEstimation(parameters, parameter_strings, estimation_mode, simulation, yaw_filepath, plotting, detrend_enable);
 
 %%
 % yaw_val_data = getexp(yaw_data,1);
@@ -36,9 +37,9 @@ toc
 displayTable(parameters, parameter_strings, yaw_estimation)
 
 figure(1)
-compare(yaw_data, yaw_estimation, inf);
+compare(yaw_val_data, yaw_estimation, inf);
 %%
-% saveParameters(yaw_estimation.Report.Parameters.ParVector, yaw_estimation.Report.Parameters.Free)
+saveParameters(yaw_estimation.Report.Parameters.ParVector, yaw_estimation.Report.Parameters.Free)
 % temp_parameters = yaw_estimation.Report.Parameters.ParVector;
 % save('yawparameters.mat','temp_parameters', 'yaw_estimation')
 %% RollPitch estimation
@@ -56,15 +57,16 @@ estimation_mode = 'RollPitch';
 % roll_pitch_filepath = fullfile('bag','test3_roll_pitch_2016-04-04-15-16-43.bag');
 %roll_pitch_filepath = fullfile('bag','test4_roll_pitch_2016-04-04-15-18-34.bag');
 
-% roll_pitch_filepath = 'RollPitch0321';
-roll_pitch_filepath = 'RollPitch0404';
+ roll_pitch_filepath = 'RollPitch0321';
+%roll_pitch_filepath = 'RollPitch0404';
 [parameters, parameter_strings]= initROVParameters();
 displayTable(parameters, parameter_strings);
 simulation = 0;
 plotting = 1;
+detrend_enable = 1;
 
-[roll_pitch_nonlinear_greybox_model, roll_pitch_data] =...
-    setupEstimation(parameters, parameter_strings, estimation_mode, simulation, roll_pitch_filepath, plotting);
+[roll_pitch_nonlinear_greybox_model, roll_pitch_data, roll_pitch_val_data] =...
+    setupEstimation(parameters, parameter_strings, estimation_mode, simulation, roll_pitch_filepath, plotting, detrend_enable);
 
 %%
 % roll_pitch_val_data = getexp(roll_pitch_data,1);
@@ -79,10 +81,11 @@ toc
 displayTable(parameters, parameter_strings, roll_pitch_estimation)
 
 figure(2)
-compare(roll_pitch_data, roll_pitch_estimation, inf);
+compare(roll_pitch_val_data, roll_pitch_estimation, inf);
 %%
-temp_parameters = roll_pitch_estimation.Report.Parameters.ParVector;
-save('rollpitchparameters.mat','temp_parameters', 'roll_pitch_estimation')
+saveParameters(roll_pitch_estimation.Report.Parameters.ParVector, roll_pitch_estimation.Report.Parameters.Free)
+% temp_parameters = roll_pitch_estimation.Report.Parameters.ParVector;
+% save('rollpitchparameters.mat','temp_parameters', 'roll_pitch_estimation')
 
 %% Pitch estimation
 % clear;
@@ -98,16 +101,17 @@ estimation_mode = 'Pitch';
 % pitch_filepath = fullfile('bag','test5_t1_lock_t2_2016-04-04-14-48-38.bag');
 % pitch_filepath = fullfile('bag','test6_t1_lock_t2_2016-04-04-14-50-33.bag');
 
-% pitch_filepath = 'Pitch0321';
-pitch_filepath = 'Pitch0404';
+pitch_filepath = 'Pitch0321';
+%pitch_filepath = 'Pitch0404';
 
 [parameters, parameter_strings]= initROVParameters();
 displayTable(parameters, parameter_strings);
 simulation = 0;
 plotting = 0;
+detrend_enable = 1;
 
-[pitch_nonlinear_greybox_model, pitch_data] =...
-    setupEstimation(parameters, parameter_strings, estimation_mode, simulation,pitch_filepath, plotting);
+[pitch_nonlinear_greybox_model, pitch_data, pitch_val_data] =...
+    setupEstimation(parameters, parameter_strings, estimation_mode, simulation,pitch_filepath, plotting, detrend_enable);
 
 %%
 % pitch_val_data = getexp(pitch_data,1);
@@ -123,7 +127,7 @@ toc
 displayTable(parameters, parameter_strings,pitch_estimation)
 
 figure(3)
-compare(pitch_data, pitch_estimation, inf);
+compare(pitch_val_data, pitch_estimation, inf);
 
 %%
 temp_parameters = pitch_estimation.Report.Parameters.ParVector;
@@ -142,9 +146,10 @@ All_filepath = 'All0404';
 displayTable(parameters, parameter_strings);
 simulation = 0;
 plotting = 1;
+detrend_enable = 1;
 
-[All_nonlinear_greybox_model, All_data] =...
-    setupEstimation(parameters, parameter_strings, estimation_mode, simulation,All_filepath, plotting);
+[All_nonlinear_greybox_model, All_data, All_val_data] =...
+    setupEstimation(parameters, parameter_strings, estimation_mode, simulation,All_filepath, plotting, detrend_enable);
 
 %%
 % All_val_data = getexp(All_data,1);
@@ -154,13 +159,13 @@ opt = nlgreyestOptions;
 opt.Display = 'on';
 opt.SearchOption.MaxIter = 50;
 tic
-All_estimation = nlgreyest(All_data, All_nonlinear_greybox_model,opt);
+All_estimation2 = nlgreyest(All_data(1:5000), All_nonlinear_greybox_model,opt);
 %All_estimation = pem(All_data, All_nonlinear_greybox_model,opt);
 toc
-displayTable(parameters, parameter_strings,All_estimation)
+displayTable(parameters, parameter_strings,All_estimation2)
 
-figure(3)
-compare(All_data, All_estimation, inf);
+figure(4)
+compare(All_val_data(1:5000), All_estimation2, inf);
 
 %%
 temp_parameters = All_estimation.Report.Parameters.ParVector;

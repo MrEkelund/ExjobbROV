@@ -6,9 +6,6 @@ function [x_dot, y] = rovMotionModelRollPitch( t, x, control, ...
     Kp_Ix_Kp_dot, Kp_abs_p_Ix_Kp_dot, Mq_dot_Ix_Kp_dot,...
     Nr_dot_Ix_Kp_dot, Mq_Iy_Mq_dot, Mq_abs_q_Iy_Mq_dot,...
     Kp_dot_Iy_Mq_dot, Nr_dot_Iy_Mq_dot, varargin)
-% if length(parameters) == 1
-%     parameters(2:length(varargin)) = cell2mat(varargin(1:end-1));
-% end
 %******* Constants
 % m = parameters(1);
 % g = parameters(2);
@@ -26,16 +23,11 @@ function [x_dot, y] = rovMotionModelRollPitch( t, x, control, ...
 % zb= parameters(13);
 
 %******* States
-u = x(1);
-v = x(2);
-w = x(3);
+p = x(1);
+q = x(2);
 
-p = x(4);
-q = x(5);
-r = x(6);
-
-fi = x(7);
-theta = x(8);
+fi = x(3);
+theta = x(4);
 %*******    Computed values
 
 ct = cos(theta);
@@ -134,10 +126,8 @@ forces = g*nakeinterp1(lookup(:,2),lookup(:,1),control');
 %Thrusterforce in newtons. Lookup table returns in kgf
 f1 = forces(1);
 f2 = forces(2);
-f3 = forces(3);
-f4 = forces(4);
-f5 = forces(5);
-f6 = forces(6);
+f5 = forces(3);
+f6 = forces(4);
 %******* Parameters
 % Xu= parameters(14);
 % Xu_dot= parameters(15);
@@ -182,38 +172,17 @@ f6 = forces(6);
 % 29, 31, 32, 33, 24, 27, 15, 18, 34, 30 %r_dot
 
 
-
-u_dot =0;%...
-%    -(f3 + f4 + u*(Xu + Xu_abs_u*abs(u)) + st*(B - W) - m*(q*w - r*v) - Yv_dot*r*v + Zw_dot*q*w)/(Xu_dot - m);
- 
- 
-v_dot =0;%...
-%    (f6 - v*(Yv + Yv_abs_v*abs(v)) - m*(p*w - r*u) + ct*sf*(B - W) - Xu_dot*r*u + Zw_dot*p*w)/(Yv_dot - m);
- 
- 
-w_dot =0;%...
- %   (f1 + f2 + f5 - w*(Zw + Zw_abs_w*abs(w)) + m*(p*v - q*u) + cf*ct*(B - W) + Xu_dot*q*u - Yv_dot*p*v)/(Zw_dot - m);
-
 p_dot =...
-    (f1*ly1 - f2*ly2 + f6*lz6 + p*(Kp + Kp_abs_p*abs(p)) - Mq_dot*q*r + Nr_dot*q*r + q*r*(Iy - Iz) + B*ct*sf*zb )/(Ix - Kp_dot); %- Yv_dot*v*w + Zw_dot*v*w 
- 
-% p_dot =...
-%     (f1*ly1 - f2*ly2 + f6*lz6 + q*r*(Iy - Iz) + B*ct*sf*zb )/(Ix_Kp_dot) + p*(Kp_Ix_Kp_dot + Kp_abs_p_Ix_Kp_dot*abs(p)) - Mq_dot_Ix_Kp_dot*q*r + Nr_dot_Ix_Kp_dot*q*r; 
+    (f1*ly1 - f2*ly2 + f6*lz6 + p*(Kp + Kp_abs_p*abs(p)) + B*ct*sf*zb )/(Ix - Kp_dot); 
  
 q_dot =...
-     (f1*lx1 + f2*lx2 - f5*lx5 + q*(Mq + Mq_abs_q*abs(q)) + Kp_dot*p*r + B*st*zb - Nr_dot*p*r - p*r*(Ix - Iz)  )/(Iy - Mq_dot); %+ Xu_dot*u*w - Zw_dot*u*w 
+     (f1*lx1 + f2*lx2 - f5*lx5 + q*(Mq + Mq_abs_q*abs(q)) + B*st*zb)/(Iy - Mq_dot);
 
-% q_dot =...
-%     (f1*lx1 + f2*lx2 - f5*lx5 + B*st*zb  - p*r*(Ix - Iz))/Iy_Mq_dot + q*(Mq_Iy_Mq_dot + Mq_abs_q_Iy_Mq_dot*abs(q)) + Kp_dot_Iy_Mq_dot*p*r - Nr_dot_Iy_Mq_dot*p*r; %+ Xu_dot*u*w - Zw_dot*u*w 
- 
-r_dot =0; %...
-%     (r*(Nr + Nr_abs_r*abs(r)) + f3*ly3 - f4*ly4 - Kp_dot*p*q + Mq_dot*p*q + p*q*(Ix - Iy) - Xu_dot*u*v + Yv_dot*u*v)/(Iz - Nr_dot);
- 
 
-fi_dot = p + q*sf*st/ct + r*cf*st/ct;
-theta_dot = q*cf - r*sf;
+fi_dot = p + q*sf*st/ct;
+theta_dot = q*cf;
 
-x_dot = [u_dot;v_dot;w_dot;p_dot;q_dot;r_dot;fi_dot;theta_dot];
+x_dot = [p_dot;q_dot;fi_dot;theta_dot];
 
 y = x;
 end
