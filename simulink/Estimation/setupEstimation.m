@@ -162,6 +162,10 @@ p_dot_estimate_parameter_index = [24, 27, 29, 30, 31, 32, 33, 34]; % Parameters 
 q_dot_estimate_parameter_index = [13, 24, 26, 27, 28, 30, 32, 33, 34]; % Parameters q_dot estimates
 r_dot_estimate_parameter_index = [13, 23, 24, 25, 27, 30, 32, 33, 34]; % Parameters r_dot estimates
 
+p_dot_estimate_parameter_index = [24, 27, 30, 32, 33, 34]; % Parameters p_dot estimates
+q_dot_estimate_parameter_index = [24, 27, 30, 32, 33, 34]; % Parameters q_dot estimates
+r_dot_estimate_parameter_index = [24, 27, 30, 32, 33, 34]; % Parameters r_dot estimates
+
 
 r_dot_only_estimate_parameter_index = [29, 30, 31, 34]; % Parameters q_dot estimates
 q_dot_only_estimate_parameter_index = [13, 26, 27, 28, 33]; % Parameters q_dot estimates
