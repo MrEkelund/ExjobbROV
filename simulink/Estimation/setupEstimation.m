@@ -32,7 +32,7 @@ switch simulation
                 disp(sprintf('Loading test data from %s',filepath));
                 [lin_vel_data ,lin_acc_data, ang_vel_data, thrusters_data, states, time,Ts]= ...
                     getTestData(filepath, plotting);
-                output_data = [zeros(size(ang_vel_data)), ang_vel_data , states(:,1:2)];
+                output_data = [ang_vel_data , antiModAngles(states(:,1:3))];
                 input_data = thrusters_data;
                 data = iddata(output_data, input_data,  Ts);
         end
@@ -40,7 +40,7 @@ switch simulation
         disp(sprintf('Loading simulated data from %s',filepath));
         [lin_vel_data ,lin_acc_data, ang_vel_data, thrusters_data, states, time,Ts] = ...
             getSimulationData(filepath,plotting);
-        output_data = [zeros(size(ang_vel_data)), ang_vel_data , states(:,1:2)];
+        output_data = [ang_vel_data , antiModAngles(states(:,1:3))];
         input_data = thrusters_data;
         data = iddata(output_data, input_data, Ts);
     otherwise
@@ -158,9 +158,9 @@ p_dot_congregated_estimate_parameter_index = [13, 35, 37, 38, 39, 40, 45];
 q_dot_congregated_estimate_parameter_index = [13, 36, 41, 42, 43, 44, 46];
 
 % Without translation dynamics
-p_dot_estimate_parameter_index = [24, 27, 30, 32, 33, 34]; % Parameters p_dot estimates
-q_dot_estimate_parameter_index = [24, 27, 30, 32, 33, 34]; % Parameters q_dot estimates
-r_dot_estimate_parameter_index = [24, 27, 30, 32, 33, 34]; % Parameters r_dot estimates
+p_dot_estimate_parameter_index = [24, 27, 29, 30, 31, 32, 33, 34]; % Parameters p_dot estimates
+q_dot_estimate_parameter_index = [13, 24, 26, 27, 28, 30, 32, 33, 34]; % Parameters q_dot estimates
+r_dot_estimate_parameter_index = [13, 23, 24, 25, 27, 30, 32, 33, 34]; % Parameters r_dot estimates
 
 
 r_dot_only_estimate_parameter_index = [29, 30, 31, 34]; % Parameters q_dot estimates
@@ -207,7 +207,7 @@ end
 %Sets the sign of the parameters
 positive_parameters = [1:12, 32:34, 35, 36];
 % negative_parameters = [13:size(parameters,1)-3];
-negative_parameters = [15 18 21 24 27 30];
+negative_parameters = [13:31];
 for i = 1:size(positive_parameters,2)
     nonlinear_greybox_model.Parameters(positive_parameters(i)).Minimum = 0;
 end
