@@ -32,7 +32,7 @@ switch simulation
                 disp(sprintf('Loading test data from %s',filepath));
                 [lin_vel_data ,lin_acc_data, ang_vel_data, thrusters_data, states, time,Ts]= ...
                     getTestData(filepath, plotting);
-                output_data = [ang_vel_data , antiModAngles(states(:,1:3))];
+                output_data = [ang_vel_data , states(:,1:3)];
                 input_data = thrusters_data;
                 data = iddata(output_data, input_data,  Ts);
         end
@@ -40,7 +40,7 @@ switch simulation
         disp(sprintf('Loading simulated data from %s',filepath));
         [lin_vel_data ,lin_acc_data, ang_vel_data, thrusters_data, states, time,Ts] = ...
             getSimulationData(filepath,plotting);
-        output_data = [ang_vel_data , antiModAngles(states(:,1:3))];
+        output_data = [ang_vel_data , states(:,1:3)];
         input_data = thrusters_data;
         data = iddata(output_data, input_data, Ts);
     otherwise
@@ -54,13 +54,19 @@ switch estimation_mode
         data.InputUnit =  {'%';'%'};
         data.OutputName = {'r','fi','theta'};
         data.OutputUnit = {'rad/s','rad','rad'};
+    case 'YawCong'
+        data = data(:,[3, 4, 5],[3, 4]);
+        data.InputName =  {'Thruster3'; 'Thruster4'};
+        data.InputUnit =  {'%';'%'};
+        data.OutputName = {'r','fi','theta'};
+        data.OutputUnit = {'rad/s','rad','rad'};
     case 'RollPitch'
         data = data(:,[1, 2, 4, 5],[1, 2, 5, 6]);
         data.InputName =  {'Thruster1';'Thruster2';'Thruster5';'Thruster6'};
         data.InputUnit =  {'%';'%';'%';'%'};
         data.OutputName = {'p','q','fi','theta'};
         data.OutputUnit = {'rad/s','rad/s','rad','rad'};
-    case 'RollPitchCongregated'
+    case 'RollPitchCong'
         data = data(:,[1, 2, 4, 5],[1, 2, 5, 6]);
         data.InputName =  {'Thruster1';'Thruster2';'Thruster5';'Thruster6'};
         data.InputUnit =  {'%';'%';'%';'%'};
@@ -83,6 +89,11 @@ switch estimation_mode
         data.InputUnit =  {'%';'%';'%';'%';'%';'%'};
         data.OutputName = {'p','q','r','fi','theta','psi'};
         data.OutputUnit = {'rad/s','rad/s','rad/s','rad','rad','rad'};
+    case 'AllCong'
+        data.InputName =  {'Thruster1';'Thruster2';'Thruster3';'Thruster4';'Thruster5';'Thruster6'};
+        data.InputUnit =  {'%';'%';'%';'%';'%';'%'};
+        data.OutputName = {'p','q','r','fi','theta','psi'};
+        data.OutputUnit = {'rad/s','rad/s','rad/s','rad','rad','rad'};        
     otherwise
         error('Unkown test: %s', estimation_mode);
 end
@@ -171,6 +182,14 @@ r_dot_only_estimate_parameter_index = [29, 30, 31, 34]; % Parameters q_dot estim
 q_dot_only_estimate_parameter_index = [13, 26, 27, 28, 33]; % Parameters q_dot estimates
 p_dot_only_estimate_parameter_index = [13, 23, 24, 25, 32]; % Parameters r_dot estimates
 
+p_dot_Cong_estimate_parameter_index = [24, 27, 29, 30, 31 47 48 49 50 35 36]; % Parameters p_dot estimates
+q_dot_Cong_estimate_parameter_index = [13, 24, 26, 27, 28, 30]; % Parameters q_dot estimates
+r_dot_Cong_estimate_parameter_index = [13, 23, 24, 25, 27, 30, 47]; % Parameters r_dot estimates
+
+p_dot_cong_only_estimate_parameter_index = [13 23, 25, 35]; % Parameters p_dot estimates
+q_dot_cong_only_estimate_parameter_index = [13, 26, 28, 36]; % Parameters q_dot estimates
+r_dot_cong_only_estimate_parameter_index = [29, 31, 47]; % Parameters q_dot estimates
+
 % With translation dynamics
 %p_dot_estimate_parameter_index = [23, 25, 33, 34, 27, 30, 18, 21, 32, 24]; % Parameters p_dot estimates
 %q_dot_estimate_parameter_index = [26, 28, 32, 34, 24, 30, 15, 21, 33, 27]; % Parameters q_dot estimates
@@ -181,14 +200,17 @@ switch estimation_mode
     case 'Yaw'
         disp('Yaw test')
         fixed_parameters = setdiff(fixed_parameters, r_dot_only_estimate_parameter_index);
+     case 'YawCong'
+        disp('Yaw test')
+        fixed_parameters = setdiff(fixed_parameters, r_dot_cong_only_estimate_parameter_index);       
     case 'RollPitch'
         disp('RollPitch test')
         fixed_parameters = setdiff(fixed_parameters, p_dot_only_estimate_parameter_index);
         fixed_parameters = setdiff(fixed_parameters, q_dot_only_estimate_parameter_index);
-    case 'RollPitchCongregated'
+    case 'RollPitchCong'
         disp('RollPitch test')
-        fixed_parameters = setdiff(fixed_parameters, p_dot_congregated_estimate_parameter_index);
-        fixed_parameters = setdiff(fixed_parameters, q_dot_congregated_estimate_parameter_index);
+        fixed_parameters = setdiff(fixed_parameters, p_dot_cong_only_estimate_parameter_index);
+        fixed_parameters = setdiff(fixed_parameters, q_dot_cong_only_estimate_parameter_index);
     case 'Pitch'
         disp('Pitch test')
         fixed_parameters = setdiff(fixed_parameters, q_dot_only_estimate_parameter_index);
@@ -200,6 +222,11 @@ switch estimation_mode
         fixed_parameters = setdiff(fixed_parameters, p_dot_estimate_parameter_index);
         fixed_parameters = setdiff(fixed_parameters, q_dot_estimate_parameter_index);
         fixed_parameters = setdiff(fixed_parameters, r_dot_estimate_parameter_index);
+    case 'AllCong'
+        disp('All rotational dynamics test')
+        fixed_parameters = setdiff(fixed_parameters, p_dot_Cong_estimate_parameter_index);
+        fixed_parameters = setdiff(fixed_parameters, q_dot_Cong_estimate_parameter_index);
+        fixed_parameters = setdiff(fixed_parameters, r_dot_Cong_estimate_parameter_index);        
     otherwise
         error('Unkown test: %s', estimation_mode);
 end
@@ -209,7 +236,7 @@ for i = 1:size(fixed_parameters,2)
 end
 
 %Sets the sign of the parameters
-positive_parameters = [1:12, 32:34, 35, 36];
+positive_parameters = [1:12, 32:34, 35, 36 50];
 % negative_parameters = [13:size(parameters,1)-3];
 negative_parameters = [13:31];
 for i = 1:size(positive_parameters,2)
