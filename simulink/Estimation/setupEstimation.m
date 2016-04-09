@@ -3,6 +3,13 @@ function [nonlinear_greybox_model, data, val_data] = ...
 %setupEstimation Setups the nonlinear model of the rov and reads data
 %   Detailed explanation goes here
 
+%Compile necessary file
+if exist('nakeinterp1.mexa64') ~= 3
+    disp('nakeinterp1.mexa64 not found...Compiling')
+    mex('CFLAGS="\$CFLAGS -std=c99"', 'nakeinterp1.c')
+end
+    
+
 %% Read from data files
 switch simulation
     case 0 % Test
@@ -79,6 +86,11 @@ switch estimation_mode
         data.OutputName = {'q','theta'};
         data.OutputUnit = {'rad/s','rad'};
     case 'All'
+        data.InputName =  {'Thruster1';'Thruster2';'Thruster3';'Thruster4';'Thruster5';'Thruster6'};
+        data.InputUnit =  {'%';'%';'%';'%';'%';'%'};
+        data.OutputName = {'p','q','r','fi','theta','psi'};
+        data.OutputUnit = {'rad/s','rad/s','rad/s','rad','rad','rad'};
+    case 'AllSimple'
         data.InputName =  {'Thruster1';'Thruster2';'Thruster3';'Thruster4';'Thruster5';'Thruster6'};
         data.InputUnit =  {'%';'%';'%';'%';'%';'%'};
         data.OutputName = {'p','q','r','fi','theta','psi'};
@@ -176,7 +188,7 @@ p_dot_only_estimate_parameter_index = [13, 23, 24, 25, 32]; % Parameters r_dot e
 %q_dot_estimate_parameter_index = [26, 28, 32, 34, 24, 30, 15, 21, 33, 27]; % Parameters q_dot estimates
 %r_dot_estimate_parameter_index = [29, 31, 32, 33, 24, 27, 15, 18, 34, 30]; % Parameters r_dot estimates
 
-% Sets which parameters that will be estimated- Nr_dot*p*r - p*r*(Ix - Iz)  
+% Sets which parameters that will be estimated  
 switch estimation_mode
     case 'Yaw'
         disp('Yaw test')
@@ -200,6 +212,11 @@ switch estimation_mode
         fixed_parameters = setdiff(fixed_parameters, p_dot_estimate_parameter_index);
         fixed_parameters = setdiff(fixed_parameters, q_dot_estimate_parameter_index);
         fixed_parameters = setdiff(fixed_parameters, r_dot_estimate_parameter_index);
+    case 'AllSimple'
+        disp('All rotational dynamics test')
+        fixed_parameters = setdiff(fixed_parameters, p_dot_only_estimate_parameter_index);
+        fixed_parameters = setdiff(fixed_parameters, q_dot_only_estimate_parameter_index);
+        fixed_parameters = setdiff(fixed_parameters, r_dot_only_estimate_parameter_index);
     otherwise
         error('Unkown test: %s', estimation_mode);
 end

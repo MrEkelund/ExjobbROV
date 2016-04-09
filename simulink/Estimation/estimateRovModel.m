@@ -132,7 +132,7 @@ save('pitchparameters.mat','temp_parameters', 'pitch_estimation')
 %% All rotational dynamics estimation
 % clear;
 % close all;
-estimation_mode = 'All';
+estimation_mode = 'AllSimple';
 
 All_filepath = fullfile('bag','test1_all_2016-04-04-15-23-32.bag');
 % All_filepath = fullfile('bag','test2_all_2016-04-04-15-27-58.bag');
@@ -143,7 +143,7 @@ All_filepath = 'All0404';
 displayTable(parameters, parameter_strings);
 simulation = 0;
 plotting = 1;
-detrend_enable = 1;
+detrend_enable = 0;
 
 [All_nonlinear_greybox_model, All_data, All_val_data] =...
     setupEstimation(parameters, parameter_strings, estimation_mode, simulation,All_filepath, plotting, detrend_enable);
@@ -156,14 +156,15 @@ opt = nlgreyestOptions;
 opt.Display = 'on';
 opt.SearchOption.MaxIter = 50;
 tic
-All_estimation2 = nlgreyest(All_data(1:5000), All_nonlinear_greybox_model,opt);
+All_estimation = nlgreyest(All_data(1:10000), All_nonlinear_greybox_model,opt);
 %All_estimation = pem(All_data, All_nonlinear_greybox_model,opt);
 toc
-displayTable(parameters, parameter_strings,All_estimation2)
+displayTable(parameters, parameter_strings,All_estimation)
 
 figure(4)
-compare(All_val_data(1:5000), All_estimation2, inf);
+compare(All_val_data(1:10000), All_estimation, inf);
 
 %%
-temp_parameters = All_estimation.Report.Parameters.ParVector;
-save('Allparameters.mat','temp_parameters', 'All_estimation')
+% temp_parameters = All_estimation.Report.Parameters.ParVector;
+% save('Allparameters.mat','temp_parameters', 'All_estimation')
+saveParameters(All_estimation.Report.Parameters.ParVector, All_estimation.Report.Parameters.Free);
