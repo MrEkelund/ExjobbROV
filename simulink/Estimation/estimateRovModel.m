@@ -156,14 +156,15 @@ opt = nlgreyestOptions;
 opt.Display = 'on';
 opt.SearchOption.MaxIter = 50;
 tic
-All_estimation2 = nlgreyest(All_data(1:5000), All_nonlinear_greybox_model,opt);
+All_estimation = nlgreyest(All_data(1:10000), All_nonlinear_greybox_model,opt);
 %All_estimation = pem(All_data, All_nonlinear_greybox_model,opt);
 toc
-displayTable(parameters, parameter_strings,All_estimation2)
+displayTable(parameters, parameter_strings,All_estimation)
 
 figure(4)
-compare(All_val_data(1:5000), All_estimation2, inf);
+compare(All_val_data(1:10000), All_estimation, inf);
 
 %%
-temp_parameters = All_estimation.Report.Parameters.ParVector;
-save('Allparameters.mat','temp_parameters', 'All_estimation')
+% temp_parameters = All_estimation.Report.Parameters.ParVector;
+% save('Allparameters.mat','temp_parameters', 'All_estimation')
+saveParameters(All_estimation.Report.Parameters.ParVector, All_estimation.Report.Parameters.Free);

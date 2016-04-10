@@ -3,6 +3,13 @@ function [nonlinear_greybox_model, data, val_data] = ...
 %setupEstimation Setups the nonlinear model of the rov and reads data
 %   Detailed explanation goes here
 
+%Compile necessary file
+if exist('nakeinterp1.mexa64') ~= 3
+    disp('nakeinterp1.mexa64 not found...Compiling')
+    mex('CFLAGS="\$CFLAGS -std=c99"', 'nakeinterp1.c')
+end
+    
+
 %% Read from data files
 switch simulation
     case 0 % Test
@@ -32,7 +39,7 @@ switch simulation
                 disp(sprintf('Loading test data from %s',filepath));
                 [lin_vel_data ,lin_acc_data, ang_vel_data, thrusters_data, states, time,Ts]= ...
                     getTestData(filepath, plotting);
-                output_data = [ang_vel_data , states(:,1:3)];
+                output_data = [ang_vel_data , antiModAngles(states(:,1:3))];
                 input_data = thrusters_data;
                 data = iddata(output_data, input_data,  Ts);
         end
@@ -40,7 +47,7 @@ switch simulation
         disp(sprintf('Loading simulated data from %s',filepath));
         [lin_vel_data ,lin_acc_data, ang_vel_data, thrusters_data, states, time,Ts] = ...
             getSimulationData(filepath,plotting);
-        output_data = [ang_vel_data , states(:,1:3)];
+        output_data = [ang_vel_data , antiModAngles(states(:,1:3))];
         input_data = thrusters_data;
         data = iddata(output_data, input_data, Ts);
     otherwise
@@ -66,7 +73,7 @@ switch estimation_mode
         data.InputUnit =  {'%';'%';'%';'%'};
         data.OutputName = {'p','q','fi','theta'};
         data.OutputUnit = {'rad/s','rad/s','rad','rad'};
-    case 'RollPitchCong'
+    case 'RollPitchCongregated'
         data = data(:,[1, 2, 4, 5],[1, 2, 5, 6]);
         data.InputName =  {'Thruster1';'Thruster2';'Thruster5';'Thruster6'};
         data.InputUnit =  {'%';'%';'%';'%'};
@@ -85,6 +92,11 @@ switch estimation_mode
         data.OutputName = {'q','theta'};
         data.OutputUnit = {'rad/s','rad'};
     case 'All'
+        data.InputName =  {'Thruster1';'Thruster2';'Thruster3';'Thruster4';'Thruster5';'Thruster6'};
+        data.InputUnit =  {'%';'%';'%';'%';'%';'%'};
+        data.OutputName = {'p','q','r','fi','theta','psi'};
+        data.OutputUnit = {'rad/s','rad/s','rad/s','rad','rad','rad'};
+    case 'AllSimple'
         data.InputName =  {'Thruster1';'Thruster2';'Thruster3';'Thruster4';'Thruster5';'Thruster6'};
         data.InputUnit =  {'%';'%';'%';'%';'%';'%'};
         data.OutputName = {'p','q','r','fi','theta','psi'};
@@ -195,7 +207,7 @@ r_dot_cong_only_estimate_parameter_index = [29, 31, 47]; % Parameters q_dot esti
 %q_dot_estimate_parameter_index = [26, 28, 32, 34, 24, 30, 15, 21, 33, 27]; % Parameters q_dot estimates
 %r_dot_estimate_parameter_index = [29, 31, 32, 33, 24, 27, 15, 18, 34, 30]; % Parameters r_dot estimates
 
-% Sets which parameters that will be estimated- Nr_dot*p*r - p*r*(Ix - Iz)  
+% Sets which parameters that will be estimated  
 switch estimation_mode
     case 'Yaw'
         disp('Yaw test')
@@ -222,7 +234,12 @@ switch estimation_mode
         fixed_parameters = setdiff(fixed_parameters, p_dot_estimate_parameter_index);
         fixed_parameters = setdiff(fixed_parameters, q_dot_estimate_parameter_index);
         fixed_parameters = setdiff(fixed_parameters, r_dot_estimate_parameter_index);
-    case 'AllCong'
+    case 'AllSimple'
+        disp('All rotational dynamics test')
+        fixed_parameters = setdiff(fixed_parameters, p_dot_only_estimate_parameter_index);
+        fixed_parameters = setdiff(fixed_parameters, q_dot_only_estimate_parameter_index);
+        fixed_parameters = setdiff(fixed_parameters, r_dot_only_estimate_parameter_index);
+case 'AllCong'
         disp('All rotational dynamics test')
         fixed_parameters = setdiff(fixed_parameters, p_dot_Cong_estimate_parameter_index);
         fixed_parameters = setdiff(fixed_parameters, q_dot_Cong_estimate_parameter_index);

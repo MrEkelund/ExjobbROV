@@ -3,3 +3,6 @@ catkin_ws/build/
 catkin_ws/install/
 slprj/
 *.autosave
+*converted-to*
+build/
+*.mexa64

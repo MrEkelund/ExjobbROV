@@ -6,25 +6,6 @@ function [x_dot, y] = rovMotionModelAll( t, x, control, ...
     Kp_Ix_Kp_dot, Kp_abs_p_Ix_Kp_dot, Mq_dot_Ix_Kp_dot,...
     Nr_dot_Ix_Kp_dot, Mq_Iy_Mq_dot, Mq_abs_q_Iy_Mq_dot,...
     Kp_dot_Iy_Mq_dot, Nr_dot_Iy_Mq_dot, varargin)
-% if length(parameters) == 1
-%     parameters(2:length(varargin)) = cell2mat(varargin(1:end-1));
-% end
-%******* Constants
-% m = parameters(1);
-% g = parameters(2);
-% rho = parameters(3);
-% V = parameters(4);
-% %Thruster placement from CO [m]
-% lx1= parameters(5);
-% ly1= parameters(6);
-% ly2= parameters(7);
-% lx2= parameters(8);
-% ly3= parameters(9);
-% lx5= parameters(10);
-% ly4= parameters(11);
-% lz6= parameters(12);
-% zb= parameters(13);
-
 %******* States
 p = x(1);
 q = x(2);
@@ -135,48 +116,15 @@ f3 = forces(3);
 f4 = forces(4);
 f5 = forces(5);
 f6 = forces(6);
-%******* Parameters
-% Xu= parameters(14);
-% Xu_dot= parameters(15);
-% Xu_abs_u= parameters(16);
-% Yv= parameters(17);
-% Yv_dot= parameters(18);
-% Yv_abs_v= parameters(19);
-% Zw= parameters(20);
-% Zw_dot= parameters(21);
-% Zw_abs_w= parameters(22);
-% Kp= parameters(23);
-% Kp_dot= parameters(24);
-% Kp_abs_p= parameters(25);
-% Mq= parameters(26);
-% Mq_dot= parameters(27);
-% Mq_abs_q= parameters(28);
-% Nr= parameters(29);
-% Nr_dot= parameters(30);
-% Nr_abs_r= parameters(31);
-% Ix= parameters(32);
-% Iy= parameters(33);
-% Iz= parameters(34);
-% Ix_Kp_dot = parameters(35);
-% Iy_Mq_dot = parameters(36);
-% Kp_Ix_Kp_dot = parameters(37);
-% Kp_abs_p_Ix_Kp_dot = parameters(38);
-% Mq_dot_Ix_Kp_dot = parameters(39);
-% Nr_dot_Ix_Kp_dot = parameters(40);
-% Mq_Iy_Mq_dot = parameters(41);
-% Mq_abs_q_Iy_Mq_dot = parameters(42);
-% Kp_dot_Iy_Mq_dot = parameters(43);
-% Nr_dot_Iy_Mq_dot = parameters(44);
 
 p_dot =...
-    (f1*ly1 - f2*ly2 + f6*lz6 + p*(Kp + Kp_abs_p*abs(p)) - Mq_dot*q*r + Nr_dot*q*r + q*r*(Iy - Iz) + B*ct*sf*zb )/(Ix - Kp_dot); %- Yv_dot*v*w + Zw_dot*v*w 
+    (f1*ly1 - f2*ly2 + f6*lz6 + p*(Kp + Kp_abs_p*abs(p)) + B*ct*sf*zb )/(Ix - Kp_dot); %- Yv_dot*v*w + Zw_dot*v*w 
  
 q_dot =...
-     (f1*lx1 + f2*lx2 - f5*lx5 + q*(Mq + Mq_abs_q*abs(q)) + Kp_dot*p*r + B*st*zb - Nr_dot*p*r - p*r*(Ix - Iz)  )/(Iy - Mq_dot); %+ Xu_dot*u*w - Zw_dot*u*w 
+     (f1*lx1 + f2*lx2 - f5*lx5 + q*(Mq + Mq_abs_q*abs(q)) + B*st*zb)/(Iy - Mq_dot); %+ Xu_dot*u*w - Zw_dot*u*w 
 
 r_dot =...
-     (r*(Nr + Nr_abs_r*abs(r)) + f3*ly3 - f4*ly4 - Kp_dot*p*q + Mq_dot*p*q + p*q*(Ix - Iy))/(Iz - Nr_dot);
-
+     (r*(Nr + Nr_abs_r*abs(r)) + f3*ly3 - f4*ly4)/(Iz - Nr_dot);
 
 fi_dot = p + q*sf*st/ct + r*cf*st/ct;
 theta_dot = q*cf - r*sf;
