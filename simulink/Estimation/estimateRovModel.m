@@ -154,7 +154,7 @@ opt = nlgreyestOptions;
 opt.Display = 'on';
 opt.SearchOption.MaxIter = 50;
 tic
-All_estimation = nlgreyest(All_data(1:10000), All_nonlinear_greybox_model,opt);
+All_estimation = nlgreyest(All_data(1:10000), All_nonlinear_greybox_model,opt)
 %All_estimation = pem(All_data, All_nonlinear_greybox_model,opt);
 toc
 displayTable(parameters, parameter_strings,All_estimation)
