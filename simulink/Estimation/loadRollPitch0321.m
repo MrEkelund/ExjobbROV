@@ -7,7 +7,7 @@ getTestData(roll_pitch_filepath, 0);
 states = states(:,[3 2 1 4]); % Change position of yaw and roll
 states = states(:,1:3)*pi/180;
 ang_vel_data = ang_vel_data*pi/180;
-output_data = [ang_vel_data, antiModAngles(states(:,1:3))];
+output_data = [ang_vel_data, states(:,1:3)];
 input_data = thrusters_data;
 roll_pitch_data1 = iddata(output_data, input_data,Ts);
 
@@ -18,7 +18,7 @@ getTestData(roll_pitch_filepath, 0);
 states = states(:,[3 2 1 4]); % Change position of yaw and roll
 states = states(:,1:3)*pi/180;
 ang_vel_data = ang_vel_data*pi/180;
-output_data = [ang_vel_data, antiModAngles(states(:,1:3))];
+output_data = [ang_vel_data, states(:,1:3)];
 input_data = thrusters_data;
 roll_pitch_data2 = iddata(output_data, input_data,Ts);
 %%
@@ -28,7 +28,7 @@ getTestData(roll_pitch_filepath, 0);
 states = states(:,[3 2 1 4]); % Change position of yaw and roll
 states = states(:,1:3)*pi/180;
 ang_vel_data = ang_vel_data*pi/180;
-output_data = [ang_vel_data, antiModAngles(states(:,1:3))];
+output_data = [ang_vel_data, states(:,1:3)];
 input_data = thrusters_data;
 roll_pitch_data3 = iddata(output_data, input_data,Ts);
 roll_pitch_data3 = merge(roll_pitch_data3(1:2140), roll_pitch_data3(2780:end));
@@ -39,7 +39,7 @@ getTestData(roll_pitch_filepath, 0);
 states = states(:,[3 2 1 4]); % Change position of yaw and roll
 states = states(:,1:3)*pi/180;
 ang_vel_data = ang_vel_data*pi/180;
-output_data = [ang_vel_data, antiModAngles(states(:,1:3))];
+output_data = [ang_vel_data, states(:,1:3)];
 input_data = thrusters_data;
 roll_pitch_data4 = iddata(output_data, input_data,Ts);
 roll_pitch_data4 = merge(roll_pitch_data4(1:6470),roll_pitch_data4(6620:end));
@@ -50,7 +50,7 @@ getTestData(roll_pitch_filepath, 0);
 states = states(:,[3 2 1 4]); % Change position of yaw and roll
 states = states(:,1:3)*pi/180;
 ang_vel_data = ang_vel_data*pi/180;
-output_data = [ang_vel_data, antiModAngles(states(:,1:3))];
+output_data = [ang_vel_data, states(:,1:3)];
 input_data = thrusters_data;
 roll_pitch_data5 = iddata(output_data, input_data,Ts);
 roll_pitch_data5 = merge(roll_pitch_data5(1:3340));

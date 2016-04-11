@@ -72,7 +72,7 @@ function [lin_vel_data ,lin_acc_data, ang_vel_data, thrusters_data, states, time
     end
     
 states = states_data(:,[1 2 3 7]); % Angels and depth
-states(:,1:3) = states(:,1:3);
+states(:,1:3) = antiModAngles(states(:,1:3));
 ang_vel_data = states_data(:,4:6);
 lin_acc_data = states_data(:,8:10);
 lin_vel_data = 0;

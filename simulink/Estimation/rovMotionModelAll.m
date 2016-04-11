@@ -176,7 +176,7 @@ q_dot =...
 
 r_dot =...
      (r*(Nr + Nr_abs_r*abs(r)) + f3*ly3 - f4*ly4 - Kp_dot*p*q + Mq_dot*p*q + p*q*(Ix - Iy))/(Iz - Nr_dot);
- 
+
 
 fi_dot = p + q*sf*st/ct + r*cf*st/ct;
 theta_dot = q*cf - r*sf;

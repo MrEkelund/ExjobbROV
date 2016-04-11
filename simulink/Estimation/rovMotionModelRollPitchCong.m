@@ -1,11 +1,11 @@
-function [x_dot, y] = rovMotionModelYaw( t, x, control,  ...
+function [x_dot, y] = rovMotionModelRollPitch( t, x, control, ...
     m, g, rho, V, lx1, ly1, ly2, lx2, ly3, lx5, ly4, lz6, zb, Xu, ...
     Xu_dot, Xu_abs_u, Yv, Yv_dot, Yv_abs_v, Zw, Zw_dot,...
     Zw_abs_w, Kp, Kp_dot, Kp_abs_p, Mq, Mq_dot, Mq_abs_q,...
     Nr, Nr_dot, Nr_abs_r, Ix, Iy, Iz, Ix_Kp_dot, Iy_Mq_dot,...
     Kp_Ix_Kp_dot, Kp_abs_p_Ix_Kp_dot, Mq_dot_Ix_Kp_dot,...
     Nr_dot_Ix_Kp_dot, Mq_Iy_Mq_dot, Mq_abs_q_Iy_Mq_dot,...
-    Kp_dot_Iy_Mq_dot, Nr_dot_Iy_Mq_dot,Iz_Nr_dot,Iy_Iz, Ix_Iz, Ix_Iy, varargin)
+    Kp_dot_Iy_Mq_dot, Nr_dot_Iy_Mq_dot, varargin)
 %******* Constants
 % m = parameters(1);
 % g = parameters(2);
@@ -23,11 +23,12 @@ function [x_dot, y] = rovMotionModelYaw( t, x, control,  ...
 % zb= parameters(13);
 
 %******* States
-r = x(1);
+p = x(1);
+q = x(2);
 
-fi = x(2);
-theta = x(3);
-%******* Computed values
+fi = x(3);
+theta = x(4);
+%*******    Computed values
 
 ct = cos(theta);
 st = sin(theta);
@@ -123,8 +124,10 @@ lookup =[...
 
 forces = nakeinterp1(lookup(:,2),lookup(:,1),control');
 %Thrusterforce in newtons. Lookup table returns in kgf
-f3 = forces(1);
-f4 = forces(2);
+f1 = forces(1);
+f2 = forces(2);
+f5 = forces(3);
+f6 = forces(4);
 %******* Parameters
 % Xu= parameters(14);
 % Xu_dot= parameters(15);
@@ -147,14 +150,39 @@ f4 = forces(2);
 % Ix= parameters(32);
 % Iy= parameters(33);
 % Iz= parameters(34);
+% Ix_Kp_dot = parameters(35);
+% Iy_Mq_dot = parameters(36);
+% Kp_Ix_Kp_dot = parameters(37);
+% Kp_abs_p_Ix_Kp_dot = parameters(38);
+% Mq_dot_Ix_Kp_dot = parameters(39);
+% Nr_dot_Ix_Kp_dot = parameters(40);
+% Mq_Iy_Mq_dot = parameters(41);
+% Mq_abs_q_Iy_Mq_dot = parameters(42);
+% Kp_dot_Iy_Mq_dot = parameters(43);
+% Nr_dot_Iy_Mq_dot = parameters(44);
+
+
+
+
+% 14, 16, 18, 21, 15 %u_dot
+% 17, 19, 15, 21, 18 %v_dot
+% 20, 22, 15, 18, 21 %w_dot
+% 23, 25, 33, 34, 27, 30, 18, 21, 32, 24 %p_dot
+% 26, 28, 32, 34, 24, 30, 15, 21, 33, 27 %q_dot
+% 29, 31, 32, 33, 24, 27, 15, 18, 34, 30 %r_dot
+
+
+p_dot =...
+    (f1*ly1 - f2*ly2 + f6*lz6 + p*(Kp + Kp_abs_p*abs(p)) + B*ct*sf*zb )/(Ix_Kp_dot); 
  
-r_dot =...
-    (r*(Nr + Nr_abs_r*abs(r)) + f3*ly3 - f4*ly4)/(Iz - Nr_dot); 
+q_dot =...
+     (f1*lx1 + f2*lx2 - f5*lx5 + q*(Mq + Mq_abs_q*abs(q)) + B*st*zb)/(Iy_Mq_dot);
 
-fi_dot = r*cf*st/ct;
-theta_dot = r*sf;
 
-x_dot = [r_dot;fi_dot;theta_dot];
+fi_dot = p + q*sf*st/ct;
+theta_dot = q*cf;
+
+x_dot = [p_dot;q_dot;fi_dot;theta_dot];
+
 y = x;
 end
-
