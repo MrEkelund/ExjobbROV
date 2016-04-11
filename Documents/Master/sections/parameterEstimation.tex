@@ -1,0 +1,83 @@
+\chapter{Parameter Estimation} \label{cha:parameterEstimation}
+A central part in modelling is parameter estimation and it's often underestimated. If the parameters in the model isn't well estimated several problems arise when trying to synthesise model-based controllers.
+
+The parameter estimation was done by trying to estimate a minimum of amount of \abbrDOF at the same time. As can be seen in \eqref{eq:p_dot} - \eqref{eq:r_dot}, $\pdot$ and $\qdot$ are coupled. Therefore are the parameters in $\pdot$ and $\qdot$ estimated simultaneously. However, the parameters in $\rdot$ are estimated by themselves. For $\pdot$, $\qdot$ and $\rdot$ the translation dynamics was assumed to be small and thus excluded from the parameter estimation. The tests was conducted in a deep swimming pool and thus could all water currents be neglected in the model. 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Estimated parameters}
+\Tableref{tab:parameterEstimation} shows the constants and parameters used in the \abbrROV model.
+
+ \begin{table}[tbp]
+  \centering
+  \caption{\label{tab:parameterEstimation}%
+    The constants and estimated parameters used in the \abbrROV model.}
+\scalebox{0.85}{
+  \begin{tabular}{l l p{0.7\linewidth}}
+    \toprule%
+    \textbf{Notation}   & \textbf{Value} & \textbf{Description} \\
+    \otoprule%
+    $m$                 & 6.621 \kilogram                    & Mass of the \abbrROV. \\            
+    $g$                 & 9.82  \meter\per\second\squared    & Gravity acceleration.\\   
+    $\rho$              & 1000  \kilogram\per\meter\cubed    & Density of water.\\ 
+    $V$                 &        \meter\cubed                & Displaced volume.\\       
+    
+    $\distance{x}{1}$   & 0.16 \meter & Distance from \abbrCG to thruster 1 in $\xPosition$-direction.\\
+    $\distance{y}{1}$   & 0.11 \meter & Distance from \abbrCG to thruster 1 in $\yPosition$-direction.\\
+    $\distance{y}{2}$   & 0.11 \meter & Distance from \abbrCG to thruster 2 in $\yPosition$-direction.\\
+    $\distance{x}{2}$   & 0.16 \meter & Distance from \abbrCG to thruster 2 in $\xPosition$-direction.\\
+    $\distance{y}{3}$   & 0.11 \meter & Distance from \abbrCG to thruster 3 in $\yPosition$-direction.\\
+    $\distance{x}{5}$   & 0.2  \meter & Distance from \abbrCG to thruster 5 in $\xPosition$-direction.\\
+    $\distance{y}{4}$   & 0.11 \meter & Distance from \abbrCG to thruster 4 in $\yPosition$-direction.\\
+    $\distance{z}{6}$   & 0.11 \meter & Distance from \abbrCG to thruster 6 in $\zPosition$-direction.\\
+    $z_B$               &   \meter& Distance from \abbrCG to \abbrCB.\\
+    
+    % Parameters that will be estimated
+    $\Xu$               &   \kilogram\per\second                        & Linear damping coefficient in $\xPosition$-direction due to translation in water.\\
+    $\Xudot$            &   \kilogram                                   & Added mass in $\xPosition$-direction due to translation in water.\\
+    $\Xuabsu$           &   \kilogram\per\meter                         & Quadratic damping coefficient in $\xPosition$-direction due to translation in water.\\
+    $\Yv$               &   \kilogram\per\second                        & Linear damping coefficient in $\yPosition$-direction due to translation in water.\\
+    $\Yvdot$            &   \kilogram                                   & Added mass in $\yPosition$-direction due to translation in water.\\
+    $\Yvabsv$           &   \kilogram\per\meter                         & Quadratic damping coefficient in $\yPosition$-direction due to translation in water.\\
+    $\Zw$               &   \kilogram\per\second                        & Linear damping coefficient in $\zPosition$-direction due to translation in water.\\
+    $\Zwdot$            &   \kilogram                                   & Added mass in $\zPosition$-direction due to translation in water.\\
+    $\Zwabsw$           &   \kilogram\per\meter                         & Quadratic damping coefficient in $\zPosition$-direction due to translation in water.\\
+    $\Kp$               &   \kilogram\usk\meter\squared                 & Linear damping coefficient due to rotation in water about the $\xPosition$-axis.\\
+    $\Kpdot$            &   \kilogram\usk\meter\squared\per\usk\second  & Increased inertia about the $\xPosition$-axis due to rotation in water.\\
+    $\Kpabsp$           &   \kilogram\usk\meter\squared                 & Quadratic damping coefficient due to rotation in water about the $\xPosition$-axis.\\
+    $\Mq$               &   \kilogram\usk\meter\squared                 & Linear damping coefficient due to rotation in water about the $\yPosition$-axis.\\
+    $\Mqdot$            &   \kilogram\usk\meter\squared\per\usk\second  & Increased inertia about the $\yPosition$-axis due to rotation in water.\\
+    $\Mqabsq$           &   \kilogram\usk\meter\squared                 & Quadratic damping coefficient due to rotation in water about the $\yPosition$-axis.\\
+    $\Nr$               &   \kilogram\usk\meter\squared                 & Linear damping coefficient due to rotation in water about the $\zPosition$-axis.\\
+    $\Nrdot$            &   \kilogram\usk\meter\squared\per\usk\second  & Increased inertia about the $\zPosition$-axis due to rotation in water.\\
+    $\Nrabsr$           &   \kilogram\usk\meter\squared                 & Quadratic damping coefficient due to rotation in water about the $\zPosition$-axis.\\
+    $\Ix$               &   \kilogram\usk\meter\squared                 & Inertia around the $\xPosition$-axis.\\
+    $\Iy$               &   \kilogram\usk\meter\squared                 & Inertia around the $\yPosition$-axis.\\
+    $\Iz$               &   \kilogram\usk\meter\squared                 & Inertia around the $\zPosition$-axis.\\
+    \bottomrule%
+  \end{tabular}}
+\end{table}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Tests}
+The main test signals used in the parameter estimation tests was telegraph signals. Both the scaling of the output signals and switch factors was changed in between tests for finding signals that excited the \abbrROV sufficiently. 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Parameter Estimation}
+The parameter estimation used a nonlinear grey box model. A first estimate of the parameters was done with MATLAB's \matlabFunction{nlgreyest} and to refine the parameter estimation MATLAB's \matlabFunction{pem} was used. Both estimation functions minimise the cost function 
+\begin{equation}
+    V(\boldsymbol{\theta}) = \frac{1}{N} \sum_{t=1}^{N} e^T(t,\boldsymbol{\theta}) W(\boldsymbol{\theta})  e(t,\boldsymbol{\theta})
+\end{equation}
+where:
+\begin{itemize}
+    \item $N$ is the number of samples.
+    \item $e(t,\boldsymbol{\theta})$ is the error vector at time t with the parameter vector $\boldsymbol{\theta}$.
+    \item $W(\boldsymbol{\theta})$ is the weight matrix.
+\end{itemize}
+
+
+\section{Yaw Parameter Estimation}
+
+\section{Roll and Pitch Parameter Estimation}
+
+\section{Attitude Parameter Estimation}
+
+\section{Validation}

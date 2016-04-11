@@ -56,6 +56,10 @@ if isempty(files)
     Nr_dot_Iy_Mq_dot = -1;
     Iy_Iz_Ix_Kp_dot = 1;
     Ix_Iz_Iy_Mq_dot = 1;
+    Iz_Nr_dot = 0.5;
+    Iy_Iz = 1; 
+    Ix_Iz = 1;
+    Ix_Iy = 1;
     
     Parameters= [...
         m; g; rho; V; lx1; ly1; ly2; lx2; ly3; lx5; ly4;
@@ -69,7 +73,8 @@ if isempty(files)
         Kp_abs_p_Ix_Kp_dot; Mq_dot_Ix_Kp_dot;
         Nr_dot_Ix_Kp_dot; Mq_Iy_Mq_dot;
         Mq_abs_q_Iy_Mq_dot; Kp_dot_Iy_Mq_dot;
-        Nr_dot_Iy_Mq_dot; Iy_Iz_Ix_Kp_dot; Ix_Iz_Iy_Mq_dot];
+        Nr_dot_Iy_Mq_dot; Iy_Iz_Ix_Kp_dot; Ix_Iz_Iy_Mq_dot;
+        Iz_Nr_dot;Iy_Iz; Ix_Iz; Ix_Iy];
 else
     temp = load('parameters.mat');
     disp('Parameters loaded from file')

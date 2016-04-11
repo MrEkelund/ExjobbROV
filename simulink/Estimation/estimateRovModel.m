@@ -16,7 +16,7 @@ estimation_mode = 'YawCong';
 %  yaw_filepath = fullfile('bag','test3_t3_t4_2016-04-04-15-02-24.bag');
 
 %yaw_filepath = 'Yaw0321';
- yaw_filepath = 'Yaw0404';
+yaw_filepath = 'Yaw0404';
 
 [parameters, parameter_strings]= initROVParameters();
 displayTable(parameters, parameter_strings);
@@ -24,8 +24,6 @@ displayTable(parameters, parameter_strings);
     setupEstimation(parameters, parameter_strings, estimation_mode, simulation, yaw_filepath, plotting, detrend_enable);
 
 %%
-% yaw_val_data = getexp(yaw_data,1);
-% yaw_est_data = getexp(yaw_data,[2:length(yaw_data.OutputData)]);
 
 opt = nlgreyestOptions;
 opt.Display = 'on';
@@ -57,8 +55,8 @@ estimation_mode = 'RollPitchCong';
 % roll_pitch_filepath = fullfile('bag','test3_roll_pitch_2016-04-04-15-16-43.bag');
 %roll_pitch_filepath = fullfile('bag','test4_roll_pitch_2016-04-04-15-18-34.bag');
 
- roll_pitch_filepath = 'RollPitch0321';
-%roll_pitch_filepath = 'RollPitch0404';
+%roll_pitch_filepath = 'RollPitch0321';
+roll_pitch_filepath = 'RollPitch0404';
 [parameters, parameter_strings]= initROVParameters();
 displayTable(parameters, parameter_strings);
 simulation = 0;
@@ -73,12 +71,12 @@ opt = nlgreyestOptions;
 opt.Display = 'on';
 opt.SearchOption.MaxIter = 50;
 tic
-roll_pitch_estimation = nlgreyest(roll_pitch_data, roll_pitch_nonlinear_greybox_model,opt);
+roll_pitch_estimation = nlgreyest(roll_pitch_data(1:5000), roll_pitch_nonlinear_greybox_model,opt);
 toc
 displayTable(parameters, parameter_strings, roll_pitch_estimation)
 
 figure(2)
-compare(roll_pitch_val_data, roll_pitch_estimation, inf);
+compare(roll_pitch_val_data(1:5000), roll_pitch_estimation, inf);
 %%
 saveParameters(roll_pitch_estimation.Report.Parameters.ParVector, roll_pitch_estimation.Report.Parameters.Free)
 % temp_parameters = roll_pitch_estimation.Report.Parameters.ParVector;

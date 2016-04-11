@@ -1,0 +1,1 @@
+COPY texmf to ~/ and run sudo texhash

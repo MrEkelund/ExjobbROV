@@ -1,0 +1,194 @@
+\providecommand*\@issn{0280-7971} % ISSN for rt lic
+\providecommand*\publication@series{Linköping studies in science and
+  technology. Thesis.\\No.\@}
+
+\ifx\local@ID\undefined
+\else
+  \newcommand{\licLocal@ID}{LIU-TEK-LIC-\thesis@year:\local@ID}
+\fi
+
+\renewcommand*\maketitle{%
+  \begingroup
+  \setlength{\parskip}{\z@}
+  \frontmatter
+  \cleardoublepage
+  \thispagestyle{empty}%
+  \vspace*{-22mm}%
+  \hspace*{-10mm}%
+  \noindent\parbox[l][0pt][t]{0pt}{%
+    \begin{minipage}[t][\paperheight-15mm][t]{\paperwidth-35mm}%
+      \raggedright%
+      \sffamily%
+      \begin{large}\publication@series~\thesisn@\\Licentiate's Thesis\par\end{large}%
+      \vspace*{17mm}%
+      {\fontsize{11mm}{13mm}\selectfont\@title\par}%
+      \ifrt@subtitle%
+      \bigskip%
+      \begin{huge}\@subtitle\par\end{huge}%
+      \fi%
+      \vspace*{10mm}%
+      \begin{LARGE}\textbf{\@author}\par\end{LARGE}%
+      \vspace*{\stretch{6}}%
+      \hspace*{-5mm}\includegraphics[width=85mm]{LiU_primary_black}%
+    \end{minipage}}
+  \clearpage
+  \thispagestyle{empty}
+
+  \vspace*{\stretch{1}}
+  \begin{center}
+    \small
+    This is a Swedish Licentiate's Thesis.\\[1.5mm]
+
+    Swedish postgraduate education leads to a Doctor's degree and/or a
+    Licentiate's degree.\\
+    A Doctor's Degree comprises 240~ECTS~credits (4~years of full-time
+    studies).\\
+    A Licentiate's degree comprises 120~ECTS~credits,\\
+    of which at least 60~ECTS~credits constitute a Licentiate's thesis.
+  \end{center}
+  \vspace*{\stretch{5}}
+  \begin{center}
+    \publication@series~\thesisn@
+    \par\smallskip
+    \textbf{\textsf{\@title\ifrt@subtitle\@subtitlesep\@subtitle\fi}}
+    \par\smallskip
+    \@author
+    \par\bigskip
+    {\slshape
+      \texttt{\u@name @isy.liu.se}\\
+      \texttt{www.control.isy.liu.se}\\
+      Department of Electrical Engineering\\
+      Linköping University\\
+      SE-581 83 Linköping\\
+      Sweden}
+    \par\bigskip
+\ifx\licLocal@ID\undefined
+    ISBN~\@isbn
+    \hspace{1cm}
+    ISSN~\@issn
+\else
+    ~\hfill
+    \makebox[.25\textwidth][c]{ISBN~\@isbn}\hfill
+    \hfill
+    \makebox[.25\textwidth][c]{ISSN~\@issn}\hfill
+    \hfill
+    \makebox[.25\textwidth][c]{\licLocal@ID}
+    \hfill~
+\fi
+    \par\bigskip
+    Copyright \copyright~\thesis@year~\@author\par
+    \par\bigskip
+    {\small Printed by \publishername~\thesis@year}
+    \normalsize
+  \end{center}
+
+  \clearemptydoublepage
+    \thispagestyle{empty}
+  \vspace*{70mm}
+  \begin{flushright}
+    \textsl{\dedic@tion}
+  \end{flushright}
+
+  \clearemptydoublepage
+  \endgroup
+}
+
+
+\newcommand*\liclist[1][liclist-utf8]{%
+  \clearemptydoublepage
+  \pagestyle{empty}
+  \begingroup
+  \setlength{\parskip}{\z@}
+  \begin{center}
+    \small\bfseries%
+    Licentiate Theses\\%
+    Division of Automatic Control\\%
+    Linköping University
+  \end{center}
+  \begin{list}{}{%
+      \setlength\leftmargin{0pt}\setlength\rightmargin{0pt}%
+      \setlength\labelwidth{0pt}\setlength\labelsep{.5em}%
+      \setlength\itemindent{0pt}\setlength\itemsep{.20\baselineskip}%
+      \setlength\parsep{0pt}\setlength\partopsep{0.5ex}%
+      \newcommand*\licitem[4]{%
+      \item\parbox{\linewidth}{\textbf{##1:} ##2. Thesis No.~##3, ##4.}}}
+    \small
+    \input{#1}
+  \end{list}
+  \endgroup
+}
+
+\AtEndDocument{\liclist}
+
+\newcommand*\makecover{%
+  \pagestyle{empty}
+  \begin{document}
+  \thispagestyle{empty}%
+  \thispagestyle{empty}%
+  \vspace*{-22mm}%
+  \hspace*{-5mm}\hspace*{-10mm}%
+  \noindent\parbox[l][0pt][t]{0pt}{%
+    \begin{minipage}[t][\paperheight-15mm][t]{\paperwidth-35mm}%
+      \raggedright%
+      \sffamily%
+      \begin{large}\publication@series~\thesisn@\\Licentiate's Thesis\par\end{large}%
+      \vspace*{17mm}%
+      {\fontsize{11mm}{13mm}\selectfont\@title\par}%
+      \ifrt@subtitle%
+      \bigskip%
+      \begin{huge}\@subtitle\par\end{huge}%
+      \fi%
+      \vspace*{10mm}%
+      \begin{LARGE}\textbf{\@author}\par\end{LARGE}%
+      \vspace*{\stretch{6}}%
+      \hspace*{-5mm}\includegraphics[width=85mm]{LiU_primary_black}%
+    \end{minipage}}
+  \newpage
+
+  \vspace*{-22mm}%
+  \hspace*{-15mm}\hspace*{36mm}
+  \noindent\parbox[l][0pt][t]{0pt}{%
+    \begin{minipage}[t][\paperheight-10mm][t]{\paperwidth-41mm}
+      \vspace*{30mm}
+      \sffamily
+      \raggedright%
+      \begin{Large}%
+        \bfseries
+        Department of Electrical Engineering
+        \par
+      \end{Large}
+      \bigskip
+      \publication@series\thesisn@\\
+      Licentiate's Thesis.
+      \par
+      \bigskip
+      Linköping University\\
+      SE-581 83 Linköping
+      \par
+      \bigskip
+      \begin{Large}
+        www.liu.se
+      \end{Large}
+      \par
+      \vspace*{\stretch{3}}
+      \hspace*{-6mm}\hspace*{-36mm}\includegraphics[width=85mm]{LiU_primary_black}
+    \end{minipage}}
+  \newpage
+
+  \raggedright
+  \rotatebox[origin=lb]{270}{%
+    \sffamily%
+    \hspace*{-4em}%
+    \makebox[.90\paperheight][l]{%
+      \def\\{ }%
+      \def\linebreak{ }%
+      \@author\hspace*{3em}%
+      \hfill%
+      \textbf{\@title\@subtitlesep\@subtitle}%
+      \hspace*{3em}\hfill%
+      \thesis@year%
+    }
+  }
+  \let\liclist\relax
+\end{document}
+}

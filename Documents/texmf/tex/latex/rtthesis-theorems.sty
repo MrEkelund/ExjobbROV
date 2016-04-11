@@ -1,0 +1,263 @@
+\ProvidesPackage{rtthesis-theorems}[2010/02/18 Theorem-like environments for the rtthesis class]
+
+\@ifpackageloaded{rtthesis-captions}{}{% If not loaded...
+  \PackageError{rtthesis-theorems}{%
+    The package rtthesis-captions must be loaded\MessageBreak
+    before rtthesis-theorems.  Since\MessageBreak
+    rtthesis-theorems cannot guess which\MessageBreak
+    character encoding you prefer, it won't\MessageBreak
+    load rtthesis-captions for you, so you have\MessageBreak
+    to do it yourself%
+  }{%
+    The package rtthesis-captions must be loaded\MessageBreak
+    before rtthesis-theorems.  Since\MessageBreak
+    rtthesis-theorems cannot guess which\MessageBreak
+    character encoding you prefer, it won't\MessageBreak
+    load rtthesis-captions for you, so you have\MessageBreak
+    to do it yourself%
+  }
+}
+
+% Use same counter for theorem-like environments?
+\newif\ifrtthm@shareTheoremCounter
+\DeclareOption{sharecounter}{\rtthm@shareTheoremCountertrue}
+\DeclareOption{nosharecounter}{\rtthm@shareTheoremCounterfalse}
+
+\ExecuteOptions{nosharecounter}
+
+% Put breaks after theorem (and similar) labels?
+\newif\ifrtthm@break
+\DeclareOption{break}{\rtthm@breaktrue}
+\DeclareOption{nobreak}{\rtthm@breakfalse}
+
+\ExecuteOptions{nobreak}
+
+% Choice of definition style
+\newif\ifrt@definitionNotTheorem
+\newif\ifrt@definitionMarks
+\DeclareOption{definition=theorem}{\rt@definitionNotTheoremfalse}
+\DeclareOption{definition=naked}{\rt@definitionNotTheoremtrue\rt@definitionMarksfalse}
+\DeclareOption{definition=marks}{\rt@definitionNotTheoremtrue\rt@definitionMarkstrue}
+
+\ExecuteOptions{definition=naked}
+
+% Should we use italics or slanted text in theorems?
+\newif\ifrtthm@slanted
+\DeclareOption{slanted}{\rtthm@slantedtrue}
+\DeclareOption{italics}{\rtthm@slantedfalse}
+
+\ExecuteOptions{italics}
+
+% Use parskip.sty and adjust sectioning commands?
+\newif\ifrtthm@parskipDefault
+\rtthm@parskipDefaulttrue
+\newif\ifrtthm@parskip
+\DeclareOption{noparskip}{\rtthm@parskipfalse\rtthm@parskipDefaultfalse}
+\DeclareOption{parskip}{\rtthm@parskiptrue\rtthm@parskipDefaultfalse}
+
+\@ifpackageloaded{parskip}{%
+  \rtthm@parskiptrue
+}{% In case KpFonts was not loaded:
+  \rtthm@parskipfalse
+  \AtBeginDocument{%
+    \ifrtthm@parskipDefault
+    \@ifpackageloaded{parskip}{%
+      \PackageWarningNoLine{rtthesis-theorems}{%
+        The default setting regarding `parskip' or\MessageBreak
+        `noparskip' is `noparskip' since package\MessageBreak
+        parskip was loaded after \MessageBreak
+        rtthesis-theorems.  This is probably not\MessageBreak
+        what you want.  Avoid this warning by\MessageBreak
+        explicitly passing one of the options\MessageBreak
+        `parskip' or `noparskip', or change the\MessageBreak
+        package loading order
+      }}{}%
+    \fi
+  }
+}
+
+% When should counters be reset?
+% Use same counter for theorem-like environments?
+\DeclareOption{reset=chapter}{\def\rtthm@reset{chapter}}
+\DeclareOption{reset=section}{\def\rtthm@reset{section}}
+
+\@ifundefined{thechapter}{%
+  \ExecuteOptions{reset=section}}{%
+  \ExecuteOptions{reset=chapter}}
+
+
+\ProcessOptions\relax
+
+
+\RequirePackage{amsthm}
+
+
+\ifrtthm@slanted
+% It's dangerous to use the italic shape, since italic small caps seem hard to find.
+\let\theoremshape\slshape
+\else
+\let\theoremshape\itshape
+\fi
+
+\newlength{\rt@theoremtopskip}
+\ifrtthm@parskip
+\setlength{\rt@theoremtopskip}{1.5\parskip plus 1.5pt}
+\else
+\setlength{\rt@theoremtopskip}{0.5em plus 1.5pt}
+\fi
+
+% In case the user adjusts this length, and later decides not to use marks, we define the following length no matter whether marks are used or not.
+\newlength{\rt@definitionlinewidth}
+\setlength{\rt@definitionlinewidth}{0.3pt}
+
+\ifrt@definitionMarks
+\newcommand{\rt@definitionBeginMark}{%
+  \begin{picture}(0,0)
+    \settoheight{\unitlength}{(D)}
+    \linethickness{\rt@definitionlinewidth}
+    \put(-0.3,1.3){\line(0,-1){0.5}}
+    \put(-0.3,1.3){\line(1,0){4}}
+  \end{picture}%
+}
+\newcommand{\rt@definitionEndMark}{%
+  \unskip
+  % Whether we are in vmode here seems to depend on whether we are using parskip...
+  \ifrtthm@parskip
+  \ifvmode
+  \nopagebreak\vspace{-\baselineskip}%
+  \fi
+  \fi
+  \ifhmode
+  \nopagebreak\\[-1\baselineskip]%
+  \fi
+  \nopagebreak\hspace*{\linewidth}%
+  \begin{picture}(0,0)
+    \settoheight{\unitlength}{(D)}
+    \linethickness{\rt@definitionlinewidth}
+    \put(0.3,-0.3){\line(0,1){0.5}}
+    \put(0.3,-0.3){\line(-1,0){4}}
+  \end{picture}%
+}
+\newcommand{\rt@topmarkskip}{%
+  \settoheight{\unitlength}{(D)}%
+  \ifhmode
+  \par\vspace{-\rt@theoremtopskip}\vspace{0.3\unitlength}%
+  \else
+  \setlength{\unitlength}{0.3\unitlength}%
+  \addtolength{\unitlength}{\parskip}
+  \addvspace{\unitlength}%
+  \fi
+}
+\newcommand{\rt@botmarkskip}{%
+  \settoheight{\unitlength}{(D)}%
+  \setlength{\unitlength}{0.3\unitlength}%
+  \addtolength{\unitlength}{\parskip}
+  \addvspace{\unitlength}%
+%%% The following line does more than just cancelling the \addtolength{\unitlength}{\parskip} above.
+  \rt@unparskip% Next thing that happens will probably be a \par, but we don't want that extra \parskip.
+%
+%%% By leaving TeX in hmode, it might be possible to continue the paragraph right after the environment...
+%%% but how exactly should this be done?!
+%%% One should probably redefine \par temporarily so that it produces the correct after-theorem space and then
+%%% resets itself to the usual \par.  This would work as long as a \par is actually the first thing that follows
+%%% the environment.  However, if the user really continues to add stuff in hmode, then this must be detected so that
+%%% we can reset \par to its usual meaning before the user leaves hmode.  The important question seems to be:
+%%%   How can we detect that the user is adding stuff in hmode before we reach the next \par?
+}
+\else
+\newcommand{\rt@definitionBeginMark}{\relax}
+\newcommand{\rt@definitionEndMark}{\relax}
+\newcommand{\rt@topmarkskip}{%
+  \ifhmode
+  \par\vspace{-\rt@theoremtopskip}%
+  \fi
+}
+\newcommand{\rt@botmarkskip}{%
+  \rt@unparskip
+%
+%%% By leaving TeX in hmode, it might be possible to continue the paragraph right after the environment...
+%%% See comments above.
+}
+\fi
+
+\ifrtthm@shareTheoremCounter
+\newtheoremstyle{break}{\rt@theoremtopskip}{\rt@theoremtopskip}{\theoremshape}{}{\bfseries}{}
+  {\newline}{\thmname{#1}~\thmnumber{#2}\thmnote{~(#3)}}
+\newtheoremstyle{nobreak}{\rt@theoremtopskip}{\rt@theoremtopskip}{\theoremshape}{}{\bfseries}{.}
+  {.75em}{\thmname{#1}~\thmnumber{#2}\thmnote{~(#3)}}
+\newtheoremstyle{definition}{\rt@theoremtopskip}{\rt@theoremtopskip}{\normalfont}{}{\bfseries}{.}
+  {.75em}{\rt@definitionBeginMark\thmname{#1}~\thmnumber{#2}\thmnote{~(#3)}}
+\newtheoremstyle{remark}{\rt@theoremtopskip}{\rt@theoremtopskip}{\normalfont\small}{}{\slshape}{.}
+  {.75em}{\rt@definitionBeginMark\thmname{#1}~\thmnumber{#2}\thmnote{~(#3)}}
+\else
+\newtheoremstyle{break}{\rt@theoremtopskip}{\rt@theoremtopskip}{\theoremshape}{}{\bfseries}{}
+  {\newline}{\thmname{#1}~\thmnumber{#2}\thmnote{~(#3)}}
+\newtheoremstyle{nobreak}{\rt@theoremtopskip}{\rt@theoremtopskip}{\theoremshape}{}{\bfseries}{.}
+  {.75em}{\thmname{#1}~\thmnumber{#2}\thmnote{~(#3)}}
+\newtheoremstyle{definition}{\rt@theoremtopskip}{\rt@theoremtopskip}{\normalfont}{}{\bfseries}{.}
+  {.75em}{\rt@definitionBeginMark\thmname{#1}~\thmnumber{#2}\thmnote{~(#3)}}
+\newtheoremstyle{remark}{\rt@theoremtopskip}{\rt@theoremtopskip}{\normalfont\small}{}{\slshape}{.}
+  {.75em}{\rt@definitionBeginMark\thmname{#1}~\thmnumber{#2}\thmnote{~(#3)}}
+\fi
+
+\ifrtthm@break
+\theoremstyle{break}
+\else
+\theoremstyle{nobreak}
+\fi
+\ifrtthm@shareTheoremCounter
+\newtheorem{theorem}{\theoremname}[\rtthm@reset]
+\newtheorem{lemma}[theorem]{\lemmaname}
+\newtheorem{corollary}[theorem]{\corollaryname}
+\newtheorem{proposition}[theorem]{\propositionname}
+\else
+\newtheorem{theorem}{\theoremname}[\rtthm@reset]
+\newtheorem{lemma}{\lemmaname}[\rtthm@reset]
+\newtheorem{corollary}{\corollaryname}[\rtthm@reset]
+\newtheorem{proposition}{\propositionname}[\rtthm@reset]
+\fi
+
+\ifrt@definitionNotTheorem
+\theoremstyle{definition}% Change theorem style unless the user prefers to use the break/nobreak style also for definitions.
+\fi
+\ifrtthm@shareTheoremCounter
+\newtheorem{rt@definition}[theorem]{\definitionname}
+\newtheorem{rt@assumption}[theorem]{\assumptionname}
+\else
+\newtheorem{rt@definition}{\definitionname}[\rtthm@reset]
+\newtheorem{rt@assumption}{\assumptionname}[\rtthm@reset]
+\fi
+\renewcommand*{\thert@assumption}{A\arabic{rt@assumption}}
+
+\newenvironment{definition}{\rt@topmarkskip\begin{rt@definition}}{\rt@definitionEndMark\end{rt@definition}\rt@botmarkskip}
+\newenvironment{assumption}{\rt@topmarkskip\begin{rt@assumption}}{\rt@definitionEndMark\end{rt@assumption}\rt@botmarkskip}
+
+
+\theoremstyle{remark}
+\ifrtthm@shareTheoremCounter
+\newtheorem{rt@remark}[theorem]{\remarkname}
+\else
+\newtheorem{rt@remark}{\remarkname}[\rtthm@reset]
+\fi
+\newenvironment{remark}{\rt@topmarkskip\begin{rt@remark}}{\rt@definitionEndMark\end{rt@remark}\rt@botmarkskip}
+
+\renewenvironment{proof}[1][\proofname]{\par
+  \pushQED{\qed}%
+  \normalfont \topsep6\p@\@plus6\p@\relax
+  \trivlist
+\item[\hskip\labelsep\bfseries#1\@addpunct{:}]\ignorespaces
+}{%
+  \popQED\endtrivlist\@endpefalse
+}
+
+\ifrtthm@parskip
+\newcommand{\rt@unparskip}{%
+  \vspace{-\parskip}% It's hard to know which is best of \addvspace and \vspace here...
+}
+%%% Adjust space before proof environment
+\let\ams@proof\proof
+\let\ams@endproof\endproof
+\renewenvironment{proof}{\rt@unparskip\ams@proof}{\ams@endproof}
+\else
+\newcommand{\rt@unparskip}{\relax}
+\fi

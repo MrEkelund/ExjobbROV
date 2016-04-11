@@ -73,7 +73,7 @@ switch estimation_mode
         data.InputUnit =  {'%';'%';'%';'%'};
         data.OutputName = {'p','q','fi','theta'};
         data.OutputUnit = {'rad/s','rad/s','rad','rad'};
-    case 'RollPitchCongregated'
+    case 'RollPitchCong'
         data = data(:,[1, 2, 4, 5],[1, 2, 5, 6]);
         data.InputName =  {'Thruster1';'Thruster2';'Thruster5';'Thruster6'};
         data.InputUnit =  {'%';'%';'%';'%'};
@@ -110,9 +110,7 @@ switch estimation_mode
         error('Unkown test: %s', estimation_mode);
 end
 
-if detrend_enable
-    data = detrend(data);
-end
+
 
 ne = length(data.ExperimentName); % number of experiments
 
@@ -123,8 +121,18 @@ elseif ne == 2
     val_data = getexp(data,2);
     data = getexp(data,1);
 else
-    val_data = getexp(data, ceil(ne/2):ne);
-    data = getexp(data, 1:ceil(ne/2)-1);
+    if mod(ne,2) == 0
+        val_data = getexp(data, ne/2+1:ne);
+        data = getexp(data, 1:ne/2);
+    else
+        val_data = getexp(data, ceil(ne/2)+1:ne);
+        data = getexp(data, 1:ceil(ne/2));
+    end
+end
+
+if detrend_enable
+    val_data = detrend(val_data);
+    data = detrend(data);
 end
 %% Setup the non linear greybox model
 Ts_model = 0;      % Sample time [s].

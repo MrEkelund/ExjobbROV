@@ -1,0 +1,19 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{rtthesis-utf8-ext}[2009/12/03 Additional UTF8 characters for the rtthesis class]
+
+\@ifpackagewith{inputenc}{utf8}{%
+  %%% Add more characters here as needed...
+  \DeclareUnicodeCharacter{C487}{\'{c}}%
+  \DeclareUnicodeCharacter{C5A1}{\v{s}}%
+}{%
+  \@ifpackageloaded{inputenc}{%
+    \PackageWarningNoLine{rtthesis-utf8-ext}{%
+      Package rtthesis-utf8-ext loaded, but not with option\MessageBreak
+      utf8.  No additional characters will be defined.}
+  }{%
+    \PackageWarningNoLine{rtthesis-utf8-ext}{%
+      Package rtthesis-utf8-ext must be loaded after package\MessageBreak
+      inputenc (with option utf8).  No additional characters\MessageBreak
+      will be defined.}
+  }%
+}

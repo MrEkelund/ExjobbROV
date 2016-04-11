@@ -1,0 +1,36 @@
+\ProvidesPackage{rtlic}[2010/03/24 rtlic Style v. 0.02a]
+\NeedsTeXFormat{LaTeX2e}
+
+% Some suff that must be declared
+\DeclareOption{noliclist}{%
+  \AtEndOfPackage{\let\liclist=\relax}}
+\DeclareOption{noextras}{%
+  \ExecuteOptions{noliclist}}
+
+%%% Note: It is too dangerous to have a default value for the encoding, so we
+%%% must detect if the user fails to select it explicitly.
+\newif\ifrtlic@InputEncUTFUnspecified
+\rtlic@InputEncUTFUnspecifiedtrue
+\newif\ifrtlic@InputEncUTF
+\DeclareOption{latin1}{\rtlic@InputEncUTFfalse\rtlic@InputEncUTFUnspecifiedfalse}
+\DeclareOption{utf8}{\rtlic@InputEncUTFtrue\rtlic@InputEncUTFUnspecifiedfalse}
+
+\ProcessOptions\relax
+
+\ifrtlic@InputEncUTFUnspecified
+\PackageError{rtlic}{%
+  One of the options `latin1' and `utf8' must\MessageBreak
+  be given to select the character encoding\MessageBreak
+  of the loaded captions%
+}{%
+  One of the options `latin1' and `utf8' must\MessageBreak
+  be given to select the character encoding\MessageBreak
+  of the loaded captions%
+}
+\fi
+
+\ifrtlic@InputEncUTF
+\RequirePackage{rtlic-defs-utf8}%
+\else
+\RequirePackage{rtlic-defs}%
+\fi

@@ -1,0 +1,193 @@
+\ProvidesPackage{rtthesis-example}[2010/02/18 The example environment of the rtthesis class]
+
+% Same dependency on rtthesis-captions as found in rtthesis-theorems.sty.
+\@ifpackageloaded{rtthesis-captions}{}{% If not loaded...
+  \PackageError{rtthesis-example}{%
+    The package rtthesis-captions must be loaded\MessageBreak
+    before rtthesis-example.  Since\MessageBreak
+    rtthesis-example cannot guess which\MessageBreak
+    character encoding you prefer, it won't\MessageBreak
+    load rtthesis-captions for you, so you have\MessageBreak
+    to do it yourself%
+  }{%
+    The package rtthesis-captions must be loaded\MessageBreak
+    before rtthesis-example.  Since\MessageBreak
+    rtthesis-example cannot guess which\MessageBreak
+    character encoding you prefer, it won't\MessageBreak
+    load rtthesis-captions for you, so you have\MessageBreak
+    to do it yourself%
+  }
+}
+
+% Use same counter for theorem-like environments?
+\newif\ifrtex@shareTheoremCounter
+\DeclareOption{sharecounter}{\rtex@shareTheoremCountertrue}
+\DeclareOption{nosharecounter}{\rtex@shareTheoremCounterfalse}
+
+\ExecuteOptions{nosharecounter}
+
+% Use parskip.sty and adjust sectioning commands?
+\newif\ifrtex@parskip
+\newif\ifrtex@parskipDefault
+\rtex@parskipDefaulttrue
+\DeclareOption{noparskip}{\rtex@parskipfalse\rtex@parskipDefaultfalse}
+\DeclareOption{parskip}{\rtex@parskiptrue\rtex@parskipDefaultfalse}
+
+\@ifpackageloaded{parskip}{%
+  \rtex@parskiptrue
+}{% In case KpFonts was not loaded:
+  \rtex@parskipfalse
+  \AtBeginDocument{%
+    \ifrtex@parskipDefault
+    \@ifpackageloaded{parskip}{%
+      \PackageWarningNoLine{rtthesis-example}{%
+        The default setting regarding `parskip' or\MessageBreak
+        `noparskip' is `noparskip' since package\MessageBreak
+        parskip was loaded after \MessageBreak
+        rtthesis-example.  This is probably not\MessageBreak
+        what you want.  Avoid this warning by\MessageBreak
+        explicitly passing one of the options\MessageBreak
+        `parskip' or `noparskip', or change the\MessageBreak
+        package loading order
+      }}{}%
+    \fi
+  }
+}
+% When should counters be reset?
+% Use same counter for theorem-like environments?
+\newif\ifrtex@resetchapter
+\DeclareOption{reset=chapter}{\rtex@resetchaptertrue}
+\DeclareOption{reset=section}{\rtex@resetchapterfalse}
+
+\@ifundefined{thechapter}{%
+  \ExecuteOptions{reset=section}}{%
+  \ExecuteOptions{reset=chapter}}
+
+
+\ProcessOptions\relax
+
+
+\RequirePackage{needspace}
+
+\DeclareRobustCommand*{\listofexamples}{%
+  \section*{\listexamplename}%
+  \@starttoc{xmp}%
+}
+\newcommand*{\l@example}{\l@figure}%
+\ifrtex@resetchapter
+\newcounter{Example}[chapter]%
+\renewcommand*{\theExample}{\thechapter.\arabic{Example}}%
+\else
+\newcounter{Example}[section]%
+\renewcommand*{\theExample}{\arabic{Example}}%
+\fi
+\newlength{\exampleLineWidth}
+\setlength{\exampleLineWidth}{.6pt}
+\newlength{\exampleTopBotInnerMargin}
+\setlength{\exampleTopBotInnerMargin}{2ex}
+\newlength{\exampleTopBotOuterMargin}
+\setlength{\exampleTopBotOuterMargin}{1em plus 1ex minus 1ex}
+
+\newenvironment{example}[1][]{%
+  \ifrtex@shareTheoremCounter
+    \refstepcounter{theorem}%
+  \else
+    \refstepcounter{Example}%
+  \fi
+  \sbox{\@tempboxa}{\ignorespaces#1\unskip}%
+  \ifdim \wd\@tempboxa>\z@%
+    \sbox{\@tempboxa}{%
+      \textbf{%
+        \ifrtex@shareTheoremCounter
+          \thinspace\ignorespaces\examplename\unskip~\thetheorem:~#1\thinspace%
+        \else
+          \thinspace\ignorespaces\examplename\unskip~\theExample:~#1\thinspace%
+        \fi
+      }}%
+  \else%
+    \sbox{\@tempboxa}{\textbf{%
+        \ifrtex@shareTheoremCounter
+          \thinspace\ignorespaces\examplename~\thetheorem\thinspace
+        \else
+          \thinspace\ignorespaces\examplename~\theExample\thinspace
+        \fi
+      }}%
+  \fi%
+  \ifrtex@shareTheoremCounter
+    \addcontentsline{xmp}{example}{\protect\numberline{\thetheorem}#1}%
+  \else
+    \addcontentsline{xmp}{example}{\protect\numberline{\theExample}#1}%
+  \fi
+  \@example%
+}%
+{\@endexample}
+
+\newenvironment{example*}[1][]{% Stared version w/o numbering
+  \sbox{\@tempboxa}{\ignorespaces#1\unskip}%
+  \ifdim \wd\@tempboxa>\z@%
+    \sbox{\@tempboxa}{\textbf{%
+        \thinspace\ignorespaces\examplename:~#1\thinspace}}%
+  \else%
+    \sbox{\@tempboxa}{\textbf{%
+        \thinspace\examplename\thinspace}}%
+  \fi%
+  \@example%
+}%
+{\@endexample}
+
+\newlength{\rt@examplerulepos}
+
+\newcommand*\@example{% Start of example environmets
+  \setlength{\@tempskipa}{\linewidth}%
+  \addtolength{\@tempskipa}{-\wd\@tempboxa}%
+  \addtolength{\@tempskipa}{-1em}%
+  \par% Enforce vmode
+  \addtolength{\exampleTopBotOuterMargin}{-\parskip}%  Change temporarily to compensate for parskip
+  \addvspace{\exampleTopBotOuterMargin}%
+  \addtolength{\exampleTopBotOuterMargin}{\parskip}%
+  \pagebreak[2]%
+  \Needspace*{5\baselineskip}% 5 could seem a bit too much, but 4 has failed to solve the page breaking problem on a few occasions.
+  \noindent
+  \rlap{%
+    \hspace*{-\exampleLineWidth}\hspace*{-.5em}%
+    \rule[\exampleLineWidth]{\exampleLineWidth}{1ex}%
+    \rule[1ex]{2em}{\exampleLineWidth}%
+    \raisebox{.6ex}{\box\@tempboxa}%
+    \rule[1ex]{\@tempskipa}{\exampleLineWidth}%
+    \rule[\exampleLineWidth]{\exampleLineWidth}{1ex}}%
+  \settoheight{\rt@examplerulepos}{X}%
+  \addtolength{\rt@examplerulepos}{-\baselineskip}%
+  \addtolength{\rt@examplerulepos}{-1ex}%
+  \addtolength{\rt@examplerulepos}{\exampleTopBotInnerMargin}%
+  \nopagebreak[4]\\[\rt@examplerulepos]%
+  \begingroup\@afterindentfalse\nopagebreak[4]\ignorespaces%
+}
+
+\newcommand*\@endexample{% End of example environments
+  \unskip% This one matters, but only in rare occasions!
+  \endgroup
+  \ifvmode
+    \nopagebreak[4]\vspace{-\baselineskip}\vspace{-\parskip}%
+  \fi
+  \ifhmode
+    \\[-\baselineskip]%
+  \fi
+  \noindent
+  \setlength{\rt@examplerulepos}{-\exampleTopBotInnerMargin}%
+  \addtolength{\rt@examplerulepos}{-\exampleLineWidth}%
+  \nopagebreak[4]%
+  \begin{picture}(0,0)
+    \put(0,0){\rlap{%
+          \hspace*{-\exampleLineWidth}\hspace*{-.5em}%
+          \rule[\rt@examplerulepos]{\exampleLineWidth}{1ex}%
+          \addtolength{\linewidth}{1em}% Make a rule that is \linewidth+1em long by temporarily changing \linewidth.
+          \rule[\rt@examplerulepos]{\linewidth}{\exampleLineWidth}%
+          \addtolength{\linewidth}{-1em}%
+          \rule[\rt@examplerulepos]{\exampleLineWidth}{1ex}%
+        }}
+  \end{picture}%
+  \vspace{-\rt@examplerulepos}%
+  \vspace{-\parskip}\par\addvspace{\exampleTopBotOuterMargin}
+  \pagebreak[2]%
+  \ignorespacesafterend%
+}
