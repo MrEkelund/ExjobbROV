@@ -61,7 +61,7 @@ roll_pitch_filepath = 'RollPitch0404';
 displayTable(parameters, parameter_strings);
 simulation = 0;
 plotting = 1;
-detrend_enable = 1;
+detrend_enable = 0;
 
 [roll_pitch_nonlinear_greybox_model, roll_pitch_data, roll_pitch_val_data] =...
     setupEstimation(parameters, parameter_strings, estimation_mode, simulation, roll_pitch_filepath, plotting, detrend_enable);
@@ -141,7 +141,7 @@ All_filepath = 'All0404';
 displayTable(parameters, parameter_strings);
 simulation = 0;
 plotting = 1;
-detrend_enable = 1;
+detrend_enable = 0;
 
 [All_nonlinear_greybox_model, All_data, All_val_data] =...
     setupEstimation(parameters, parameter_strings, estimation_mode, simulation,All_filepath, plotting, detrend_enable);
@@ -154,13 +154,13 @@ opt = nlgreyestOptions;
 opt.Display = 'on';
 opt.SearchOption.MaxIter = 50;
 tic
-All_estimation = nlgreyest(All_data, All_nonlinear_greybox_model,opt)
+All_estimation = nlgreyest(All_data(1:5000), All_nonlinear_greybox_model,opt)
 %All_estimation = pem(All_data, All_nonlinear_greybox_model,opt);
 toc
 displayTable(parameters, parameter_strings,All_estimation)
 
 figure(4)
-compare(All_val_data, All_estimation, inf);
+compare(All_val_data(1:5000), All_estimation, inf);
 
 %%
 % temp_parameters = All_estimation.Report.Parameters.ParVector;
