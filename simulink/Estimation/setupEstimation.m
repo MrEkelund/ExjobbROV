@@ -62,11 +62,11 @@ switch estimation_mode
         data.OutputName = {'r','fi','theta'};
         data.OutputUnit = {'rad/s','rad','rad'};
     case 'YawCong'
-        data = data(:,[3, 4, 5],[3, 4]);
+        data = data(:,[3, 6],[3, 4]);
         data.InputName =  {'Thruster3'; 'Thruster4'};
         data.InputUnit =  {'%';'%'};
-        data.OutputName = {'r','fi','theta'};
-        data.OutputUnit = {'rad/s','rad','rad'};
+        data.OutputName = {'r','psi'};
+        data.OutputUnit = {'rad/s','rad'};
     case 'RollPitch'
         data = data(:,[1, 2, 4, 5],[1, 2, 5, 6]);
         data.InputName =  {'Thruster1';'Thruster2';'Thruster5';'Thruster6'};

@@ -23,29 +23,29 @@ if isempty(files)
     zb = -0.05;
     
     % Parameters that will be estimated
-    Xu_init = -1;
-    Xu_dot_init = -1;
-    Xu_abs_u_init = -1;
-    Yv_init = -1;
-    Yv_dot_init = -1;
-    Yv_abs_v_init = -1;
-    Zw_init = -1;
-    Zw_dot_init = -1;
-    Zw_abs_w_init = -1;
-    Kp_init = -1;
-    Kp_dot_init = -1;
-    Kp_abs_p_init = -1;
-    Mq_init = -1;
-    Mq_dot_init = -1;
-    Mq_abs_q_init = -1;
-    Nr_init = -1;
-    Nr_dot_init = -1;
-    Nr_abs_r_init = -1;
-    Ix_init = 1;
-    Iy_init = 1;
-    Iz_init = 1;
-    Ix_Kp_dot = 1;
-    Iy_Mq_dot = 1;
+    Xu = -1;
+    Xu_dot = -1;
+    Xu_abs_u = -1;
+    Yv = -1;
+    Yv_dot = -1;
+    Yv_abs_v = -1;
+    Zw = -1;
+    Zw_dot = -1;
+    Zw_abs_w = -1;
+    Kp = -1;
+    Kp_dot = -1;
+    Kp_abs_p = -1;
+    Mq = -1;
+    Mq_dot = -1;
+    Mq_abs_q = -1;
+    Nr = -1;
+    Nr_dot = -1;
+    Nr_abs_r = -1;
+    Ix = 1;
+    Iy = 1;
+    Iz = 1;
+    Ix_Kp_dot = Ix - Kp_dot;
+    Iy_Mq_dot = Iy - Mq_dot;
     Kp_Ix_Kp_dot = -1;
     Kp_abs_p_Ix_Kp_dot = -1;
     Mq_dot_Ix_Kp_dot = -1;
@@ -56,25 +56,19 @@ if isempty(files)
     Nr_dot_Iy_Mq_dot = -1;
     Iy_Iz_Ix_Kp_dot = 1;
     Ix_Iz_Iy_Mq_dot = 1;
-    Iz_Nr_dot = 0.5;
-    Iy_Iz = 1; 
-    Ix_Iz = 1;
-    Ix_Iy = 1;
+    Iz_Nr_dot = Iz - Nr_dot;
+    Iy_Iz = 0.1; 
+    Ix_Iz = 0.1;
+    Ix_Iy = 0.1;
     
     Parameters= [...
         m; g; rho; V; lx1; ly1; ly2; lx2; ly3; lx5; ly4;
-        lz6; zb; Xu_init; Xu_dot_init; Xu_abs_u_init;
-        Yv_init; Yv_dot_init; Yv_abs_v_init; Zw_init;
-        Zw_dot_init; Zw_abs_w_init; Kp_init; Kp_dot_init;
-        Kp_abs_p_init; Mq_init; Mq_dot_init;
-        Mq_abs_q_init; Nr_init; Nr_dot_init;
-        Nr_abs_r_init; Ix_init; Iy_init; Iz_init; 
-        Ix_Kp_dot; Iy_Mq_dot; Kp_Ix_Kp_dot; 
-        Kp_abs_p_Ix_Kp_dot; Mq_dot_Ix_Kp_dot;
-        Nr_dot_Ix_Kp_dot; Mq_Iy_Mq_dot;
-        Mq_abs_q_Iy_Mq_dot; Kp_dot_Iy_Mq_dot;
-        Nr_dot_Iy_Mq_dot; Iy_Iz_Ix_Kp_dot; Ix_Iz_Iy_Mq_dot;
-        Iz_Nr_dot;Iy_Iz; Ix_Iz; Ix_Iy];
+        lz6; zb; Xu; Xu_dot; Xu_abs_u; Yv; Yv_dot; Yv_abs_v; Zw; Zw_dot;
+        Zw_abs_w; Kp; Kp_dot; Kp_abs_p; Mq; Mq_dot; Mq_abs_q; Nr; Nr_dot;
+        Nr_abs_r; Ix; Iy; Iz; Ix_Kp_dot; Iy_Mq_dot; Kp_Ix_Kp_dot; 
+        Kp_abs_p_Ix_Kp_dot; Mq_dot_Ix_Kp_dot; Nr_dot_Ix_Kp_dot; Mq_Iy_Mq_dot;
+        Mq_abs_q_Iy_Mq_dot; Kp_dot_Iy_Mq_dot; Nr_dot_Iy_Mq_dot; 
+        Iy_Iz_Ix_Kp_dot; Ix_Iz_Iy_Mq_dot; Iz_Nr_dot;Iy_Iz; Ix_Iz; Ix_Iy];
 else
     temp = load('parameters.mat');
     disp('Parameters loaded from file')

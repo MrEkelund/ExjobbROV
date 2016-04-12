@@ -1,15 +1,32 @@
 \chapter{Operation of the \abbrROV} \label{app:operation}
 
-\section{Start up of the ROV}
-
+\section{Start up of the \abbrROV}
+For starting the \abbrROV connect all cables according to \ref{sec:}.
+\begin{itemize}
+	\item Make sure that the battery is tightly fastened and is fully charged. 
+	\item Slide the cradle gently into the \abbrROV tube. 
+	\item If needed apply some silicone grease to the O-rings of the end cap. Then slide the end cap into the \abbrROV tube.
+	\item Insert the vent bolt in to the vent nut on the end cap.
+	\item Insert the cat 6 cable to the workstation.
+ \end{itemize} 
+Navigate to the catkin\_ws folder on the workstation and run the start script in a terminal for the \abbrROV
+\begin{lstlisting}
+ ./startrov.sh
+\end{lstlisting}
+Then in a new terminal navigate to the catkin\_ws folder and run the workstation script
+\begin{lstlisting}
+ ./startworkstation.sh
+\end{lstlisting} 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Operating the ROV}
 
 \subsection{Modes and controllers}
 
-\subsection{Manual mode}
+\subsubsection{Manual mode}
 
-\subsection{Bag logging}
+\subsection{Logging data}
+For logging of data rqt-bag is used. In rqt on the workstation start rqt-bag by Plugins $\rightarrow$ Logging $\rightarrow$ Bag. Start the recording of data by pressing the red circle. A menu of available topics is showed, select the topics that you want to record. Then give the logfile a name in the pop-up.
+To stop recording data press the red circle and close Bag by Running $\rightarrow$ Close:Bag.
 
 \subsection{Sending test signals}
 
