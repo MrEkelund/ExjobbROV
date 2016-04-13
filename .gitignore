@@ -18,4 +18,6 @@ main.tex.bak
 main.toc
 *.bak
 main.dvi
+Documents/Master/sections/*.log
+*~
 
