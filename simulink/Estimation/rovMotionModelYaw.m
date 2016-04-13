@@ -152,7 +152,7 @@ r_dot =...
     (r*(Nr + Nr_abs_r*abs(r)) + f3*ly3 - f4*ly4)/(Iz - Nr_dot); 
 
 fi_dot = r*cf*st/ct;
-theta_dot = r*sf;
+theta_dot = -r*sf;
 
 x_dot = [r_dot;fi_dot;theta_dot];
 y = x;
