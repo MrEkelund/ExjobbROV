@@ -18,8 +18,8 @@ getTestData(yaw_filepath, 0);
 states = states(:,[3 2 1 4]); % Change position of yaw and roll
 states(:,1:3) = states(:,1:3)*pi/180;
 ang_vel_data = ang_vel_data*pi/180;
-output_data = [ang_vel_data, antiModAngles(states(:,1:3))];
-input_data = thrusters_data;
+output_data = ang_vel_data;
+input_data = [thrusters_data, antiModAngles(states(:,1:3))];
 yaw_data2 = iddata(output_data, input_data, Ts);
 yaw_data2 = yaw_data2(1100:end);
 %%
@@ -29,8 +29,8 @@ getTestData(yaw_filepath, 0);
 states = states(:,[3 2 1 4]); % Change position of yaw and roll
 states(:,1:3) = states(:,1:3)*pi/180;
 ang_vel_data = ang_vel_data*pi/180;
-output_data = [ang_vel_data, antiModAngles(states(:,1:3))];
-input_data = thrusters_data;
+output_data = ang_vel_data;
+input_data = [thrusters_data, antiModAngles(states(:,1:3))];
 yaw_data3 = iddata(output_data, input_data, Ts);
 
 %%
@@ -40,8 +40,8 @@ getTestData(yaw_filepath, 0);
 states = states(:,[3 2 1 4]); % Change position of yaw and roll
 states(:,1:3) = states(:,1:3)*pi/180;
 ang_vel_data = ang_vel_data*pi/180;
-output_data = [ang_vel_data, states(:,1:3)];
-input_data = thrusters_data;
+output_data = ang_vel_data;
+input_data = [thrusters_data, antiModAngles(states(:,1:3))];
 yaw_data4 = iddata(output_data, input_data, Ts);
 %%
 yaw_filepath = fullfile('bag','act_3_4_test_5_2016-03-21-15-15-26.bag');
@@ -50,8 +50,8 @@ getTestData(yaw_filepath, 0);
 states = states(:,[3 2 1 4]); % Change position of yaw and roll
 states(:,1:3) = states(:,1:3)*pi/180;
 ang_vel_data = ang_vel_data*pi/180;
-output_data = [ang_vel_data, states(:,1:3)];
-input_data = thrusters_data;
+output_data = ang_vel_data;
+input_data = [thrusters_data, antiModAngles(states(:,1:3))];
 yaw_data5 = iddata(output_data, input_data, Ts);
 
 %%

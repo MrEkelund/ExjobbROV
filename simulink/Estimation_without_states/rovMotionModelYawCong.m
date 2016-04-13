@@ -6,22 +6,6 @@ function [x_dot, y] = rovMotionModelYawCong( t, x, control,  ...
     Kp_Ix_Kp_dot, Kp_abs_p_Ix_Kp_dot, Mq_dot_Ix_Kp_dot,...
     Nr_dot_Ix_Kp_dot, Mq_Iy_Mq_dot, Mq_abs_q_Iy_Mq_dot,...
     Kp_dot_Iy_Mq_dot, Nr_dot_Iy_Mq_dot,Iz_Nr_dot,Iy_Iz, Ix_Iz, Ix_Iy, varargin)
-%******* Constants
-% m = parameters(1);
-% g = parameters(2);
-% rho = parameters(3);
-% V = parameters(4);
-% %Thruster placement from CO [m]
-% lx1= parameters(5);
-% ly1= parameters(6);
-% ly2= parameters(7);
-% lx2= parameters(8);
-% ly3= parameters(9);
-% lx5= parameters(10);
-% ly4= parameters(11);
-% lz6= parameters(12);
-% zb= parameters(13);
-
 %******* States
 r = x(1);
 
@@ -125,34 +109,9 @@ forces = nakeinterp1(lookup(:,2),lookup(:,1),control');
 %Thrusterforce in newtons. Lookup table returns in kgf
 f3 = forces(1);
 f4 = forces(2);
-%******* Parameters
-% Xu= parameters(14);
-% Xu_dot= parameters(15);
-% Xu_abs_u= parameters(16);
-% Yv= parameters(17);
-% Yv_dot= parameters(18);
-% Yv_abs_v= parameters(19);
-% Zw= parameters(20);
-% Zw_dot= parameters(21);
-% Zw_abs_w= parameters(22);
-% Kp= parameters(23);
-% Kp_dot= parameters(24);
-% Kp_abs_p= parameters(25);
-% Mq= parameters(26);
-% Mq_dot= parameters(27);
-% Mq_abs_q= parameters(28);
-% Nr= parameters(29);
-% Nr_dot= parameters(30);
-% Nr_abs_r= parameters(31);
-% Ix= parameters(32);
-% Iy= parameters(33);
-% Iz= parameters(34);
  
 r_dot =...
     (r*(Nr + Nr_abs_r*abs(r)) + f3*ly3 - f4*ly4)/(Iz_Nr_dot); 
-
-% fi_dot = r*cf*st/ct;
-% theta_dot = r*sf;
 
 x_dot = [r_dot];
 y = x;

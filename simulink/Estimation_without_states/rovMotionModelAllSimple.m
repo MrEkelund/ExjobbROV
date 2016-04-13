@@ -1,18 +1,18 @@
 function [x_dot, y] = rovMotionModelAll( t, x, control, ...
-    m, g, rho, V, lx1, ly1, ly2, lx2, ly3, lx5, ly4, lz6, zb, Xu, ...
+ m, g, rho, V, lx1, ly1, ly2, lx2, ly3, lx5, ly4, lz6, zb, Xu, ...
     Xu_dot, Xu_abs_u, Yv, Yv_dot, Yv_abs_v, Zw, Zw_dot,...
     Zw_abs_w, Kp, Kp_dot, Kp_abs_p, Mq, Mq_dot, Mq_abs_q,...
     Nr, Nr_dot, Nr_abs_r, Ix, Iy, Iz, Ix_Kp_dot, Iy_Mq_dot,...
     Kp_Ix_Kp_dot, Kp_abs_p_Ix_Kp_dot, Mq_dot_Ix_Kp_dot,...
     Nr_dot_Ix_Kp_dot, Mq_Iy_Mq_dot, Mq_abs_q_Iy_Mq_dot,...
-    Kp_dot_Iy_Mq_dot, Nr_dot_Iy_Mq_dot, varargin)
+    Kp_dot_Iy_Mq_dot, Nr_dot_Iy_Mq_dot,Iz_Nr_dot,Iy_Iz, Ix_Iz, Ix_Iy, varargin)
 %******* States
 p = x(1);
 q = x(2);
 r = x(3);
 
-fi = x(4);
-theta = x(5);
+fi = control(7);
+theta = control(8);
 %*******    Computed values
 
 ct = cos(theta);
@@ -118,19 +118,16 @@ f5 = forces(5);
 f6 = forces(6);
 
 p_dot =...
-    (f1*ly1 - f2*ly2 + f6*lz6 + p*(Kp + Kp_abs_p*abs(p)) + B*ct*sf*zb )/(Ix - Kp_dot); %- Yv_dot*v*w + Zw_dot*v*w 
+    (f1*ly1 - f2*ly2 + f6*lz6 + p*(Kp + Kp_abs_p*abs(p)) + B*ct*sf*zb )/(Ix - Kp_dot); 
  
 q_dot =...
-     (f1*lx1 + f2*lx2 - f5*lx5 + q*(Mq + Mq_abs_q*abs(q)) + B*st*zb)/(Iy - Mq_dot); %+ Xu_dot*u*w - Zw_dot*u*w 
+     (f1*lx1 + f2*lx2 - f5*lx5 + q*(Mq + Mq_abs_q*abs(q)) + B*st*zb)/(Iy - Mq_dot);
 
 r_dot =...
      (r*(Nr + Nr_abs_r*abs(r)) + f3*ly3 - f4*ly4)/(Iz - Nr_dot);
 
-fi_dot = p + q*sf*st/ct + r*cf*st/ct;
-theta_dot = q*cf - r*sf;
-psi_dot = q*sf/ct + r*cf/ct;
 
-x_dot = [p_dot;q_dot;r_dot;fi_dot;theta_dot;psi_dot];
+x_dot = [p_dot;q_dot;r_dot];
 
 y = x;
 end

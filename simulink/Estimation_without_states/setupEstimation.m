@@ -39,16 +39,16 @@ switch simulation
                 disp(sprintf('Loading test data from %s',filepath));
                 [lin_vel_data ,lin_acc_data, ang_vel_data, thrusters_data, states, time,Ts]= ...
                     getTestData(filepath, plotting);
-                output_data = [ang_vel_data , antiModAngles(states(:,1:3))];
-                input_data = thrusters_data;
+                output_data = ang_vel_data;
+                input_data = [thrusters_data, antiModAngles(states(:,1:3))];
                 data = iddata(output_data, input_data,  Ts);
         end
     case 1 % simulation
         disp(sprintf('Loading simulated data from %s',filepath));
         [lin_vel_data ,lin_acc_data, ang_vel_data, thrusters_data, states, time,Ts] = ...
             getSimulationData(filepath,plotting);
-        output_data = [ang_vel_data , antiModAngles(states(:,1:3))];
-        input_data = thrusters_data;
+        output_data = ang_vel_data;
+        input_data = [thrusters_data, antiModAngles(states(:,1:3))];
         data = iddata(output_data, input_data, Ts);
     otherwise
         error('Simulation can only be 0 or 1');
@@ -86,11 +86,11 @@ switch estimation_mode
         data.OutputName = {'q','theta'};
         data.OutputUnit = {'rad/s','rad'};
     case 'PitchCongregated'
-        data = data(:,[2, 5],[1, 2, 5]);
-        data.InputName =  {'Thruster1';'Thruster2';'Thruster5'};
-        data.InputUnit =  {'%';'%';'%'};
-        data.OutputName = {'q','theta'};
-        data.OutputUnit = {'rad/s','rad'};
+        data = data(:,[2],[1, 2, 5, 8]);
+        data.InputName =  {'Thruster1';'Thruster2';'Thruster5';'theta'};
+        data.InputUnit =  {'%';'%';'%';'rad'};
+        data.OutputName = {'q'};
+        data.OutputUnit = {'rad/s'};
     case 'All'
         data = data(:,[1, 2, 3],[1, 2, 3, 4, 5, 6, 7, 8]);
         data.InputName =  {'Thruster1';'Thruster2';'Thruster3';'Thruster4';'Thruster5';'Thruster6';'fi';'theta'};
@@ -118,19 +118,14 @@ end
 ne = length(data.ExperimentName); % number of experiments
 
 if ne == 1
-    val_data = data(ceil(size(data.OutputData,1)/2):end)
-    data = data(1:ceil(size(data.OutputData,1)/2)-1)
+    val_data = data(ceil(size(data.OutputData,1)/2):end);
+    data = data(1:ceil(size(data.OutputData,1)/2)-1);
 elseif ne == 2
     val_data = getexp(data,2);
     data = getexp(data,1);
 else
-    if mod(ne,2) == 0
-        val_data = getexp(data, ne/2+1:ne);
-        data = getexp(data, 1:ne/2);
-    else
-        val_data = getexp(data, ceil(ne/2)+1:ne);
-        data = getexp(data, 1:ceil(ne/2));
-    end
+    val_data = getexp(data, ceil(ne/2)+1:ne);
+    data = getexp(data, 1:ceil(ne/2));
 end
 
 if detrend_enable
@@ -196,18 +191,13 @@ p_dot_estimate_parameter_index = [24, 27, 29, 30, 31, 32, 33, 34]; % Parameters 
 q_dot_estimate_parameter_index = [13, 24, 26, 27, 28, 30, 32, 33, 34]; % Parameters q_dot estimates
 r_dot_estimate_parameter_index = [13, 23, 24, 25, 27, 30, 32, 33, 34]; % Parameters r_dot estimates
 
-% p_dot_estimate_parameter_index = [24, 27, 30, 32, 33, 34]; % Parameters p_dot estimates
-% q_dot_estimate_parameter_index = [24, 27, 30, 32, 33, 34]; % Parameters q_dot estimates
-% r_dot_estimate_parameter_index = [24, 27, 30, 32, 33, 34]; % Parameters r_dot estimates
-
-
 r_dot_only_estimate_parameter_index = [29, 30, 31, 34]; % Parameters q_dot estimates
 q_dot_only_estimate_parameter_index = [13, 26, 27, 28, 33]; % Parameters q_dot estimates
 p_dot_only_estimate_parameter_index = [13, 23, 24, 25, 32]; % Parameters r_dot estimates
 
-p_dot_Cong_estimate_parameter_index = [24, 27, 29, 30, 31 47 48 49 50 35 36]; % Parameters p_dot estimates
-q_dot_Cong_estimate_parameter_index = [13, 24, 26, 27, 28, 30]; % Parameters q_dot estimates
-r_dot_Cong_estimate_parameter_index = [13, 23, 24, 25, 27, 30, 47]; % Parameters r_dot estimates
+p_dot_Cong_estimate_parameter_index = [13, 24, 27, 29, 30, 31, 47, 35]; % Parameters p_dot estimates
+q_dot_Cong_estimate_parameter_index = [13, 24, 26, 27, 28, 30, 36, 48]; % Parameters q_dot estimates
+r_dot_Cong_estimate_parameter_index = [23, 24, 25, 27, 30, 47, 49, 50]; % Parameters r_dot estimates
 
 p_dot_cong_only_estimate_parameter_index = [13 23, 25, 35]; % Parameters p_dot estimates
 q_dot_cong_only_estimate_parameter_index = [13, 26, 28, 36]; % Parameters q_dot estimates
@@ -237,9 +227,6 @@ switch estimation_mode
     case 'Pitch'
         disp('Pitch test')
         fixed_parameters = setdiff(fixed_parameters, q_dot_only_estimate_parameter_index);
-    case 'PitchCongregated'
-        disp('PitchCongreted test')
-        fixed_parameters = setdiff(fixed_parameters, q_dot_congregated_estimate_parameter_index);
     case 'All'
         disp('All rotational dynamics test')
         fixed_parameters = setdiff(fixed_parameters, p_dot_estimate_parameter_index);
@@ -265,7 +252,6 @@ end
 
 %Sets the sign of the parameters
 positive_parameters = [1:12, 32:34, 35, 36 50];
-% negative_parameters = [13:size(parameters,1)-3];
 negative_parameters = [13:31];
 for i = 1:size(positive_parameters,2)
     nonlinear_greybox_model.Parameters(positive_parameters(i)).Minimum = 0;

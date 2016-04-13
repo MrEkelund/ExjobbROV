@@ -6,7 +6,6 @@ yaw_filepath = fullfile('bag','test1_t3_t4_2016-04-04-14-57-52.bag');
 getTestData(yaw_filepath, 0);
 output_data = ang_vel_data;
 input_data = [thrusters_data, antiModAngles(states(:,1:3))];
-plot([ang_vel_data(:,3); diff(antiModAngles(states(:,3)))])
 yaw_data1 = iddata(output_data, input_data, Ts);
 %%
 yaw_filepath = fullfile('bag','test2_t3_t4_2016-04-04-14-59-57.bag');

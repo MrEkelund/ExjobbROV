@@ -7,8 +7,8 @@ getTestData(pitch_filepath, 0);
 states = states(:,[3 2 1 4]); % Change position of yaw and roll
 states = states(:,1:3)*pi/180;
 ang_vel_data = ang_vel_data*pi/180;
-output_data = [ang_vel_data, antiModAngles(states(:,1:3))];
-input_data = thrusters_data;
+output_data = ang_vel_data;
+input_data = [thrusters_data, antiModAngles(states(:,1:3))];
 pitch_data1 = iddata(output_data, input_data,Ts);
 
 %%
@@ -18,8 +18,8 @@ getTestData(pitch_filepath, 0);
 states = states(:,[3 2 1 4]); % Change position of yaw and roll
 states = states(:,1:3)*pi/180;
 ang_vel_data = ang_vel_data*pi/180;
-output_data = [ang_vel_data, antiModAngles(states(:,1:3))];
-input_data = thrusters_data;
+output_data = ang_vel_data;
+input_data = [thrusters_data, antiModAngles(states(:,1:3))];
 pitch_data2 = iddata(output_data, input_data,Ts);
 
 %%
