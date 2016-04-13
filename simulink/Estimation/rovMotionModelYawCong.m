@@ -25,14 +25,13 @@ function [x_dot, y] = rovMotionModelYawCong( t, x, control,  ...
 %******* States
 r = x(1);
 
-fi = x(2);
-theta = x(3);
+psi = x(2);
 %******* Computed values
 
-ct = cos(theta);
-st = sin(theta);
-cf = cos(fi);
-sf = sin(fi);
+% ct = cos(theta);
+% st = sin(theta);
+% cf = cos(fi);
+% sf = sin(fi);
  
 % B = rho*g*V;
 W = m*g;
@@ -151,10 +150,11 @@ f4 = forces(2);
 r_dot =...
     (r*(Nr + Nr_abs_r*abs(r)) + f3*ly3 - f4*ly4)/(Iz_Nr_dot); 
 
-fi_dot = r*cf*st/ct;
-theta_dot = r*sf;
+% fi_dot = r*cf*st/ct;
+% theta_dot = -r*sf;
+psi_dot = r;
 
-x_dot = [r_dot;fi_dot;theta_dot];
+x_dot = [r_dot;psi_dot];
 y = x;
 end
 

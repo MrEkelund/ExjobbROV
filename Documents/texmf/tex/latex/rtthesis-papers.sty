@@ -1,0 +1,256 @@
+\RequirePackage{setspace}
+
+\newcommand{\paperseptitlefont}{}
+\newcommand{\papersepauthorfont}{}
+\newcommand{\papertitlefont}{\LARGE\bfseries}
+\newcommand{\paperauthorfont}{}
+\newcommand{\paperaffilfont}{}
+\newcommand{\paperemailfont}{\texttt}
+\newcommand{\@email}{}
+\newcommand{\@emailleft}{}
+\newcommand{\@emailright}{}
+\newcommand{\@affilblockleft}{}
+\newcommand{\@affilblockright}{}
+\newcommand{\authorleftmark}{$^*$}
+\newcommand{\authorrightmark}{$^{**}$}
+
+% Commands for changing some of the commands above.
+\newcommand{\email}[1]{\renewcommand{\@email}{#1}}
+\newcommand{\emailleft}[1]{\renewcommand{\@emailleft}{#1}}
+\newcommand{\emailright}[1]{\renewcommand{\@emailright}{#1}}
+\newcommand{\affilblockleft}[1]{\renewcommand{\@affilblockleft}{#1}}
+\newcommand{\affilblockright}[1]{\renewcommand{\@affilblockright}{#1}}
+\newcommand{\authorleft}{\authorleftmark\xspace}
+\newcommand{\authorright}{\authorrightmark\xspace}
+
+\newcommand{\rtpapers@thanks}[1]{\footnote{#1}}
+
+%%% Captions and strings that will be re-defined when the language is changed.
+%%% The first one is just a fixed string.
+\newcommand{\paperaffiliation}{Department so~and~so}
+%%% The following three are meant to be used inside paperinfo items.
+\newcommand{\paperedited}[1]{\textit{Edited version of the paper:} \citet{#1}}% Full caption is set upon selection of language.
+\newcommand{\paperprelver}[1]{\textit{Preliminary version:} LiTH-ISY-R-#1.}% Full caption is set upon selection of language.
+\newcommand{\papertechrep}[1]{Published as LiTH-ISY-R-#1.}% Full caption is set upon selection of language.
+
+
+\newcommand*{\rtpapers@globalchapter}{\ClassError{rtthesis}{%
+    The rtpapers@globalchapter command should\MessageBreak
+    be have been redefined at the beginning\MessageBreak
+    of the papers environment%
+  }{%
+    The rtpapers@globalchapter command should\MessageBreak
+    be have been redefined at the beginning\MessageBreak
+    of the papers environment%
+  }}
+\newcommand*{\rtpapers@chapter}[2][]{%
+  \def\rtpapers@shorttitle{#1}%
+  \title{#2}%
+  \stepcounter{rtpapers@chapter}
+  \ifx\rtpapers@shorttitle\@empty
+  \rtpapers@globalchapter{#2}%
+  \else
+  \rtpapers@globalchapter[#1]{#2}%
+  \fi
+  \thispagestyle{empty}%
+  \renewcommand*{\thesection}{\arabic{section}}%
+}
+
+\newenvironment{paperinfo}{%
+  \begin{list}{}{\setlength{\itemsep}{5mm}%
+      \setlength{\parskip}{25mm}%
+      \setlength{\rightmargin}{0mm}%
+      \setlength{\leftmargin}{\rightmargin}}
+  \item
+    \textit{Authors:} {
+      \def\authorleft{\xspace}
+      \def\authorright{\xspace}
+      \papersepauthorfont{\@author}
+    }}{%
+  \end{list}}
+
+
+% New maketitle for article-look
+\newcommand*{\rtpapers@maketitle}{%
+  % Define acknowledgements as footnote and make the desired
+  % settings for it.
+  \bgroup% Avoid leaking footnote-changes to the global namespace 
+  \def\thefootnote{} % Standard cssconf.cls
+  \def\footnotemark{} % Standard cssconf.cls
+  \let\thanks=\rtpapers@thanks
+  \renewcommand{\footnoterule}{}
+  \interfootnotelinepenalty=10000
+  \interdisplaylinepenalty=2500
+
+  \clearemptydoublepage
+  \thispagestyle{plain}%
+  \addvspace{10mm}%
+  \begin{center}\par
+    {\papertitlefont\@title\par}
+    \addvspace{8mm}
+    {\paperauthorfont{\@author}\par}
+    \addvspace{4mm}
+    {\paperaffilfont{\paperaffiliation}\\
+      \paperemailfont{\@email}\par}
+  \end{center}
+  \addvspace{6mm}%
+  \egroup 
+}
+
+\newcommand*{\rtpapers@maketitletwoaffil}{%
+  % Define acknowledgements as footnote and make the desired
+  % settings for it.
+  \bgroup% Avoid leaking footnote-changes to the global namespace 
+  \def\thefootnote{} % Standard cssconf.cls
+  \def\footnotemark{} % Standard cssconf.cls
+  \let\thanks=\rtpapers@thanks
+  \renewcommand{\footnoterule}{}
+  \interfootnotelinepenalty=10000
+  \interdisplaylinepenalty=2500
+
+  \clearemptydoublepage
+  \thispagestyle{plain}
+  \addvspace{10mm}
+  \begin{center}
+    {\papertitlefont\@title\par}
+    \addvspace{8mm}
+    {\paperauthorfont{\@author}\par}
+    \addvspace{4mm}
+    {\begin{minipage}[t]{0.49\linewidth}
+        \begin{center}
+          \authorleftmark \paperaffilfont{\@affilblockleft}\\
+          \paperemailfont{\@emailleft}
+        \end{center}
+      \end{minipage}
+      \hfill
+      \begin{minipage}[t]{0.49\linewidth}
+        \begin{center}
+          \authorrightmark \paperaffilfont{\@affilblockright}\\
+          \paperemailfont{\@emailright}
+        \end{center}
+      \end{minipage}}
+  \end{center}
+  \addvspace{6mm}%
+  \egroup 
+}
+
+
+\newcommand*{\rtpapers@globalsection}{\ClassError{rtthesis}{%
+    The rtpapers@globalsection command should\MessageBreak
+    be have been redefined at the beginning\MessageBreak
+    of the document%
+  }{%
+    The rtpapers@globalsection command should\MessageBreak
+    be have been redefined at the beginning\MessageBreak
+    of the document%
+  }}
+\newcounter{rtpapers@section}
+\newcommand*{\rtpapers@section@NoStar}[2][]{%
+  \def\rtpapers@shorttitle{#1}%
+  \stepcounter{rtpapers@section}
+  \ifx\rtpapers@shorttitle\@empty
+  \rtpapers@globalsection{#2}%
+  \else
+  \rtpapers@globalsection[#1]{#2}%
+  \fi
+}
+\newcommand*{\rtpapers@section@Star}[1]{%
+  \rtpapers@globalsection*{#1}%
+}
+\newcommand{\rtpapers@section}{\@ifstar\rtpapers@section@Star\rtpapers@section@NoStar}
+
+
+\newcommand*{\rtpapers@appendix}{%
+  \setcounter{rtpapers@section}{0}% Do not mess with the "real" section counter here!  It will mess up the bookmarks.
+  \renewcommand*{\thesection}{\Alph{rtpapers@section}}%
+  \section*{\appendixname}%
+  % \addtocontents{toc}{\protect\vspace{1mm}}%
+}
+
+%%% This is part of a hack, see \putbib below.  The following command will act like \section when called with a star, except that it will add a contents line.
+\newcommand{\TOCsection@NoStar}[2][]{\ClassError{rtthesis}{TOCsection@NoStar was not supposed to be called}{TOCsection@NoStar was not supposed to be called}}
+\newcommand{\TOCsection@Star}[1]{\ifrt@UseHyperref\phantomsection\fi\rtpapers@bibsection*{#1}\addcontentsline{toc}{section}{#1}}
+\newcommand{\TOCsection}{\@ifstar\TOCsection@Star\TOCsection@NoStar}
+
+\newif\ifrt@papersBibLevelSection% When this is false, bibliographies goes on the chapter level.
+\rt@papersBibLevelSectionfalse
+\newcommand{\rtpapers@putbib}[1][]{
+  \def\bibargs{#1}
+  \rtthesis@assertnonobackref%
+  \begingroup
+  \let\stdthebibliography\thebibliography
+  \ifrt@papersBibLevelSection
+  % This is a little hack to make the bibliographies of papers appear among the bookmarks.
+  \let\rtpapers@bibsection\section
+  \def\thebibliography{\let\section\TOCsection\global\def\thesection{}\stdthebibliography}
+  \else
+  % The bibliographies on chapter level are handled nicely by tocbibind, loaded by rtthesis.
+  \fi
+  \markright{\bibname}
+  \ifx\bibargs\@empty
+  \rtpapers@globalputbib
+  \else
+  \rtpapers@globalputbib[#1]
+  \fi
+  \endgroup
+}
+\AtBeginDocument{%
+  \@ifpackageloaded{bibentry}{%
+    \let\rtpapers@globalputbib\putbib
+    \let\putbib\rtpapers@putbib
+  }{}}
+
+\newcounter{rtpapers@chapter}
+\newenvironment{papers}
+{% Setting up article look
+  \setcounter{rtpapers@chapter}{0}% Warning!  Do not try to reset the chapter counter here.  It will mess up the bookmars!
+  \chapternumberfont{\Huge\sffamily}
+  \chapternamefont{\Huge\sffamily}
+  \renewcommand*\chaptername{Paper}
+  \renewcommand*\thechapter{\Alph{rtpapers@chapter}}
+  \renewcommand*\thesection{\arabic{section}}
+  \renewcommand*\theequation{\arabic{equation}}
+  \renewcommand*\thelemma{\arabic{lemma}}
+  \renewcommand*\thecorollary{\arabic{corollary}}
+  \renewcommand*\theproposition{\arabic{proposition}}
+  \renewcommand*\thetable{\arabic{table}}
+  \renewcommand*\thefigure{\arabic{figure}}
+  \renewcommand*\bibsection{\section*{\bibname}}
+  \renewcommand*\thetheorem{\arabic{theorem}}
+  \renewcommand*\thert@definition{\arabic{rt@definition}}
+  \ifcsname c@algorithm\endcsname
+    \numberwithin{algorithm}{chapter}
+    \providecommand*\thealgorithm{\arabic{algorithm}}
+    \renewcommand*\thealgorithm{\arabic{algorithm}}
+  \fi
+  \ifrt@shareTheoremCounter
+  % Assumptions use the theorem counter.  Nothing to do.
+  \else
+  \numberwithin{rt@assumption}{chapter}
+  \fi
+%  \renewcommand*\theassumption{\arabic{assumption}}
+  \renewcommand*\thert@remark{\arabic{rt@remark}}
+  \renewcommand*{\theExample}{\arabic{Example}}%
+  \setchapapp{\chaptername}
+
+  % Article-type abstract
+  \renewenvironment{abstract}
+  {\begin{center}\large\textbf{Abstract}\end{center}
+    \begin{quote}}{\end{quote}}
+
+  % Keywords
+  \newenvironment{keyword}{\textbf{\textsf{Keywords:} }}{}
+
+  \let\maketitle\rtpapers@maketitle
+  \let\maketitletwoaffil\rtpapers@maketitletwoaffil
+  \let\rtpapers@globalchapter\chapter
+  \let\chapter\rtpapers@chapter
+  \let\rtpapers@globalsection\section
+  \let\section\rtpapers@section
+  \let\appendix\rtpapers@appendix
+  \let\appendices\appendix
+  \rt@papersBibLevelSectiontrue
+}{%
+  \rt@papersBibLevelSectionfalse
+  \setchapapp{\relax}
+}

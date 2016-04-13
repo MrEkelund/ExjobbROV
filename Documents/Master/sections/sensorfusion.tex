@@ -1,0 +1,199 @@
+\chapter{Sensor fusion}
+In order to properly estimate its attitude in the global coordinate system the \abbrROV needs sensor to measure inputs from its environment.
+Unfortunately signals from sensors do not necessarily give direct information about attitude and are to some extent noisy. Smart algorithms and filters can nevertheless be used to extract and combine the information from the different sensors into a high certainty attitude estimate. The combination, or fusion, of several sensor sources into a estimate goes under the name sensor fusion.
+\section{Filter notation}
+To be able to understand how a filter like the Kalman filter works, it is important to understand to commonly used notation.
+In table \ref{tab:notationKalman} the specific notation used in this chapter is listed.
+ \begin{table}[tbp]
+  \centering
+  \caption{\label{tab:notationKalman}%
+    The notation used for describing the Kalman filter.}
+    \begin{tabular}{l p{0.7\linewidth}}
+    \toprule%
+    \textbf{Notation} & \textbf{Description} \\
+    \otoprule%
+    $x$ & State vector.\\
+    $\hat{x}$ & State vector estimate.\\
+    $y$    & Measurement vector.\\
+    $u$ & Control signal.\\
+    $v,e$ & Noise.\\
+    $_k$ & At time k.\\
+    $_{k|m}$ & At time $k$ given information up to time $m$.\\
+    $g'$ & Jacobian of $g(x)$.\\
+    $E(x)$ & The expected value of x.\\
+    $Cov(x)$ & The covariance of x.\\
+    \bottomrule%
+ \end{tabular}
+\end{table}
+
+\section{The extended Kalman filter}
+According to \citet{sensorfusion} the Kalman filter is a linear state space observer, meaning that it estimates states, both measurable and unmeasurable, in a linear system. It's also stated in \citet{sensorfusion} that the Kalman filter finds the best possible linear filter for the given input $y_{k}$. 
+In \citet{sensorfusion} the Kalman filter algorithm for a linear system 
+\begin{align*}
+    x_{k+1} &= F_{k} x_{k} + G_{u,k} u_{k} + G_{v,k} v_{k}   & Cov(v_{k}) &= Q_{k}\\
+    y_{k} &= H_{k} x_{k} + D_{k} u_{k} + e_{k}           & Cov(e_{k}) &= R_{k}\\
+    E(x_{0}) &= \hat{x}_{1|0}                           & Cov(x_{0}) &= P_{1|0}
+\end{align*}
+is in standard form described by the three following steps
+\begin{align*}
+    \intertext{1: Initialisation: Done at start up or reset}\\
+    \hat{x}_{1|0} &= E(x_{0})\\
+     P_{1|0} &= Cov(x_{0})\\
+    \intertext{2: Measurement update}\\
+    \hat{x}_{k|k} &= \hat{x}_{k|k-1} + P_{k|k-1} H_{k}^{T} (H_{k} P_{k|k-1} H_{k}^{T} + R_{k})^{-1}(y_{k} - H_{k} \hat{x}_{k|k-1} - D_{k} u_{k})\\
+    P_{k|k} &= P_{k|k-1} - P_{k|k-1} H_{k}^{T} (H_{k} P_{k|k-1} H_{k}^{T} + R_{k})^{-1} H_{k} P_{k|k-1}
+    \intertext{3: Time update} \\
+    \hat{x}_{k+1|k} &= F_{k} \hat{x}_{k|k} + G_{u,k} u_{k}\\
+    P_{k+1|k} &= F_{k} P_{k|k} F_{k}^{T} + G_{v,k} Q_{k} G_{v,k}^{T}
+\end{align*}
+Since $Cov(v_{k})$, $Cov(e_{k})$ and $Cov(x_{0})$ often can be hard to properly estimate, the matrices $Q_{k}$, $R_{k}$ and $P_{1|0}$ can be seen as design variables denoting certainty in the model, sensors and initial state.
+It is important to note that several time updates or measurement updates can be made in a row. One may for example run a time update at a given rate, while measurements are received sporadically.\citep[p.170]{sensorfusion}
+
+The extended Kalman filter (\abbrEKF) follows the same algorithm with minor differences in order to estimate the states of a non linear system.
+According to \citet[p.195-p.198]{sensorfusion} the EKF algorithm applied to a non linear system
+\begin{align*}
+     x_{k+1} &= f(x_{k},u_{k},v_{k})\\
+     y_{k} &= h(x_{k},u_{k},e_{k})
+\end{align*}
+with additive noise is
+\begin{align*}
+    \intertext{1: Initialisation: Done at start up or reset}\\
+    \hat{x}_{1|0} &= E(x_{0})\\
+    P_{1|0} &= Cov(x_{0})\\
+    \intertext{2: Measurement update}\\
+    S_{k} &= (h'(\hat{x}_{k|k-1}) P_{k|k-1} (h'(\hat{x}_{k|k-1}))^{T} + R_{k})\\
+    K_{k} &= P_{k|k-1}(h'(\hat{x}_{k|k-1}))^{T}S_{k}^{-1}\\
+    \hat{x}_{k|k} &= \hat{x}_{k|k-1} + K_{k}(y_{k} - h(\hat{x}_{k|k-1}))\\
+    P_{k|k} &= P_{k|k-1} - P_{k|k-1} (h'(\hat{x}_{k|k-1}))^{T}S_{k}^{-1}h'(\hat{x}_{k|k-1})P_{k|k-1}\\
+    \intertext{3: Time update} \\
+    \hat{x}_{k+1|k} &= f(\hat{x}_{k|k})\\
+    P_{k+1|k} &= f'(\hat{x}_{k|k})P_{k|k}(f'(\hat{x}_{k|k}))^{T} + Q_{k}
+\end{align*}
+\section{Iterated form}
+Since the \abbrROV's sensors can be sampled at different rates it is preferable to avoid waiting for the slowest sensor to do a measurement update. According to \citet[p.170]{sensorfusion} it is possible to do each update independently at the arrival of the respective data if $R$ is block diagonal. This means that if the measurements are independent the sensors can be sampled at different rates and the specific update can executed as fast as possible.  
+
+\subsection{Time update}
+The \abbrROV is equipped with a MPU6000 inertial measurement unit (\abbrIMU) from InvenSense.
+This unit supplies gyro and accelerometer data to the \abbrROV's input output module which in turn sends it to the sensor fusion module. The \abbrIMU sends its gyro and accelerometer data at a maximum rate of 200$Hz$.
+The gyro data is used as input in the \abbrEKF time update which is constructed in the following way:
+\begin{equation}
+   \hat{x}_{k+1|k} = 
+   \begin{pmatrix}
+    0 & -wx & -wy & -wz & 0\\
+    wx & 0 &  wz & -wy & 0\\
+    wy & -wz & 0 &  wx & 0\\
+    wz &  wy & -wx & 0 & 0\\
+    0 & 0 & 0 & 0 & 1
+   \end{pmatrix}
+    \frac{T}{2}\hat{x}_{k|k}
+\end{equation}
+where $\hat{x}_{k|k}$ is the current state estimate, $\hat{x}_{k+1|k}$ is the predicted state estimate and T is the sample time.
+$\omega_x$, $\omega_y$, $\omega_z$ are the measured angular velocities in $rad/s$.
+\subsection{Accelerometer measurement equation}
+Since the \abbrIMU sends accelerometer data in addition to angular velocities a accelerometer measurement update can be done with each new \abbrIMU data packet. The measurement equation for the accelerometer is
+\begin{equation}
+    \begin{pmatrix}
+    a_x\\
+    a_y\\
+    a_z
+    \end{pmatrix}
+    =
+    R^T
+    \begin{pmatrix}
+    0\\
+    0\\
+    -g
+    \end{pmatrix}
+    =
+    \begin{pmatrix}
+        2*(q_0^2+q_1^2) - 1 &  2*(q_1*q_2-q_0*q_3) &    2*(q_1*q_3+q_0*q_2)\\
+        2*(q_1*q_2+q_0*q_3) &    2*(q_0^2+q_2^2) - 1 &  2*(q_2*q_3-q_0*q_1)\\
+        2*(q_1*q_3-q_0*q_2) &    2*(q_2*q_3+q_0*q_1) &    2*(q_0^2+q_3^2) - 1
+    \end{pmatrix}
+    \begin{pmatrix}
+        0\\
+        0\\
+        -g
+    \end{pmatrix}
+\end{equation}
+    where $q_0$, $q_1$, $q_2$ and $q_3$ are quaternions, $R$ is a rotation matrix from the local to the global coordinate system and $g$ is the gravitational constant.
+    To ensure that the only $g$ is used to update the \abbrROV's attitude outlier rejection is performed and measurements are used if 
+\begin{align*}
+    \intertext{Keep if: }
+    \abs{ ||
+    \begin{pmatrix}
+        a_x\\
+        a_y\\
+        a_z
+    \end{pmatrix}||
+    -g
+     } < \epsilon
+\end{align*} holds.
+Here epsilon is a design variable that tweaks how harsh the outlier rejection should be.
+
+\subsection{Magnetometer measurement update}
+The internal magnetometer enables the \abbrROV to measure the magnetic field strength in the three local axes $x$, $y$ and $z$.
+This data is used as a measurement in a measurement update that is constructed the following way:
+\begin{equation}
+    \begin{pmatrix}
+        m_x\\
+        m_y\\
+        m_z
+    \end{pmatrix} = 
+    R^T
+    \begin{pmatrix}
+        m_N\\
+        m_E\\
+        m_D
+    \end{pmatrix}=
+    \begin{pmatrix}
+        2*(q_0^2+q_1^2) - 1 &  2*(q_1*q_2-q_0*q_3) &    2*(q_1*q_3+q_0*q_2)\\
+        2*(q_1*q_2+q_0*q_3) &    2*(q_0^2+q_2^2) - 1 &  2*(q_2*q_3-q_0*q_1)\\
+        2*(q_1*q_3-q_0*q_2) &    2*(q_2*q_3+q_0*q_1) &    2*(q_0^2+q_3^2) - 1
+    \end{pmatrix}
+    \begin{pmatrix}
+        m_N\\
+        m_E\\
+        m_D
+    \end{pmatrix}
+\end{equation}
+where $m_x$, $m_y$ and $m_z$ are the components of the measured magnetic field in the local coordinate system. $m_N$, $m_E$ and $m_D$ are the components of the Earth's magnetic field in the $NED$ coordinate system and should be set during calibration.
+To ensure that the good measurements are used an outlier rejection equation was implemented. Measurements are used if 
+\begin{equation}
+        \abs{ ||
+    \begin{pmatrix}
+        m_x\\
+        m_y\\
+        m_z
+    \end{pmatrix}||
+    -
+    ||
+    \begin{pmatrix}
+        m_N\\
+        m_E\\
+        m_D
+    \end{pmatrix}||
+     } < \epsilon
+\end{equation}
+holds.
+
+
+
+\subsection{Pressure sensor measurement update}
+The \abbrROV is also equipped with a Br30 pressure sensor from BlueRobotics. This waterproof sensor has a resolution of 2mm and can operate down to depths of 300m. The sensor is placed in the rear, or bow, of the \abbrROV which in turn means that the attitude of the \abbrROV needs to be taken in to account when calculating the depth.
+The measurement equation for the pressure sensor is
+\begin{equation}
+p =  \rho g (d + \begin{pmatrix}
+    0 & 0 & 1
+\end{pmatrix} R 
+\begin{pmatrix}
+x_{offset}\\
+0\\
+0
+\end{pmatrix}
+\end{equation}.
+Here $p$ is the measured pressure in pascal, $\rho$ is the density of the water, $d$ is the current depth in meters and $x_{offset}$ is the pressure sensors offset from the \abbrROV's \abbrCO in the x direction. In this case $x_{offset}$ is a negative number.
+A basic form of outlier rejection is implemented in the pressure sensor measurement update. The update is done if the following expression holds true:
+\begin{equation}
+    p > 0
+\end{equation}

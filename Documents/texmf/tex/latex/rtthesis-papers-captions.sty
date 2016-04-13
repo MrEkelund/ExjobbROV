@@ -1,0 +1,33 @@
+\ProvidesPackage{rtthesis-papers-captions}[2010/02/18 Additional paper captions for the rtthesis class]
+
+%%% Note: It is too dangerous to have a default value for the encoding, so we
+%%% must detect if the user fails to select it explicitly.
+\newif\ifrtpcap@InputEncUTFUnspecified
+\rtpcap@InputEncUTFUnspecifiedtrue
+\newif\ifrtpcap@InputEncUTF
+\DeclareOption{latin1}{\rtpcap@InputEncUTFfalse\rtpcap@InputEncUTFUnspecifiedfalse}
+\DeclareOption{utf8}{\rtpcap@InputEncUTFtrue\rtpcap@InputEncUTFUnspecifiedfalse}
+
+\ProcessOptions\relax
+
+\ifrtpcap@InputEncUTFUnspecified
+\PackageError{rtthesis-papers-captions}{%
+  One of the options `latin1' and\MessageBreak
+  `utf8' must be given to select the\MessageBreak
+  character encoding of the loaded\MessageBreak
+  captions%
+}{%
+  One of the options `latin1' and\MessageBreak
+  `utf8' must be given to select the\MessageBreak
+  character encoding of the loaded\MessageBreak
+  captions%
+}
+\fi
+
+\RequirePackage[english]{babel}
+
+\ifrtpcap@InputEncUTF
+\RequirePackage{rtthesis-papers-caption-defs-utf8}%
+\else
+\RequirePackage{rtthesis-papers-caption-defs}%
+\fi

@@ -151,10 +151,9 @@ f4 = forces(2);
 r_dot =...
     (r*(Nr + Nr_abs_r*abs(r)) + f3*ly3 - f4*ly4)/(Iz - Nr_dot); 
 
-fi_dot = r*cf*st/ct;
-theta_dot = -r*sf;
+psi_dot = r*cf/ct;
 
-x_dot = [r_dot;fi_dot;theta_dot];
+x_dot = [r_dot;psi_dot];
 y = x;
 end
 

@@ -1,0 +1,84 @@
+\setupThesis{
+  author={Adam Aili and Erik Ekelund},
+  swetitle={Modellbaserad utveckling och reglering av ett undervattensfordon},
+  swesubtitle={},
+  title={Model-based Design Development and Control of An Underwater Vehicle},
+  subtitle={},
+  year=2016,
+  month=6,
+  day=10,
+  type=msc,
+  subject={reglerteknik},
+  division={Division of Automatic Control},
+  department=isy,
+  examiner={Daniel Axehill \AT \textsc{isy}, Linköpings universitet},
+  supervisor={Jonas Linder \AT \textsc{isy}, Linköpings universitet \AND Rikard Bengtsson \AT Combine},
+  keywords={Underwater, Model-based,Master thesis},
+  isrn=LiTH-ISY-EX-{}-16/NNNN-{}-SE,
+  url={http://urn.kb.se/resolve?urn=urn:nbn:se:liu:diva-XXXXX},
+  dedication={Till våra föräldrar}
+}
+
+%%% Define the abstract that goes on the library page here.  This makes it easy to get the same text in two places.
+\newcommand{\myabstract}{%
+}
+
+%%% Since macros that define notation may be useful also to produce figures, these macros are kept in a separate file.
+\RequirePackage{mynotation}
+
+
+%%% Setup for natbib (natbib is loaded by rtthesis).
+\AtBeginDocument{%
+  \bibliographystyle{plainnat}%
+}
+
+
+%%% Tell \includegraphics where to search for files.
+\graphicspath{{fig/}}
+
+
+%%% For consistent formatting of lengths and other physical quantities.
+\RequirePackage[squaren]{SIunits}
+
+
+%%% Define command for playing around with margin paragraphs.
+\definecolor{Warning}{rgb}{1.0,0.5,0.0}
+\newcommand{\Warning}[2][Warning]{\marginpar{\fcolorbox{Warning}{white}{\begin{minipage}{\linewidth}\textbf{\textcolor{Warning}{\emph{#1:}}}\par \tiny \sf #2\end{minipage}}}}
+
+
+%%% Customize captions.
+\captionsetup[table]{position=bottom}% Some say that this should be 'top'.  This overrides the default of rtthesis.cls!
+
+
+%%% Define font size command to use for all verbatim environments.
+\newcommand{\verbatimsize}{\small}
+
+
+%%% Define some convenient referencing commands.
+\newcommand{\chapterref}[1]{\hyperref[#1]{chapter~\ref*{#1}}}
+\newcommand{\Chapterref}[1]{\hyperref[#1]{Chapter~\ref*{#1}}}
+
+\newcommand{\sectionref}[1]{\hyperref[#1]{section~\ref*{#1}}}
+\newcommand{\Sectionref}[1]{\hyperref[#1]{Section~\ref*{#1}}}
+
+\newcommand{\theoremref}[1]{\hyperref[#1]{theorem~\ref*{#1}}}
+\newcommand{\Theoremref}[1]{\hyperref[#1]{Theorem~\ref*{#1}}}
+
+\newcommand{\exampleref}[1]{\hyperref[#1]{exempel~\ref*{#1}}}
+\newcommand{\Exampleref}[1]{\hyperref[#1]{Exempel~\ref*{#1}}}
+
+\newcommand{\figureref}[1]{\hyperref[#1]{figure~\ref*{#1}}}
+\newcommand{\Figureref}[1]{\hyperref[#1]{Figure~\ref*{#1}}}
+
+\newcommand{\tableref}[1]{\hyperref[#1]{table~\ref*{#1}}}
+\newcommand{\Tableref}[1]{\hyperref[#1]{Table~\ref*{#1}}}
+
+\newcommand{\pagepageref}[1]{\hyperref[#1]{page~\pageref*{#1}}}
+
+\newcommand{\appref}[1]{\hyperref[#1]{appendix~\ref*{#1}}}
+\newcommand{\Appref}[1]{\hyperref[#1]{Appendix~\ref*{#1}}}
+
+\renewcommand{\eqref}[1]{\hyperref[#1]{equation~(\ref*{#1})}}
+\newcommand{\Eqref}[1]{\hyperref[#1]{Equation~(\ref*{#1})}}
+
+\newcommand\scalemath[2]{\scalebox{#1}{\mbox{\ensuremath{\displaystyle #2}}}}

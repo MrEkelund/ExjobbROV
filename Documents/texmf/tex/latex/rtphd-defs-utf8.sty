@@ -1,0 +1,163 @@
+\providecommand*\@issn{0345-7524} % ISSN for PhD thesis
+\providecommand*\publication@series{Linköping studies in science and
+  technology. Dissertations.\\No.\@}
+
+\renewcommand*\maketitle{%
+  \frontmatter
+  \cleardoublepage%
+  \thispagestyle{empty}%
+  \vspace*{-22mm}%
+  \hspace*{-10mm}%
+  \noindent\parbox[l][0pt][t]{0pt}{%
+    \begin{minipage}[t][\paperheight-15mm][t]{\paperwidth-35mm}%
+      \raggedright%
+      \sffamily%
+      \begin{large}\publication@series~\thesisn@\par\end{large}%
+      \vspace*{17mm}%
+      {\fontsize{11mm}{13mm}\selectfont\@title\par}%
+      \ifrt@subtitle%
+      \bigskip%
+      \begin{huge}\@subtitle\par\end{huge}%
+      \fi%
+      \vspace*{10mm}%
+      \begin{LARGE}\textbf{\@author}\par\end{LARGE}%
+      \vspace*{\stretch{6}}%
+      \hspace*{-5mm}\includegraphics[width=85mm]{LiU_primary_black}%
+    \end{minipage}}
+  \clearpage
+  \thispagestyle{empty}
+
+  \vspace*{\stretch{1}}
+  \noindent\rtcoverinfo
+  \vspace*{\stretch{4}}
+  \begin{center}
+    \publication@series~\thesisn@
+    \par\smallskip
+    \textbf{\textsf{\@title\ifrt@subtitle\@subtitlesep\@subtitle\fi}}
+    \par\smallskip
+    \@author
+    \par\bigskip
+    {\slshape
+      \texttt{\u@name @isy.liu.se}\\
+      \texttt{www.control.isy.liu.se}\\
+      Division of Automatic Control\\
+      Department of Electrical Engineering \\
+      Linköping University \\
+      SE--581 83 Linköping \\
+      Sweden}
+    \par\bigskip\bigskip
+    ISBN~\@isbn
+    \hspace{1cm}
+    ISSN~\@issn
+    \par\bigskip
+    Copyright \copyright~\thesis@year~\@author\par
+    \par\bigskip
+    {\small Printed by \publishername~\thesis@year}
+    \normalsize
+  \end{center}
+
+  \clearemptydoublepage
+    \thispagestyle{empty}
+  \vspace*{70mm}
+  \begin{flushright}
+    \textsl{\dedic@tion}
+  \end{flushright}
+
+  \clearemptydoublepage
+}
+
+
+\newcommand*\phdlist[1][phdlist-utf8]{%
+  \clearemptydoublepage
+  \pagestyle{empty}
+  \begin{center}
+    \small\bfseries%
+    PhD~Dissertations\\%
+    Division of Automatic Control\\%
+    Linköping University
+  \end{center}
+  \begin{list}{}{%
+      \setlength\leftmargin{0pt}\setlength\rightmargin{0pt}%
+      \setlength\labelwidth{0pt}\setlength\labelsep{.5em}%
+      \setlength\itemindent{0pt}\setlength\itemsep{.20\baselineskip}%
+      \setlength\parsep{0pt}\setlength\partopsep{0.5ex}%
+      \newcommand*\phditem[5]{%
+      \item\parbox{\linewidth}{\textbf{##1:} ##2. Thesis No.~##3, ##4. ISBN~##5.}}}
+    \small
+    \input{#1}
+  \end{list}}
+
+\AtEndDocument{\phdlist}
+
+
+\newcommand*\makecover{%
+  \pagestyle{empty}
+  \begin{document}
+  \thispagestyle{empty}%
+  \thispagestyle{empty}%
+  \vspace*{-22mm}%
+  \hspace*{-5mm}\hspace*{-10mm}%
+  \noindent\parbox[l][0pt][t]{0pt}{%
+    \begin{minipage}[t][\paperheight-15mm][t]{\paperwidth-35mm}%
+      \raggedright%
+      \sffamily%
+      \begin{large}\publication@series~\thesisn@\par\end{large}%
+      \vspace*{17mm}%
+      {\fontsize{11mm}{13mm}\selectfont\@title\par}%
+      \ifrt@subtitle%
+      \bigskip%
+      \begin{huge}\@subtitle\par\end{huge}%
+      \fi%
+      \vspace*{10mm}%
+      \begin{LARGE}\textbf{\@author}\par\end{LARGE}%
+      \vspace*{\stretch{6}}%
+      \hspace*{-5mm}\includegraphics[width=85mm]{LiU_primary_black}%
+    \end{minipage}}
+  \newpage
+
+  \vspace*{-22mm}%
+  \hspace*{-15mm}\hspace*{36mm}
+  \noindent\parbox[l][0pt][t]{0pt}{%
+    \begin{minipage}[t][\paperheight-10mm][t]{\paperwidth-41mm}
+      \vspace*{30mm}
+      \sffamily
+      \raggedright%
+      \begin{Large}%
+        \bfseries
+        Department of Electrical Engineering
+        \par
+      \end{Large}
+      \bigskip
+      \publication@series\thesisn@
+      \par
+      \bigskip
+      Linköping University\\
+      SE-581 83 Linköping
+      \par
+      \bigskip
+      \begin{Large}
+        www.liu.se
+      \end{Large}
+      \par
+      \vspace*{\stretch{3}}
+      \hspace*{-6mm}\hspace*{-36mm}\includegraphics[width=85mm]{LiU_primary_black}
+    \end{minipage}}
+  \newpage
+
+  \raggedright
+  \rotatebox[origin=lb]{270}{%
+    \sffamily%
+    \hspace*{-4em}%
+    \makebox[.90\paperheight][l]{%
+      \def\\{ }%
+      \def\linebreak{ }%
+      \@author\hspace*{3em}%
+      \hfill%
+      \textbf{\@title\@subtitlesep\@subtitle}%
+      \hspace*{3em}\hfill%
+      \thesis@year%
+    }
+  }
+  \let\phdlist\relax
+\end{document}
+}

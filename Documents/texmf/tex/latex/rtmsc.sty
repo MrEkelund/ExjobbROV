@@ -1,0 +1,35 @@
+\ProvidesPackage{rtmsc}[2010/03/24 rtmsc Style v. 0.02a]
+\NeedsTeXFormat{LaTeX2e}
+
+% Some suff that must be declared
+\DeclareOption{noextras}{%
+  % Nothing to do here.
+}
+
+%%% Note: It is too dangerous to have a default value for the encoding, so we
+%%% must detect if the user fails to select it explicitly.
+\newif\ifrtmsc@InputEncUTFUnspecified
+\rtmsc@InputEncUTFUnspecifiedtrue
+\newif\ifrtmsc@InputEncUTF
+\DeclareOption{latin1}{\rtmsc@InputEncUTFfalse\rtmsc@InputEncUTFUnspecifiedfalse}
+\DeclareOption{utf8}{\rtmsc@InputEncUTFtrue\rtmsc@InputEncUTFUnspecifiedfalse}
+
+\ProcessOptions\relax
+
+\ifrtmsc@InputEncUTFUnspecified
+\PackageError{rtmsc}{%
+  One of the options `latin1' and `utf8' must\MessageBreak
+  be given to select the character encoding\MessageBreak
+  of the loaded captions%
+}{%
+  One of the options `latin1' and `utf8' must\MessageBreak
+  be given to select the character encoding\MessageBreak
+  of the loaded captions%
+}
+\fi
+
+\ifrtmsc@InputEncUTF
+\RequirePackage{rtmsc-defs-utf8}%
+\else
+\RequirePackage{rtmsc-defs}%
+\fi

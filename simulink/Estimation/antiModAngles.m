@@ -3,7 +3,7 @@ function [new_angle] = antiModAngles(angle)
 
 samples = size(angle,1);
 num_angles = size(angle,2);
-design = 0.8;
+design = 0.7;
 new_angle = zeros(size(angle));
 new_angle(1,:) = angle(1,:);
 

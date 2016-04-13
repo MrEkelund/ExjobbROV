@@ -1,0 +1,46 @@
+\ProvidesPackage{rtthesis-captions}[2010/02/18 Basic captions for the rtthesis class]
+
+%%% Note: It is too dangerous to have a default value for the encoding, so we
+%%% must detect if the user fails to select it explicitly.
+\newif\ifrtcap@InputEncUTFUnspecified
+\rtcap@InputEncUTFUnspecifiedtrue
+\newif\ifrtcap@InputEncUTF
+\DeclareOption{latin1}{\rtcap@InputEncUTFfalse\rtcap@InputEncUTFUnspecifiedfalse}
+\DeclareOption{utf8}{\rtcap@InputEncUTFtrue\rtcap@InputEncUTFUnspecifiedfalse}
+
+\ProcessOptions\relax
+
+\ifrtcap@InputEncUTFUnspecified
+\PackageError{rtthesis-captions}{%
+  One of the options `latin1' and `utf8' must\MessageBreak
+  be given to select the character encoding\MessageBreak
+  of the loaded captions%
+}{%
+  One of the options `latin1' and `utf8' must\MessageBreak
+  be given to select the character encoding\MessageBreak
+  of the loaded captions%
+}
+\fi
+
+\RequirePackage[english]{babel}
+
+%%% Definitions of captions %%%
+\providecommand*\acknowledgmentsname{Acknowledgments}
+\providecommand*\notationname{Notation}
+\providecommand*\algorithmname{Algorithm}
+\providecommand*\assumptionname{Assumption}
+\providecommand*\propertyname{Property}
+\providecommand*\corollaryname{Corollary}
+\providecommand*\definitionname{Definition}
+\providecommand*\examplename{Example}
+\providecommand*\lemmaname{Lemma}
+\providecommand*\listexamplename{List of Examples}
+\providecommand*\propositionname{Proposition}
+\providecommand*\remarkname{Remark}
+\providecommand*\theoremname{Theorem}
+
+\ifrtcap@InputEncUTF
+\RequirePackage{rtthesis-caption-defs-utf8}%
+\else
+\RequirePackage{rtthesis-caption-defs}%
+\fi

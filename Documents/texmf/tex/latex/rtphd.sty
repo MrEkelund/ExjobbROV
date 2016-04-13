@@ -1,0 +1,36 @@
+\ProvidesPackage{rtphd}[2010/03/24 rtphd Style v. 0.02a]
+\NeedsTeXFormat{LaTeX2e}
+
+% Some suff that must be declared
+\DeclareOption{nophdlist}{%
+  \AtEndOfPackage{\let\phdlist=\relax}}
+\DeclareOption{noextras}{%
+  \ExecuteOptions{nophdlist}}
+
+%%% Note: It is too dangerous to have a default value for the encoding, so we
+%%% must detect if the user fails to select it explicitly.
+\newif\ifrtphd@InputEncUTFUnspecified
+\rtphd@InputEncUTFUnspecifiedtrue
+\newif\ifrtphd@InputEncUTF
+\DeclareOption{latin1}{\rtphd@InputEncUTFfalse\rtphd@InputEncUTFUnspecifiedfalse}
+\DeclareOption{utf8}{\rtphd@InputEncUTFtrue\rtphd@InputEncUTFUnspecifiedfalse}
+
+\ProcessOptions\relax
+
+\ifrtphd@InputEncUTFUnspecified
+\PackageError{rtphd}{%
+  One of the options `latin1' and `utf8' must\MessageBreak
+  be given to select the character encoding\MessageBreak
+  of the loaded captions%
+}{%
+  One of the options `latin1' and `utf8' must\MessageBreak
+  be given to select the character encoding\MessageBreak
+  of the loaded captions%
+}
+\fi
+
+\ifrtphd@InputEncUTF
+\RequirePackage{rtphd-defs-utf8}%
+\else
+\RequirePackage{rtphd-defs}%
+\fi

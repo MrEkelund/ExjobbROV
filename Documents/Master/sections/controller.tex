@@ -1,0 +1,112 @@
+\chapter{Controlling the ROV} \label{cha:controller}
+
+\section{Open loop control}
+The open loop control of the \abbrROV consists of an static thrust allocation matrix which is
+\begin{equation}
+    \thrusterGeometryOnes[*] = \thrusterGeometryOnes[T](\thrusterGeometryOnes \thrusterGeometryOnes[T])^{-1}
+\end{equation}
+according to \citet{thrustallocation}. The thrust geometry matrix $\thrusterGeometryOnes$ has been derived from the thrust matrix $\thrusterGeometry$ and became 
+\begin{equation*}
+    \thrusterGeometryOnes = 
+    \begin{pmatrix}
+    0  & 0  & 1 & 1  &  0 &  0 \\
+    0  & 0  & 0 & 0  &  0 & -1 \\
+    -1 & -1 & 0 & 0  & -1 &  0 \\
+    1  & -1 & 0 & 0  &  0 &  1 \\
+    1  & 1  & 0 & 0  & -1 &  0 \\
+    0  & 0  & 1 & -1 &  0 &  0 \\
+    \end{pmatrix}
+\end{equation*}
+
+
+\begin{figure}
+    \centering
+
+    \begin{tikzpicture}[auto, thick, node distance=3cm, >=triangle 45,%
+        block/.style    = {draw, thick, rectangle, minimum height = 3em,%
+        minimum width = 3em},%
+      sum/.style      = {draw, circle, node distance = 2cm},% 
+      input/.style    = {coordinate},%
+      output/.style   = {coordinate} %
+    ]
+    \draw
+    	% Drawing the blocks of first filter :
+    	node at (0,0)[input, name=input1] (input1) {}
+    	node [block, right of=input1] (inte1) {\thrusterGeometryOnes[*]}
+    	node [output, right of=inte1] (output1) {};
+        % Joining blocks. 
+        % Commands \draw with options like [->] must be written individually
+    	\draw[->](input1) -- node {$u_{control}$}(inte1);
+     	\draw[->](inte1) -- node {$u_{allocated}$} (output1);
+    \end{tikzpicture}
+    \caption{The control signals, $u_{control}$, are allocated to the different thrusters by the thrust allocation matrix $\thrusterGeometryOnes[*]$.} 
+    \label{fig:open_control}
+\end{figure}
+
+\section{Decentralised PID}
+\begin{figure}
+    \centering
+
+    \begin{tikzpicture}[auto, thick, node distance=1cm, >=triangle 45,%
+        block/.style    = {draw, thick, rectangle, minimum height = 1cm,%
+                           minimum width = 3em, node distance = 3cm},%
+        PID/.style    = {draw, thick, rectangle, minimum height = 1.5cm,%
+                         minimum width = 1cm,node distance=2cm},%
+        sum/.style      = {draw, circle, node distance = 2cm},%
+        mux/.style    = {draw, thick, rectangle, minimum width=0.3cm,%
+                        minimum height = 2.5cm ,fill= black!100,%
+                        node distance=2cm},
+        input/.style    = {coordinate,node distance = 1cm},%
+        output/.style   = {coordinate,node distance = 3cm} %
+    ]
+    
+    \draw node at (1.5,0) [PID] (zeros) {$0_{3x1}$};
+    \draw
+    	% Drawing the blocks of first filter :
+    	node [PID, below of=zeros] (pid1) {PID}
+    	node [input] (tr1) [below left=-1.25 and 1.5 of pid1] {}
+    	node [input, below of=tr1] (input1) {}
+     	
+    	
+     	node [input, below of=input1] (tr2) {}
+    	node [input, below of=tr2] (input2) {}
+     	node [PID, below of=pid1] (pid2) {PID}
+     	
+     	node [input, below of=input2] (tr3) {}
+    	node [input, below of=tr3] (input3) {}
+     	node [PID, below of=pid2] (pid3) {PID};
+     	
+  
+      \draw[->] (tr1) -- node[align=center, below] {$TR_p$} ($(pid1.west) + (0,0.5)$);
+      \draw[->] (input1) -- node[align=center, below] {$p_{ref} - p$} ($(pid1.west) + (0,-0.5)$);
+      \draw[->] (tr2) -- node[align=center, below] {$TR_q$} ($(pid2.west) + (0,0.5)$);
+      \draw[->] (input2) -- node[align=center, below] {$q_{ref} - q$} ($(pid2.west) + (0,-0.5)$);
+      \draw[->] (tr3) --  node[align=center, below] {$TR_r$} ($(pid3.west) + (0,0.5)$);
+      \draw[->] (input3) -- node[align=center, below] {$r_{ref} - r$} ($(pid3.west) + (0,-0.5)$);
+     	
+
+    \draw node at (6,-3) [mux, name=mux] {};
+    \draw[->] (zeros.east) -| ++(1.5,-2.25)  --  ($(mux.west) + (0,0.75)$);
+    \draw[->] (pid1.east) -| node[right] {$u_{p}$} ++(1,-0.75)  -- ($(mux.west) + (0,0.25)$);
+    \draw[->] (pid2.east) -| node[right] {$u_{q}$} ++(1,0.75)   -- ($(mux.west) + (0,-0.25)$);
+    \draw[->] (pid3.east) -| node[right] {$u_{r}$} ++(1.5,2.25) -- ($(mux.west) + (0,-0.75)$);
+    
+    \draw node [block, right of=mux] (thrust) {\thrusterGeometryOnes[*]};
+    \draw[->] (mux.east) -- node[below] {$u_{control}$} (thrust.west);
+    \draw node [output, right of=thrust] (output) {};
+    \draw[->] (thrust) -- node[align=center, below] {$u_{allocated}$} (output);
+    \end{tikzpicture}
+    
+    \caption{Each PID gets an error signal and a trace signal. The trace signal is used for bumpless control transfer. The control signals are passed through the thrust allocation matrix, $\thrusterGeometryOnes[*]$.} 
+    \label{fig:dec_pid}
+\end{figure}
+
+\section{Exact linearisation}
+
+\section{LQ}
+
+
+\section{Benchmarking}
+\subsection{Simulated Performance}
+\subsection{Test Performance}
+\subsection{Conclusion}
