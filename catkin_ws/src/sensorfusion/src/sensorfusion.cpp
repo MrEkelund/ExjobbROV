@@ -164,7 +164,7 @@ void Ekf::pressureUpdate(){
     states = new_states;
 
     new_state_cov = state_cov - k*H_pressure*state_cov;
-    state_cov = new_state_cov;
+    state_cov = new_state_cov/2 + new_state_cov.transpose()/2;
     normQuaternions();
     any_updates = true;
   }
@@ -205,7 +205,7 @@ void Ekf::accUpdate(){
     new_states = states + k*innovation;
     states = new_states;
     new_state_cov = state_cov - k*H_acc*state_cov;
-    state_cov = new_state_cov;
+    state_cov = new_state_cov/2 + new_state_cov.transpose()/2;
 
     normQuaternions();
     any_updates = true;
@@ -244,7 +244,8 @@ void Ekf::magUpdate(){
     new_states = states + k*innovation;
     states = new_states;
     new_state_cov = state_cov - k*H_mag*state_cov;
-    state_cov = new_state_cov;
+
+    state_cov = new_state_cov/2 + new_state_cov.transpose()/2;
     normQuaternions();
     any_updates = true;
   }
@@ -276,7 +277,9 @@ void Ekf::gyroUpdate(){
     new_states = states + k*innovation;
     states = new_states;
     new_state_cov = state_cov - k*H_gyro*state_cov;
-    state_cov = new_state_cov;
+
+
+    state_cov = new_state_cov/2 + new_state_cov.transpose()/2;
     normQuaternions();
     any_updates = true;
   }
@@ -340,10 +343,10 @@ void Ekf::calcGv(){
   Gv(4,0) = delta_t;
   Gv(5,1) = delta_t;
   Gv(6,2) = delta_t;
-  Gv(7,3) = 1.0;
-  Gv(8,4) = 1.0;
-  Gv(9,5) = 1.0;
-  Gv(10,6) = 1.0;
+  Gv(7,3) = delta_t;
+  Gv(8,4) = delta_t;
+  Gv(9,5) = delta_t;
+  Gv(10,6) = delta_t;
 }
 void Ekf::timeUpdate(){
   //read states
@@ -357,7 +360,8 @@ void Ekf::timeUpdate(){
     normQuaternions();
     //update state covariance
     new_state_cov = F*state_cov*F.transpose() + Gv*process_cov*Gv.transpose();
-    state_cov = new_state_cov;
+
+    state_cov = new_state_cov/2 + new_state_cov.transpose()/2;
     any_updates = true;
   }
 }
@@ -430,9 +434,9 @@ void Ekf::sendStates(){
   state_message.data[4] = q;
   state_message.data[5] = r;
   state_message.data[6] = d;
-  state_message.data[7] = meas_acc(0);
-  state_message.data[8] = meas_acc(1);
-  state_message.data[9] = meas_acc(2);
+  state_message.data[7] = meas_gyro(0);
+  state_message.data[8] = meas_gyro(1);
+  state_message.data[9] = meas_gyro(2);
   states_pub.publish(state_message);
   any_updates = false;
 
@@ -466,7 +470,7 @@ void Ekf::spin(){
     {
       sendStates();
     }
-
+    std::cout << state_cov - state_cov.transpose() << "\n"<< std::endl;
     rate.sleep();
   }
 
