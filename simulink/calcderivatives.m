@@ -71,8 +71,10 @@ end
 
  %% Motion model
  motion_model = blkdiag([eye(4) + delta_t*Sw/2,delta_t^2*Sq/2;zeros(3,4),eye(3)],eye(1))
+ 
+ 
  Gv = [[delta_t^3*Sq/4;delta_t*eye(3)],zeros(7,1);
-     zeros(1,3),eye(1)];
+     zeros(1,3),eye(1)*delta_t];
  %% F matrix
  %for n=1:nr_states
  %  for m=1:nr_states
