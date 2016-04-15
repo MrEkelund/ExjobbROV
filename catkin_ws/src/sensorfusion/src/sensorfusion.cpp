@@ -15,7 +15,7 @@ void Ekf::initFilter(){
   states_pub = node_handle.advertise<std_msgs::Float64MultiArray>("/sensor_fusion/states", 50);
   state_message.data.resize(10);
 
-  setInitiaMeasurements();
+  setInitialMeasurements();
   state_cov = initial_state_cov;
   states = initial_states;
   normQuaternions();
@@ -31,7 +31,7 @@ void Ekf::initFilter(){
   mag_d = 1000;
 }
 void Ekf::restartFilter(){
-  setInitiaMeasurements();
+  setInitialMeasurements();
   state_cov = initial_state_cov;
   states = initial_states;
   normQuaternions();
@@ -100,18 +100,15 @@ void Ekf::setProcessCov(){
   process_cov(0,0) = config.process_cov_p;
   process_cov(1,1) = config.process_cov_q;
   process_cov(2,2) = config.process_cov_r;
-  process_cov(3,3) = config.process_cov_bias_p;
-  process_cov(4,4) = config.process_cov_bias_q;
-  process_cov(5,5) = config.process_cov_bias_r;
-  process_cov(6,6) = config.process_cov_d;
-
+  process_cov(3,3) = config.process_cov_d;
 }
 void Ekf::setInitialStates(){
   // no need to set idividual states
   initial_states.setZero();
+  //set quat_0 to 1;
   initial_states(0) = 1;
 }
-void Ekf::setInitiaMeasurements(){
+void Ekf::setInitialMeasurements(){
   // make sure matrices are defined
   meas_gyro.setZero();
   meas_mag.setZero();
@@ -128,17 +125,14 @@ void Ekf::setInitialStateCov(){
   initial_state_cov(4,4) = config.initial_cov_p;
   initial_state_cov(5,5) = config.initial_cov_q;
   initial_state_cov(6,6) = config.initial_cov_r;
-  initial_state_cov(7,7) = config.initial_cov_bias_p;
-  initial_state_cov(8,8) = config.initial_cov_bias_q;
-  initial_state_cov(9,9) = config.initial_cov_bias_r;
-  initial_state_cov(10,10) = config.initial_cov_d;
+  initial_state_cov(7,7) = config.initial_cov_d;
 }
 void Ekf::calcHPressure(){
   H_pressure.setZero();
   H_pressure.setZero();
   double quat_0 = states(0); double quat_1 = states(1);
   double quat_2 = states(2); double quat_3 = states(3);
-  double d = states(10);
+  double d = states(7);
   double rho = config.rho; double x_offset = config.x_offset;
   double g = config.g;
 
@@ -146,14 +140,14 @@ void Ekf::calcHPressure(){
   H_pressure(0,1) = g*quat_3*rho*x_offset*2.0;
   H_pressure(0,2) = g*quat_0*rho*x_offset*-2.0;
   H_pressure(0,3) = g*quat_1*rho*x_offset*2.0;
-  H_pressure(0,10) = g*rho;
+  H_pressure(0,7) = g*rho;
 
   h_pressure(0,0) = g*rho*(d-x_offset*(quat_0*quat_2*2.0-quat_1*quat_3*2.0));
 }
 void Ekf::pressureUpdate(){
   if(config.enable_pressure_update && (meas_pressure(0) > 0))
   {
-    Eigen::Matrix<double, 11, 1> k;
+    Eigen::Matrix<double, 8, 1> k;
     Eigen::Matrix<double, 1, 1> innovation;
     calcHPressure();
 
@@ -198,7 +192,7 @@ void Ekf::accUpdate(){
   if (config.enable_acceleration_update && (abs(meas_acc.norm() - config.g) < config.eps_acc)) {
     calcHAcc();
     Eigen::Matrix<double, 3, 1> innovation;
-    Eigen::Matrix<double, 11, 3> k;
+    Eigen::Matrix<double, 8, 3> k;
 
     innovation = meas_acc - h_acc;
     k = state_cov*H_acc.transpose()*((H_acc*state_cov*H_acc.transpose() + cov_acc).inverse());
@@ -237,7 +231,7 @@ void Ekf::magUpdate(){
   if (config.enable_magnetometer_update && (abs(meas_mag.norm() - sqrt(mag_n*mag_n + mag_e*mag_e + mag_d*mag_d)) < config.eps_mag)) {
     calcHMag();
     Eigen::Matrix<double, 3, 1> innovation;
-    Eigen::Matrix<double, 11, 3> k;
+    Eigen::Matrix<double, 8, 3> k;
 
     innovation = meas_mag - h_mag;
     k = state_cov*H_mag.transpose()*((H_mag*state_cov*H_mag.transpose() + cov_mag).inverse());
@@ -253,23 +247,22 @@ void Ekf::calcHGyro(){
   H_gyro.setZero();
   h_gyro.setZero();
   double p = states(4); double q = states(5); double r = states(6);
-  double bias_p = states(7); double bias_q = states(8); double bias_r = states(9);
-  H_gyro(0,4) = 1.0;
-  H_gyro(0,7) = 1.0;
-  H_gyro(1,5) = 1.0;
-  H_gyro(1,8) = 1.0;
-  H_gyro(2,6) = 1.0;
-  H_gyro(2,9) = 1.0;
 
-  h_gyro(0,0) = bias_p + p;
-  h_gyro(1,0) = bias_q + q;
-  h_gyro(2,0) = bias_r + r;
+
+  H_gyro(0,4) = 1.0;
+  H_gyro(1,5) = 1.0;
+  H_gyro(2,6) = 1.0;
+
+
+  h_gyro(0,0) =  p;
+  h_gyro(1,0) =  q;
+  h_gyro(2,0) =  r;
 }
 void Ekf::gyroUpdate(){
   if (config.enable_gyro_update){
     calcHGyro();
     Eigen::Matrix<double, 3, 1> innovation;
-    Eigen::Matrix<double, 11, 3> k;
+    Eigen::Matrix<double, 8, 3> k;
 
     innovation = meas_gyro - h_gyro;
     k = state_cov*H_gyro.transpose()*((H_gyro*state_cov*H_gyro.transpose() + cov_gyro).inverse());
@@ -317,9 +310,6 @@ void Ekf::calcF(){
   F(5,5) = 1.0;
   F(6,6) = 1.0;
   F(7,7) = 1.0;
-  F(8,8) = 1.0;
-  F(9,9) = 1.0;
-  F(10,10) = 1.0;
 }
 void Ekf::calcGv(){
   Gv.setZero();
@@ -341,9 +331,6 @@ void Ekf::calcGv(){
   Gv(5,1) = delta_t;
   Gv(6,2) = delta_t;
   Gv(7,3) = 1.0;
-  Gv(8,4) = 1.0;
-  Gv(9,5) = 1.0;
-  Gv(10,6) = 1.0;
 }
 void Ekf::timeUpdate(){
   //read states
@@ -409,7 +396,7 @@ void Ekf::sendStates(){
   double quat_0 = states(0); double quat_1 = states(1);
   double quat_2 = states(2); double quat_3 = states(3);
   double p = states(4); double q = states(5); double r = states(6);
-  double d = states(10); //depth
+  double d = states(7); //depth
 
   //calc yaw pitch roll
   double yaw = atan2(2.0*quat_0*quat_3+2.0*quat_1*quat_2,1.0-2.0*(quat_2*quat_2 + quat_3*quat_3));

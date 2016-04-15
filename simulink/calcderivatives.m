@@ -29,7 +29,7 @@ Sq = [-quat_1, -quat_2, -quat_3;
 
  
 
-Sw = [0, -(p ), -(q ), -(r ); % wx = p +b_p  bias is subtracted in ard
+Sw = [0, -(p ), -(q ), -(r ); 
     (p ), 0, (r ), -(q );
     (q ), -(r ), 0, (p );
     (r ), (q ), -(p ), 0];
@@ -54,11 +54,11 @@ mag_meas = transpose(Q)*mag_global;
  pressure_meas =  rho*g*(d+[0,0,1]*Q*[x_offset;0;0]);
  
 % Measurement equation for gyro
- gyro_meas = [p + b_p; q + b_q; r + b_r];
+ gyro_meas = [p; q; r];
  
  measurement_eqs = [acc_meas;gyro_meas;mag_meas;pressure_meas];
  
- states = [transpose(quat),p,q,r,b_p,b_q,b_r,d];
+ states = [transpose(quat),p,q,r,d];
  %derivatives for acc meas eq
  nr_meas_eqs = length(measurement_eqs);
  nr_states = length(states);
@@ -70,10 +70,9 @@ for i=1:nr_meas_eqs
 end
 
  %% Motion model
- motion_model = blkdiag([eye(4) + delta_t*Sw/2,delta_t^2*Sq/2;zeros(3,4),eye(3)],eye(4))
- Gv = [[delta_t^3*Sq/4;delta_t*eye(3)],zeros(7,3),zeros(7,1);
-     zeros(3,3),eye(3),zeros(3,1);
-     zeros(1,3),zeros(1,3),eye(1)];
+ motion_model = blkdiag([eye(4) + delta_t*Sw/2,delta_t^2*Sq/2;zeros(3,4),eye(3)],eye(1))
+ Gv = [[delta_t^3*Sq/4;delta_t*eye(3)],zeros(7,1);
+     zeros(1,3),eye(1)];
  %% F matrix
  %for n=1:nr_states
  %  for m=1:nr_states
@@ -81,11 +80,19 @@ end
  %  end
  %end
     
-%% print
-
+%% print to eigen friendly c-code
+F=motion_model;
+strrep(strrep(strrep(ccode(F),'][',','),'[','('),']',')')
+H_acc = H(1:3,:);
+strrep(strrep(strrep(ccode(H_acc),'][',','),'[','('),']',')')
+H_gyro = H(4:6,:);
+strrep(strrep(strrep(ccode(H_gyro),'][',','),'[','('),']',')')
+H_mag = H(7:9,:);
+strrep(strrep(strrep(ccode(H_mag),'][',','),'[','('),']',')')
+H_pressure = H(10,:);
+strrep(strrep(strrep(ccode(H_pressure),'][',','),'[','('),']',')')
 
 strrep(strrep(strrep(ccode(Gv),'][',','),'[','('),']',')')
-
  
  
  
