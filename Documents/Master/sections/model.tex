@@ -108,7 +108,7 @@ This coordinate system is used to express buoyancy and gravitational forces on t
         
         \draw[thick,red,->] (O) ++(\ax,-\ay) -- ++(\coordXRot,-\coordYRot) node[anchor=north west]{$\xPosition$};
         \draw[thick,red,->] (O) ++(-\ay,-\ax) -- ++(-\coordYRot,-\coordXRot) node[anchor=north east]{$\yPosition$};
-        \draw[->] (O) ++(0.5,0) arc (0:-\coordRot:0.5) node[right, midway]{\yawAngle};
+        \draw[->] (O) ++(0.5,0) arc (0:-\coordRot:0.5) node[right]{\yawAngle};
         
         \def\coordDistance{1.5}
         
@@ -120,7 +120,7 @@ This coordinate system is used to express buoyancy and gravitational forces on t
         
          \draw[thick,red,->] (O) ++(\ax,\ay) -- ++(\coordXRot,\coordYRot) node[anchor=south west]{$\xPosition$};
          \draw[thick,red,->] (O) ++(\ay,-\ax) -- ++(\coordYRot,-\coordXRot) node[anchor=north east]{$\zPosition$};
-         \draw[->] (O) ++(0.5,0) arc (0:\coordRot:0.5) node[right, midway]{\pitchAngle};
+         \draw[->] (O) ++(0.5,0) arc (0:\coordRot:0.5) node[right]{\pitchAngle};
          
           
         \pgfmathsetmacro\coordDistanceZ{2*\coordDistance+1}
@@ -133,7 +133,7 @@ This coordinate system is used to express buoyancy and gravitational forces on t
         
         \draw[thick,red,->] (O) ++(\ay,-\ax) -- ++(\coordYRot,-\coordXRot) node[anchor=north west]{$\zPosition$};
         \draw[thick,red,->] (O) ++(-\ax,-\ay) -- ++(-\coordXRot,-\coordYRot) node[anchor=south east]{$\yPosition$};
-        \draw[->] (O) ++(-0.5,0) arc (180:180+\coordRot:0.5) node[left, midway]{\rollAngle};
+        \draw[->] (O) ++(-0.5,0) arc (180:180+\coordRot:0.5) node[left]{\rollAngle};
     
     \end{tikzpicture}
     \caption{The local and global coordinate systems relate to each other by the rotations \yawAngle, \pitchAngle and \rollAngle.} 

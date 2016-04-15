@@ -1,5 +1,29 @@
 \chapter{Parameter Estimation} \label{cha:parameterEstimation}
-A central part in modelling is parameter estimation and it's often underestimated. If the parameters in the model isn't well estimated several problems arise when trying to synthesise model-based controllers.
+A central part in modelling is parameter estimation and it's often underestimated. If the parameters in the model isn't well estimated several problems arise when trying to synthesise model-based controllers. If a systems dynamics are completely unknown, a black box method is used \textit{i.e.} general equations are fitted to test data. When a system can be completely modelled analytically for example via Newtons laws its called white box modelling. In our case the model of the system is known but several parameters are unknown, that is called gray box modelling. 
+
+\Warning[TODO]{Write about kinetics in \Chapterref{cha:modelling}}
+
+To estimate the unknown parameters in the \abbrROV model described in \Chapterref{cha:modelling} different methods can be used. Relations between states can be used to get better estimates of parameters for example if the angles of the \abbrROV are estimated well the relations
+\begin{align}
+\pdot &= \rollVelocity + \pitchVelocity \sin \rollAngle \tan \pitchAngle + \yawVelocity \cos \rollAngle \tan \pitchAngle,\\
+\qdot &= \pitchVelocity \cos \rollAngle - \yawVelocity \sin \rollAngle \\
+&\textrm{and} \nonumber \\
+\rdot &= \pitchVelocity \frac{\sin \rollAngle}{\cos \pitchAngle} + \rollVelocity \frac{\cos \rollAngle}{\cos \pitchAngle}
+\end{align}
+from \Chapterref{cha:modelling} could be used. Another aspect to consider when estimating model parameters is what to have as inputs and outputs. Inputs to a system is considered to be true signals, thus if they are noisy or inaccurate it can effect the estimation negatively. Outputs from a system are measurements, thus are they considered to be somewhat uncertain. 
+
+\section{Divide and Conquer}
+The attitude model of the \abbrROV was divided into three estimation steps. From \eqref{eq:p_dot} - \eqref{eq:r_dot} it can be seen that $\rdot$ aren't effected by the same thrusters as $\pdot$ and $\qdot$. Thus was the yaw models parameters initially estimated by themselves and the roll and pitch models parameters estimated by themselves. The initially estimated parameters was then used in the complete attitude model parameter estimation. The initial models for yaw and roll and pitch dynamics that was used was the simpler models
+\begin{align} \label{eq:pq_dot_simple}
+\dot{p} &= \frac{\thrusterfun{1} \distance{y}{1} - \thrusterfun{2} \distance{y}{2} + \thrusterfun{6} \distance{z}{6}}{\Ix - \Kpdot} + \frac{p (Kp + \Kpabsp \abs{p})}{\Ix - \Kpdot} + \frac{B \cos{\theta} \sin{\phi} z_B}{\Ix - \Kpdot} \\
+\dot{q} &=\frac{\thrusterfun{1} \distance{x}{1} + \thrusterfun{2} \distance{x}{2} - \thrusterfun{5} \distance{x}{5}}{\Iy - \Mqdot} + \frac{q (\Mq + \Mqabsq \abs{q})}{\Iy - \Mqdot} + \frac{B \sin{\theta} z_B}{\Iy - \Mqdot} 
+\end{align} and
+\begin{equation} \label{eq:r_dot_simple}
+\dot{r} = \frac{\thrusterfun{3} \distance{y}{3} - \thrusterfun{4} \distance{y}{4}}{\Iz - \Nrdot} + \frac{r (\Nr + \Nrabsr \abs{r})}{\Iz - \Nrdot}
+\end{equation}
+This could be done because the tests only excited the states used in that estimation and thus was the coupled terms assumed to be zero.
+
+Test data necessary for the parameter estimation was collected in such way that the dynamics of the \abbrROV was excited in the way they were estimated. 
 
 The parameter estimation was done by trying to estimate a minimum of amount of \abbrDOF at the same time. As can be seen in \eqref{eq:p_dot} - \eqref{eq:r_dot}, $\pdot$ and $\qdot$ are coupled. Therefore are the parameters in $\pdot$ and $\qdot$ estimated simultaneously. However, the parameters in $\rdot$ are estimated by themselves. For $\pdot$, $\qdot$ and $\rdot$ the translation dynamics was assumed to be small and thus excluded from the parameter estimation. The tests was conducted in a deep swimming pool and thus could all water currents be neglected in the model. 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -81,3 +105,67 @@ where:
 \section{Attitude Parameter Estimation}
 
 \section{Validation}
+
+% Lägg de här någon lämplig plats
+\begin{multline} \label{eq:p_dotWithoutTranslation}
+\dot{p} = \frac{\thrusterfun{1} \distance{y}{1} - \thrusterfun{2} \distance{y}{2} + \thrusterfun{6} \distance{z}{6}}{\Ix - \Kpdot} + \frac{p (Kp + \Kpabsp \abs{p})}{\Ix - \Kpdot} + \frac{-\Mqdot q r}{\Ix - \Kpdot} + \frac{\Nrdot q r}{\Ix - \Kpdot} +\\
+\frac{q r (\Iy - \Iz)}{\Ix - \Kpdot} + \frac{B \cos{\theta} \sin{\phi} z_B}{\Ix - \Kpdot},
+\end{multline} 
+\begin{multline} \label{eq:q_dotWithoutTranslation}
+\dot{q} =\frac{\thrusterfun{1} \distance{x}{1} + \thrusterfun{2} \distance{x}{2} - \thrusterfun{5} \distance{x}{5}}{\Iy - \Mqdot} + \frac{q (\Mq + \Mqabsq \abs{q})}{\Iy - \Mqdot} + \frac{\Kpdot p r}{\Iy - \Mqdot} + \frac{-\Nrdot p r}{\Iy - \Mqdot} +\\
+\frac{p r (\Iz - \Ix)}{\Iy - \Mqdot} + \frac{B \sin{\theta} z_B}{\Iy - \Mqdot}\ \textrm{and}
+\end{multline} 
+\begin{multline} \label{eq:r_dotWithoutTranslation}
+\dot{r} = \frac{\thrusterfun{3} \distance{y}{3} - \thrusterfun{4} \distance{y}{4}}{\Iz - \Nrdot} + \frac{r (\Nr + \Nrabsr \abs{r})}{\Iz - \Nrdot} + \frac{-\Kpdot p q}{\Iz - \Nrdot} + \frac{\Mqdot p q}{\Iz - \Nrdot} + \frac{p q (\Ix - \Iy)}{\Iz - \Nrdot}
+\end{multline} 
+
+\section{Parameter Estimation from Angular Velocities}
+Due to poorly estimated angles as can be seen in \Figureref{fig:integratedAngleVelocities}, the angles was not suited to be used in the parameter estimation. Thus was the parameters only estimated using the angular velocities as measurements. This method was used when the sensor fusion algorithms described in \Sectionref{sec:angularVelocityKalman} was used.
+
+\begin{figure}[tbp]
+  \centering
+  \subfloat[][\label{fig:velocityAnglePhi}A comparison of integration of angular velocities transformed to the global frame (blue) against the estimated angel \rollAngle (red).]{\includegraphics[width=0.5\textwidth]{velocityAnglePhi}}
+  \qquad
+  \subfloat[][\label{fig:velocityAngleTheta}A comparison of integration of angular velocities transformed to the global frame (blue) against the estimated angel \pitchAngle (red).]{\includegraphics[width=0.5\textwidth]{velocityAngleTheta}}
+  \\
+  \subfloat[][\label{fig:velocityAnglePsi}A comparison of integration of angular velocities transformed to the global frame (blue) against the estimated angel \yawAngle (red).]{\includegraphics[width=0.5\textwidth]{velocityAnglePsi}}
+  \caption{\label{fig:integratedAngleVelocities}%
+    As can be seen in \protect\subref{fig:velocityAnglePhi}-\protect\subref{fig:velocityAnglePsi} the angles are poorly estimated and thus not suitable to use in parameter estimation.}
+\end{figure}
+
+To get an initial estimate on the parameters in the yaw dynamics the simple model parameters in
+\begin{equation} \label{eq:r_dot_simple}
+\dot{r} = \frac{\thrusterfun{3} \distance{y}{3} - \thrusterfun{4} \distance{y}{4}}{\Iz - \Nrdot} + \frac{r (\Nr + \Nrabsr \abs{r})}{\Iz - \Nrdot}
+\end{equation}
+was first estimated. The estimation was done with data collected from a test that mainly excited the \abbrROV in \yawAngle-direction and thus could the cross-terms be assumed to be zero.
+
+The roll and pitch dynamics are coupled thus became the simple model 
+\begin{multline} \label{eq:pq_dot_simple}
+\dot{p} = \frac{\thrusterfun{1} \distance{y}{1} - \thrusterfun{2} \distance{y}{2} + \thrusterfun{6} \distance{z}{6}}{\Ix - \Kpdot} + \frac{p (Kp + \Kpabsp \abs{p})}{\Ix - \Kpdot} + \frac{B \cos{\theta} \sin{\phi} z_B}{\Ix - \Kpdot} \\
+\dot{q} =\frac{\thrusterfun{1} \distance{x}{1} + \thrusterfun{2} \distance{x}{2} - \thrusterfun{5} \distance{x}{5}}{\Iy - \Mqdot} + \frac{q (\Mq + \Mqabsq \abs{q})}{\Iy - \Mqdot} + \frac{B \sin{\theta} z_B}{\Iy - \Mqdot} 
+\end{multline}
+The cross terms could be assumed to be zero due to the \abbrROV was mainly excited in \rollAngle-direction and \pitchAngle-direction in the used estimation data.
+
+The estimate of the parameters in \eqref{eq:r_dot_simple} and \eqref{eq:pq_dot_simple} was used as initial estimates of the parameters in \eqref{eq:q_dotWithoutTranslation}-\eqref{eq:r_dotWithoutTranslation}. Due to observational problems the reparametrisation $A_p = \Ix - \Kpdot$, $B_q = \Iy - \Mqdot$ and $C_r = \Iz - \Nrdot$ was done. In \Figureref{fig:compareVelocites} the simulated model without reparametrisation can be seen. A improvement of the fit can be seen in \Figureref{fig:compareVelocitesCong} where some parameters has been reparameterised.
+
+\begin{figure}[tbp]
+  \centering
+  \subfloat[][\label{fig:velocityComparep}Comparison between a simulated model without reparametrisation and validation data in the \rollAngle-direction.]{\includegraphics[width=0.8\textwidth]{velocityComparep}}
+  \qquad
+  \subfloat[][\label{fig:velocityCompareq}Comparison between a simulated model without reparametrisation and validation data in the \pitchAngle-direction.]{\includegraphics[width=0.8\textwidth]{velocityCompareq}}
+  \\
+  \subfloat[][\label{fig:velocityComparer}Comparison between a simulated model without reparametrisation and validation data in the \yawAngle-direction.]{\includegraphics[width=0.8\textwidth]{velocityComparer}}
+  \caption{\label{fig:velocityCompare}%
+    Comparison of simulation of the attitude model against validation data.}
+\end{figure}
+
+\begin{figure}[tbp]
+  \centering
+  \subfloat[][\label{fig:velocityAnglePhi}Comparison between a simulated model without reparametrisation and validation data in the \rollAngle-direction.]{\includegraphics[width=0.5\textwidth]{velocityCompareCongp}}
+  \qquad
+  \subfloat[][\label{fig:velocityAngleTheta}Comparison between a simulated model without reparametrisation and validation data in the \pitchAngle-direction.]{\includegraphics[width=0.5\textwidth]{velocityCompareCongq}}
+  \\
+  \subfloat[][\label{fig:velocityAnglePsi}Comparison between a simulated model without reparametrisation and validation data in the \yawAngle-direction.]{\includegraphics[width=0.5\textwidth]{velocityCompareCongr}}
+  \caption{\label{fig:integratedAngleVelocities}%
+    Comparison of simulation of the attitude model against validation data.}
+\end{figure}
