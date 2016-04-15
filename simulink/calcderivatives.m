@@ -1,37 +1,38 @@
 syms yaw pitch roll...
     yaw_rate pitch_rate roll_rate...
-    q q0 q1 q2 q3 qdot...
+    q quat_0 quat_1 quat_2 quat_3 qdot...
     Sq Sw Q...
     acc_meas a_global_x a_global_y a_global_z...
     acc_n acc_e acc_d g acc_ned...
     mag_global mag_n mag_e mag_d...
     wx wy wz...
-    acc_bias...
+    p q r...
+    b_p b_q b_r...
     F T motion_model...
     rho g x_offset d pressure_atm...
-    Gv Euler
+    Gv Euler delta_t
 
 % define som matrixes
 %rotation matrix from body/sensor frame to global frame
-Q = [2*(q0^2+q1^2) - 1,  2*(q1*q2-q0*q3),    2*(q1*q3+q0*q2);
-    2*(q1*q2+q0*q3),    2*(q0^2+q2^2) - 1,  2*(q2*q3-q0*q1);
-    2*(q1*q3-q0*q2),    2*(q2*q3+q0*q1),    2*(q0^2+q3^2) - 1];
+Q = [2*(quat_0^2+quat_1^2) - 1,  2*(quat_1*quat_2-quat_0*quat_3),    2*(quat_1*quat_3+quat_0*quat_2);
+    2*(quat_1*quat_2+quat_0*quat_3),    2*(quat_0^2+quat_2^2) - 1,  2*(quat_2*quat_3-quat_0*quat_1);
+    2*(quat_1*quat_3-quat_0*quat_2),    2*(quat_2*quat_3+quat_0*quat_1),    2*(quat_0^2+quat_3^2) - 1];
 %quarternion vector
-q = [q0;q1;q2;q3];
+quat = [quat_0;quat_1;quat_2;quat_3];
 
 
 
-Sq = [-q1, -q2, -q3;
-     q0, -q3,  q2;
-     q3,  q0, -q1;
-     -q2, q1, q0];
+Sq = [-quat_1, -quat_2, -quat_3;
+     quat_0, -quat_3,  quat_2;
+     quat_3,  quat_0, -quat_1;
+     -quat_2, quat_1, quat_0];
 
  
 
-Sw = [0, -(wx ), -(wy ), -(wz ); % wk = gyro_meas + bias bias is subtracted in ard
-    (wx ), 0, (wz ), -(wy );
-    (wy ), -(wz ), 0, (wx );
-    (wz ), (wy ), -(wx ), 0];
+Sw = [0, -(p ), -(q ), -(r ); % wx = p +b_p  bias is subtracted in ard
+    (p ), 0, (r ), -(q );
+    (q ), -(r ), 0, (p );
+    (r ), (q ), -(p ), 0];
 
 
 
@@ -39,20 +40,25 @@ Sw = [0, -(wx ), -(wy ), -(wz ); % wk = gyro_meas + bias bias is subtracted in a
  %% H matrix 
  %acceleration in body frame
 acc_ned = [acc_n; acc_e; acc_d];
+
+
 % measurement equation for acceleration
 acc_meas = transpose(Q)*([0; 0; -g]); % fråga Manon + acc_ned
+
+
 % measurement equation for magnetometer 
-% should i change to mag_global = [0;sqrt;mag_d]???
-%mag_global=[0;sqrt(mag_n^2 + mag_e^2);mag_d]
 mag_global=[sqrt(mag_n^2 + mag_e^2);0;mag_d]; % could change to mx 0 mz and use bjord =mz bjord sin(θdip)dˆ+ bjord cos(θdip)nˆ
 mag_meas = transpose(Q)*mag_global;
 
 % measurement equation pressure sensor
  pressure_meas =  rho*g*(d+[0,0,1]*Q*[x_offset;0;0]);
  
- measurement_eqs = [acc_meas;mag_meas;pressure_meas];
+% Measurement equation for gyro
+ gyro_meas = [p + b_p; q + b_q; r + b_r];
  
- states = [transpose(q),d];
+ measurement_eqs = [acc_meas;gyro_meas;mag_meas;pressure_meas];
+ 
+ states = [transpose(quat),p,q,r,b_p,b_q,b_r,d];
  %derivatives for acc meas eq
  nr_meas_eqs = length(measurement_eqs);
  nr_states = length(states);
@@ -63,44 +69,22 @@ for i=1:nr_meas_eqs
     end
 end
 
+ %% Motion model
+ motion_model = blkdiag([eye(4) + delta_t*Sw/2,delta_t^2*Sq/2;zeros(3,4),eye(3)],eye(4))
+ Gv = [[delta_t^3*Sq/4;delta_t*eye(3)],zeros(7,3),zeros(7,1);
+     zeros(3,3),eye(3),zeros(3,1);
+     zeros(1,3),zeros(1,3),eye(1)];
  %% F matrix
- motion_model=[(eye(4) + 1/2*Sw*T)*q;d];
- for n=1:nr_states 
-    for m=1:nr_states
-       F(n,m) = diff(motion_model(n,1),states(m));
-    end
- end
+ %for n=1:nr_states
+ %  for m=1:nr_states
+ %     F(n,m) = diff(motion_model(n,1),states(m));
+ %  end
+ %end
     
-%% Gv matrix aka noise effect on states
-% Use result from lab 2 sensor fusion for noise relations between
-% quaternions. I asume that noise enters directly on measurements for the
-% other states.
-% this should but is not computed via derivatives.
-
-Gv =  blkdiag(T/2*Sq, eye(1));
- 
-%%  y = f(x) 
-% py = gradf*Px*gradF' For calculation of standard deviation in yaw pitch roll depth
- 
-
- 
- Transform(1,1) = -atan2(2*(q1*q2 - q0*q3),...
-     1-2*(q2^2 + q3^2));
+%% print
 
 
-%Pitch
-Transform(2,1) = -atan2(2*(q2*q3 - q0*q1),...
-    1-2*(q1^2 + q2^2));
-%Roll
-Transform(3,1) = asin(2*(q1*q3 + q0*q2));
-Transform(4,1) =  d;
- 
-for k=1:length(Transform)
-    for l=1:nr_states
-    gradTransform(k,l) = diff(Transform(k,1),states(l));
-    end
-end
-
+strrep(strrep(strrep(ccode(Gv),'][',','),'[','('),']',')')
 
  
  
