@@ -413,6 +413,7 @@ void Ekf::sendStates(){
   double quat_0 = states(0); double quat_1 = states(1);
   double quat_2 = states(2); double quat_3 = states(3);
   double p = states(4); double q = states(5); double r = states(6);
+double bias_p = states(7); double bias_q = states(8); double bias_r = states(9);
   double d = states(10); //depth
 
   //calc yaw pitch roll
@@ -433,10 +434,10 @@ void Ekf::sendStates(){
   state_message.data[3] = p;
   state_message.data[4] = q;
   state_message.data[5] = r;
-  state_message.data[6] = d;
-  state_message.data[7] = meas_gyro(0);
-  state_message.data[8] = meas_gyro(1);
-  state_message.data[9] = meas_gyro(2);
+  state_message.data[6] = bias_p;
+  state_message.data[7] = bias_q;
+  state_message.data[8] = bias_r;
+  state_message.data[9] = d;
   states_pub.publish(state_message);
   any_updates = false;
 
@@ -470,7 +471,6 @@ void Ekf::spin(){
     {
       sendStates();
     }
-    std::cout << state_cov - state_cov.transpose() << "\n"<< std::endl;
     rate.sleep();
   }
 

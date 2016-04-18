@@ -43,8 +43,8 @@ xlabel('Time [s]')
 
 subplot(2,1,2)
 plot(plot_time, lin_acc_data)
-legend('Lin\_acc\_x','Lin\_acc\_y','Lin\_acc\_z')
-ylabel('Linear acceleration [m/s]');
+legend('Bias\_x','Bias\_y','Bias\_z')
+ylabel('Bias angular velocity [rad/s]');
 xlabel('Time [s]')
 
 %     figure(integrated_fig)
