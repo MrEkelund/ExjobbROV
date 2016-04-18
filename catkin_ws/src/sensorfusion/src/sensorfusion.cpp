@@ -50,7 +50,7 @@ void Ekf::calibrateMagCallback(const std_msgs::Bool &msg){
 void Ekf::configCallback(sensorfusion::ekfConfig &update, uint level){
   //since some parameters from the parameter server are parts of matrices,
   // we need to update the config and put the parameters in their respective matrix.
-  ROS_INFO("Reconfigure request received");
+  ROS_INFO("reconfigure request received");
   config=update;
   setCovMag();
   setCovAcc();
@@ -107,7 +107,7 @@ void Ekf::setProcessCov(){
 
 }
 void Ekf::setInitialStates(){
-  // no need to set idividual states
+  // no need to set idividual states anymore. Just let all be zero except the first quaternion.
   initial_states.setZero();
   initial_states(0) = 1;
 }
@@ -470,7 +470,6 @@ void Ekf::spin(){
     {
       sendStates();
     }
-    std::cout << state_cov - state_cov.transpose() << "\n"<< std::endl;
     rate.sleep();
   }
 
