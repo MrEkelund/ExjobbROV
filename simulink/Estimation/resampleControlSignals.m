@@ -15,7 +15,10 @@ function [resampled_control_signals, states, time, Ts] = resampleControlSignals(
 
 Ts = mean(state_time(2:end) - state_time(1:end-1));
 first_time_instant = find((state_time - control_time(1)) > -0.001 & (state_time - control_time(1) < 0.5),1);
-last_time_instant = find((state_time - control_time(end)) > -Ts & (state_time - control_time(end) < Ts),1);
+last_time_instant = find((state_time - control_time(end)) > -Ts*1.2 & (state_time - control_time(end) < Ts*1.2));
+if isempty(last_time_instant)
+    error('Couldnt find last experiment time.')
+end
 test_time = state_time(first_time_instant:last_time_instant);
 
 

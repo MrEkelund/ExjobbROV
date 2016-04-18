@@ -1,4 +1,6 @@
 #!/bin/bash
+export ROS_MASTER_URI=http://bluerov:11311
+export ROS_IP=$(gethostip -d workstation)
 echo "Controller disconnected"
 rosparam set /matlab_controller/enable_thruster1 false
 rosparam set /matlab_controller/enable_thruster2 false
