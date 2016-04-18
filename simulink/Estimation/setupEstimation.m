@@ -65,11 +65,11 @@ end
 
 switch estimation_mode
     case 'Yaw'
-        data = data(:,[3, 4, 5],[3, 4]);
+        data = data(:,[3, 6],[3, 4]);
         data.InputName =  {'Thruster3'; 'Thruster4'};
         data.InputUnit =  {'%';'%'};
-        data.OutputName = {'r','fi','theta'};
-        data.OutputUnit = {'rad/s','rad','rad'};
+        data.OutputName = {'r','psi'};
+        data.OutputUnit = {'rad/s','rad'};
     case 'YawCong'
         data = data(:,[3, 6],[3, 4]);
         data.InputName =  {'Thruster3'; 'Thruster4'};
