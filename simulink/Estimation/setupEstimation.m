@@ -14,27 +14,36 @@ end
 switch simulation
     case 0 % Test
         switch filepath
+            case 'Yaw0418'
+                disp('Loading yaw test data from 2016-04-18');
+                data = loadYaw0418();
             case 'Yaw0404'
                 disp('Loading yaw test data from 2016-04-04');
                 data = loadYaw0404();
-            case 'RollPitch0404'
-                disp('Loading roll pitch test data from 2016-04-04');
-                data = loadRollPitch0404();
-            case 'Pitch0404'
-                disp('Loading pitch test data from 2016-04-04');
-                data = loadPitch0404();
-            case 'All0404'
-                disp('Loading all test data from 2016-04-04');
-                data = loadAll0404();
             case 'Yaw0321'
                 disp('Loading yaw test data from 2016-03-21');
                 data = loadYaw0321();
+            case 'RollPitch0418'
+                disp('Loading roll pitch test data from 2016-04-18');
+                data = loadRollPitch0418();
+            case 'RollPitch0404'
+                disp('Loading roll pitch test data from 2016-04-04');
+                data = loadRollPitch0404();
             case 'RollPitch0321'
                 disp('Loading roll pitch test data from 2016-03-21');
                 data = loadRollPitch0321();
+            case 'Pitch0404'
+                disp('Loading pitch test data from 2016-04-04');
+                data = loadPitch0404();
             case 'Pitch0321'
                 disp('Loading pitch test data from 2016-03-21');
                 data = loadPitch0321();
+            case 'All0418'
+                disp('Loading all test data from 2016-04-18');
+                data = loadAll0418();
+            case 'All0404'
+                disp('Loading all test data from 2016-04-04');
+                data = loadAll0404();
             otherwise
                 disp(sprintf('Loading test data from %s',filepath));
                 [lin_vel_data ,lin_acc_data, ang_vel_data, thrusters_data, states, time,Ts]= ...
@@ -193,9 +202,9 @@ p_dot_estimate_parameter_index = [24, 27, 29, 30, 31, 32, 33, 34]; % Parameters 
 q_dot_estimate_parameter_index = [13, 24, 26, 27, 28, 30, 32, 33, 34]; % Parameters q_dot estimates
 r_dot_estimate_parameter_index = [13, 23, 24, 25, 27, 30, 32, 33, 34]; % Parameters r_dot estimates
 
-p_dot_estimate_parameter_index = [24, 27, 30, 32, 33, 34]; % Parameters p_dot estimates
-q_dot_estimate_parameter_index = [24, 27, 30, 32, 33, 34]; % Parameters q_dot estimates
-r_dot_estimate_parameter_index = [24, 27, 30, 32, 33, 34]; % Parameters r_dot estimates
+% p_dot_estimate_parameter_index = [24, 27, 30, 32, 33, 34]; % Parameters p_dot estimates
+% q_dot_estimate_parameter_index = [24, 27, 30, 32, 33, 34]; % Parameters q_dot estimates
+% r_dot_estimate_parameter_index = [24, 27, 30, 32, 33, 34]; % Parameters r_dot estimates
 
 
 r_dot_only_estimate_parameter_index = [29, 30, 31, 34]; % Parameters q_dot estimates
