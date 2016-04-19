@@ -133,10 +133,8 @@ and
 \end{pmatrix}
 \end{equation}. Here $p$, $q$ and $r$ represent roll-, pitch- and yaw-rate. $Q_0$ \rightarrow $Q_3$ are quaternions which are used to represent the attitude of the \abbROV.
 
-
 %Since $Cov(v_{k})$, $Cov(e_{k})$ and $Cov(x_{0})$ often can be hard to properly estimate, the matrices $Q_{k}$, $R_{k}$ and $P_{1|0}$ can be seen as design variables denoting certainty in the model, sensors and initial state.
 %It is important to note that several time updates or measurement updates can be made in a row. One may for example run a time update at a given rate, while measurements are received sporadically.\citep[p.170]{sensorfusion}
-
 
 \subsection{Gyro measurement equation}
 The \abbrROV is equipped with an \abbrIMU. The gyro measurement equation is 
