@@ -156,13 +156,13 @@ opt = nlgreyestOptions;
 opt.Display = 'on';
 opt.SearchOption.MaxIter = 100;
 tic
-All_estimation = nlgreyest(All_data(1:1000), All_nonlinear_greybox_model,opt)
+All_estimation = nlgreyest(All_data, All_nonlinear_greybox_model,opt)
 %All_estimation = pem(All_data, All_nonlinear_greybox_model,opt);
 toc
 displayTable(parameters, parameter_strings,All_estimation)
 
 figure(4)
-compare(All_val_data(1:1000), All_estimation, inf);
+compare(All_val_data, All_estimation, inf);
 
 %%
 % temp_parameters = All_estimation.Report.Parameters.ParVector;
