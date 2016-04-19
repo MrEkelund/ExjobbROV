@@ -15,24 +15,27 @@
 class Ekf {
 public:
   Ekf();
-  void calcHAcc();
-  void calcHMag();
-  void calcHPressure();
-  void calcGv();
   void calcF();
+  void calcGv();
+  void calcHAcc();
+  void calcHPressure();
+  void calcHMag();
+  void calcHGyro();
   void accUpdate();
   void magUpdate();
+  void gyroUpdate();
   void pressureUpdate();
-  void timeUpdate(double);
+  void timeUpdate();
   void normQuaternions();
 
   void initFilter();
-  void setRMag();
-  void setRAcc();
-  void setRPressure();
-  void setQ();
+  void setCovMag();
+  void setCovAcc();
+  void setCovPressure();
+  void setCovGyro();
+  void setProcessCov();
   void setInitialStates();
-  void setP0();
+  void setInitialStateCov();
   void setInitiaMeasurements();
   void sendStates();
   void spin();
@@ -60,18 +63,40 @@ private:
   void calibrateMagCallback(const std_msgs::Bool &msg);
 
   //defenitions of matrices
-  Eigen::Matrix<double, 5, 1> initial_states;
-  Eigen::Matrix<double, 5, 1> states;
-  Eigen::Matrix<double, 4, 1> quaterinons;
-  Eigen::Matrix<double, 3, 1> omega;
+  Eigen::Matrix<double, 11, 1> initial_states;
+  Eigen::Matrix<double, 11, 1> states;
+  Eigen::Matrix<double, 11, 1> new_states;
+  // covariance of states
+  Eigen::Matrix<double, 11, 11> initial_state_cov;
+  Eigen::Matrix<double, 11, 11> state_cov;
+  Eigen::Matrix<double, 11, 11> new_state_cov;
 
-  Eigen::Matrix<double, 5, 5> f; //motion model
-  Eigen::Matrix<double, 4, 4> q; //covariance for motion model
-  Eigen::Matrix<double, 5, 4> gv; //noise propagation for motion model
+  Eigen::Matrix<double, 11, 11> F; // motion model
+  Eigen::Matrix<double, 11, 7> Gv; // noise propagation
+  Eigen::Matrix<double, 7, 7> process_cov; //covariance for motion model
 
-  // covariannce of estimates
-  Eigen::Matrix<double, 5, 5> p;
-  Eigen::Matrix<double, 5, 5> p0;
+//matrices for gyro measurement update
+  Eigen::Matrix<double, 3, 11> H_gyro;
+  Eigen::Matrix<double, 3, 1> h_gyro;
+  Eigen::Matrix<double, 3, 3> cov_gyro;
+
+//matrices for acc measurement update
+  Eigen::Matrix<double, 3, 11> H_acc;
+  Eigen::Matrix<double, 3, 1> h_acc;
+  Eigen::Matrix<double, 3, 3> cov_acc;
+
+//matrices for magnetometer measurement update
+  Eigen::Matrix<double, 3, 11> H_mag;
+  Eigen::Matrix<double, 3, 1> h_mag;
+  Eigen::Matrix<double, 3, 3> cov_mag;
+  double mag_n;
+  double mag_e;
+  double mag_d;
+
+//matrices for pressure measurement update
+  Eigen::Matrix<double, 1, 11> H_pressure;
+  Eigen::Matrix<double, 1, 1> h_pressure;
+  Eigen::Matrix<double, 1, 1> cov_pressure;
 
   // variables that are used during Calculation of time difference between two imu readings
   double delta_t;
@@ -82,19 +107,11 @@ private:
   Eigen::Matrix<double, 3, 1> meas_acc;
   Eigen::Matrix<double, 3, 1> meas_mag;
   Eigen::Matrix<double, 1, 1> meas_pressure;
+  Eigen::Matrix<double, 3, 1> meas_gyro;
 
-  //
-  Eigen::Matrix<double, 3, 3>  r_acc;
-  Eigen::Matrix<double, 3, 3>  r_mag;
-  Eigen::Matrix<double, 1, 1>  r_pressure;
-
+//booleans for main loop
   bool new_mag_data;
   bool new_imu_data;
   bool new_pressure_data;
   bool imu_first_data;
-
-  //constants for magnetometer.
-  double mag_n;
-  double mag_e;
-  double mag_d;
 };

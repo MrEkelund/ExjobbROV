@@ -15,6 +15,7 @@ function [resampled_control_signals, states, time, Ts] = resampleControlSignals(
 
 Ts = mean(state_time(2:end) - state_time(1:end-1));
 first_time_instant = find((state_time - control_time(1)) > -0.001 & (state_time - control_time(1) < 0.5),1);
+
 last_time_instant = find((state_time - control_time(end)) > -Ts & (state_time - control_time(end) < Ts));
 if isempty(last_time_instant)
     warning('Couldnt find a good experiment time.')
