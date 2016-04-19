@@ -84,7 +84,7 @@ end
 %% print
 
 
-strrep(strrep(strrep(ccode(Gv),'][',','),'[','('),']',')')
+strrep(strrep(strrep(ccode(),'][',','),'[','('),']',')')
 
  
  
