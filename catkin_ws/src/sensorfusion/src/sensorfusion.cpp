@@ -7,12 +7,12 @@ Ekf::Ekf(){
   initFilter();
 }
 void Ekf::initFilter(){
-  imu_data_sub = node_handle.subscribe("/rovio/imu/data", 20, &Ekf::imuCallback,this);
-  pressure_data_sub = node_handle.subscribe("/rovio/water_pressure/data", 20, &Ekf::pressureCallback,this);
-  mag_data_sub = node_handle.subscribe("/rovio/magnetometer/data", 20, &Ekf::magCallback,this);
-  restart_sub = node_handle.subscribe("/sensor_fusion/restart",10, &Ekf::restartCallback,this);
-  calibrate_mag_sub = node_handle.subscribe("/sensor_fusion/calibrate_mag",10,&Ekf::calibrateMagCallback,this);
-  states_pub = node_handle.advertise<std_msgs::Float64MultiArray>("/sensor_fusion/states", 50);
+  imu_data_sub = node_handle.subscribe("rovio/imu/data", 20, &Ekf::imuCallback,this);
+  pressure_data_sub = node_handle.subscribe("rovio/water_pressure/data", 20, &Ekf::pressureCallback,this);
+  mag_data_sub = node_handle.subscribe("rovio/magnetometer/data", 20, &Ekf::magCallback,this);
+  restart_sub = node_handle.subscribe("sensor_fusion/restart",10, &Ekf::restartCallback,this);
+  calibrate_mag_sub = node_handle.subscribe("sensor_fusion/calibrate_mag",10,&Ekf::calibrateMagCallback,this);
+  states_pub = node_handle.advertise<std_msgs::Float64MultiArray>("sensor_fusion/states", 50);
   state_message.data.resize(10);
 
   setInitiaMeasurements();
@@ -31,10 +31,14 @@ void Ekf::initFilter(){
   mag_d = 1000;
 }
 void Ekf::restartFilter(){
+  // clear the stored measurements
   setInitiaMeasurements();
+  // reset state covariance
   state_cov = initial_state_cov;
+  //set sates and ensure that quaternions are normed
   states = initial_states;
   normQuaternions();
+  // Reset all booleans
   new_mag_data = false;
   new_imu_data = false;
   new_pressure_data = false;
@@ -42,13 +46,16 @@ void Ekf::restartFilter(){
   any_updates = false;
 }
 void Ekf::calibrateMagCallback(const std_msgs::Bool &msg){
+  // Store the current measurements as the reference field for the magnetometer measurement update
   mag_n = meas_mag(0);
   mag_e = meas_mag(1);
   mag_d = meas_mag(2);
+  //restart the filter to make sure that bias states dont diverge when the magnetometer is activated
+  restartFilter();
   ROS_INFO("Calibrated mag to %f uT %f uT %f uT", mag_n, mag_e, mag_d);
 }
 void Ekf::configCallback(sensorfusion::ekfConfig &update, uint level){
-  //since some parameters from the parameter server are parts of matrices,
+  // since some parameters from the parameter server are parts of matrices,
   // we need to update the config and put the parameters in their respective matrix.
   ROS_INFO("reconfigure request received");
   config=update;
@@ -59,7 +66,6 @@ void Ekf::configCallback(sensorfusion::ekfConfig &update, uint level){
   setProcessCov();
   setInitialStates();
   setInitialStateCov();
-
 }
 void Ekf::restartCallback(const std_msgs::Bool &msg){
  restartFilter();
@@ -75,16 +81,6 @@ void Ekf::setCovAcc(){
   cov_acc(0,0) = config.cov_acc_x;
   cov_acc(1,1) = config.cov_acc_y;
   cov_acc(2,2) = config.cov_acc_z;
-  // cov_acc(0,1) = 0.0;
-  // cov_acc(0,2) = 0.0;
-  //
-  // cov_acc(1,0) = 0.0;
-  //
-  // cov_acc(1,2) = 0.0;
-  //
-  // cov_acc(2,0) = 0.0;
-  // cov_acc(2,1) = 0.0;
-
 }
 void Ekf::setCovPressure(){
   cov_pressure(0,0) = config.cov_pressure;
@@ -92,8 +88,8 @@ void Ekf::setCovPressure(){
 void Ekf::setCovGyro(){
   cov_gyro.setZero();
   cov_gyro(0,0) = config.cov_gyro_x;
-  cov_gyro(1,1) = config.cov_gyro_x;
-  cov_gyro(2,2) = config.cov_gyro_x;
+  cov_gyro(1,1) = config.cov_gyro_y;
+  cov_gyro(2,2) = config.cov_gyro_z;
 }
 void Ekf::setProcessCov(){
   process_cov.setZero();
@@ -119,7 +115,6 @@ void Ekf::setInitiaMeasurements(){
   meas_pressure.setZero();
 }
 void Ekf::setInitialStateCov(){
-  // rename P0 starting_state_cov and  P0_11 to respective state+cov
   initial_state_cov.setZero();
   initial_state_cov(0,0) = config.initial_cov_quat_0;
   initial_state_cov(1,1) = config.initial_cov_quat_1;
@@ -135,19 +130,19 @@ void Ekf::setInitialStateCov(){
 }
 void Ekf::calcHPressure(){
   H_pressure.setZero();
-  H_pressure.setZero();
+  h_pressure.setZero();
   double quat_0 = states(0); double quat_1 = states(1);
   double quat_2 = states(2); double quat_3 = states(3);
   double d = states(10);
   double rho = config.rho; double x_offset = config.x_offset;
   double g = config.g;
-
+  // derivative of measurement eq:s with respect to states
   H_pressure(0,0) = g*quat_2*rho*x_offset*-2.0;
   H_pressure(0,1) = g*quat_3*rho*x_offset*2.0;
   H_pressure(0,2) = g*quat_0*rho*x_offset*-2.0;
   H_pressure(0,3) = g*quat_1*rho*x_offset*2.0;
   H_pressure(0,10) = g*rho;
-
+  // measurement eq
   h_pressure(0,0) = g*rho*(d-x_offset*(quat_0*quat_2*2.0-quat_1*quat_3*2.0));
 }
 void Ekf::pressureUpdate(){
