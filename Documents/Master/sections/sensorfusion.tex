@@ -180,6 +180,7 @@ Since the \abbrIMU sends accelerometer data in addition to angular velocities a 
 \end{equation}
     where $R$ is a rotation matrix from the local to the global coordinate system and $g$ is the gravitational constant. To ensure that only the gravitational constant $g$ is used to update the \abbrROV's attitude outlier rejection is performed. Accelerometer measurements are used if 
 \begin{align*}
+    \intertext{Keep if: }
     \abs{ ||
     \begin{pmatrix}
         a_x\\
@@ -253,4 +254,3 @@ Here $p$ is the measured pressure in pascal, $\rho$ is the density of the water,
 \begin{equation}
     p > 0
 \end{equation}
-holds true.

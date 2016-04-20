@@ -133,7 +133,7 @@ saveParameters(roll_pitch_estimation.Report.Parameters.ParVector, roll_pitch_est
 %% All rotational dynamics estimation
 % clear;
 % close all;
-estimation_mode = 'All';
+estimation_mode = 'AllCong';
 
 % All_filepath = fullfile('bag','test1_all_2016-04-04-15-23-32.bag');
 % All_filepath = fullfile('bag','test2_all_2016-04-04-15-27-58.bag');
@@ -147,7 +147,7 @@ simulation = 0;
 plotting = 1;
 detrend_enable = 0;
 
-[All_nonlinear_greybox_model, All_data, All_val_data] =...
+[All_nonlinear_greybox_model2, All_data, All_val_data] =...
     setupEstimation(parameters, parameter_strings, estimation_mode, simulation,All_filepath, plotting, detrend_enable);
 
 %%
@@ -156,13 +156,13 @@ opt = nlgreyestOptions;
 opt.Display = 'on';
 opt.SearchOption.MaxIter = 100;
 tic
-All_estimation = nlgreyest(All_data, All_nonlinear_greybox_model,opt)
+All_estimation = nlgreyest(All_data(1:2000), All_nonlinear_greybox_model2,opt)
 %All_estimation = pem(All_data, All_nonlinear_greybox_model,opt);
 toc
 displayTable(parameters, parameter_strings,All_estimation)
 
-figure(4)
-compare(All_val_data, All_estimation, inf);
+figure(5)
+compare(All_val_data(1:2000), All_estimation, inf);
 
 %%
 % temp_parameters = All_estimation.Report.Parameters.ParVector;

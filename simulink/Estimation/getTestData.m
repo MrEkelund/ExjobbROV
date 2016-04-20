@@ -23,7 +23,16 @@ function [lin_vel_data ,lin_acc_data, ang_vel_data, thrusters_data, states, time
         states_data(i,:) = data(:);
         states_time(i) = states_bag.MessageList{i,1};
     end
-
+    
+%     new_states_data(:,4) = decimate(states_data(:,4),10);
+%     new_states_data(:,5) = decimate(states_data(:,5),10);
+%     new_states_data(:,6) = decimate(states_data(:,6),10);
+%     states_data(:,1:3) = antiModAngles(states_data(:,1:3));
+%     new_states_data(:,1) = decimate(states_data(:,1),10);
+%     new_states_data(:,2) = decimate(states_data(:,2),10);
+%     new_states_data(:,3) = decimate(states_data(:,3),10);
+%     new_states_data(:,10) = decimate(states_data(:,10),10);
+%     states_time = downsample(states_time,10);
 %% Thrusters
     thrusters_bag = select(bag,'Topic','/rovio/thrusters');
     
