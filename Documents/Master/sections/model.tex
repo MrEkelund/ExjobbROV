@@ -14,11 +14,7 @@ where
   \listNu 
 \end{equation*}
 are generalised velocities that are used to describe motion in 6 \abbrDOF. The matrices $\inertia$\index{Inertia matrix}, $\coriolis$\index{Coriolis matrix}, $\damping$\index{Damping matrix} and the vector $\gravity$\index{Restoring forces matrix} respectively describes how inertia, Coriolis forces, damping forces, gravity and buoyancy affect the \abbrROV. The vector $\tauVector$ describes the forces and torques produced by the \abbrROV's actuators and disturbances.
-
-
-\Warning[TODO]{Write something about the different coordinate systems}
-
-
+\todo[inline]{Write something about the different coordinate systems}
 
 
  
@@ -140,11 +136,8 @@ This coordinate system is used to express buoyancy and gravitational forces on t
     \label{fig:coordinate_frames}
 \end{figure}
 
-\Warning[TODO]{Picture of the rov with the coordinate system.}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\section{Deriving the Model}
-
+\todo[inline]{Write about kinetics}
+\missingfigure{Picture of the rov with the coordinate system.}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Inertia}
@@ -288,7 +281,7 @@ In these calculations it is assumed that the \abbrCG coincides with the \abbrCO 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Thrust Matrix}
-\Warning[TODO]{Picture of the moments and forces including the name of the thrusters.}
+\missingfigure{Picture of the moments and forces including the name of the thrusters.}
 The \abbrROV's actuators can be modelled as
 \begin{equation}
     \tauVector = \thrusterGeometry \boldsymbol{\thrusterfun{}} 
@@ -326,7 +319,7 @@ where $\thrusterGeometry$\index{thruster geometry} is a matrix describing the ge
 \end{split}
 \end{equation}
 where \distance{x}{1}, \distance{x}{2}, \distance{y}{1}, \distance{y}{2}, \distance{y}{3}, \distance{y}{4} and \distance{z}{6} are the offsets in the $x$, $y$ or $z$ direction of the $n$:th thruster and $\thrusterfun{i}$ is a lookup table from control signal to thrust in Newtons. See \appref{app:thrustmapping} for details regarding the lookup table.
-\Warning[TODO]{Write \appref{app:thrustmapping}.}
+\todo[inline]{Write \appref{app:thrustmapping}.}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Equations in Component Form}
 If the matrices and vectors in \eqref{eq:model} are substituted with the matrices and vectors previously defined in this chapter and \eqref{eq:model} then solved for $\nuVectordot$ the following equations can be derived 
@@ -353,10 +346,3 @@ If the matrices and vectors in \eqref{eq:model} are substituted with the matrice
 \dot{r} = \frac{\thrusterfun{3} \distance{y}{3} - \thrusterfun{4} \distance{y}{4}}{\Iz - \Nrdot} + \frac{r (\Nr + \Nrabsr \abs{r})}{\Iz - \Nrdot} + \frac{-\Kpdot p q}{\Iz - \Nrdot} + \frac{\Mqdot p q}{\Iz - \Nrdot} +\\
 \frac{p q (\Ix - \Iy)}{\Iz - \Nrdot} + \frac{- \Xudot u v}{\Iz - \Nrdot} + \frac{\Yvdot u v}{\Iz - \Nrdot}
 \end{multline} 
-
-
-
-
-
-
-

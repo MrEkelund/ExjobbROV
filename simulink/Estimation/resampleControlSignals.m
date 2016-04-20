@@ -19,7 +19,7 @@ first_time_instant = find((state_time - control_time(1)) > -0.001 & (state_time 
 last_time_instant = find((state_time - control_time(end)) > -Ts & (state_time - control_time(end) < Ts));
 if isempty(last_time_instant)
     warning('Couldnt find a good experiment time.')
-    last_time_instant = find((state_time - control_time(end)) > -5*Ts & (state_time - control_time(end) < 5*Ts));
+    last_time_instant = find((state_time - control_time(end)) > -20*Ts & (state_time - control_time(end) < 20*Ts));
     if isempty(last_time_instant)
         error('Couldnt find last experiment time.')
     end

@@ -66,14 +66,14 @@ The complete extended Kalman filter algorithm can be viewed in \ref{alg:EKF}.
 \section{Motion model}
 A Kalman filter uses knowledge of the system dynamics to strengthen the estimates of the models states. It is therefore very important to choose a model the sufficiently describes the systems dynamics. The better the model the better performance of the filter. In this thesis two different motion models have been tested, one with a focus on speed and ease of implementation and more advanced model.
 
-\begin{equation}
-    x_{k+1} &= \begin{pmatrix}
-       1 & -(\Delta t*p)/2 & -(\Delta t*q)/2 & -(\Delta t*r)/2 & -(\Delta t^2*quat_1)/2 & -(\Delta t^2*quat_2)/2 & -(\Delta t^2*quat_3)/2 & 0 & 0 & 0 & 0\\
-       (\Delta t*p)/2 & 1 &  (\Delta t*r)/2 & -(\Delta t*q)/2 &  (\Delta t^2*quat_0)/2 & -(\Delta t^2*quat_3)/2 &  (\Delta t^2*quat_2)/2& 0 & 0 & 0 & 0\\
-       (\Delta t*q)/2 & -(\Delta t*r)/2 & 1 & (\Delta t*p)/2 & (\Delta t^2*quat_3)/2 &  (\Delta t^2*quat_0)/2 & -(\Delta t^2*quat_1)/2 & 0 & 0 & 0 & 0\\
-       (\Delta t*r)/2 & (\Delta t*q)/2 & -(\Delta t*p)/2 &1 & -(\Delta t^2*quat_2)/2 &(\Delta t^2*quat_1)/2 &(\Delta t^2*quat_0)/2 & 0 & 0 & 0 & 0\\
-    \end{pmatrix}
-\end{equation}
+%\begin{equation}
+%    x_{k+1} &= \begin{pmatrix}
+%       1 & -(\Delta t*p)/2 & -(\Delta t*q)/2 & -(\Delta t*r)/2 & -(\Delta t^2*quat_1)/2 & -(\Delta t^2*quat_2)/2 & -(\Delta t^2*quat_3)/2 & 0 & 0 & 0 & 0\\
+%       (\Delta t*p)/2 & 1 &  (\Delta t*r)/2 & -(\Delta t*q)/2 &  (\Delta t^2*quat_0)/2 & -(\Delta t^2*quat_3)/2 &  (\Delta t^2*quat_2)/2& 0 & 0 & 0 & 0\\
+%       (\Delta t*q)/2 & -(\Delta t*r)/2 & 1 & (\Delta t*p)/2 & (\Delta t^2*quat_3)/2 &  (\Delta t^2*quat_0)/2 & -(\Delta t^2*quat_1)/2 & 0 & 0 & 0 & 0\\
+%       (\Delta t*r)/2 & (\Delta t*q)/2 & -(\Delta t*p)/2 &1 & -(\Delta t^2*quat_2)/2 &(\Delta t^2*quat_1)/2 &(\Delta t^2*quat_0)/2 & 0 & 0 & 0 & 0\\
+%    \end{pmatrix}
+%\end{equation}
 
 
 %Since $Cov(v_{k})$, $Cov(e_{k})$ and $Cov(x_{0})$ often can be hard to properly estimate, the matrices $Q_{k}$, $R_{k}$ and $P_{1|0}$ can be seen as design variables denoting certainty in the model, sensors and initial state.
