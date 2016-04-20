@@ -1,5 +1,5 @@
 function [nonlinear_greybox_model, data, val_data] = ...
-    setupEstimation(parameters, parameter_strings, estimation_mode, simulation, filepath, plotting, detrend_enable)
+    setupEstimation(parameters, parameter_strings, estimation_mode, simulation, filepath, plotting, detrend_enable, resampling_fs)
 %setupEstimation Setups the nonlinear model of the rov and reads data
 %   Detailed explanation goes here
 
@@ -16,38 +16,41 @@ switch simulation
         switch filepath
             case 'Yaw0418'
                 disp('Loading yaw test data from 2016-04-18');
-                data = loadYaw0418();
+                data = loadYaw0418(resampling_fs);
             case 'Yaw0404'
                 disp('Loading yaw test data from 2016-04-04');
-                data = loadYaw0404();
+                data = loadYaw0404(resampling_fs);
             case 'Yaw0321'
                 disp('Loading yaw test data from 2016-03-21');
-                data = loadYaw0321();
+                data = loadYaw0321(resampling_fs);
             case 'RollPitch0418'
                 disp('Loading roll pitch test data from 2016-04-18');
-                data = loadRollPitch0418();
+                data = loadRollPitch0418(resampling_fs);
             case 'RollPitch0404'
                 disp('Loading roll pitch test data from 2016-04-04');
-                data = loadRollPitch0404();
+                data = loadRollPitch0404(resampling_fs);
             case 'RollPitch0321'
                 disp('Loading roll pitch test data from 2016-03-21');
-                data = loadRollPitch0321();
+                data = loadRollPitch0321(resampling_fs);
             case 'Pitch0404'
                 disp('Loading pitch test data from 2016-04-04');
-                data = loadPitch0404();
+                data = loadPitch0404(resampling_fs);
             case 'Pitch0321'
                 disp('Loading pitch test data from 2016-03-21');
-                data = loadPitch0321();
+                data = loadPitch0321(resampling_fs);
             case 'All0418'
                 disp('Loading all test data from 2016-04-18');
-                data = loadAll0418();
+                data = loadAll0418(resampling_fs);
+            case 'All0418Again'
+                disp('Loading all resimulated test data from 2016-04-18');
+                data = loadAll0418Again(resampling_fs);
             case 'All0404'
                 disp('Loading all test data from 2016-04-04');
-                data = loadAll0404();
+                data = loadAll0404(resampling_fs);
             otherwise
                 disp(sprintf('Loading test data from %s',filepath));
                 [lin_vel_data ,lin_acc_data, ang_vel_data, thrusters_data, states, time,Ts]= ...
-                    getTestData(filepath, plotting);
+                    getTestData(filepath, plotting, resampling_fs);
                 output_data = [ang_vel_data , antiModAngles(states(:,1:3))];
                 input_data = thrusters_data;
                 data = iddata(output_data, input_data,  Ts);
@@ -124,19 +127,14 @@ end
 ne = length(data.ExperimentName); % number of experiments
 
 if ne == 1
-    val_data = data(ceil(size(data.OutputData,1)/2):end)
-    data = data(1:ceil(size(data.OutputData,1)/2)-1)
+    val_data = data(ceil(size(data.OutputData,1)/2):end);
+    data = data(1:ceil(size(data.OutputData,1)/2)-1);
 elseif ne == 2
     val_data = getexp(data,2);
     data = getexp(data,1);
 else
-    if mod(ne,2) == 0
-        val_data = getexp(data, ne/2+1:ne);
-        data = getexp(data, 1:ne/2);
-    else
-        val_data = getexp(data, ceil(ne/2)+1:ne);
-        data = getexp(data, 1:ceil(ne/2));
-    end
+    val_data = getexp(data, ceil(ne/2)+1:ne);
+    data = getexp(data, 1:ceil(ne/2));
 end
 
 if detrend_enable
@@ -164,6 +162,9 @@ order = [ny nu nx]; % Model orders [ny nu nx].
 nonlinear_greybox_model = idnlgrey(file_name, order, parameters, initial_states, Ts_model, ...
     'Name', 'Rov Model', 'TimeUnit', 's');
 
+for i = 1:nx
+    nonlinear_greybox_model.InitialStates(i).Fixed = 0;
+end
 %% Setup names for the nonlinear greybox
 nonlinear_greybox_model.Name = estimation_mode;
 

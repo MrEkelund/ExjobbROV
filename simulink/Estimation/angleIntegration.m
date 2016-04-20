@@ -1,7 +1,6 @@
-Ts = 0.0045;
-yaw_filepath = fullfile('bag','all_1_2016-04-18-14-00-41.bag');
-[lin_vel_data ,lin_acc_data, ang_vel_data, thrusters_data, states, time, ~]= ...
-getTestData(yaw_filepath, 0);
+yaw_filepath = fullfile('bag','all_1_low_sensor_cov_7_2016-04-20-10-50-53.bag');
+[lin_vel_data ,lin_acc_data, ang_vel_data, thrusters_data, states, time, Ts]= ...
+getTestData(yaw_filepath, 0, 0);
 
 states(:,1:3) = antiModAngles(states(:,1:3));
 roll = states(:,1);
@@ -53,7 +52,7 @@ set(gca,'FontSize',ft)
 
 % print -f1 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/velocityAngleTheta.eps'
 %%
- close all
+close all
 plot([cumsum(g_ang_vel(:,3))*Ts, antiModAngles(states(:,3))])
 
 h = legend('\int R(\nu_2)','\psi');

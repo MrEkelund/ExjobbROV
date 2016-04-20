@@ -1,4 +1,5 @@
-function [lin_vel_data ,lin_acc_data, ang_vel_data, thrusters_data, states, time, Ts] = getTestData(filepath,plotting)
+function [lin_vel_data ,lin_acc_data, ang_vel_data, thrusters_data, states, time, Ts] = ...
+    getTestData(filepath, plotting, resampling_fs)
     %getTestData
     %   Input: filepath - Fullfilepath or relative.
     %   Input: plotting - 1 for subplots of the data. 0 for no plots
@@ -24,15 +25,9 @@ function [lin_vel_data ,lin_acc_data, ang_vel_data, thrusters_data, states, time
         states_time(i) = states_bag.MessageList{i,1};
     end
     
-%     new_states_data(:,4) = decimate(states_data(:,4),10);
-%     new_states_data(:,5) = decimate(states_data(:,5),10);
-%     new_states_data(:,6) = decimate(states_data(:,6),10);
-%     states_data(:,1:3) = antiModAngles(states_data(:,1:3));
-%     new_states_data(:,1) = decimate(states_data(:,1),10);
-%     new_states_data(:,2) = decimate(states_data(:,2),10);
-%     new_states_data(:,3) = decimate(states_data(:,3),10);
-%     new_states_data(:,10) = decimate(states_data(:,10),10);
-%     states_time = downsample(states_time,10);
+    if resampling_fs ~= 0
+        [states_data states_time] = resample(states_data, states_time, resampling_fs);
+    end
 %% Thrusters
     thrusters_bag = select(bag,'Topic','/rovio/thrusters');
     
@@ -56,7 +51,7 @@ function [lin_vel_data ,lin_acc_data, ang_vel_data, thrusters_data, states, time
 states = states_data(:,[1 2 3 10]); % Angels and depth
 states(:,1:3) = antiModAngles(states(:,1:3));
 ang_vel_data = states_data(:,4:6);
-lin_acc_data = states_data(:,8:10);
+lin_acc_data = states_data(:,7:9);
 lin_vel_data = 0;
 
 

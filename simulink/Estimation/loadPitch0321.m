@@ -1,5 +1,5 @@
-function pitch_data = loadPitch0321()
-Ts = 0.0045;
+function pitch_data = loadPitch0321(resampling_fs)
+% Ts = 0.0045;
 %%
 pitch_filepath = fullfile('bag','act_5_test_1_2016-03-21-15-36-48.bag');
 [lin_vel_data ,lin_acc_data, ang_vel_data, thrusters_data, states, time, ~]= ...

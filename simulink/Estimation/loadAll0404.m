@@ -1,8 +1,8 @@
-function All_data = loadAll0404()
-Ts = 0.0045;
+function All_data = loadAll0404(resampling_fs)
+% Ts = 0.0045;
 %%
 All_filepath = fullfile('bag','test1_all_2016-04-04-15-23-32.bag');
-[lin_vel_data ,lin_acc_data, ang_vel_data, thrusters_data, states, time, ~]= ...
+[lin_vel_data ,lin_acc_data, ang_vel_data, thrusters_data, states, time, Ts]= ...
 getTestData(All_filepath, 0);
 output_data = [ang_vel_data, antiModAngles(states(:,1:3))];
 input_data = thrusters_data;
