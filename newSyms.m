@@ -106,6 +106,8 @@ mag_global=[sqrt(mag_n^2 + mag_e^2);0;mag_d]; % could change to mx 0 mz and use 
 mag_meas = transpose(RQ)*mag_global;
 
 h = [gyro_meas;acc_meas;mag_meas];
+
+h = collect(h, [p q r n e1 e2 e3])
 %%
 for i=1:length(h)
     for j=1:length(state);
