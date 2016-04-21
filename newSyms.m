@@ -104,7 +104,8 @@ gyro_meas = [p ; q ; r ];
 mag_global=[sqrt(mag_n^2 + mag_e^2);0;mag_d]; % could change to mx 0 mz and use bjord =mz bjord sin(θdip)dˆ+ bjord cos(θdip)nˆ
 mag_meas = transpose(RQ)*mag_global;
 
-h = [acc_meas;gyro_meas;mag_meas];
+h = [gyro_meas;acc_meas;mag_meas];
+h = collect(h, [p q r n e1 e2 e3])
 %%
 for i=1:length(h)
     for j=1:length(state);
