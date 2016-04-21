@@ -1,5 +1,6 @@
 syms Ts n e1 e2 e3 p q r Ix Iy Iz Kp_dot Mq_dot Nr_dot Kp  Kp_abs_p Mq  Mq_abs_q...
-Nr Nr_abs_r gam zb W B ly1 lx1 ly2 lx2 ly3 ly4 lx5 lz6 f1 f2 f3 f4 f5 f6 Ix_Kp_dot Iy_Mq_dot Iz_Nr_dot g
+Nr Nr_abs_r gam zb W B ly1 lx1 ly2 lx2 ly3 ly4 lx5 lz6 f1 f2 f3 f4 f5 f6 ...
+Ix_Kp_dot Iy_Mq_dot Iz_Nr_dot g mag_n mag_e mag_d
 M = diag([ Ix, Iy, Iz]) - diag([Kp_dot,Mq_dot,Nr_dot]);
 nu = [p;q;r];
 eta = [n;e1;e2;e3];
@@ -70,14 +71,15 @@ thrusterforce = [...
 tau = T*thrusterforce;
 
 nu_dot = inv(M)*(tau-C-D-gn);
-nu_dot = collect(nu_dot,[p q r]);
 nu_dot = subs(nu_dot,Ix - Kp_dot, Ix_Kp_dot);
 nu_dot = subs(nu_dot,Iy - Mq_dot, Iy_Mq_dot);
 nu_dot = subs(nu_dot,Iz - Nr_dot, Iz_Nr_dot);
-nu_k_1 = nu + Ts*nu_dot
+nu_k_1 = nu + Ts*nu_dot;
+nu_k_1 = collect(nu_k_1,[p q r])
 
 %eta_k_1 = eta + Ts*Q_dot
-eta_k_1 =(eye(4) + Ts*T_bar_nu)*eta + (Ts^2*T_eta)*nu
+eta_k_1 =(eye(4) + Ts*T_bar_nu)*eta + (Ts^2*T_eta)*nu;
+eta_k_1 = collect(eta_k_1,[p q r n e1 e2 e3])
 
 
 
@@ -97,16 +99,16 @@ eta_k_1 =(eye(4) + Ts*T_bar_nu)*eta + (Ts^2*T_eta)*nu
      [Ts^3/2*T_eta;Ts*eye(3)];
  Gv=blkdiag(Gv,eye(16));
  
-acc_meas = transpose(Q)*([0; 0; -g]);
+acc_meas = transpose(RQ)*([0; 0; -g]);
 gyro_meas = [p ; q ; r ];
 mag_global=[sqrt(mag_n^2 + mag_e^2);0;mag_d]; % could change to mx 0 mz and use bjord =mz bjord sin(θdip)dˆ+ bjord cos(θdip)nˆ
-mag_meas = transpose(Q)*mag_global;
+mag_meas = transpose(RQ)*mag_global;
 
 h = [acc_meas;gyro_meas;mag_meas];
 %%
 for i=1:length(h)
     for j=1:length(state);
-        H(i,j) = diff(h(i),states(j));
+        H(i,j) = diff(h(i),state(j));
     end
 end
  
