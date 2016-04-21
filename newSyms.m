@@ -1,7 +1,8 @@
 syms Ts n e1 e2 e3 p q r Ix Iy Iz Kp_dot Mq_dot Nr_dot Kp  Kp_abs_p Mq  Mq_abs_q...
-Nr Nr_abs_r gam zb W B ly1 lx1 ly2 lx2 ly3 ly4 lx5 lz6 f1 f2 f3 f4 f5 f6 Ix_Kp_dot Iy_Mq_dot Iz_Nr_dot
+Nr Nr_abs_r gam zb W B ly1 lx1 ly2 lx2 ly3 ly4 lx5 lz6 f1 f2 f3 f4 f5 f6 Ix_Kp_dot Iy_Mq_dot Iz_Nr_dot g
 M = diag([ Ix, Iy, Iz]) - diag([Kp_dot,Mq_dot,Nr_dot]);
 nu = [p;q;r];
+eta = [n;e1;e2;e3];
 
 C_AA = [...
     0 , -Nr_dot*r , Mq_dot*q ;
@@ -24,7 +25,7 @@ D = -[...
     (Mq + Mq_abs_q*abs(q))*q;
     (Nr + Nr_abs_r*abs(r))*r];
 
-Q = [n;e1;e2;e3];
+
 % rotation matrix from body to NED. NED_angle = RQ*Body_angle
 RQ =...
     [1 - 2*(e2^2 + e3^2), 2*(e1*e2 - e3*n), 2*(e1*e3 + e2*n);
@@ -33,13 +34,18 @@ RQ =...
  
  % Transform of angular velocities, from body to NED. 
  % NED_angle_Rate = TQ*Body_angle_rate
- TQ =1/2*...
+ T_eta =1/2*...
      [-e1 ,-e2 -e3;
      n -e3 e2;
      e3 n -e1;
      -e2 e1 n];
+ T_bar_nu=1/2*...
+     [0 -p -q -r;
+     p 0 r -q;
+     q -r 0 p;
+     r q -p 0];
 
- Q_dot = TQ*nu;
+ %eta_dot = T_eta*nu;
  
 rb = [0; 0; zb];
 rg = [0; 0; 0];
@@ -70,21 +76,40 @@ nu_dot = subs(nu_dot,Iy - Mq_dot, Iy_Mq_dot);
 nu_dot = subs(nu_dot,Iz - Nr_dot, Iz_Nr_dot);
 nu_k_1 = nu + Ts*nu_dot
 
-Q_k_1 = Q + Ts*Q_dot
+%eta_k_1 = eta + Ts*Q_dot
+eta_k_1 =(eye(4) + Ts*T_bar_nu)*eta + (Ts^2*T_eta)*nu
 
 
 
 
 
-
- state = [Q; nu; zb; Kp; Kp_dot; Kp_abs_p; Mq;...
+ state = [eta; nu; zb; Kp; Kp_dot; Kp_abs_p; Mq;...
      Mq_dot; Mq_abs_q; Nr; Nr_dot; Nr_abs_r;...
      Ix; Iy; Iz; Ix_Kp_dot; Iy_Mq_dot; Iz_Nr_dot];
- f = [Q_k_1;nu_k_1];
+ f = [eta_k_1;nu_k_1];
  for i=1:length(f)
     for j=1:length(state)
         F(i,j) = diff(f(i),state(j));
     end
+ end
+
+ Gv =...
+     [Ts^3/2*T_eta;Ts*eye(3)];
+ Gv=blkdiag(Gv,eye(16));
+ 
+acc_meas = transpose(Q)*([0; 0; -g]);
+gyro_meas = [p ; q ; r ];
+mag_global=[sqrt(mag_n^2 + mag_e^2);0;mag_d]; % could change to mx 0 mz and use bjord =mz bjord sin(θdip)dˆ+ bjord cos(θdip)nˆ
+mag_meas = transpose(Q)*mag_global;
+
+h = [acc_meas;gyro_meas;mag_meas];
+%%
+for i=1:length(h)
+    for j=1:length(state);
+        H(i,j) = diff(h(i),states(j));
+    end
 end
+ 
+ 
  
  
