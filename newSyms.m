@@ -79,7 +79,7 @@ nu_k_1 = collect(nu_k_1,[p q r])
 
 %eta_k_1 = eta + Ts*Q_dot
 eta_k_1 =(eye(4) + Ts*T_bar_nu)*eta + (Ts^2*T_eta)*nu;
-eta_k_1 = collect(eta_k_1,[p q r n e1 e2 e3])
+eta_k_1 = collect(eta_k_1,[p q r n e1 e2 e3]);
 
 
 
@@ -89,6 +89,7 @@ eta_k_1 = collect(eta_k_1,[p q r n e1 e2 e3])
      Mq_dot; Mq_abs_q; Nr; Nr_dot; Nr_abs_r;...
      Ix; Iy; Iz; Ix_Kp_dot; Iy_Mq_dot; Iz_Nr_dot];
  f = [eta_k_1;nu_k_1];
+ f = collect(f,[p q r n e1 e2 e3]);
  for i=1:length(f)
     for j=1:length(state)
         F(i,j) = diff(f(i),state(j));
@@ -97,14 +98,14 @@ eta_k_1 = collect(eta_k_1,[p q r n e1 e2 e3])
 
  Gv =...
      [Ts^3/2*T_eta;Ts*eye(3)];
- Gv=blkdiag(Gv,eye(16));
+ Gv=blkdiag(Gv,Ts*eye(16));
  
 acc_meas = transpose(RQ)*([0; 0; -g]);
 gyro_meas = [p ; q ; r ];
 mag_global=[sqrt(mag_n^2 + mag_e^2);0;mag_d]; % could change to mx 0 mz and use bjord =mz bjord sin(θdip)dˆ+ bjord cos(θdip)nˆ
 mag_meas = transpose(RQ)*mag_global;
 
-h = [acc_meas;gyro_meas;mag_meas];
+h = [gyro_meas;acc_meas;mag_meas];
 %%
 for i=1:length(h)
     for j=1:length(state);
