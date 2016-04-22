@@ -1,5 +1,5 @@
 function F = getSystemJacobian(Ts,state,tau)
-%extractstates
+%extract states
 n=state(1);e1=state(2);e2=state(3);e3=state(4);p=state(5);
 q=state(6);r=state(7);zb=state(8);Kp=state(9);Kp_dot=state(10);
 Kp_abs_p=state(11);Mq=state(12);Mq_dot=state(13);Mq_abs_q=state(14);
@@ -7,11 +7,11 @@ Nr=state(15);Nr_dot=state(16);Nr_abs_r=state(17);Ix=state(18);
 Iy=state(19);Iz=state(20);Ix_Kp_dot=state(21);Iy_Mq_dot=state(22);
 Iz_Nr_dot=state(23);
 
-m=6.621;%ROVmass[kg];
+m=6.621;%ROV mass[kg];
 g=9.81744;%Gravity[m/s^2]
 rho=1000;%waterdensity[kg/m^3]
-V=0.012;%Discplacedwatervolume[m^3]
-%ThrusterplacementfromCO[m]
+V=0.012;%Discplaced water volume[m^3]
+%Thruster placement from CO[m]
 lx1=0.16;
 ly1=0.11;
 ly2=0.11;
@@ -32,7 +32,8 @@ f5=tau(5);
 f6=tau(6);
 
 
-%returnJacobianF old not based on fossen euler forward
+%return Jacobian F
+%old not based on fossen euler forward
 %F=[...
 %1,-p*(Ts^2/2+Ts/2),-q*(Ts^2/2+Ts/2),-r*(Ts^2/2+Ts/2),-e1*(Ts^2/2+Ts/2),-e2*(Ts^2/2+Ts/2),-e3*(Ts^2/2+Ts/2),0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0;
 %p*(Ts^2/2+Ts/2),1,r*(Ts^2/2+Ts/2),-q*(Ts^2/2+Ts/2),n*(Ts^2/2+Ts/2),-e3*(Ts^2/2+Ts/2),e2*(Ts^2/2+Ts/2),0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0;
@@ -81,7 +82,7 @@ Ts*r*((Ts*(Nr+Nr_abs_r*abs(r)))/(2*Iz_Nr_dot)+1/2)+(Ts^2*(f3*ly3-f4*ly4))/(2*Iz_
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0;
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0;
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0;
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0];
-
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0;
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1];
 
 end
