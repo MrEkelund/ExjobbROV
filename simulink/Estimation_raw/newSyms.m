@@ -69,21 +69,21 @@ thrusterforce = [...
         f6];
 
 tau = T*thrusterforce;
-
+%%
 nu_dot = inv(M)*(tau-C-D-gn);
+nu_dot = collect(nu_dot, [p q r]);
 nu_dot = subs(nu_dot,Ix - Kp_dot, Ix_Kp_dot);
 nu_dot = subs(nu_dot,Iy - Mq_dot, Iy_Mq_dot);
 nu_dot = subs(nu_dot,Iz - Nr_dot, Iz_Nr_dot);
 nu_k_1 = nu + Ts*nu_dot;
 nu_k_1 = collect(nu_k_1,[p q r])
 
-eta_dot= T_eta*nu +100/2*(1-transpose(eta)*eta)*eta ;
+eta_dot= T_eta*nu +100/2*(1-transpose(eta)*eta)*eta;
 
 %old eta_k_1 = eta + Ts*Q_dot
 %old eta_k_1 =(eye(4) + Ts*T_bar_nu)*eta + (Ts^2*T_eta)*nu;
 eta_k_1=eta+Ts*(T_eta*nu_k_1);
 eta_k_1 = collect(eta_k_1,[p q r n e1 e2 e3])
-
 
 % describe noise
 coloured_noise_nu = noise;

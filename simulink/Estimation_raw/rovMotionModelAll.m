@@ -1,42 +1,17 @@
-function [x_dot, y] = rovMotionModelAll( t, x, control, ...
+function [x_dot, y] = rovMotionModelAllCong( t, x, control, ...
     m, g, rho, V, lx1, ly1, ly2, lx2, ly3, lx5, ly4, lz6, zb,...
     Kp, Kp_dot, Kp_abs_p, Mq, Mq_dot, Mq_abs_q,Nr, Nr_dot,...
-    Nr_abs_r, Ix, Iy, Iz, Ix_Kp_dot, Iy_Mq_dot, Iz_Nr_dot,...
+    Nr_abs_r, Ix, Iy, Iz, Ix_Kp_dot, Iy_Mq_dot, Iz_Nr_dot, Ts, mag_n, mag_e, mag_d,...
     varargin)
-% if length(parameters) == 1
-%     parameters(2:length(varargin)) = cell2mat(varargin(1:end-1));
-% end
-%******* Constants
-% m = parameters(1);
-% g = parameters(2);
-% rho = parameters(3);
-% V = parameters(4);
-% %Thruster placement from CO [m]
-% lx1= parameters(5);
-% ly1= parameters(6);
-% ly2= parameters(7);
-% lx2= parameters(8);
-% ly3= parameters(9);
-% lx5= parameters(10);
-% ly4= parameters(11);
-% lz6= parameters(12);
-% zb= parameters(13);
-
 %******* States
 p = x(1);
 q = x(2);
 r = x(3);
-
-fi = x(4);
-theta = x(5);
+n = x(4);
+e1 = x(5);
+e2 = x(6);
+e3 = x(7);
 %*******    Computed values
-
-ct = cos(theta);
-st = sin(theta);
-cf = cos(fi);
-sf = sin(fi);
- 
-% B = rho*g*V;
 W = m*g;
 B = W;
 % look-up table for t200.
@@ -123,7 +98,6 @@ lookup =[...
    48.0408    0.9750
    49.9531    1.0000];
 
-
 forces = nakeinterp1(lookup(:,2),lookup(:,1),control');
 %Thrusterforce in newtons. Lookup table returns in kgf
 f1 = forces(1);
@@ -132,54 +106,33 @@ f3 = forces(3);
 f4 = forces(4);
 f5 = forces(5);
 f6 = forces(6);
-%******* Parameters
-% Xu= parameters(14);
-% Xu_dot= parameters(15);
-% Xu_abs_u= parameters(16);
-% Yv= parameters(17);
-% Yv_dot= parameters(18);
-% Yv_abs_v= parameters(19);
-% Zw= parameters(20);
-% Zw_dot= parameters(21);
-% Zw_abs_w= parameters(22);
-% Kp= parameters(23);
-% Kp_dot= parameters(24);
-% Kp_abs_p= parameters(25);
-% Mq= parameters(26);
-% Mq_dot= parameters(27);
-% Mq_abs_q= parameters(28);
-% Nr= parameters(29);
-% Nr_dot= parameters(30);
-% Nr_abs_r= parameters(31);
-% Ix= parameters(32);
-% Iy= parameters(33);
-% Iz= parameters(34);
-% Ix_Kp_dot = parameters(35);
-% Iy_Mq_dot = parameters(36);
-% Kp_Ix_Kp_dot = parameters(37);
-% Kp_abs_p_Ix_Kp_dot = parameters(38);
-% Mq_dot_Ix_Kp_dot = parameters(39);
-% Nr_dot_Ix_Kp_dot = parameters(40);
-% Mq_Iy_Mq_dot = parameters(41);
-% Mq_abs_q_Iy_Mq_dot = parameters(42);
-% Kp_dot_Iy_Mq_dot = parameters(43);
-% Nr_dot_Iy_Mq_dot = parameters(44);
 
-p_dot =...
-    (f1*ly1 - f2*ly2 + f6*lz6 + p*(Kp + Kp_abs_p*abs(p)) - Mq_dot*q*r + Nr_dot*q*r + q*r*(Iy - Iz) + B*ct*sf*zb )/(Ix - Kp_dot); %- Yv_dot*v*w + Zw_dot*v*w 
+
+nu_k_1 = [... 
+  ((Ts*(Kp + Kp_abs_p*abs(p)))/Ix_Kp_dot + 1)*p + ((Ts*(Iy - Iz - Mq_dot + Nr_dot))/Ix_Kp_dot)*q*r + (Ts*(f1*ly1 - f2*ly2 + f6*lz6 + B*zb*(2*e2*e3 + 2*e1*n)))/Ix_Kp_dot
+ (-(Ts*(Ix - Iz - Kp_dot + Nr_dot))/Iy_Mq_dot)*p*r + ((Ts*(Mq + Mq_abs_q*abs(q)))/Iy_Mq_dot + 1)*q + (Ts*(f1*lx1 + f2*lx2 - f5*lx5 - B*zb*(2*e1*e3 - 2*e2*n)))/Iy_Mq_dot
+                                     ((Ts*(Ix - Iy - Kp_dot + Mq_dot))/Iz_Nr_dot)*p*q + ((Ts*(Nr + Nr_abs_r*abs(r)))/Iz_Nr_dot + 1)*r + (Ts*(f3*ly3 - f4*ly4))/Iz_Nr_dot];
+
+eta_k_1 = [... 
+  n - (Ts*e1*p)/2 - (Ts*e2*q)/2 - (Ts*e3*r)/2 - (Ts^2*e1*p)/2 - (Ts^2*e2*q)/2 - (Ts^2*e3*r)/2
+  e1 - (Ts*e3*q)/2 + (Ts*e2*r)/2 + (Ts*n*p)/2 - (Ts^2*e3*q)/2 + (Ts^2*e2*r)/2 + (Ts^2*n*p)/2
+  e2 + (Ts*e3*p)/2 - (Ts*e1*r)/2 + (Ts*n*q)/2 + (Ts^2*e3*p)/2 - (Ts^2*e1*r)/2 + (Ts^2*n*q)/2
+  e3 - (Ts*e2*p)/2 + (Ts*e1*q)/2 + (Ts*n*r)/2 - (Ts^2*e2*p)/2 + (Ts^2*e1*q)/2 + (Ts^2*n*r)/2];
  
-q_dot =...
-     (f1*lx1 + f2*lx2 - f5*lx5 + q*(Mq + Mq_abs_q*abs(q)) + Kp_dot*p*r + B*st*zb - Nr_dot*p*r - p*r*(Ix - Iz)  )/(Iy - Mq_dot); %+ Xu_dot*u*w - Zw_dot*u*w 
 
-r_dot =...
-     (r*(Nr + Nr_abs_r*abs(r)) + f3*ly3 - f4*ly4 - Kp_dot*p*q + Mq_dot*p*q + p*q*(Ix - Iy))/(Iz - Nr_dot);
+x_dot = [nu_k_1; eta_k_1];
 
 
-fi_dot = p + q*sf*st/ct + r*cf*st/ct;
-theta_dot = q*cf - r*sf;
-psi_dot = q*sf/ct + r*cf/ct;
+h = [...
+    p
+    q
+    r
+    (2*g)*n*e2 + (-2*g)*e1*e3
+    (-2*g)*n*e1 + (-2*g)*e2*e3
+    2*g*e1^2 + 2*g*e2^2 - g
+    (-2*mag_d)*n*e2 + (2*mag_d)*e1*e3 + (-2*(mag_e^2 + mag_n^2)^(1/2))*e2^2 + (-2*(mag_e^2 + mag_n^2)^(1/2))*e3^2 + (mag_e^2 + mag_n^2)^(1/2)
+    (2*mag_d)*n*e1 + (-2*(mag_e^2 + mag_n^2)^(1/2))*n*e3 + (2*(mag_e^2 + mag_n^2)^(1/2))*e1*e2 + (2*mag_d)*e2*e3
+    (2*(mag_e^2 + mag_n^2)^(1/2))*n*e2 + (-2*mag_d)*e1^2 + (2*(mag_e^2 + mag_n^2)^(1/2))*e1*e3 + (-2*mag_d)*e2^2 + mag_d];
 
-x_dot = [p_dot;q_dot;r_dot;fi_dot;theta_dot;psi_dot];
-
-y = x;
+y = h;
 end

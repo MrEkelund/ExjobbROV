@@ -91,7 +91,7 @@ switch estimation_mode
         data = data(:,:,:);
         data.InputName =  {'Thruster1';'Thruster2';'Thruster3';'Thruster4';'Thruster5';'Thruster6'};
         data.InputUnit =  {'%','%','%','%','%','%'};
-        data.OutputName = {'p', 'q', 'r', 'an', 'ae', 'ad', 'm_n', 'm_e', 'm_d'};
+        data.OutputName = {'p', 'q', 'r', 'a_x', 'a_y', 'a_z', 'm_x', 'm_y', 'm_z'};
         data.OutputUnit = {'rad/s','rad/s','rad/s', 'm/s', 'm/s', 'm/s', 'µT', 'µT', 'µT'};
         state_name = {'p', 'q', 'r', 'n', 'e1', 'e2','e3'};
         state_unit = {'rad/s', 'rad/s', 'rad/s', '','','',''};
@@ -128,6 +128,7 @@ initial_states = zeros(nx,length(data.ExperimentName));
 for i = 1:length(data.ExperimentName)
     temp_data = getexp(data, i);
     initial_states(1:3,i) = temp_data.OutputData(1,1:3);
+    initial_states(4,i) = 1;
 end
 
 temp_exp = getexp(data, 1);
