@@ -131,16 +131,22 @@ displayTable(parameters, parameter_strings);
 %%
 opt = nlgreyestOptions;
 opt.Display = 'on';
-opt.SearchOption.MaxIter = 50;
-opt.OutputWeight = 'noise'
-opt.Advanced.ErrorThreshold = 1.6;
+opt.SearchOption.MaxIter = 100;
+opt.OutputWeight = 'noise';
+opt.SearchMethod = 'gna';
+% opt.Advanced.ErrorThreshold = 1.6;
+% opt.SearchOption.Advanced.UseParallel = true; 
+% options = optimset('lsqnonlin');
+% options = optimset(options,'UseParallel',true)
+% opt.SearchOption = options;
+
 tic
 All_estimation = nlgreyest(All_data, All_nonlinear_greybox_model,opt);
 %All_estimation = pem(All_data, All_nonlinear_greybox_model,opt);
 toc
 displayTable(parameters, parameter_strings,All_estimation)
 
-figure(5)
+figure(4)
 compare(All_val_data, All_estimation, inf);
 
 %%

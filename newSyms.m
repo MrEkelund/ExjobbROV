@@ -77,6 +77,7 @@ nu_dot = subs(nu_dot,Iz - Nr_dot, Iz_Nr_dot);
 nu_k_1 = nu + Ts*nu_dot;
 nu_k_1 = collect(nu_k_1,[p q r])
 
+eta_dot = T_eta*nu + gam/2*(1 - transpose(eta)*eta)*eta;
 %eta_k_1 = eta + Ts*Q_dot
 eta_k_1 =(eye(4) + Ts*T_bar_nu)*eta + (Ts^2*T_eta)*nu;
 eta_k_1 = collect(eta_k_1,[p q r n e1 e2 e3]);

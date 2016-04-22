@@ -7,10 +7,12 @@ function [x_dot, y] = rovMotionModelAllCong( t, x, control, ...
 p = x(1);
 q = x(2);
 r = x(3);
-n = x(4);
-e1 = x(5);
-e2 = x(6);
-e3 = x(7);
+
+quat_norm = norm(x(4:7));
+n = x(4)/quat_norm;
+e1 = x(5)/quat_norm;
+e2 = x(6)/quat_norm;
+e3 = x(7)/quat_norm;
 %*******    Computed values
 W = m*g;
 B = W;
@@ -106,7 +108,6 @@ f3 = forces(3);
 f4 = forces(4);
 f5 = forces(5);
 f6 = forces(6);
-
 
 nu_k_1 = [... 
   ((Ts*(Kp + Kp_abs_p*abs(p)))/Ix_Kp_dot + 1)*p + ((Ts*(Iy - Iz - Mq_dot + Nr_dot))/Ix_Kp_dot)*q*r + (Ts*(f1*ly1 - f2*ly2 + f6*lz6 + B*zb*(2*e2*e3 + 2*e1*n)))/Ix_Kp_dot

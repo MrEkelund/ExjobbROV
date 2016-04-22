@@ -41,6 +41,7 @@ if isempty(files)
         m; g; rho; V; lx1; ly1; ly2; lx2; ly3; lx5; ly4;
         lz6; zb; Kp; Kp_dot; Kp_abs_p; Mq; Mq_dot; Mq_abs_q; Nr; Nr_dot;
         Nr_abs_r; Ix; Iy; Iz; Ix_Kp_dot; Iy_Mq_dot; Iz_Nr_dot];
+    saveParameters(Parameters, ones(size(Parameters)));
 else
     temp = load('parameters.mat');
     disp('Parameters loaded from file')
