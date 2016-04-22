@@ -14,9 +14,16 @@ syms yaw pitch roll...
 
 % define som matrixes
 %rotation matrix from body/sensor frame to global frame
-Q = [2*(quat_0^2+quat_1^2) - 1,  2*(quat_1*quat_2-quat_0*quat_3),    2*(quat_1*quat_3+quat_0*quat_2);
-    2*(quat_1*quat_2+quat_0*quat_3),    2*(quat_0^2+quat_2^2) - 1,  2*(quat_2*quat_3-quat_0*quat_1);
-    2*(quat_1*quat_3-quat_0*quat_2),    2*(quat_2*quat_3+quat_0*quat_1),    2*(quat_0^2+quat_3^2) - 1];
+%old rot Q = [2*(quat_0^2+quat_1^2) - 1,  2*(quat_1*quat_2-quat_0*quat_3),    2*(quat_1*quat_3+quat_0*quat_2);
+ %   2*(quat_1*quat_2+quat_0*quat_3),    2*(quat_0^2+quat_2^2) - 1,  2*(quat_2*quat_3-quat_0*quat_1);
+ %   2*(quat_1*quat_3-quat_0*quat_2),    2*(quat_2*quat_3+quat_0*quat_1),    2*(quat_0^2+quat_3^2) - 1];
+
+Q = [...
+    1-2*(quat_2*quat_2+quat_3*quat_3), 2*(quat_1*quat_2-quat_3*quat_0),2*(quat_1*quat_3+quat_2*quat_0);
+    2*(quat_1*quat_2+quat_3*quat_0),1-2*(quat_1*quat_1+quat_3*quat_3), 2*(quat_2*quat_3-quat_1*quat_0);
+    2*(quat_1*quat_3-quat_2*quat_0), 2*(quat_2*quat_3 + quat_1*quat_0), 1-2*(quat_1*quat_1*quat_2*quat_2)];
+
+
 %quarternion vector
 quat = [quat_0;quat_1;quat_2;quat_3];
 
