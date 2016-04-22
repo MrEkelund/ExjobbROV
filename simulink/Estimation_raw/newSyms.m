@@ -1,10 +1,10 @@
 syms Ts n e1 e2 e3 p q r Ix Iy Iz Kp_dot Mq_dot Nr_dot Kp  Kp_abs_p Mq  Mq_abs_q...
 Nr Nr_abs_r gam zb W B ly1 lx1 ly2 lx2 ly3 ly4 lx5 lz6 f1 f2 f3 f4 f5 f6 ...
-Ix_Kp_dot Iy_Mq_dot Iz_Nr_dot g mag_n mag_e mag_d
+Ix_Kp_dot Iy_Mq_dot Iz_Nr_dot g mag_n mag_e mag_d v1 v2 v3
 M = diag([ Ix, Iy, Iz]) - diag([Kp_dot,Mq_dot,Nr_dot]);
 nu = [p;q;r];
 eta = [n;e1;e2;e3];
-
+noise = [v1;v2;v3];
 C_AA = [...
     0 , -Nr_dot*r , Mq_dot*q ;
     Nr_dot*r , 0 , -Kp_dot*p ;
@@ -79,13 +79,25 @@ nu_k_1 = collect(nu_k_1,[p q r])
 
 eta_dot= T_eta*nu +100/2*(1-transpose(eta)*eta)*eta ;
 
-%eta_k_1 = eta + Ts*Q_dot
-eta_k_1 =(eye(4) + Ts*T_bar_nu)*eta + (Ts^2*T_eta)*nu;
-eta_k_1 = collect(eta_k_1,[p q r n e1 e2 e3]);
+%old eta_k_1 = eta + Ts*Q_dot
+%old eta_k_1 =(eye(4) + Ts*T_bar_nu)*eta + (Ts^2*T_eta)*nu;
+eta_k_1=eta+Ts*(T_eta*nu_k_1);
+eta_k_1 = collect(eta_k_1,[p q r n e1 e2 e3])
 
 
-
-
+% describe noise
+coloured_noise_nu = noise;
+coloured_noise_eta = T_eta*Ts/2*coloured_noise_nu;
+coloured_noise = [coloured_noise_eta;coloured_noise_nu];
+for i=1:7
+    for j=1:3
+       Gv_discrete(i,j)=Ts*diff(coloured_noise(i),noise(j));
+    end
+end
+Gv_discrete
+ %Gv =...
+ %    [Ts^3/2*T_eta;Ts*eye(3)];
+ Gv_discrete=blkdiag(Gv_discrete,Ts*eye(16));
 
  state = [eta; nu; zb; Kp; Kp_dot; Kp_abs_p; Mq;...
      Mq_dot; Mq_abs_q; Nr; Nr_dot; Nr_abs_r;...
@@ -100,9 +112,7 @@ eta_k_1 = collect(eta_k_1,[p q r n e1 e2 e3]);
     end
  end
 
- Gv =...
-     [Ts^3/2*T_eta;Ts*eye(3)];
- Gv=blkdiag(Gv,Ts*eye(16));
+
  
 acc_meas = transpose(RQ)*([0; 0; -g]);
 gyro_meas = [p ; q ; r ];
