@@ -15,7 +15,7 @@ displayTable(parameters, parameter_strings);
 [All_nonlinear_greybox_model, All_data, All_val_data] =...
     setupEstimation(parameters, parameter_strings, estimation_mode, simulation,All_filepath, plotting, detrend_enable, resampling_fs);
 
-
+%%
 opt = nlgreyestOptions;
 opt.Display = 'on';
 opt.SearchOption.MaxIter = 100;

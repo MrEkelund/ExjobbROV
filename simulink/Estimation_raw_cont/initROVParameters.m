@@ -21,15 +21,15 @@ if isempty(files)
 
     % Parameters that will be estimated
     zb = -0.05/2;
-    Kp = -1;
-    Kp_dot = -1/10;
-    Kp_abs_p = -1/10;
+    Kp = -0.5;
+    Kp_dot = -0.5;
+    Kp_abs_p = -0.5;
     Mq = -0.5;
-    Mq_dot = -1/10;
-    Mq_abs_q = -1/10;
-    Nr = -1;
-    Nr_dot = -1;
-    Nr_abs_r = -1;
+    Mq_dot = -0.5;
+    Mq_abs_q = -0.5;
+    Nr = -0.5;
+    Nr_dot = -0.5;
+    Nr_abs_r = -0,5;
     Ix = 0.5;
     Iy = 0.5;
     Iz = 0.5;
