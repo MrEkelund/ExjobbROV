@@ -3,9 +3,9 @@ function All_data = loadAll0418(plotting, resampling_fs)
 All_filepath = {
     fullfile('bag','all_1_2016-04-18-14-00-41.bag');
     fullfile('bag','all_2_2016-04-18-14-56-58.bag');
-    fullfile('bag','all_3_2016-04-18-15-04-50.bag');
-    fullfile('bag','all_4_2016-04-18-15-06-06.bag');
-    fullfile('bag','all_5_2016-04-18-15-06-44.bag')
+%     fullfile('bag','all_3_2016-04-18-15-04-50.bag');
+%     fullfile('bag','all_4_2016-04-18-15-06-06.bag');
+%     fullfile('bag','all_5_2016-04-18-15-06-44.bag')
     };
 
 data = cell(size(All_filepath,1),1);

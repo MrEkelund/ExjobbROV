@@ -1,7 +1,7 @@
 %% All rotational dynamics estimation
 % clear;
 % close all;
-
+LASTN = maxNumCompThreads(4);
 estimation_mode = 'AllCong_c';
 All_filepath = 'All0418';
 simulation = 0;

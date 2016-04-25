@@ -16,6 +16,9 @@ main.out
 main.synctex.gz
 main.tex.bak
 main.toc
+main.ilg
+main.tdo
+main.ind
 *.bak
 main.dvi
 Documents/Master/sections/*.log
