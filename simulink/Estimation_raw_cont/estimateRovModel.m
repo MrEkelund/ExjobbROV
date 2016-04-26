@@ -19,9 +19,12 @@ displayTable(parameters, parameter_strings);
 opt = nlgreyestOptions;
 opt.Display = 'on';
 opt.SearchOption.MaxIter = 100;
-opt.OutputWeight = 'noise';
+w = diag([100 100 100 5 5 5 1 1 1]);
+% opt.OutputWeight = 'noise';
+opt.Outputweight = w;
 opt.SearchMethod = 'lm';
-opt.Advanced.ErrorThreshold = 1.6;
+opt.Advanced.ErrorThreshold = 0.8;
+
 % opt.SearchOption.Advanced.UseParallel = true; 
 % options = optimset('lsqnonlin');
 % options = optimset(options,'UseParallel',true);
@@ -29,12 +32,11 @@ opt.Advanced.ErrorThreshold = 1.6;
 
 tic
 All_estimation = nlgreyest(All_data, All_nonlinear_greybox_model,opt);
-%All_estimation = pem(All_data, All_nonlinear_greybox_model,opt);
 toc
 displayTable(parameters, parameter_strings,All_estimation)
 
-figure(4)
-comopt = compareOptions('InitialCondition','e','OutputWeight','noise');
+figure(1)
+comopt = compareOptions('InitialCondition','e','OutputWeight',w);
 compare(All_val_data, All_estimation, inf);
 
 %%

@@ -9,8 +9,31 @@ function ctrl_c() {
   exit
 }
 
-echo -e "Choose test\n [1]: All DOF test.\n [2]: Yaw test.\n [3]: RollPitch test."
-read testnum
+if [[ $# > 0 ]]; then
+  if [[ $# == 4 ]]; then
+    testnum="$1"
+    maxscale="$2"
+    minscale="$3"
+    name="$4"
+    echo $testnum $maxscale $minscale $name
+  else
+    echo "Usage: ./test.sh testnum maxscaling minscaling logname"
+    exit
+  fi
+else
+  echo -e "Choose test\n [1]: All DOF test.\n [2]: Yaw test.\n [3]: RollPitch test."
+  read testnum
+
+  echo -e "Set max scaling of the test signal in the interval [0-1]"
+  read maxscale
+
+  echo -e "Set min scaling of the test signal in the interval [0-1]"
+  read minscale
+
+  echo -e "Enter the name you want for the logfile"
+  read name
+fi
+
 case $testnum in
   1)  echo "All DOF test"
   thrusters=(1 2 3 4 5 6)
@@ -25,11 +48,7 @@ case $testnum in
   exit
   ;;
 esac
-echo -e "Set max scaling of the test signal in the interval [0-1]"
-read maxscale
 
-echo -e "Set min scaling of the test signal in the interval [0-1]"
-read minscale
 
 awk -v maxs=$maxscale -v mins=$minscale -v n2=1 -v n3=0 \
 'BEGIN {if (maxs<=n2 && maxs>=n3 && mins<=n2 && mins>=n3);
@@ -55,7 +74,5 @@ do
   rosparam set /matlab_controller/min_scale${i} $minscale
 done
 
-echo -e "Enter the name you want for the logfile"
-read name
 cd ../simulink/Estimation/bag
 rosbag record -o $name sensor_fusion/states rovio/water_pressure/data rovio/magnetometer/data rovio/imu/data rovio/thrusters

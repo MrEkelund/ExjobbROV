@@ -1,6 +1,16 @@
 #!/bin/bash
 export ROS_MASTER_URI=http://bluerov:11311
 export ROS_IP=$(gethostip -d workstation)
+
+trap ctrl_c INT
+
+function ctrl_c() {
+  echo "Abort"
+  rostopic pub --once /rovio/thrusters std_msgs/UInt16MultiArray "{data:[1500,1500,1500,1500,1500,1500]}"
+  rostopic pub --once /rovio/enable_thrusters std_msgs/Bool false
+  exit
+}
+
 echo "Controller disconnected"
 rosparam set /matlab_controller/enable_thruster1 false
 rosparam set /matlab_controller/enable_thruster2 false
@@ -8,6 +18,7 @@ rosparam set /matlab_controller/enable_thruster3 false
 rosparam set /matlab_controller/enable_thruster4 false
 rosparam set /matlab_controller/enable_thruster5 false
 rosparam set /matlab_controller/enable_thruster6 false
+rostopic pub --once /rovio/enable_thrusters std_msgs/Bool true
 # reset thursters
 echo "Reseting thrusters"
 rostopic pub --once /rovio/thrusters std_msgs/UInt16MultiArray "{data:[1500,1500,1500,1500,1500,1500]}"
@@ -47,7 +58,7 @@ sleep 1s
 # stop thrusters
 rostopic pub --once /rovio/thrusters std_msgs/UInt16MultiArray "{data:[1500,1500,1500,1500,1500,1500]}"
 
-
+rostopic pub --once /rovio/enable_thrusters std_msgs/Bool false
 echo "Controller connected"
 rosparam set /matlab_controller/enable_thruster1 true
 rosparam set /matlab_controller/enable_thruster2 true
@@ -55,6 +66,3 @@ rosparam set /matlab_controller/enable_thruster3 true
 rosparam set /matlab_controller/enable_thruster4 true
 rosparam set /matlab_controller/enable_thruster5 true
 rosparam set /matlab_controller/enable_thruster6 true
-
-
-
