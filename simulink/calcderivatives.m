@@ -10,7 +10,7 @@ syms yaw pitch roll...
     b_p b_q b_r...
     F T motion_model...
     rho g x_offset d pressure_atm...
-    Gv Euler delta_t
+    Gv Euler delta_t n e1 e2 e3
 
 % define som matrixes
 %rotation matrix from body/sensor frame to global frame
@@ -41,7 +41,10 @@ Sw = [0, -(p ), -(q ), -(r ); % wx = p +b_p  bias is subtracted in ard
     (q ), -(r ), 0, (p );
     (r ), (q ), -(p ), 0];
 
-
+RQ =...
+    [1 - 2*(e2^2 + e3^2), 2*(e1*e2 - e3*n), 2*(e1*e3 + e2*n);
+     2*(e1*e2 + e3*n),  1-2*(e1^2 + e3^2),2*(e2*e3-e1*n);
+     2*(e1*e3 - e2*n),  2*(e2*e3 + e1*n), 1-2*(e1^2 + e2^2)];
 
 
  %% H matrix 
@@ -50,15 +53,15 @@ acc_ned = [acc_n; acc_e; acc_d];
 
 
 % measurement equation for acceleration
-acc_meas = transpose(Q)*([0; 0; -g]); % fråga Manon + acc_ned
+acc_meas = transpose(RQ)*([0; 0; -g]); % fråga Manon + acc_ned
 
 
 % measurement equation for magnetometer 
 mag_global=[sqrt(mag_n^2 + mag_e^2);0;mag_d]; % could change to mx 0 mz and use bjord =mz bjord sin(θdip)dˆ+ bjord cos(θdip)nˆ
-mag_meas = transpose(Q)*mag_global;
+mag_meas = transpose(RQ)*mag_global;
 
 % measurement equation pressure sensor
- pressure_meas =  rho*g*(d+[0,0,1]*Q*[x_offset;0;0]);
+ pressure_meas =  rho*g*(d+[0,0,1]*RQ*[x_offset;0;0]);
  
 % Measurement equation for gyro
  gyro_meas = [p + b_p; q + b_q; r + b_r];
