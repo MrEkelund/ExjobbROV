@@ -115,7 +115,7 @@ saveParameters(roll_pitch_estimation.Report.Parameters.ParVector, roll_pitch_est
 % clear;
 % close all;
 
-estimation_mode = 'AllCong';
+estimation_mode = 'AllCong_disc_c';
 All_filepath = 'All0418';
 simulation = 0;
 plotting = 0;

@@ -45,7 +45,7 @@ switch simulation
 end
 
 switch estimation_mode 
-    case {'All','AllCong', 'AllCong_c'}
+    case {'All','AllCong', 'AllCong_c','AllCong_disc_c'}
         if exist('rovMotionModelAllCong_c.mexa64') ~= 3
             disp('rovMotionModelAllCong_c.mexa64 not found...Compiling')
             mex rovMotionModelAllCong_c.c
@@ -94,7 +94,8 @@ for i = 1:length(data.ExperimentName)
 end
 
 temp_exp = getexp(data, 1);
-parameters = [parameters; 0.5; temp_exp.OutputData(1,[7 8 9])'];
+%parameters = [parameters; 100; temp_exp.OutputData(1,[7 8 9])'];
+parameters = [parameters; 1/resampling_fs; temp_exp.OutputData(1,[7 8 9])'];
 parameter_strings{end+1} = 'gam';
 parameter_strings{end+1} = 'm_n';
 parameter_strings{end+1} = 'm_e';
@@ -158,7 +159,7 @@ switch estimation_mode
     case 'All'
         disp('All rotational dynamics test')
         fixed_parameters = setdiff(fixed_parameters, all_parameters);
-    case {'AllCong', 'AllCong_c'}
+    case {'AllCong', 'AllCong_c','AllCong_disc_c'}
         disp('All rotational dynamics test')
         fixed_parameters = setdiff(fixed_parameters, all_cong_parameters);
     otherwise
@@ -178,7 +179,9 @@ end
 
 for i = 1:size(negative_parameters,2)
     nonlinear_greybox_model.Parameters(negative_parameters(i)).Maximum = 0;
+    nonlinear_greybox_model.Parameters(negative_parameters(i)).Minimum = -10;
 end
+
 
 end
 

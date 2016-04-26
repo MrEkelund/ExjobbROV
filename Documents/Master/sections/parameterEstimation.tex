@@ -49,8 +49,12 @@ and
 \begin{equation}
 \hat{y}(t|\boldsymbol{\theta}) = h(x(t), u(t), \boldsymbol{\theta})
 \end{equation}
- where $\hat{y}(t|\boldsymbol{\theta})$ is the predicted output. 
- 
+ where:
+ \begin{itemize}
+  \item $\hat{y}(t|\boldsymbol{\theta})$ is the predicted output.
+  \item $x(t)$ are the states. 
+  \item $u(t)$ are the inputs. 
+ \end{itemize}
 A measure of how well the model describes the data can be
 \begin{equation}
 Fit = 100 \Biggr(1 - \frac{\sqrt{\sum\limits_{t=1}^N (y(k) - \hat{y}(t))^2}}{\sqrt{\sum\limits_{t=1}^N(y(t)-\frac{1}{N}\sum\limits_{t=1}^N y(t))^2}}\Biggl)

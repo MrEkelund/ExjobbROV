@@ -86,7 +86,7 @@ eta_k_1=eta+Ts*(T_eta*nu_k_1);
 eta_k_1 = collect(eta_k_1,[p q r n e1 e2 e3])
 
 % describe noise
-coloured_noise_nu = noise;
+coloured_noise_nu = noise; %% apply noise directyl on p q r dot
 coloured_noise_eta = T_eta*Ts/2*coloured_noise_nu;
 coloured_noise = [coloured_noise_eta;coloured_noise_nu];
 for i=1:7
@@ -94,7 +94,6 @@ for i=1:7
        Gv_discrete(i,j)=Ts*diff(coloured_noise(i),noise(j));
     end
 end
-Gv_discrete
  %Gv =...
  %    [Ts^3/2*T_eta;Ts*eye(3)];
  Gv_discrete=blkdiag(Gv_discrete,Ts*eye(16));
@@ -113,7 +112,6 @@ Gv_discrete
  end
 
 
- 
 acc_meas = transpose(RQ)*([0; 0; -g]);
 gyro_meas = [p ; q ; r ];
 mag_global=[sqrt(mag_n^2 + mag_e^2);0;mag_d]; % could change to mx 0 mz and use bjord =mz bjord sin(θdip)dˆ+ bjord cos(θdip)nˆ
@@ -130,5 +128,7 @@ for i=1:length(h)
 end
  
  
+
+
  
  
