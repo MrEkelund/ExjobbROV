@@ -66,11 +66,11 @@ mag_meas = transpose(RQ)*mag_global;
  pressure_meas =  rho*g*(d+[0,0,1]*RQ*[x_offset;0;0]);
  
 % Measurement equation for gyro
- gyro_meas = [p + b_p; q + b_q; r + b_r];
+ gyro_meas = [p ; q ; r];
  
- measurement_eqs = [acc_meas;gyro_meas;mag_meas;pressure_meas];
+ measurement_eqs = [gyro_meas;acc_meas;mag_meas];
  
- states = [transpose(quat),p,q,r,b_p,b_q,b_r,d];
+ states = [transpose(quat),p,q,r];
  %derivatives for acc meas eq
  nr_meas_eqs = length(measurement_eqs);
  nr_states = length(states);
@@ -83,17 +83,17 @@ end
 
  %% Motion model
  %old !!!!motion_model = blkdiag([eye(4) + delta_t*T_bar_nu,delta_t^2*T_eta;zeros(3,4),eye(3)],eye(4));
- motionmodel = blkdiag(eye(4) + delta_t*T_bar_nu,eye(7));
+ motionmodel = blkdiag(eye(4) + delta_t*T_bar_nu,eye(3))%*transpose(states);
  
  
  %old !!1 Gv = [[delta_t^3*T_eta/2;delta_t*eye(3)],zeros(7,3),zeros(7,1);
-     Gv= blkdiag([delta_t^2*T_eta;delta_t*eye(3)],delta_t*eye(4))
+     Gv= blkdiag([delta_t^2*T_eta;delta_t*eye(3)]);
  %% F matrix
- %for n=1:nr_states
- %  for m=1:nr_states
- %     F(n,m) = diff(motion_model(n,1),states(m));
- %  end
- %end
+ for n=1:nr_states
+  for m=1:nr_states
+     F(n,m) = diff(motionmodel(n,1),states(m));
+  end
+ end
     
 %% print
 H_acc=H(1:3,:);

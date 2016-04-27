@@ -26,6 +26,9 @@ switch simulation
             case 'All0404'
                 disp('Loading all test data from 2016-04-04');
                 data = loadAll0404();
+            case 'All0418'
+                disp('Loading all test data from 2016-04-18');
+                data = loadAll0418();
             case 'Yaw0321'
                 disp('Loading yaw test data from 2016-03-21');
                 data = loadYaw0321();
@@ -237,11 +240,11 @@ switch estimation_mode
         fixed_parameters = setdiff(fixed_parameters, p_dot_only_estimate_parameter_index);
         fixed_parameters = setdiff(fixed_parameters, q_dot_only_estimate_parameter_index);
         fixed_parameters = setdiff(fixed_parameters, r_dot_only_estimate_parameter_index);
-case 'AllCong'
+    case 'AllCong'
         disp('All rotational dynamics test')
         fixed_parameters = setdiff(fixed_parameters, p_dot_Cong_estimate_parameter_index);
         fixed_parameters = setdiff(fixed_parameters, q_dot_Cong_estimate_parameter_index);
-        fixed_parameters = setdiff(fixed_parameters, r_dot_Cong_estimate_parameter_index);        
+        fixed_parameters = setdiff(fixed_parameters, r_dot_Cong_estimate_parameter_index);
     otherwise
         error('Unkown test: %s', estimation_mode);
 end

@@ -1,4 +1,4 @@
-function [nonlinear_greybox_model, data, val_data] = ...
+function [nonlinear_greybox_model, data, val_data, initial_states_and_mag] = ...
     setupEstimation(parameters, parameter_strings, estimation_mode, simulation,...
     filepath, plotting, detrend_enable, resampling_fs)
 %setupEstimation Setups the nonlinear model of the rov and reads data
@@ -23,7 +23,7 @@ switch simulation
                 data = loadRollPitch0418(plotting, resampling_fs);
             case 'All0418'
                 disp('Loading all test data from 2016-04-18');
-                data = loadAll0418(plotting, resampling_fs);
+                [data, initial_states_and_mag] = loadAll0418(plotting, resampling_fs);
             otherwise
                 disp(sprintf('Loading test data from %s',filepath));
                 [imu_data, mag_data, thrusters_data, time]= ...
@@ -86,16 +86,18 @@ ny = length(data.OutputName);
 nu = length(data.InputName);
 nx = length(state_name);
 
-initial_states = zeros(nx,length(data.ExperimentName));
-for i = 1:length(data.ExperimentName)
-    temp_data = getexp(data, i);
-    initial_states(1:3,i) = temp_data.OutputData(1,1:3);
-    initial_states(4,i) = 1;
-end
+% initial_states = zeros(nx,length(data.ExperimentName));
+% for i = 1:length(data.ExperimentName)
+%      temp_data = getexp(data, i);
+initial_states = initial_states_and_mag(1:length(data.ExperimentName),1:nx).';
+%     initial_states(4,i) = 1;
+% end
 
 temp_exp = getexp(data, 1);
+warning('Mag not set');
 %parameters = [parameters; 100; temp_exp.OutputData(1,[7 8 9])'];
-parameters = [parameters; 1/resampling_fs; temp_exp.OutputData(1,[7 8 9])'];
+% parameters = [parameters; 100; temp_exp.OutputData(1,[7 8 9])'];
+parameters = [parameters; 100; initial_states_and_mag(1,8:10).'];
 parameter_strings{end+1} = 'gam';
 parameter_strings{end+1} = 'm_n';
 parameter_strings{end+1} = 'm_e';
