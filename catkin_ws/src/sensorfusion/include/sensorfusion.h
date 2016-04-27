@@ -27,6 +27,7 @@ public:
   void pressureUpdate();
   void timeUpdate();
   void normQuaternions();
+	
 
   void initFilter();
   void setCovMag();
@@ -62,40 +63,43 @@ private:
   void restartCallback(const std_msgs::Bool &msg);
   void calibrateMagCallback(const std_msgs::Bool &msg);
 
-  //defenitions of matrices
+  //definitions of matrices
   Eigen::Matrix<double, 11, 1> initial_states;
   Eigen::Matrix<double, 11, 1> states;
-  Eigen::Matrix<double, 11, 1> new_states;
-  // covariance of states
+  Eigen::Matrix<double, 11, 1> new_states;  // This variable is needed since eigen does not like asignments on the form a = a*b etc
+  // initial covariance of states
   Eigen::Matrix<double, 11, 11> initial_state_cov;
+  // covariance of states
   Eigen::Matrix<double, 11, 11> state_cov;
-  Eigen::Matrix<double, 11, 11> new_state_cov;
+  Eigen::Matrix<double, 11, 11> new_state_cov; // This variable is needed since eigen does not like asignments on the form a = a*b etc
 
-  Eigen::Matrix<double, 11, 11> F; // motion model
+ //definitions of motion model related matrices
+  Eigen::Matrix<double, 11, 11> F; // motion model jacobian F = d/d(xn) f(x_k)*x_k or  (Fossen terms:  eta_k+1 = T(eta_k)*nu_k where state = [eta;nu;];
+  Eigen::Matrix<double, 11, 11> f; // motion model matrix on form x_k+1 = f(x_k)*x_k
   Eigen::Matrix<double, 11, 7> Gv; // noise propagation
-  Eigen::Matrix<double, 7, 7> process_cov; //covariance for motion model
+  Eigen::Matrix<double, 7, 7> process_cov; //covariance for motion model aka. system noise.
 
 //matrices for gyro measurement update
-  Eigen::Matrix<double, 3, 11> H_gyro;
-  Eigen::Matrix<double, 3, 1> h_gyro;
+  Eigen::Matrix<double, 3, 11> H_gyro; // gyro measurement jacobian
+  Eigen::Matrix<double, 3, 1> h_gyro;	// expected gyro measurement
   Eigen::Matrix<double, 3, 3> cov_gyro;
 
 //matrices for acc measurement update
-  Eigen::Matrix<double, 3, 11> H_acc;
-  Eigen::Matrix<double, 3, 1> h_acc;
+  Eigen::Matrix<double, 3, 11> H_acc; // acc measurement jacobian
+  Eigen::Matrix<double, 3, 1> h_acc; // expected acc measurement
   Eigen::Matrix<double, 3, 3> cov_acc;
 
 //matrices for magnetometer measurement update
-  Eigen::Matrix<double, 3, 11> H_mag;
-  Eigen::Matrix<double, 3, 1> h_mag;
+  Eigen::Matrix<double, 3, 11> H_mag; //mag  measurement jacobian
+  Eigen::Matrix<double, 3, 1> h_mag; // expected mag measurement
   Eigen::Matrix<double, 3, 3> cov_mag;
   double mag_n;
   double mag_e;
   double mag_d;
 
 //matrices for pressure measurement update
-  Eigen::Matrix<double, 1, 11> H_pressure;
-  Eigen::Matrix<double, 1, 1> h_pressure;
+  Eigen::Matrix<double, 1, 11> H_pressure; // Pressure measurement jacobian
+  Eigen::Matrix<double, 1, 1> h_pressure; // expected pressure measurement
   Eigen::Matrix<double, 1, 1> cov_pressure;
 
   // variables that are used during Calculation of time difference between two imu readings

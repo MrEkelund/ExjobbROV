@@ -87,13 +87,13 @@ end
  
  
  %old !!1 Gv = [[delta_t^3*T_eta/2;delta_t*eye(3)],zeros(7,3),zeros(7,1);
-     Gv= blkdiag([delta_t^2*T_eta;delta_t*eye(3)],delta_t*eye(4))
+ Gv= blkdiag([delta_t^2*T_eta;delta_t*eye(3)],delta_t*eye(4))
  %% F matrix
- %for n=1:nr_states
- %  for m=1:nr_states
- %     F(n,m) = diff(motion_model(n,1),states(m));
- %  end
- %end
+ for n=1:nr_states
+   for m=1:nr_states
+      F(n,m) = diff(motionmodel(n,:)*transpose(states),states(m));
+   end
+ end
     
 %% print
 H_acc=H(1:3,:);
@@ -108,6 +108,7 @@ h_mag=measurement_eqs(7:9);
 H_pressure=H(10,:);
 h_pressure=measurement_eqs(10);
 
+f=motionmodel;
 
 strrep(strrep(strrep(ccode(H_acc),'][',','),'[','('),']',')')
 strrep(strrep(strrep(ccode(h_acc),'][',','),'[','('),']',')')
@@ -117,7 +118,9 @@ strrep(strrep(strrep(ccode(H_mag),'][',','),'[','('),']',')')
 strrep(strrep(strrep(ccode(h_mag),'][',','),'[','('),']',')')
 strrep(strrep(strrep(ccode(H_pressure),'][',','),'[','('),']',')')
 strrep(strrep(strrep(ccode(h_pressure),'][',','),'[','('),']',')')
- 
+strrep(strrep(strrep(ccode(F),'][',','),'[','('),']',')')
+strrep(strrep(strrep(ccode(f),'][',','),'[','('),']',')')
+strrep(strrep(strrep(ccode(Gv),'][',','),'[','('),']',')')
  
  
  

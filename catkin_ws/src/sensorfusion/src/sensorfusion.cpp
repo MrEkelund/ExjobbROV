@@ -180,13 +180,13 @@ void Ekf::calcHAcc(){
   H_acc(1,1) = g*quat_0*-2.0;
   H_acc(1,2) = g*quat_3*-2.0;
   H_acc(1,3) = g*quat_2*-2.0;
-  H_acc(2,0) = g*quat_0*-4.0;
-  H_acc(2,3) = g*quat_3*-4.0;
+  H_acc(2,1) = g*quat_1*4.0;
+  H_acc(2,2) = g*quat_2*4.0;
 
   //measurement eq
   h_acc(0,0) = g*(quat_0*quat_2*2.0-quat_1*quat_3*2.0);
   h_acc(1,0) = -g*(quat_0*quat_1*2.0+quat_2*quat_3*2.0);
-  h_acc(2,0) = -g*((quat_0*quat_0)*2.0+(quat_3*quat_3)*2.0-1.0);
+  h_acc(2,0) = g*((quat_1*quat_1)*2.0+(quat_2*quat_2)*2.0-1.0);
 
 }
 void Ekf::accUpdate(){
@@ -211,22 +211,23 @@ void Ekf::calcHMag(){
   h_mag.setZero();
   double quat_0 = states(0); double quat_1 = states(1);
   double quat_2 = states(2); double quat_3 = states(3);
-  H_mag(0,0) = quat_0*sqrt(mag_e*mag_e+mag_n*mag_n)*4.0-mag_d*quat_2*2.0;
-  H_mag(0,1) = quat_1*sqrt(mag_e*mag_e+mag_n*mag_n)*4.0+mag_d*quat_3*2.0;
-  H_mag(0,2) = mag_d*quat_0*-2.0;
-  H_mag(0,3) = mag_d*quat_1*2.0;
+  H_mag(0,0) = mag_d*quat_2*-2.0;
+  H_mag(0,1) = mag_d*quat_3*2.0;
+  H_mag(0,2) = quat_2*sqrt(mag_e*mag_e+mag_n*mag_n)*-4.0-mag_d*quat_0*2.0;
+  H_mag(0,3) = quat_3*sqrt(mag_e*mag_e+mag_n*mag_n)*-4.0+mag_d*quat_1*2.0;
   H_mag(1,0) = quat_3*sqrt(mag_e*mag_e+mag_n*mag_n)*-2.0+mag_d*quat_1*2.0;
   H_mag(1,1) = quat_2*sqrt(mag_e*mag_e+mag_n*mag_n)*2.0+mag_d*quat_0*2.0;
   H_mag(1,2) = quat_1*sqrt(mag_e*mag_e+mag_n*mag_n)*2.0+mag_d*quat_3*2.0;
   H_mag(1,3) = quat_0*sqrt(mag_e*mag_e+mag_n*mag_n)*-2.0+mag_d*quat_2*2.0;
-  H_mag(2,0) = quat_2*sqrt(mag_e*mag_e+mag_n*mag_n)*2.0+mag_d*quat_0*4.0;
-  H_mag(2,1) = quat_3*sqrt(mag_e*mag_e+mag_n*mag_n)*2.0;
-  H_mag(2,2) = quat_0*sqrt(mag_e*mag_e+mag_n*mag_n)*2.0;
-  H_mag(2,3) = quat_1*sqrt(mag_e*mag_e+mag_n*mag_n)*2.0+mag_d*quat_3*4.0;
+  H_mag(2,0) = quat_2*sqrt(mag_e*mag_e+mag_n*mag_n)*2.0;
+  H_mag(2,1) = quat_3*sqrt(mag_e*mag_e+mag_n*mag_n)*2.0-mag_d*quat_1*4.0;
+  H_mag(2,2) = quat_0*sqrt(mag_e*mag_e+mag_n*mag_n)*2.0-mag_d*quat_2*4.0;
+  H_mag(2,3) = quat_1*sqrt(mag_e*mag_e+mag_n*mag_n)*2.0;
 
-  h_mag(0,0) = sqrt(mag_e*mag_e+mag_n*mag_n)*((quat_0*quat_0)*2.0+(quat_1*quat_1)*2.0-1.0)-mag_d*(quat_0*quat_2*2.0-quat_1*quat_3*2.0);
+
+h_mag(0,0) = -sqrt(mag_e*mag_e+mag_n*mag_n)*((quat_2*quat_2)*2.0+(quat_3*quat_3)*2.0-1.0)-mag_d*(quat_0*quat_2*2.0-quat_1*quat_3*2.0);
   h_mag(1,0) = -(quat_0*quat_3*2.0-quat_1*quat_2*2.0)*sqrt(mag_e*mag_e+mag_n*mag_n)+mag_d*(quat_0*quat_1*2.0+quat_2*quat_3*2.0);
-  h_mag(2,0) = mag_d*((quat_0*quat_0)*2.0+(quat_3*quat_3)*2.0-1.0)+(quat_0*quat_2*2.0+quat_1*quat_3*2.0)*sqrt(mag_e*mag_e+mag_n*mag_n);
+  h_mag(2,0) = -mag_d*((quat_1*quat_1)*2.0+(quat_2*quat_2)*2.0-1.0)+(quat_0*quat_2*2.0+quat_1*quat_3*2.0)*sqrt(mag_e*mag_e+mag_n*mag_n);
 }
 void Ekf::magUpdate(){
   if (config.enable_magnetometer_update && (abs(meas_mag.norm() - sqrt(mag_n*mag_n + mag_e*mag_e + mag_d*mag_d)) < config.eps_mag)) {
@@ -257,9 +258,9 @@ void Ekf::calcHGyro(){
   H_gyro(2,6) = 1.0;
   H_gyro(2,9) = 1.0;
 
-  h_gyro(0,0) = bias_p + p;
-  h_gyro(1,0) = bias_q + q;
-  h_gyro(2,0) = bias_r + r;
+  h_gyro(0,0) = bias_p+p;
+  h_gyro(1,0) = bias_q+q;
+  h_gyro(2,0) = bias_r+r;
 }
 void Ekf::gyroUpdate(){
   if (config.enable_gyro_update){
@@ -279,6 +280,8 @@ void Ekf::gyroUpdate(){
     any_updates = true;
   }
 }
+//function that calculates the motion models jacobian with respect to the states.
+// Needed since the motion model is non linear in some states
 void Ekf::calcF(){
   F.setZero();
   double quat_0 = states(0); double quat_1 = states(1); double quat_2 = states(2);
@@ -287,30 +290,30 @@ void Ekf::calcF(){
   F(0,1) = delta_t*p*(-1.0/2.0);
   F(0,2) = delta_t*q*(-1.0/2.0);
   F(0,3) = delta_t*r*(-1.0/2.0);
-  F(0,4) = (delta_t*delta_t)*quat_1*(-1.0/2.0);
-  F(0,5) = (delta_t*delta_t)*quat_2*(-1.0/2.0);
-  F(0,6) = (delta_t*delta_t)*quat_3*(-1.0/2.0);
+  F(0,4) = delta_t*quat_1*(-1.0/2.0);
+  F(0,5) = delta_t*quat_2*(-1.0/2.0);
+  F(0,6) = delta_t*quat_3*(-1.0/2.0);
   F(1,0) = delta_t*p*(1.0/2.0);
   F(1,1) = 1.0;
   F(1,2) = delta_t*r*(1.0/2.0);
   F(1,3) = delta_t*q*(-1.0/2.0);
-  F(1,4) = (delta_t*delta_t)*quat_0*(1.0/2.0);
-  F(1,5) = (delta_t*delta_t)*quat_3*(-1.0/2.0);
-  F(1,6) = (delta_t*delta_t)*quat_2*(1.0/2.0);
+  F(1,4) = delta_t*quat_0*(1.0/2.0);
+  F(1,5) = delta_t*quat_3*(-1.0/2.0);
+  F(1,6) = delta_t*quat_2*(1.0/2.0);
   F(2,0) = delta_t*q*(1.0/2.0);
   F(2,1) = delta_t*r*(-1.0/2.0);
   F(2,2) = 1.0;
   F(2,3) = delta_t*p*(1.0/2.0);
-  F(2,4) = (delta_t*delta_t)*quat_3*(1.0/2.0);
-  F(2,5) = (delta_t*delta_t)*quat_0*(1.0/2.0);
-  F(2,6) = (delta_t*delta_t)*quat_1*(-1.0/2.0);
+  F(2,4) = delta_t*quat_3*(1.0/2.0);
+  F(2,5) = delta_t*quat_0*(1.0/2.0);
+  F(2,6) = delta_t*quat_1*(-1.0/2.0);
   F(3,0) = delta_t*r*(1.0/2.0);
   F(3,1) = delta_t*q*(1.0/2.0);
   F(3,2) = delta_t*p*(-1.0/2.0);
   F(3,3) = 1.0;
-  F(3,4) = (delta_t*delta_t)*quat_2*(-1.0/2.0);
-  F(3,5) = (delta_t*delta_t)*quat_1*(1.0/2.0);
-  F(3,6) = (delta_t*delta_t)*quat_0*(1.0/2.0);
+  F(3,4) = delta_t*quat_2*(-1.0/2.0);
+  F(3,5) = delta_t*quat_1*(1.0/2.0);
+  F(3,6) = delta_t*quat_0*(1.0/2.0);
   F(4,4) = 1.0;
   F(5,5) = 1.0;
   F(6,6) = 1.0;
@@ -318,23 +321,51 @@ void Ekf::calcF(){
   F(8,8) = 1.0;
   F(9,9) = 1.0;
   F(10,10) = 1.0;
+  
+
+  f.setZero();
+  f(0,0) = 1.0;
+  f(0,1) = delta_t*p*(-1.0/2.0);
+  f(0,2) = delta_t*q*(-1.0/2.0);
+  f(0,3) = delta_t*r*(-1.0/2.0);
+  f(1,0) = delta_t*p*(1.0/2.0);
+  f(1,1) = 1.0;
+  f(1,2) = delta_t*r*(1.0/2.0);
+  f(1,3) = delta_t*q*(-1.0/2.0);
+  f(2,0) = delta_t*q*(1.0/2.0);
+  f(2,1) = delta_t*r*(-1.0/2.0);
+  f(2,2) = 1.0;
+  f(2,3) = delta_t*p*(1.0/2.0);
+  f(3,0) = delta_t*r*(1.0/2.0);
+  f(3,1) = delta_t*q*(1.0/2.0);
+  f(3,2) = delta_t*p*(-1.0/2.0);
+  f(3,3) = 1.0;
+  f(4,4) = 1.0;
+  f(5,5) = 1.0;
+  f(6,6) = 1.0;
+  f(7,7) = 1.0;
+  f(8,8) = 1.0;
+  f(9,9) = 1.0;
+  f(10,10) = 1.0;
+
 }
+// function that calculates the system noise propagation matrix. Noise for quat0 to quat3 comes from propagation of noise on p q and r.
 void Ekf::calcGv(){
   Gv.setZero();
   double quat_0 = states(0); double quat_1 = states(1); double quat_2 = states(2);
   double quat_3 = states(3);
-  Gv(0,0) = (delta_t*delta_t*delta_t)*quat_1*(-1.0/4.0);
-  Gv(0,1) = (delta_t*delta_t*delta_t)*quat_2*(-1.0/4.0);
-  Gv(0,2) = (delta_t*delta_t*delta_t)*quat_3*(-1.0/4.0);
-  Gv(1,0) = (delta_t*delta_t*delta_t)*quat_0*(1.0/4.0);
-  Gv(1,1) = (delta_t*delta_t*delta_t)*quat_3*(-1.0/4.0);
-  Gv(1,2) = (delta_t*delta_t*delta_t)*quat_2*(1.0/4.0);
-  Gv(2,0) = (delta_t*delta_t*delta_t)*quat_3*(1.0/4.0);
-  Gv(2,1) = (delta_t*delta_t*delta_t)*quat_0*(1.0/4.0);
-  Gv(2,2) = (delta_t*delta_t*delta_t)*quat_1*(-1.0/4.0);
-  Gv(3,0) = (delta_t*delta_t*delta_t)*quat_2*(-1.0/4.0);
-  Gv(3,1) = (delta_t*delta_t*delta_t)*quat_1*(1.0/4.0);
-  Gv(3,2) = (delta_t*delta_t*delta_t)*quat_0*(1.0/4.0);
+  Gv(0,0) = (delta_t*delta_t)*quat_1*(-1.0/2.0);
+  Gv(0,1) = (delta_t*delta_t)*quat_2*(-1.0/2.0);
+  Gv(0,2) = (delta_t*delta_t)*quat_3*(-1.0/2.0);
+  Gv(1,0) = (delta_t*delta_t)*quat_0*(1.0/2.0);
+  Gv(1,1) = (delta_t*delta_t)*quat_3*(-1.0/2.0);
+  Gv(1,2) = (delta_t*delta_t)*quat_2*(1.0/2.0);
+  Gv(2,0) = (delta_t*delta_t)*quat_3*(1.0/2.0);
+  Gv(2,1) = (delta_t*delta_t)*quat_0*(1.0/2.0);
+  Gv(2,2) = (delta_t*delta_t)*quat_1*(-1.0/2.0);
+  Gv(3,0) = (delta_t*delta_t)*quat_2*(-1.0/2.0);
+  Gv(3,1) = (delta_t*delta_t)*quat_1*(1.0/2.0);
+  Gv(3,2) = (delta_t*delta_t)*quat_0*(1.0/2.0);
   Gv(4,0) = delta_t;
   Gv(5,1) = delta_t;
   Gv(6,2) = delta_t;
@@ -346,16 +377,17 @@ void Ekf::calcGv(){
 void Ekf::timeUpdate(){
   //read states
   if(config.enable_time_update){
-    //calculate f matrix
+    //calculate F matrix
     calcF();
     calcGv();
     // Calculate new state
-    new_states = F*states;
+    new_states = f*states;
     states = new_states;
     normQuaternions();
     //update state covariance
     new_state_cov = F*state_cov*F.transpose() + Gv*process_cov*Gv.transpose();
-
+	
+    // symmeterize state cov for increased stability.
     state_cov = new_state_cov/2 + new_state_cov.transpose()/2;
     any_updates = true;
   }
@@ -408,18 +440,19 @@ void Ekf::sendStates(){
   double quat_0 = states(0); double quat_1 = states(1);
   double quat_2 = states(2); double quat_3 = states(3);
   double p = states(4); double q = states(5); double r = states(6);
-double bias_p = states(7); double bias_q = states(8); double bias_r = states(9);
+  double bias_p = states(7); double bias_q = states(8); double bias_r = states(9);
   double d = states(10); //depth
 
   //calc yaw pitch roll
-  double yaw = atan2(2.0*quat_0*quat_3+2.0*quat_1*quat_2,1.0-2.0*(quat_2*quat_2 + quat_3*quat_3));
-  double pitch = asin(2.0*(quat_0*quat_2-quat_3*quat_1));
-  double roll = atan2(2.0*quat_0*quat_1+2.0*quat_2*quat_3,1.0-2.0*(quat_1*quat_1 + quat_2*quat_2));
+  double roll = atan2(quat_0*quat_1*2.0+quat_2*quat_3*2.0,(quat_1*quat_1)*-2.0-(quat_2*quat_2)*2.0+1.0);
+  double pitch = -asin(quat_0*quat_2*-2.0+quat_1*quat_3*2.0);
+  double yaw = atan2(quat_0*quat_3*2.0+quat_1*quat_2*2.0,(quat_2*quat_2)*-2.0-(quat_3*quat_3)*2.0+1.0);
 
-  // remove extra 2p
-  yaw = fmod(yaw + M_PI,2.0*M_PI) - M_PI;
-  pitch= fmod(pitch + M_PI,2.0*M_PI) - M_PI;
+  // remove extra 2pi
   roll = fmod(roll + M_PI,2.0*M_PI) - M_PI;
+  pitch= fmod(pitch + M_PI,2.0*M_PI) - M_PI;
+  yaw = fmod(yaw + M_PI,2.0*M_PI) - M_PI;
+
 
   state_message.data.resize(10);
   // convert to correct format and send
