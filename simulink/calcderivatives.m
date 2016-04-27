@@ -17,11 +17,6 @@ syms yaw pitch roll...
 %old rot Q = [2*(quat_0^2+quat_1^2) - 1,  2*(quat_1*quat_2-quat_0*quat_3),    2*(quat_1*quat_3+quat_0*quat_2);
  %   2*(quat_1*quat_2+quat_0*quat_3),    2*(quat_0^2+quat_2^2) - 1,  2*(quat_2*quat_3-quat_0*quat_1);
  %   2*(quat_1*quat_3-quat_0*quat_2),    2*(quat_2*quat_3+quat_0*quat_1),    2*(quat_0^2+quat_3^2) - 1];
-
-Q = [...
-    1-2*(quat_2*quat_2+quat_3*quat_3), 2*(quat_1*quat_2-quat_3*quat_0),2*(quat_1*quat_3+quat_2*quat_0);
-    2*(quat_1*quat_2+quat_3*quat_0),1-2*(quat_1*quat_1+quat_3*quat_3), 2*(quat_2*quat_3-quat_1*quat_0);
-    2*(quat_1*quat_3-quat_2*quat_0), 2*(quat_2*quat_3 + quat_1*quat_0), 1-2*(quat_1*quat_1*quat_2*quat_2)];
 RQ =...
     [1 - 2*(quat_2^2 + quat_3^2), 2*(quat_1*quat_2 - quat_3*quat_0), 2*(quat_1*quat_3 + quat_2*quat_0);
      2*(quat_1*quat_2 + quat_3*quat_0),  1-2*(quat_1^2 + quat_3^2),2*(quat_2*quat_3-quat_1*quat_0);
@@ -29,6 +24,7 @@ RQ =...
 
 %quarternion vector
 quat = [quat_0;quat_1;quat_2;quat_3];
+nu=[p;q;r];
 
 
 
@@ -37,12 +33,6 @@ Sq = [-quat_1, -quat_2, -quat_3;
      quat_3,  quat_0, -quat_1;
      -quat_2, quat_1, quat_0];
 
- 
-
-%Sw = [0, -(p ), -(q ), -(r ); % wx = p +b_p  bias is subtracted in ard
-%    (p ), 0, (r ), -(q );
-%    (q ), -(r ), 0, (p );
-%    (r ), (q ), -(p ), 0];
 
  T_eta =1/2*...
      [-quat_1 ,-quat_2 -quat_3;
@@ -92,13 +82,12 @@ for i=1:nr_meas_eqs
 end
 
  %% Motion model
- motion_model = blkdiag([eye(4) + delta_t*T_bar_nu,delta_t^2*T_eta;zeros(3,4),eye(3)],eye(4));
+ %old !!!!motion_model = blkdiag([eye(4) + delta_t*T_bar_nu,delta_t^2*T_eta;zeros(3,4),eye(3)],eye(4));
+ motionmodel = blkdiag(eye(4) + delta_t*T_bar_nu,eye(7));
  
  
- 
- Gv = [[delta_t^3*T_eta/2;delta_t*eye(3)],zeros(7,3),zeros(7,1);
-     zeros(3,3),delta_t*eye(3),zeros(3,1);
-     zeros(1,3),zeros(1,3),delta_t*eye(1)];
+ %old !!1 Gv = [[delta_t^3*T_eta/2;delta_t*eye(3)],zeros(7,3),zeros(7,1);
+     Gv= blkdiag([delta_t^2*T_eta;delta_t*eye(3)],delta_t*eye(4))
  %% F matrix
  %for n=1:nr_states
  %  for m=1:nr_states
@@ -107,14 +96,27 @@ end
  %end
     
 %% print
+H_acc=H(1:3,:);
+h_acc=measurement_eqs(1:3);
+
+H_gyro=H(4:6,:);
+h_gyro=measurement_eqs(4:6);
+
+H_mag=H(7:9,:);
+h_mag=measurement_eqs(7:9);
+
+H_pressure=H(10,:);
+h_pressure=measurement_eqs(10);
 
 
-
-
-
-strrep(strrep(strrep(ccode(),'][',','),'[','('),']',')')
-
- 
+strrep(strrep(strrep(ccode(H_acc),'][',','),'[','('),']',')')
+strrep(strrep(strrep(ccode(h_acc),'][',','),'[','('),']',')')
+strrep(strrep(strrep(ccode(H_gyro),'][',','),'[','('),']',')')
+strrep(strrep(strrep(ccode(h_gyro),'][',','),'[','('),']',')')
+strrep(strrep(strrep(ccode(H_mag),'][',','),'[','('),']',')')
+strrep(strrep(strrep(ccode(h_mag),'][',','),'[','('),']',')')
+strrep(strrep(strrep(ccode(H_pressure),'][',','),'[','('),']',')')
+strrep(strrep(strrep(ccode(h_pressure),'][',','),'[','('),']',')')
  
  
  
