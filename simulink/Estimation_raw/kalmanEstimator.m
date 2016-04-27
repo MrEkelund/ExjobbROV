@@ -119,20 +119,20 @@ if(paramsOK)
         tau_valid = [t;tau_valid];
         save('tau.mat','tau_valid');
         y=sim('quatSim',configSet);
-        pqr=y.get('yout');
+        data=y.get('yout');
 
     % plot
         subplot(length(data.exp),3,3*k-2)
-        plot(t,[pqr(:,1),y_valid(1,:)'])
-        str = sprintf('p: Fit %f %%',100*goodnessOfFit(pqr(:,1),y_valid(1,:)','NMSE'));
+        plot(t,[data(:,1),y_valid(1,:)'])
+        str = sprintf('p: Fit %f %%',100*goodnessOfFit(data(:,1),y_valid(1,:)','NMSE'));
         title(str)
         subplot(length(data.exp),3,3*k-1)
-        plot(t,[pqr(:,2),y_valid(2,:)'])
-        str = sprintf('q: Fit %f %%',100*goodnessOfFit(pqr(:,2),y_valid(2,:)','NMSE'));
+        plot(t,[data(:,2),y_valid(2,:)'])
+        str = sprintf('q: Fit %f %%',100*goodnessOfFit(data(:,2),y_valid(2,:)','NMSE'));
         title(str)
         subplot(length(data.exp),3,3*k)
-        plot(t,[pqr(:,3),y_valid(3,:)'])
-        str = sprintf('r: Fit %f %%',100*goodnessOfFit(pqr(:,3),y_valid(3,:)','NMSE'));
+        plot(t,[data(:,3),y_valid(3,:)'])
+        str = sprintf('r: Fit %f %%',100*goodnessOfFit(data(:,3),y_valid(3,:)','NMSE'));
         title(str)
 
     end

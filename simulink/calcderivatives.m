@@ -10,7 +10,7 @@ syms yaw pitch roll...
     b_p b_q b_r...
     F T motion_model...
     rho g x_offset d pressure_atm...
-    Gv Euler delta_t n e1 e2 e3
+    Gv Euler delta_t n quat_1 quat_2 quat_3
 
 % define som matrixes
 %rotation matrix from body/sensor frame to global frame
@@ -22,7 +22,10 @@ Q = [...
     1-2*(quat_2*quat_2+quat_3*quat_3), 2*(quat_1*quat_2-quat_3*quat_0),2*(quat_1*quat_3+quat_2*quat_0);
     2*(quat_1*quat_2+quat_3*quat_0),1-2*(quat_1*quat_1+quat_3*quat_3), 2*(quat_2*quat_3-quat_1*quat_0);
     2*(quat_1*quat_3-quat_2*quat_0), 2*(quat_2*quat_3 + quat_1*quat_0), 1-2*(quat_1*quat_1*quat_2*quat_2)];
-
+RQ =...
+    [1 - 2*(quat_2^2 + quat_3^2), 2*(quat_1*quat_2 - quat_3*quat_0), 2*(quat_1*quat_3 + quat_2*quat_0);
+     2*(quat_1*quat_2 + quat_3*quat_0),  1-2*(quat_1^2 + quat_3^2),2*(quat_2*quat_3-quat_1*quat_0);
+     2*(quat_1*quat_3 - quat_2*quat_0),  2*(quat_2*quat_3 + quat_1*quat_0), 1-2*(quat_1^2 + quat_2^2)];
 
 %quarternion vector
 quat = [quat_0;quat_1;quat_2;quat_3];
@@ -36,15 +39,24 @@ Sq = [-quat_1, -quat_2, -quat_3;
 
  
 
-Sw = [0, -(p ), -(q ), -(r ); % wx = p +b_p  bias is subtracted in ard
-    (p ), 0, (r ), -(q );
-    (q ), -(r ), 0, (p );
-    (r ), (q ), -(p ), 0];
+%Sw = [0, -(p ), -(q ), -(r ); % wx = p +b_p  bias is subtracted in ard
+%    (p ), 0, (r ), -(q );
+%    (q ), -(r ), 0, (p );
+%    (r ), (q ), -(p ), 0];
 
-RQ =...
-    [1 - 2*(e2^2 + e3^2), 2*(e1*e2 - e3*n), 2*(e1*e3 + e2*n);
-     2*(e1*e2 + e3*n),  1-2*(e1^2 + e3^2),2*(e2*e3-e1*n);
-     2*(e1*e3 - e2*n),  2*(e2*e3 + e1*n), 1-2*(e1^2 + e2^2)];
+ T_eta =1/2*...
+     [-quat_1 ,-quat_2 -quat_3;
+     quat_0 -quat_3 quat_2;
+     quat_3 quat_0 -quat_1;
+     -quat_2 quat_1 quat_0];
+ T_bar_nu=1/2*...
+     [0 -p -q -r;
+     p 0 r -q;
+     q -r 0 p;
+     r q -p 0];
+
+
+
 
 
  %% H matrix 
@@ -80,8 +92,11 @@ for i=1:nr_meas_eqs
 end
 
  %% Motion model
- motion_model = blkdiag([eye(4) + delta_t*Sw/2,delta_t^2*Sq/2;zeros(3,4),eye(3)],eye(4))
- Gv = [[delta_t^3*Sq/4;delta_t*eye(3)],zeros(7,3),zeros(7,1);
+ motion_model = blkdiag([eye(4) + delta_t*T_bar_nu,delta_t^2*T_eta;zeros(3,4),eye(3)],eye(4));
+ 
+ 
+ 
+ Gv = [[delta_t^3*T_eta/2;delta_t*eye(3)],zeros(7,3),zeros(7,1);
      zeros(3,3),delta_t*eye(3),zeros(3,1);
      zeros(1,3),zeros(1,3),delta_t*eye(1)];
  %% F matrix
@@ -92,6 +107,9 @@ end
  %end
     
 %% print
+
+
+
 
 
 strrep(strrep(strrep(ccode(),'][',','),'[','('),']',')')
