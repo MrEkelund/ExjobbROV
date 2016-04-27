@@ -1,4 +1,4 @@
-function [imu_data, mag_data, thrusters_data, time] = ...
+function [imu_data, mag_data, thrusters_data, time, initial_state] = ...
     getTestData(filepath, plotting, resampling_fs)
     %getTestData
     %   Input: filepath - Fullfilepath or relative.
@@ -42,6 +42,19 @@ function [imu_data, mag_data, thrusters_data, time] = ...
     [imu_time_series, mag_time_series] =...
         synchronize(imu_time_series, mag_time_series,...
         'Uniform','Interval', 1/resampling_fs);
+    %% states
+    state_bag = select(bag,'Topic','/sensor_fusion/states');
+    state_msgs = readMessages(state_bag);
+    
+    state_data = zeros(size(state_msgs,1),size(state_msgs{1}.Data',2));
+    state_time = zeros(size(state_msgs,1),1);
+    for i = 1:size(state_msgs,1)
+        data = double(state_msgs{i}.Data');
+        state_data(i,:) = data(:);
+        state_time(i) = state_bag.MessageList{i,1};
+    end
+    
+    
 %% Thrusters
     thrusters_bag = select(bag,'Topic','/rovio/thrusters');
     
@@ -64,18 +77,21 @@ function [imu_data, mag_data, thrusters_data, time] = ...
     end
     thrusters_time_series = timeseries(thrusters_data, time);
     % Syncronize the sensor data with the thrusters data over the experiment time
-    [thrusters_time_series, imu_time_series] =...
+    [thrusters_time_series_test, imu_time_series_test] =...
         synchronize(thrusters_time_series, imu_time_series,...
         'Uniform','Interval', 1/resampling_fs);
-    [thrusters_time_series, mag_time_series] =...
+    [thrusters_time_series_test, mag_time_series_test] =...
         synchronize(thrusters_time_series, mag_time_series,...
         'Uniform','Interval', 1/resampling_fs);
 if plotting
-    plotData(imu_time_series, mag_time_series, thrusters_time_series, filepath);
+    plotData(imu_time_series_test, mag_time_series_test, thrusters_time_series_test, filepath);
 end
+first_time_instant = find((imu_time_series.Time - imu_time_series_test.Time(1)) > -0.1*1/resampling_fs & (imu_time_series.Time - imu_time_series_test.Time(1) < 1/resampling_fs*2),1);
 
-imu_data = imu_time_series.Data;
-mag_data = mag_time_series.Data;
-thrusters_data = thrusters_time_series.Data;
-time = imu_time_series.Time;
+imu_data = imu_time_series_test.Data;
+mag_data = mag_time_series_test.Data;
+thrusters_data = thrusters_time_series_test.Data;
+time = imu_time_series_test.Time;
+
+initial_state = initialEkf(1/resampling_fs, [imu_time_series.Data(1:first_time_instant,:).'; mag_time_series.Data(1:first_time_instant,:).'], mag_data(1,1), mag_data(1,2), mag_data(1,3));
 end
