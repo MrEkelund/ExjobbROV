@@ -100,7 +100,7 @@ H_acc=H(1:3,:);
 h_acc=measurement_eqs(1:3);
 
 H_gyro=H(4:6,:);
-h_gyro=measurement_eqs(4:6);
+h_gyro=measurement_eqs(4:6); 
 
 H_mag=H(7:9,:);
 h_mag=measurement_eqs(7:9);
