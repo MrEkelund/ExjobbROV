@@ -6,7 +6,7 @@
 #include <math.h>
 
 /* Specify the number of outputs here. */
-#define NY 9
+#define NY 6
 
 /* State equations. */
 void compute_dx(double *dx, double *x, double *u, double **p)
@@ -137,11 +137,10 @@ void compute_y(double *y, double *x, double *u, double **p)
   y[3] = e1*e3*g[0]*-2.0+e2*g[0]*n*2.0;
   y[4] = e2*e3*g[0]*-2.0-e1*g[0]*n*2.0;
   y[5] = -g[0]+(e1*e1)*g[0]*2.0+(e2*e2)*g[0]*2.0;
-  y[6] = sqrt(mag_e[0]*mag_e[0]+mag_n[0]*mag_n[0])-(e2*e2)*sqrt(mag_e[0]*mag_e[0]+mag_n[0]*mag_n[0])*2.0-(e3*e3)*sqrt(mag_e[0]*mag_e[0]+mag_n[0]*mag_n[0])*2.0+e1*e3*mag_d[0]*2.0-e2*mag_d[0]*n*2.0;
+ /* y[6] = sqrt(mag_e[0]*mag_e[0]+mag_n[0]*mag_n[0])-(e2*e2)*sqrt(mag_e[0]*mag_e[0]+mag_n[0]*mag_n[0])*2.0-(e3*e3)*sqrt(mag_e[0]*mag_e[0]+mag_n[0]*mag_n[0])*2.0+e1*e3*mag_d[0]*2.0-e2*mag_d[0]*n*2.0;
   y[7] = e1*e2*sqrt(mag_e[0]*mag_e[0]+mag_n[0]*mag_n[0])*2.0-e3*n*sqrt(mag_e[0]*mag_e[0]+mag_n[0]*mag_n[0])*2.0+e2*e3*mag_d[0]*2.0+e1*mag_d[0]*n*2.0;
-  y[8] = mag_d[0]-(e1*e1)*mag_d[0]*2.0-(e2*e2)*mag_d[0]*2.0+e1*e3*sqrt(mag_e[0]*mag_e[0]+mag_n[0]*mag_n[0])*2.0+e2*n*sqrt(mag_e[0]*mag_e[0]+mag_n[0]*mag_n[0])*2.0;
+  y[8] = mag_d[0]-(e1*e1)*mag_d[0]*2.0-(e2*e2)*mag_d[0]*2.0+e1*e3*sqrt(mag_e[0]*mag_e[0]+mag_n[0]*mag_n[0])*2.0+e2*n*sqrt(mag_e[0]*mag_e[0]+mag_n[0]*mag_n[0])*2.0; */
 }
-
 
 
 /*----------------------------------------------------------------------- *

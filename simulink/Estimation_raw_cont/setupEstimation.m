@@ -1,6 +1,6 @@
-function [nonlinear_greybox_model, data, val_data, initial_states_and_mag] = ...
+function [nonlinear_greybox_model, data, val_data, initial_states_out] = ...
     setupEstimation(parameters, parameter_strings, estimation_mode, simulation,...
-    filepath, plotting, detrend_enable, resampling_fs)
+    filepath, plotting, detrend_enable, sampling_fs, varargin)
 %setupEstimation Setups the nonlinear model of the rov and reads data
 %   Detailed explanation goes here
 
@@ -17,31 +17,42 @@ switch simulation
         switch filepath
             case 'Yaw0418'
                 disp('Loading yaw test data from 2016-04-18');
-                data = loadYaw0418(plotting, resampling_fs);
+                data = loadYaw0418(plotting, sampling_fs);
             case 'RollPitch0418'
                 disp('Loading roll pitch test data from 2016-04-18');
-                data = loadRollPitch0418(plotting, resampling_fs);
+                data = loadRollPitch0418(plotting, sampling_fs);
             case 'All0418'
                 disp('Loading all test data from 2016-04-18');
-                [data, initial_states_and_mag] = loadAll0418(plotting, resampling_fs);
+                [data, initial_states_and_mag] = loadAll0418(plotting, sampling_fs, detrend_enable);
             otherwise
                 disp(sprintf('Loading test data from %s',filepath));
                 [imu_data, mag_data, thrusters_data, time]= ...
-                    getTestData(All_filepath, plotting, resampling_fs);
+                    getTestData(All_filepath, plotting, sampling_fs);
                 output_data = [imu_data, mag_data];
                 input_data = thrusters_data;
-                data = iddata(output_data, input_data, 1/resampling_fs);
+                data = iddata(output_data, input_data, 1/sampling_fs);
         end
     case 1 % simulation
-        warning('This functionallity has been depricated')
-        disp(sprintf('Loading simulated data from %s',filepath));
-        [lin_vel_data ,lin_acc_data, ang_vel_data, thrusters_data, states, time,Ts] = ...
-            getSimulationData(filepath,plotting);
-        output_data = [ang_vel_data , antiModAngles(states(:,1:3))];
-        input_data = thrusters_data;
-        data = iddata(output_data, input_data, Ts);
+        if varargin{3} ~= 0
+            temp_parameters = parameters + varargin{3}*randn(size(parameters));
+        else
+            temp_parmeters = parameters;
+        end
+        [data, initial_states_and_mag] = simulateROV(temp_parameters, sampling_fs, varargin{1}, varargin{2});
     otherwise
         error('Simulation can only be 0 or 1');
+end
+
+ne = length(data.ExperimentName); % number of experiments
+if ne == 1
+    if simulation
+        mag = [10 10 10];
+    else
+        mag = data.OutputData(1,7:9);
+    end
+    smooth = initialSmoother(1/sampling_fs, data.OutputData.', mag);
+    sample_num = ceil(size(data.OutputData,1)/2);
+    initial_states_and_mag = [initial_states_and_mag, [smooth(5:end, sample_num); smooth(1:4, sample_num)]];   
 end
 
 switch estimation_mode 
@@ -50,20 +61,16 @@ switch estimation_mode
             disp('rovMotionModelAllCong_c.mexa64 not found...Compiling')
             mex rovMotionModelAllCong_c.c
         end
-        data = data(:,:,:);
+        data = data(:,[1:6],:);
         data.InputName =  {'Thruster1';'Thruster2';'Thruster3';'Thruster4';'Thruster5';'Thruster6'};
         data.InputUnit =  {'%','%','%','%','%','%'};
-        data.OutputName = {'p', 'q', 'r', 'a_x', 'a_y', 'a_z', 'm_x', 'm_y', 'm_z'};
-        data.OutputUnit = {'rad/s','rad/s','rad/s', 'm/s', 'm/s', 'm/s', 'µT', 'µT', 'µT'};
+        data.OutputName = {'p', 'q', 'r', 'a_x', 'a_y', 'a_z'};
+        data.OutputUnit = {'rad/s','rad/s','rad/s', 'm/s', 'm/s', 'm/s'};
         state_name = {'p', 'q', 'r', 'n', 'e1', 'e2','e3'};
         state_unit = {'rad/s', 'rad/s', 'rad/s', '','','',''};
     otherwise
         error('Unkown test: %s', estimation_mode);
 end
-
-
-
-ne = length(data.ExperimentName); % number of experiments
 
 if ne == 1
     val_data = data(ceil(size(data.OutputData,1)/2):end);
@@ -76,32 +83,34 @@ else
     data = getexp(data, 1:ceil(ne/2));
 end
 
-if detrend_enable
-    val_data = detrend(val_data);
-    data = detrend(data);
-end
 %% Setup the non linear greybox model
 Ts_model = 0;      % Sample time [s].
 ny = length(data.OutputName);
 nu = length(data.InputName);
 nx = length(state_name);
 
-% initial_states = zeros(nx,length(data.ExperimentName));
-% for i = 1:length(data.ExperimentName)
-%      temp_data = getexp(data, i);
-initial_states = initial_states_and_mag(1:length(data.ExperimentName),1:nx).';
-%     initial_states(4,i) = 1;
-% end
+initial_states = zeros(nx,length(data.ExperimentName));
+initial_states_out = zeros(nx,length(data.ExperimentName) + length(val_data.ExperimentName));
+for i = 1:length(data.ExperimentName)
+    temp_data = getexp(data, i);
+    initial_states(:,i) = [temp_data.OutputData(1,1:3).'; initial_states_and_mag(4:7,i)];
+    %     initial_states_out(:,i) = [temp_data.OutputData(1,1:3).'; initial_states_and_mag(i,4:7).'; initial_states_and_mag(i,8:10)];
+    initial_states_out(:,i) = [temp_data.OutputData(1,1:3).'; initial_states_and_mag(4:7,i)];
+end
 
-temp_exp = getexp(data, 1);
-warning('Mag not set');
-%parameters = [parameters; 100; temp_exp.OutputData(1,[7 8 9])'];
-% parameters = [parameters; 100; temp_exp.OutputData(1,[7 8 9])'];
-parameters = [parameters; 100; initial_states_and_mag(1,8:10).'];
-parameter_strings{end+1} = 'gam';
-parameter_strings{end+1} = 'm_n';
-parameter_strings{end+1} = 'm_e';
-parameter_strings{end+1} = 'm_d';
+j = length(data.ExperimentName);
+for i = 1:length(val_data.ExperimentName)
+    temp_data = getexp(val_data, i);
+    %     initial_states_out(:,j+i) = [temp_data.OutputData(1,1:3).'; initial_states_and_mag(j+i,4:7).'; initial_states_and_mag(j+i,8:10).'];
+    initial_states_out(:,j+i) = [temp_data.OutputData(1,1:3).'; initial_states_and_mag(4:7,j+i)];
+end
+
+% parameters = [parameters; initial_states_and_mag(1,8)];
+% parameters = [parameters; initial_states_and_mag(1,9)];
+% parameters = [parameters; initial_states_and_mag(1,10)];
+% parameter_strings{end+1} = 'mag_n';
+% parameter_strings{end+1} = 'mag_e';
+% parameter_strings{end+1} = 'mag_d';
 
 file_name  = strcat('rovMotionModel',estimation_mode); % File describing the model structure.
 
@@ -177,6 +186,11 @@ positive_parameters = [1:12, 23:28];
 negative_parameters = [13:22];
 for i = 1:size(positive_parameters,2)
     nonlinear_greybox_model.Parameters(positive_parameters(i)).Minimum = 0;
+    if i ~= 3
+        nonlinear_greybox_model.Parameters(positive_parameters(i)).Maximum = 15;
+    else
+        nonlinear_greybox_model.Parameters(positive_parameters(i)).Maximum = 1200; % density
+    end
 end
 
 for i = 1:size(negative_parameters,2)

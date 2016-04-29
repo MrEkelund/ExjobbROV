@@ -92,6 +92,6 @@ imu_data = imu_time_series_test.Data;
 mag_data = mag_time_series_test.Data;
 thrusters_data = thrusters_time_series_test.Data;
 time = imu_time_series_test.Time;
-
-initial_state = initialEkf(1/resampling_fs, [imu_time_series.Data(1:first_time_instant,:).'; mag_time_series.Data(1:first_time_instant,:).'], mag_data(1,1), mag_data(1,2), mag_data(1,3));
+smooth = initialSmoother(1/resampling_fs,[imu_time_series.Data, mag_time_series.Data].', mag_time_series.Data(1,:));
+initial_state = [smooth(5:end,first_time_instant); smooth(1:4,first_time_instant); mag_time_series.Data(1,:).'];
 end
