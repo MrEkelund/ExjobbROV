@@ -38,40 +38,41 @@ if isempty(files)
     %     Iz_Nr_dot = Iz - Nr_dot;
     
     %From ekf with gv
-    zb = -0.39;
-    Kp = -1.19;
-    Kp_dot = -0.91;
-    Kp_abs_p = -0.0007;
-    Mq = -0.30;
-    Mq_dot = -1.01;
-    Mq_abs_q = -0.22;
-    Nr = -1.52;
-    Nr_dot = -1.07;
-    Nr_abs_r = -1.14;
-    Ix = 0.91;
-    Iy = 1.01;
-    Iz = 1.07;
-    Ix_Kp_dot = 0.92;
-    Iy_Mq_dot = 0.68;
-    Iz_Nr_dot = 1.30;
+%     zb = -0.039;
+%     Kp = -1.19;
+%     Kp_dot = -0.91;
+%     Kp_abs_p = -0.0007;
+%     Mq = -0.30;
+%     Mq_dot = -1.01;
+%     Mq_abs_q = -0.22;
+%     Nr = -1.52;
+%     Nr_dot = -1.07;
+%     Nr_abs_r = -1.14;
+%     Ix = 0.91;
+%     Iy = 1.01;
+%     Iz = 1.07;
+%     Ix_Kp_dot = 0.92;
+%     Iy_Mq_dot = 0.68;
+%     Iz_Nr_dot = 1.30;
     
     %From ekf without gv
-%     zb = -0.0355;
-%     Kp = -0.88;
-%     Kp_dot = -0.95;
-%     Kp_abs_p = -0.53;
-%     Mq = -1.03;
-%     Mq_dot = -1.02;
-%     Mq_abs_q = -0.015;
-%     Nr = -1.11;
-%     Nr_dot = -1.02;
-%     Nr_abs_r = -1.10;
-%     Ix = 0.95;
-%     Iy = 1.02;
-%     Iz = 1.02;
-%     Ix_Kp_dot = 1.18;
-%     Iy_Mq_dot = 0.69;
-%     Iz_Nr_dot = 1.9;
+    zb = -0.0355;
+    zb = -0.02;
+    Kp = -0.88;
+    Kp_dot = -0.95;
+    Kp_abs_p = -0.53;
+    Mq = -1.03;
+    Mq_dot = -1.02;
+    Mq_abs_q = -0.015;
+    Nr = -1.11;
+    Nr_dot = -1.02;
+    Nr_abs_r = -1.10;
+    Ix = 0.95;
+    Iy = 1.02;
+    Iz = 1.02;
+    Ix_Kp_dot = 1.18;
+    Iy_Mq_dot = 0.69;
+    Iz_Nr_dot = 1.9;
     
     Parameters= [...
         m; g; rho; V; lx1; ly1; ly2; lx2; ly3; lx5; ly4;
