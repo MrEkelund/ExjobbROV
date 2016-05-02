@@ -149,6 +149,7 @@ roll_pitch_parameters = [13:19, 23, 24];
 roll_pitch_cong_parameters = [13:19, 26, 27];
 all_parameters = [13:25];
 all_cong_parameters = [13:28];
+all_super_cong_parameters = [13:14, 16:17, 19:20, 22, 26:28];
 % Sets which parameters that will be estimated  
 switch estimation_mode
     case 'Yaw'
@@ -166,9 +167,12 @@ switch estimation_mode
     case 'All'
         disp('All rotational dynamics test')
         fixed_parameters = setdiff(fixed_parameters, all_parameters);
-    case {'AllCong', 'AllCong_c','AllCong_disc_c','AllSuperCong_c'}
+    case {'AllCong', 'AllCong_c','AllCong_disc_c'}
         disp('All rotational dynamics test')
         fixed_parameters = setdiff(fixed_parameters, all_cong_parameters);
+    case 'AllSuperCong_c'
+        disp('All rotational dynamics test')
+        fixed_parameters = setdiff(fixed_parameters, all_super_cong_parameters);
     otherwise
         error('Unkown test: %s', estimation_mode);
 end

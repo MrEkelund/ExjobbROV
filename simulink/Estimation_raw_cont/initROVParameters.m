@@ -57,7 +57,6 @@ if isempty(files)
     
     %From ekf without gv
     zb = -0.0355;
-    zb = -0.02;
     Kp = -0.88;
     Kp_dot = -0.95;
     Kp_abs_p = -0.53;

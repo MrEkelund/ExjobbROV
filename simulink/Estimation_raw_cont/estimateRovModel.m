@@ -5,9 +5,9 @@ LASTN = maxNumCompThreads(4);
 estimation_mode = 'AllSuperCong_c';
 All_filepath = 'All0418';
 simulation = 0;
-plotting = 0;
-detrend_enable = 0;
-resampling_fs = 75;
+plotting = 1;
+detrend_enable = 1;
+resampling_fs = 50;
 load('rtau.mat') 
 initialCondition = [1 0 0 1 0 0 0].';
 parameter_variance = 0.2;
@@ -31,7 +31,7 @@ opt.SearchOption.MaxIter = 100;
 %  w = diag([100 100 100 50 50 50]);
 opt.OutputWeight = 'noise';
 % opt.Outputweight = w;
-opt.Advanced.ErrorThreshold = 1.6;
+opt.Advanced.ErrorThreshold = 1.3;
 
 tic
 All_estimation = nlgreyest(All_data, All_nonlinear_greybox_model,opt);
@@ -39,9 +39,9 @@ toc
 displayTable(parameters, parameter_strings,All_estimation)
 
 figure
-comopt = compareOptions('InitialCondition', initial_states(:,2));
+comopt = compareOptions('InitialCondition', initial_states(:,5));
 
-compare(All_val_data, All_estimation, inf,comopt);
+compare(getexp(All_val_data,2), All_estimation, inf,comopt);
 %%
 dist_parameters - parameters
 %%
