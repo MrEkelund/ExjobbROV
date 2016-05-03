@@ -1,6 +1,9 @@
 \chapter{Operation of the \abbrROV} \label{app:operation}
 This Chapter describes normal operation of the \abbrROV, how to implement new controllers and some tips for troubleshooting.
- 
+
+\section{Wiring} \label{sec_wiring}
+\todo[inline]{Write about how wire the \abbrROV} 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Start up of the \abbrROV}
 For starting the \abbrROV connect all cables according to \Sectionref{sec:wiring}.
 \begin{itemize}
@@ -34,17 +37,28 @@ To stop recording data press the red circle and close Bag by Running $\rightarro
 and follow the instructions.
 
 \subsection{Sending test signals}
-For sending telegraph signals to the \abbrROV the logging script in \Sectionref{sec:logging} can be used or dynamic reconfigure can be used. Dynamic reconfigure can be used from the command line or rqt. In rqt start dynamic reconfigure by Plugins $\rightarrow$ Configuration $\rightarrow$ Dynamic Reconfigure. When the dynamic reconfigure box is shown choose matlab\_controller then check telegraph\_signals. In the submenu choose the scaling and switch factor for each thruster.
-To enable tests change the test signal from off $\rightarrow$ on.    
+For sending telegraph signals to the \abbrROV the logging script in \Sectionref{sec:logging} can be used or dynamic reconfigure can be used. Dynamic reconfigure can be used from the command line or rqt. In rqt start dynamic reconfigure by Plugins $\rightarrow$ Configuration $\rightarrow$ Dynamic Reconfigure. When the dynamic reconfigure box is shown choose matlab\_controller then check telegraph\_signals. In the submenu choose the scaling and switch factor for each thruster. Then the wanted thrusters has to be enabled/disabled by checking/unchecking the option \textit{enable_thrusteri}. To enable tests change the test signal from off $\rightarrow$ on.    
 
 \subsection{Displaying the continuous plots}
-Displaying plots in rqt is enabled by Plugins $\rightarrow$ Visualization $\rightarrow$ Plot. In the plot plugin plot data by choosing topics in the topic field. The active topics can be seen in the command line by running 
+Displaying plots in rqt is enabled by Plugins $\rightarrow$ Visualization $\rightarrow$ Plot. In the plot plugin, data can be plotted by choosing topics in the topic field this is shown in \Figureref{fig:contplot}. The active topics can be seen in the command line by running 
 \begin{lstlisting}
 rostopic list
 \end{lstlisting}
+\begin{figure}
+\centering
+\begin{tikzpicture}
+    \node[anchor=south west,inner sep=0] (image) at (0,0) {\includegraphics[trim={0cm 0cm 0cm 0.8cm},clip,width=0.9\textwidth]{contplot}};
+    \begin{scope}[x={(image.south east)},y={(image.north west)}]
+        \draw[red,ultra thick,rounded corners] (0.35,0.91) rectangle (0.67,0.96);
+    \end{scope}
+\end{tikzpicture}
+\caption{The topic field where the specification of what data should be plotted is circled in red. The green plus adds data to be plotted and the red minus removes data from the graph.}
+\label{fig:contplot}
+\end{figure}
+
 For multiarray messages an extra \textit{\textbackslash data} field has to be added to the topic. Data is then accessed by indexing with hard brackets. 
 \begin{example}
-Plot the data with index 0 in the multiarray message on topics \textit{/rovio/imu/data}. Type /rovio/imu/data/data[0] in the into the topic field and press the green plus.  
+Plot the data with index 1 in the multiarray message on topics \textit{/rovio/imu/data}. Type /rovio/imu/data/data[1] in the into the topic field and press the green plus.  
 \end{example}
 
 \subsection{\abbrLED lights on the HKPilot}
@@ -69,30 +83,59 @@ There are several different \abbrLED lights on the HKPilot Mega 2.7, \Tableref{t
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{New Parameter Estimation and New Controllers}
 
+\subsection{New Parameter Estimation}
+
 \subsection{New Controllers}
-To implement a new controller open the Simulink file Controller.slx. 
+To implement a new controller open the Simulink file Controller.slx. Construct the controller in a suitable location. Then expand the switch that chooses what controller that is used, see \Figureref{fig:controller_simulink}. Connect the new controller to the switch to enable that the controller can be chosen from dynamic reconfigure when operating the \abbrROV.
 
-
+\begin{figure}
+\centering
 \begin{tikzpicture}
     \node[anchor=south west,inner sep=0] (image) at (0,0) {\includegraphics[trim={18cm 7cm 2.5cm 9cm},clip,width=0.9\textwidth]{Controller}};
     \begin{scope}[x={(image.south east)},y={(image.north west)}]
-        \draw[red,ultra thick,rounded corners] (0.62,0.65) rectangle (0.78,0.75);
+        \draw[red,ultra thick,rounded corners] (0.20,0.48) rectangle (0.28,0.75);
     \end{scope}
-    \caption{}
-    \label{fig:Controller}
 \end{tikzpicture}
-
-\subsection{New Parameter Estimation}
+    \caption{When implementing new controllers in the control node the red marked switch has to be expanded. The new controller ought to be connected to the new connector for enabling the usage of the controller.}
+    \label{fig:controller_simulink}
+\end{figure}
 
 \subsection{Code Generation of the Controller Node}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Known issues and troubleshooting}
+This sections brings up some of the known issues and how to solve them. Some general debugging and troubleshooting is also brought up.
 
-\subsection{\abbrROS debugging}
+\subsection{Calibration of Sensors}
+If drift or bias is noted in the sensor fusion or in the raw sensor reading it could be due to bad calibration of the sensors.
+Calibration of the gyroscope is done by
+\begin{lstlisting}
+rostopic pub --once /rovio/gyro/calibrate_offsets std_msgs/Bool true
+\end{lstlisting}
+The calibration of the accelerometer is done by running
+\begin{lstlisting}
+rostopic pub --once /rovio/accelerometer/calibrate_offsets std_msgs/Bool true
+\end{lstlisting}
+and following the instructions that shows up.
+Calibration of the magnetometer is done by the command
+\begin{lstlisting}
+rostopic pub --once /rovio/magnetometer/calibrate_offsets std_msgs/Bool true
+\end{lstlisting}
+and following the commands that shows up.
+For setting the magnetic field in the sensor fusion run 
+\begin{lstlisting}
+./calibratemag.sh
+\end{lstlisting}
 
-\subsection{Check Ethernet connection}
+\subsection{\abbrROS Debugging}
+Debugging \abbrROS nodes can be done by listening on \abbrROS messages. This is done by 
+\begin{lstlisting}
+rostopic echo /example/topic
+\end{lstlisting}
+In the nodes several different log messages can be generated for example by \textit{ROS\_INFO} and \textit{ROS\_DEBUG}.
+
+\subsection{Check Ethernet Connection}
 It is assumed that the setup from \Appref{app:dependencies} is done. To check the Ethernet connection from the \abbrROV to the workstation or the other way around do
 \begin{lstlisting}
 #From the ROV to the workstation
@@ -106,12 +149,79 @@ ifconfig
 \end{lstlisting}
 The output at eth0 ought to contain the correct \abbrIP. Otherwise the setup from the \Appref{app:dependencies} has to revisited.
 
-\subsection{One or several thrusters are unresponsive}
+\subsection{One or Several Thrusters Are Unresponsive}\label{subsec:unresponsive}
 To check for unresponsive thrusters run the following commands 
 \begin{lstlisting}
 rostopic pub --once /rovio/thrusters_enable std_msgs/Bool true
 ./thrusterTest.sh
 \end{lstlisting}
-The thruster test will run the thrusters at a minimal torque in incremental order. If the one or several thrusters are unresponsive check that the thrusters are connected according to \Sectionref{sec:wiring}. If all thrusters are unresponsive check that the HKPilot Mega 2.7 and the Raspberry has power and connected to each other. 
+The thruster test will run the thrusters at a minimal torque in incremental order. If the one or several thrusters are unresponsive check that the thrusters are connected according to \Sectionref{sec:wiring}. If all thrusters are unresponsive check that the HKPilot Mega 2.7 and the Raspberry has power and connected to each other. Note that if the \abbrROV is disarmed no control signals will be sent to the thrusters.
 
-\subsection{Checking and changing polarity of thrusters}
+\subsection{Checking and changing rotation of thrusters}
+The rotation of thrusters are important due to the moments they create. Thus are two thruster pairs counter-rotating. For checking the rotation of the thrusters the script mentioned in \Subsectionref{subsec:unresponsive} can be run. \Figureref{fig:thrusterRotation12} - \Figureref{fig:thrusterRotation6} shows how the different thrusters should rotate when supplied with a positive control signal. If one or more thrusters are rotating in the wrong direction, change the order the corresponding thruster cables are connected. 
+
+\begin{figure}
+\centering
+\begin{tikzpicture}        zb = -0.05/2;
+        Kp = -0.5/2;
+        Kp_dot = -1/10;
+        Kp_abs_p = -1/10;
+        Mq = -0.5;
+        Mq_dot = -1/10;
+        Mq_abs_q = -1/10;
+        Nr = -0.5;
+        Nr_dot = -1/10;
+        Nr_abs_r = -1/10;
+        Ix = 0.5;
+        Iy = 0.5;
+        Iz = 0.5;
+        Ix_Kp_dot = Ix - Kp_dot;
+        Iy_Mq_dot = Iy - Mq_dot;
+        Iz_Nr_dot = Iz - Nr_dot;
+
+    \node[anchor=south west,inner sep=0] (image) at (0,0) {\includegraphics[trim={0cm 0cm 0cm 0cm},clip,width=0.9\textwidth]{thrusterRotation12}};
+    \begin{scope}[x={(image.south east)},y={(image.north west)}]
+        \draw[->,red,ultra thick,rounded corners] (0.28,0.205) arc (-30:30:0.2);
+        \draw[->,red,ultra thick,rounded corners] (0.78,0.205) arc (210:150:0.2);
+    \end{scope}
+\end{tikzpicture}
+    \caption{The arrows indicate the rotational direction of thruster 1 and thruster 2 when supplying a positive control signal.}
+    \label{fig:thrusterRotation12}
+\end{figure}
+
+\begin{figure}
+\centering
+\begin{tikzpicture}
+    \node[anchor=south west,inner sep=0] (image) at (0,0) {\includegraphics[trim={0cm 0cm 0cm 4cm},clip,width=0.9\textwidth]{thrusterRotation34}};
+    \begin{scope}[x={(image.south east)},y={(image.north west)}]
+        \draw[->,red,ultra thick,rounded corners] (0.24,0.405) arc (-30:30:0.2);
+        \draw[->,red,ultra thick,rounded corners] (0.74,0.405) arc (210:150:0.2);
+    \end{scope}
+\end{tikzpicture}
+    \caption{The arrows indicate the rotational direction of thruster 3 and thruster 4 when supplying a positive control signal.}
+    \label{fig:thrusterRotation34}
+\end{figure}
+
+\begin{figure}
+\centering
+\begin{tikzpicture}
+    \node[anchor=south west,inner sep=0] (image) at (0,0) {\includegraphics[trim={0cm 0cm 0cm 14cm},clip,width=0.9\textwidth]{thrusterRotation5}};
+    \begin{scope}[x={(image.south east)},y={(image.north west)}]
+        \draw[->,red,ultra thick,rounded corners] (0.44,0.445) arc (210:150:0.2);
+    \end{scope}
+\end{tikzpicture}
+    \caption{The arrows indicate the rotational direction of thruster 5 when supplying a positive control signal.}
+    \label{fig:thrusterRotation5}
+\end{figure}
+
+\begin{figure}
+\centering
+\begin{tikzpicture}
+    \node[anchor=south west,inner sep=0] (image) at (0,0) {\includegraphics[trim={0cm 0cm 0cm 9cm},clip,width=0.9\textwidth]{thrusterRotation6}};
+    \begin{scope}[x={(image.south east)},y={(image.north west)}]
+        \draw[->,red,ultra thick,rounded corners] (0.40,0.45) arc (210:150:0.2);
+    \end{scope}
+\end{tikzpicture}
+    \caption{The arrows indicate the rotational direction of thruster 6 when supplying a positive control signal.}
+    \label{fig:thrusterRotation6}
+\end{figure}

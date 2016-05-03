@@ -20,22 +20,22 @@ if isempty(files)
     lz6 = 0.11;
     
     % Parameters that will be estimated
-    %     zb = -0.05/2;
-    %     Kp = -0.5/2;
-    %     Kp_dot = -1/10;
-    %     Kp_abs_p = -1/10;
-    %     Mq = -0.5;
-    %     Mq_dot = -1/10;
-    %     Mq_abs_q = -1/10;
-    %     Nr = -0.5;
-    %     Nr_dot = -1/10;
-    %     Nr_abs_r = -1/10;
-    %     Ix = 0.5;
-    %     Iy = 0.5;
-    %     Iz = 0.5;
-    %     Ix_Kp_dot = Ix - Kp_dot;
-    %     Iy_Mq_dot = Iy - Mq_dot;
-    %     Iz_Nr_dot = Iz - Nr_dot;
+        zb = -0.05/2;
+        Kp = -1;
+        Kp_dot = -1;
+        Kp_abs_p = -1;
+        Mq = -1;
+        Mq_dot = -1;
+        Mq_abs_q = -1;
+        Nr = -1;
+        Nr_dot = -1;
+        Nr_abs_r = -1;
+        Ix = 0.5;
+        Iy = 0.5;
+        Iz = 0.5;
+        Ix_Kp_dot = Ix - Kp_dot;
+        Iy_Mq_dot = Iy - Mq_dot;
+        Iz_Nr_dot = Iz - Nr_dot;
     
     %From ekf with gv
 %     zb = -0.039;
@@ -56,22 +56,51 @@ if isempty(files)
 %     Iz_Nr_dot = 1.30;
     
     %From ekf without gv
-    zb = -0.0355;
-    Kp = -0.88;
-    Kp_dot = -0.95;
-    Kp_abs_p = -0.53;
-    Mq = -1.03;
-    Mq_dot = -1.02;
-    Mq_abs_q = -0.015;
-    Nr = -1.11;
-    Nr_dot = -1.02;
-    Nr_abs_r = -1.10;
-    Ix = 0.95;
-    Iy = 1.02;
-    Iz = 1.02;
-    Ix_Kp_dot = 1.18;
-    Iy_Mq_dot = 0.69;
-    Iz_Nr_dot = 1.9;
+%     zb = -0.0355;
+%     Kp = -0.88;
+%     Kp_dot = -0.95;
+%     Kp_abs_p = -0.53;
+%     Mq = -1.03;
+%     Mq_dot = -1.02;
+%     Mq_abs_q = -0.015;
+%     Nr = -1.11;
+%     Nr_dot = -1.02;
+%     Nr_abs_r = -1.10;
+%     Ix = 0.95;
+%     Iy = 1.02;
+%     Iz = 1.02;
+%     Ix_Kp_dot = 1.18;
+%     Iy_Mq_dot = 0.69;
+%     Iz_Nr_dot = 1.9;
+    
+  % Från without_state   
+%     zb = -0.017858;
+%     Kp = -1.3289;
+%     Kp_dot = -0.18608; 
+%     Kp_abs_p = -0.020905;    
+%     Mq = -1.1199;
+%     Mq_dot = -0.28544;
+%     Mq_abs_q = -0.14053;
+%     Nr = -2.7942;
+%     Nr_dot = -0.36513;     
+%     Nr_abs_r = -0.72576;   
+%     Ix_Kp_dot = 0.33337;    
+%     Iy_Mq_dot = 0.40395;     
+%     Iz_Nr_dot = 0.84831;
+    
+%     zb = -0.017851;
+%     Kp = -1.3954;
+%     Kp_dot = -0.18608;       
+%     Kp_abs_p = -0.016327;       
+%     Mq = -1.163;       
+%     Mq_dot = -0.28544;       
+%     Mq_abs_q = -0.12377;       
+%     Nr =  -4.4632;       
+%     Nr_dot = -0.36513;       
+%     Nr_abs_r = -2.1633;       
+%     Ix_Kp_dot = 0.33593;       
+%     Iy_Mq_dot = 0.38822;       
+%     Iz_Nr_dot = 0.84831;      
     
     Parameters= [...
         m; g; rho; V; lx1; ly1; ly2; lx2; ly3; lx5; ly4;

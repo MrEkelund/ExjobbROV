@@ -5,7 +5,7 @@ LASTN = maxNumCompThreads(4);
 estimation_mode = 'AllSuperCong_c';
 All_filepath = 'All0418';
 simulation = 0;
-plotting = 1;
+plotting = 0;
 detrend_enable = 1;
 resampling_fs = 50;
 load('rtau.mat') 
@@ -31,7 +31,7 @@ opt.SearchOption.MaxIter = 100;
 %  w = diag([100 100 100 50 50 50]);
 opt.OutputWeight = 'noise';
 % opt.Outputweight = w;
-opt.Advanced.ErrorThreshold = 1.3;
+opt.Advanced.ErrorThreshold = 1.6;
 
 tic
 All_estimation = nlgreyest(All_data, All_nonlinear_greybox_model,opt);
