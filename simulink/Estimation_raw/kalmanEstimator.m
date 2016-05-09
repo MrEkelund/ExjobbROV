@@ -1,11 +1,8 @@
-%% load data set
-fs= 50;
-Ts = 1/fs;
-data = loadAll0418(0,1/Ts);
+
 %%
-for ab=1:1
+for ab=1:2
     display(sprintf('Iteration number %i',ab))
-    for k=1:4%length(data.exp)
+    for k=1:5%length(data.exp)
         exp = getexp(data,k);
         tau = exp.InputData;
         measurements = exp.OutputData';
@@ -17,14 +14,15 @@ for ab=1:1
         mag_d = measurements(9,1);
         
         % Set initial variables
-        Q = blkdiag(10*eye(4),10*eye(3),0.001*eye(16));
-        R = blkdiag(0.000001*eye(3),0.0001*eye(3),10*eye(3));
-        state = zeros(23,2*length(measurements));
+        Q = blkdiag(10*eye(4),10*eye(3),0.00000001*eye(3),0.001*eye(16));
+        R = blkdiag(1*eye(3),0.0001*eye(3),10*eye(3));
+        state = zeros(26,2*length(measurements));
         
         % First run variables
-        nu =  [0;0;0];
         eta = [1;0;0;0];
-        state(1:7,1)=[eta;nu];
+        nu =  [0;0;0];
+        bias = [0;0;0];
+        state(1:10,1)=[eta;nu;bias];
         if (k==1 && ab==1)
             zb = -0.05;
             Kp = -1;
@@ -42,15 +40,15 @@ for ab=1:1
             Ix_Kp_dot = Ix - Kp_dot;
             Iy_Mq_dot = Iy - Mq_dot;
             Iz_Nr_dot = Iz - Nr_dot;
-            state(8:end,1) =... %EstimatedParams;
+            state(11:end,1) =... %EstimatedParams;
                 [zb; Kp; Kp_dot; Kp_abs_p; Mq;...
                 Mq_dot; Mq_abs_q; Nr; Nr_dot; Nr_abs_r;...
                 Ix; Iy; Iz; Ix_Kp_dot; Iy_Mq_dot; Iz_Nr_dot];
-            P = blkdiag(10*eye(7),0.01*eye(16));
+            P = blkdiag(10*eye(7),0.0000001*eye(3),0.01*eye(16));
         elseif (k==1 &&ab~=1)
-            state(8:end,1) = params(:,k);
+            state(11:end,1) = params(:,k);
         else
-            state(8:end,1) = params(:,k-1);
+            state(11:end,1) = params(:,k-1);
         end
         
         %display(sprintf('Data set number %i',k))
@@ -65,7 +63,7 @@ for ab=1:1
             innovation=measurements(:,i) - h;
             S=H*P*H.'+ R;
             
-            Sigma = 50000*ones(1,9);
+            Sigma = 0.05*ones(1,9);
             [innovation,H,S] = outlierReject(innovation,H,S,Sigma);
             KalmanGain=P*H.'/S;
             
@@ -80,7 +78,7 @@ for ab=1:1
             P = F*P*F.' + Q;%Gv*Q*Gv.'
             j=j+1;
         end
-        params(:,k) = state(8:end,end);
+        params(:,k) = state(11:end,end);
     end
 end
 
@@ -106,7 +104,7 @@ if(paramsOK)
         valid = getexp(data,k);
         tau_valid = valid.InputData;
         y_valid = valid.outputdata;
-        initialCondition = [1;0;0;0;y_valid(1:3,1)];
+        initialCondition = [1;0;0;0;y_valid(1,1:3)'];
         tend= (length(tau_valid)-1)/fs;
         t=(0:1/fs:tend);
         load_system('quatSim1');
