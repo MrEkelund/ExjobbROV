@@ -83,7 +83,7 @@ Three different tests was conducted
 \end{description}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Parameter Estimation from Angular Velocities}
+\section{Parameter Estimation from Angular Velocities} \label{sec:ParameterEstimationAng}
 Due to poorly estimated angles as can be seen in \Figureref{fig:integratedAngleVelocities}, the angles was not suited to be used in the parameter estimation. Thus was the parameters estimated using the angular velocities as measurements. This method was used when the sensor fusion algorithms described in \Sectionref{sec:angularVelocityKalman} was used.
 
 \begin{figure}[tbp]
@@ -128,7 +128,7 @@ The estimate of the parameters in \eqref{eq:r_dot_simple} and \eqref{eq:pq_dot_s
 \end{figure}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Extended Kalman filter estimation}\index{EKF@\abbrEKF!abbreviation}
-A \abbrEKF was also used to estimate parameters of the \abbrROV. A congregated model from chapter \ref{cha:modelling} was used to model $\eta$ and $\nu$. Measurement equations were taken from chapter \ref{cha:fusion}. Each model parameter was modelled as a state using a constant position motion model. The entire motion model used in the filter was discretised using the Euler forward discretisation method. The complete discrete model is
+A \abbrEKF was also used to estimate parameters of the \abbrROV. The congregated model from section\Sectionref{sec:ParameterEstimationAng} was used to model $\eta$ and $\nu$. Measurement equations were taken from section chapter \Chapterref{cha:fusion}. Each model parameter was modelled as a state using a constant position motion model. The entire motion model used in the filter was discretised using the Euler forward discretisation method. The complete discrete model is
 \begin{equation}
 \label{eq:motionModelKalman}
 \begin{pmatrix}
@@ -150,7 +150,7 @@ v_{\textrm{bias}}\\
 v_{\Theta}
 \end{pmatrix}
 \end{equation}.
-Here \Theta is a vector containing the parameters that are to be estimated. $v$ is model noise, and is assumed to enter each term directly. This will result in a diagonal $Q$-matrix when implementing the model in the \abbrEKF. $J(\eta)$ is a angular velocity transformation matrix using the quaternion form of $\eta$ and is defined in the following way
+Here $\Theta$ is a vector containing the parameters that are to be estimated. $v$ is model noise, and is assumed to enter each term directly. This will result in a diagonal $Q$-matrix when implementing the model in the \abbrEKF. $J(\eta)$ is a angular velocity transformation matrix using the quaternion form of $\eta$ and is defined in the following way
 %\begin{equation}
 %J(\eta) = \begin{pmatrix}
 %-\QuatI  & -\QuatII  & -\QuatIII \\
@@ -162,8 +162,8 @@ Here \Theta is a vector containing the parameters that are to be estimated. $v$ 
 
 \todo{Write about outlier rejection. Ask Hendeby about implementation.}
 To increase the performance of the filter a method for outlier detection and rejection was implemented.
-The outlier rejection is based on the assumption that the normalised innovation should be $\Xi^2$ distributed \citep{sensorfusion}. This is used in the \abbrEKF using the following algorithm:
-\begin{algorithm}
+The outlier rejection is based on the assumption that the normalised innovation $\epsilon^T S^{-1} \epsilon \sim \chi_{n}^{2}$ where $n$ is the number of measurements. To check the validity of a single measurement the previous asumption gives that $\epsilon_i^{2}/ S_{i,i} \sim \chi_{1}^{2}$ \citep{sensorfusion}. This is used in the \abbrEKF using the following algorithm:
+\begin{algorithm}[H]
 \label{alg:outlier}
 \caption{The outlier rejection algorithm used during the measurement update step of the parameter estimation \abbrEKF.}
 \textbf{1.} Calculate $S=H P H^T + R$ and the innovation $\epsilon$.
@@ -172,23 +172,22 @@ The outlier rejection is based on the assumption that the normalised innovation 
 \begin{equation}
 \epsilon_{i}^{2} > \sigma_i S_{i,i}
 \end{equation}
-Sigma is a $n\times1$ dimensional design variable and $n$ is the number of measurements in the \abbrEKF
 If the expression holds true remove the $i$:th row from $\epsilon$ and the $i$:th row and column from $S$ and $H$.\\
 \textbf{3.} Proceed with the Kalman algorithm using the cropped $H$, $S$ and $\epsilon$.
 \end{algorithm}
+Here $\sigma$ is a $n\times1$ dimensional design variable and $n$ is the number of measurements that are used in the \abbrEKF. A higher value of $\sigma_i$ decreases the sensitivity of the outlier rejection on the $i$:th measurement.
 
-The filter was run on each collected data set. The final values of \hat{\Theta} from a data set were used as initial values for $\theta$ when the filter was applied on the next data set. The same was done for the covariance matrix $P$. The covariance given from the first run was set as the initial covariance when the filter was applied on subsequent data set.
-
-At completion the parameters are entered in a simulator which is feed with the control signals from each data set. The simulators output was then compared with the original data. The result from a typical estimation can be viewed in figure \ref{fig:} .
+The filter was run on each collected data set. The final values of $\hat{\Theta}$ from a data set were used as initial values for $\hat{\theta}$ when the filter was applied on the next data set. The same was done for the covariance matrix $P$. The final covariance from an erlier run was set as the initial covariance when the filter was applied on subsequent data set.
+At completion the parameters are entered in a simulator which is feed with the control signals from each data set. The simulated  output was then compared with the original data. The result from a typical estimation can be viewed in figure \ref{fig:KalmanCompare}.
 \begin{figure}[tbp]
   \centering
-  \subfloat[][\label{fig:velocityCompareCongp}Comparison between a simulated model without reparametrisation and validation data in the \rollAngle-direction.fil]{\includegraphics[width=0.5\textwidth]{velocityCompareCongp}}
+  \subfloat[][\label{fig:KalmanCompareP}Comparison between a simulated model and validation data in $p$.]{\includegraphics[width=0.5\textwidth]{kalmanEstimatorP}}
   \qquad
-  \subfloat[][\label{fig:velocityCompareCongq}Comparison between a simulated model without reparametrisation and validation data in the \pitchAngle-direction.]{\includegraphics[width=0.5\textwidth]{velocityCompareCongq}}
+  \subfloat[][\label{fig:KalmanCompareQ}Comparison between a simulated model and validation data in $q$.]{\includegraphics[width=0.5\textwidth]{kalmanEstimatorQ}}
   \\
-  \subfloat[][\label{fig:velocityCompareCongr}Comparison between a simulated model without reparametrisation and validation data in the \yawAngle-direction.]{\includegraphics[width=0.5\textwidth]{velocityCompareCongr}}
-  \caption{\label{fig:velocityCompareCong}%
-    Comparison of simulation of the attitude model against validation data.}
+  \subfloat[][\label{fig:KalmanCompareR}Comparison between a simulated model and validation data in $r$.]{\includegraphics[width=0.5\textwidth]{kalmanEstimatorR}}
+  \caption{\label{fig:KalmanCompare}%
+    Comparison of simulation of $\nu$ against validation data. Goodness of fit statistic can be viewed at the top of each sub-figure.}
 \end{figure}
 
 
