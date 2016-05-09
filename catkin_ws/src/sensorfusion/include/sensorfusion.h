@@ -77,8 +77,8 @@ private:
   Eigen::Matrix<double, 11, 11> F; // motion model jacobian F = d/d(xn) f(x_k)*x_k or  (Fossen terms:  eta_k+1 = T(eta_k)*nu_k where state = [eta;nu;];
   Eigen::Matrix<double, 11, 11> f; // motion model matrix on form x_k+1 = f(x_k)*x_k
   Eigen::Matrix<double, 11, 7> Gv; // noise propagation
-  Eigen::Matrix<double, 7, 7> process_cov; //covariance for motion model aka. system noise.
-
+  //Eigen::Matrix<double, 7, 7> process_cov; //covariance for motion model aka. system noise.
+  Eigen::Matrix<double, 11, 11> process_cov; //covariance for motion model aka. system noise.
 //matrices for gyro measurement update
   Eigen::Matrix<double, 3, 11> H_gyro; // gyro measurement jacobian
   Eigen::Matrix<double, 3, 1> h_gyro;	// expected gyro measurement

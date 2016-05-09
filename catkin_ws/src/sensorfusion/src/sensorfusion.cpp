@@ -93,13 +93,17 @@ void Ekf::setCovGyro(){
 }
 void Ekf::setProcessCov(){
   process_cov.setZero();
-  process_cov(0,0) = config.process_cov_p;
-  process_cov(1,1) = config.process_cov_q;
-  process_cov(2,2) = config.process_cov_r;
-  process_cov(3,3) = config.process_cov_bias_p;
-  process_cov(4,4) = config.process_cov_bias_q;
-  process_cov(5,5) = config.process_cov_bias_r;
-  process_cov(6,6) = config.process_cov_d;
+  process_cov(0,0) = config.process_cov_quat_0;
+  process_cov(1,1) = config.process_cov_quat_1;
+  process_cov(2,2) = config.process_cov_quat_2;
+  process_cov(3,3) = config.process_cov_quat_3;
+  process_cov(4,4) = config.process_cov_p;
+  process_cov(5,5) = config.process_cov_q;
+  process_cov(6,6) = config.process_cov_r;
+  process_cov(7,7) = config.process_cov_bias_p;
+  process_cov(8,8) = config.process_cov_bias_q;
+  process_cov(9,9) = config.process_cov_bias_r;
+  process_cov(10,10) = config.process_cov_d;
 
 }
 void Ekf::setInitialStates(){
@@ -385,7 +389,7 @@ void Ekf::timeUpdate(){
     states = new_states;
     normQuaternions();
     //update state covariance
-    new_state_cov = F*state_cov*F.transpose() + Gv*process_cov*Gv.transpose();
+    new_state_cov = F*state_cov*F.transpose() + process_cov;//Gv*process_cov*Gv.transpose()
 	
     // symmeterize state cov for increased stability.
     state_cov = new_state_cov/2 + new_state_cov.transpose()/2;
