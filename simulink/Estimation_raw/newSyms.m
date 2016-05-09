@@ -1,6 +1,6 @@
 syms Ts n e1 e2 e3 p q r Ix Iy Iz Kp_dot Mq_dot Nr_dot Kp  Kp_abs_p Mq  Mq_abs_q...
 Nr Nr_abs_r gam zb W B ly1 lx1 ly2 lx2 ly3 ly4 lx5 lz6 f1 f2 f3 f4 f5 f6 ...
-Ix_Kp_dot Iy_Mq_dot Iz_Nr_dot g mag_n mag_e mag_d v1 v2 v3
+Ix_Kp_dot Iy_Mq_dot Iz_Nr_dot g mag_n mag_e mag_d v1 v2 v3 bias_p bias_q bias_r
 M = diag([ Ix, Iy, Iz]) - diag([Kp_dot,Mq_dot,Nr_dot]);
 nu = [p;q;r];
 eta = [n;e1;e2;e3];
@@ -89,16 +89,17 @@ eta_k_1 = collect(eta_k_1,[p q r n e1 e2 e3])
 coloured_noise_nu = noise; %% apply noise directyl on p q r dot
 coloured_noise_eta = T_eta*Ts/2*coloured_noise_nu;
 coloured_noise = [coloured_noise_eta;coloured_noise_nu];
-for i=1:7
-    for j=1:3
-       Gv_discrete(i,j)=Ts*diff(coloured_noise(i),noise(j));
-    end
-end
+% not used anymore! caused problems with fit!
+% for i=1:7
+%     for j=1:3
+%        Gv_discrete(i,j)=Ts*diff(coloured_noise(i),noise(j));
+%     end
+% end
  %Gv =...
  %    [Ts^3/2*T_eta;Ts*eye(3)];
- Gv_discrete=blkdiag(Gv_discrete,Ts*eye(16));
+ %Gv_discrete=blkdiag(Gv_discrete,Ts*eye(16));
 
- state = [eta; nu; zb; Kp; Kp_dot; Kp_abs_p; Mq;...
+ state = [eta; nu; bias_p; bias_q; bias_r; zb; Kp; Kp_dot; Kp_abs_p; Mq;...
      Mq_dot; Mq_abs_q; Nr; Nr_dot; Nr_abs_r;...
      Ix; Iy; Iz; Ix_Kp_dot; Iy_Mq_dot; Iz_Nr_dot];
  f = [eta_k_1;nu_k_1;state(8:end)];
@@ -113,7 +114,7 @@ end
 
 
 acc_meas = transpose(RQ)*([0; 0; -g]);
-gyro_meas = [p ; q ; r ];
+gyro_meas = [p + bias_p ; q+bias_q ; r+bias_r ];
 mag_global=[sqrt(mag_n^2 + mag_e^2);0;mag_d]; % could change to mx 0 mz and use bjord =mz bjord sin(θdip)dˆ+ bjord cos(θdip)nˆ
 mag_meas = transpose(RQ)*mag_global;
 

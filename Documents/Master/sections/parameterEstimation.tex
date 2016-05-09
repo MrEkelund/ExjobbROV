@@ -138,14 +138,69 @@ The estimate of the parameters in \eqref{eq:r_dot_simple} and \eqref{eq:pq_dot_s
     Comparison of simulation of the attitude model against validation data.}
 \end{figure}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Extended Kalman filter estimation}
-A \abbrEKF was also used to estimate parameters of the \abbrROV. A congregated model used in \Chapterref{cha:modelling} was used. Each parameter was modelled as a state using a constant position model as a motion model. The complete model can be seen in equation \ref{eq:motionModelKalman}. The Kalman filter was run on each collected data set with the result of each run used as a starting state for the subsequent run.  
+\subsection{Extended Kalman filter estimation}\index{EKF@\abbrEKF!abbreviation}
+A \abbrEKF was also used to estimate parameters of the \abbrROV. The congregated model from section\Sectionref{sec:ParameterEstimationAng} was used to model $\eta$ and $\nu$. Measurement equations were taken from section chapter \Chapterref{cha:fusion}. Each model parameter was modelled as a state using a constant position motion model. The entire motion model used in the filter was discretised using the Euler forward discretisation method. The complete discrete model is
 \begin{equation}
-%insert full motion modelfor kalman estimator here.
-\end{equation}
+\label{eq:motionModelKalman}
+\begin{pmatrix}
+\eta_{k+1}\\ 
+\nu_{k+1}\\
+bias_{k+1}\\
+\Theta_{k+1}
+\end{pmatrix} = 
+\begin{pmatrix}
+\eta_k + T_s J(\eta_k)\nu_k\\
+\nu_k\\
+bias_k\\
+\Theta_k
+\end{pmatrix}
++ \begin{pmatrix}
+v_{\eta}\\
+v_{\nu}\\
+v_{\textrm{bias}}\\
+v_{\Theta}
+\end{pmatrix}
+\end{equation}.
+Here $\Theta$ is a vector containing the parameters that are to be estimated. $v$ is model noise, and is assumed to enter each term directly. This will result in a diagonal $Q$-matrix when implementing the model in the \abbrEKF. $J(\eta)$ is a angular velocity transformation matrix using the quaternion form of $\eta$ and is defined in the following way
+%\begin{equation}
+%J(\eta) = \begin{pmatrix}
+%-\QuatI  & -\QuatII  & -\QuatIII \\
+%\QuatO   & -\QuatIII & \QuatII   \\
+%\QuatIII & \QuatO    & -\QuatI   \\ 
+%-\QuatII & \QuatI    & -\QuatO   \\ 
+%\end{pmatrix}
+%\end{equation}.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Validation}
+\todo{Write about outlier rejection. Ask Hendeby about implementation.}
+To increase the performance of the filter a method for outlier detection and rejection was implemented.
+The outlier rejection is based on the assumption that the normalised innovation $\epsilon^T S^{-1} \epsilon \sim \chi_{n}^{2}$ where $n$ is the number of measurements. To check the validity of a single measurement the previous asumption gives that $\epsilon_i^{2}/ S_{i,i} \sim \chi_{1}^{2}$ \citep{sensorfusion}. This is used in the \abbrEKF using the following algorithm:
+\begin{algorithm}[H]
+\label{alg:outlier}
+\caption{The outlier rejection algorithm used during the measurement update step of the parameter estimation \abbrEKF.}
+\textbf{1.} Calculate $S=H P H^T + R$ and the innovation $\epsilon$.
+\\
+\textbf{2.} For each row $i$ in $\epsilon$ do the comparison
+\begin{equation}
+\epsilon_{i}^{2} > \sigma_i S_{i,i}
+\end{equation}
+If the expression holds true remove the $i$:th row from $\epsilon$ and the $i$:th row and column from $S$ and $H$.\\
+\textbf{3.} Proceed with the Kalman algorithm using the cropped $H$, $S$ and $\epsilon$.
+\end{algorithm}
+Here $\sigma$ is a $n\times1$ dimensional design variable and $n$ is the number of measurements that are used in the \abbrEKF. A higher value of $\sigma_i$ decreases the sensitivity of the outlier rejection on the $i$:th measurement.
+
+The filter was run on each collected data set. The final values of $\hat{\Theta}$ from a data set were used as initial values for $\hat{\theta}$ when the filter was applied on the next data set. The same was done for the covariance matrix $P$. The final covariance from an erlier run was set as the initial covariance when the filter was applied on subsequent data set.
+At completion the parameters are entered in a simulator which is feed with the control signals from each data set. The simulated  output was then compared with the original data. The result from a typical estimation can be viewed in figure \ref{fig:KalmanCompare}.
+\begin{figure}[tbp]
+  \centering
+  \subfloat[][\label{fig:KalmanCompareP}Comparison between a simulated model and validation data in $p$.]{\includegraphics[width=0.5\textwidth]{kalmanEstimatorP}}
+  \qquad
+  \subfloat[][\label{fig:KalmanCompareQ}Comparison between a simulated model and validation data in $q$.]{\includegraphics[width=0.5\textwidth]{kalmanEstimatorQ}}
+  \\
+  \subfloat[][\label{fig:KalmanCompareR}Comparison between a simulated model and validation data in $r$.]{\includegraphics[width=0.5\textwidth]{kalmanEstimatorR}}
+  \caption{\label{fig:KalmanCompare}%
+    Comparison of simulation of $\nu$ against validation data. Goodness of fit statistic can be viewed at the top of each sub-figure.}
+\end{figure}
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -229,6 +284,8 @@ To handle noisy signals an error threshold was introduced. An error threshold me
     \otoprule%
     $m$                 & 6.621 \kilogram                    & Mass of the \abbrROV. \\            
     $g$                 & 9.82  \meter\per\second\squared    & Gravity acceleration.\\   
+    $\rho$              & 1000  \kilogram\per\meter\cubed    & Density of water.\\ 
+    $V$                 &        \meter\cubed                & Displaced volume.\\       
     
     $\distance{x}{1}$   & 0.16 \meter & Distance from \abbrCG to thruster 1 in $\xPosition$-direction.\\
     $\distance{y}{1}$   & 0.11 \meter & Distance from \abbrCG to thruster 1 in $\yPosition$-direction.\\
@@ -268,3 +325,11 @@ To handle noisy signals an error threshold was introduced. An error threshold me
     \bottomrule%
   \end{tabular}}
 \end{table}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Parameter Estimation from Angular Velocities and Linear Acceleration}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Validation}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Estimated parameters}

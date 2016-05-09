@@ -1,6 +1,6 @@
-\chapter{Sensor fusion}
+\chapter{Sensor fusion}\label{cha:fusion}
 In order to properly estimate its attitude in the global coordinate system the \abbrROV needs sensor to measure inputs from its environment.
-Unfortunately signals from sensors do not necessarily give direct information about attitude and are to some extent noisy. Smart algorithms and filters can nevertheless be used to extract and combine the information from the different sensors into a high certainty attitude estimate. The combination, or fusion, of several sensor sources into a estimate goes under the name sensor fusion. One filter that can accomplish the task of fusing different measurements and estimating states in a non-linear dynamic system is the extended Kalman filter (\abbrEKF). 
+Unfortunately signals from sensors do not necessarily give direct information about attitude and their measurements are to some extent noisy. Smart algorithms and filters can nevertheless be used to extract and combine the information from the different sensors into a high certainty attitude estimate. The combination, or fusion, of several sensor sources into a estimate goes under the name sensor fusion. One filter that can accomplish the task of fusing different measurements and estimating states in a non-linear dynamic system is the extended Kalman filter (\abbrEKF). 
 \section{Filter notation}
 To be able to understand how a filter like the extended Kalman filter works, it is important to understand the notation. In table \ref{tab:notationKalman} the notation used in this chapter is listed.
  \begin{table}[htbp]
@@ -245,12 +245,12 @@ p =  \rho g (d + \begin{pmatrix}
     0 & 0 & 1
 \end{pmatrix} R 
 \begin{pmatrix}
-x_{offset}\\
+x_{\textrm{offset}}\\
 0\\
 0
 \end{pmatrix}
 \end{equation}.
-Here $p$ is the measured pressure in pascal, $\rho$ is the density of the water, $d$ is the current depth in meters and $x_{offset}$ is the pressure sensors offset from the \abbrROV's \abbrCO in the x direction. In this case $x_{offset}$ is a negative number. A basic form of outlier rejection is implemented in the pressure sensor measurement update. The update is performed if
+Here $p$ is the measured pressure in pascal, $\rho$ is the density of the water, $d$ is the current depth in meters and $x_{\textrm{offset}}$ is the pressure sensors offset from the \abbrROV's \abbrCO in the x direction. In this case $x_{\textrm{offset}}$ is a negative number. A basic form of outlier rejection is implemented in the pressure sensor measurement update. The update is performed if
 \begin{equation}
     p > 0
 \end{equation}
