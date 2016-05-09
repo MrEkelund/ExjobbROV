@@ -2,15 +2,16 @@
 % clear;
 % close all;
 LASTN = maxNumCompThreads(4);
-estimation_mode = 'AllCong_c';
+estimation_mode = 'AllSuperCong_c';
 All_filepath = 'All0418';
-simulation = 1;
+simulation = 0;
 plotting = 0;
-detrend_enable = 0;
-resampling_fs = 100;
+detrend_enable = 1;
+resampling_fs = 50;
 load('rtau.mat') 
 initialCondition = [1 0 0 1 0 0 0].';
-parameter_variance = 0.1;
+parameter_variance = 0.2;
+output_variance = 0.3;
 
 
 [parameters, parameter_strings]= initROVParameters();
@@ -18,9 +19,9 @@ parameters = [parameters; 100;];
 parameter_strings{end+1} = 'gam';
 displayTable(parameters, parameter_strings);
 
-[All_nonlinear_greybox_model, All_data, All_val_data, initial_states] =...
+[All_nonlinear_greybox_model, All_data, All_val_data, initial_states, dist_parameters] =...
     setupEstimation(parameters, parameter_strings, estimation_mode, simulation, All_filepath,...
-    plotting, detrend_enable, resampling_fs, real_tau, initialCondition, parameter_variance);
+    plotting, detrend_enable, resampling_fs, real_tau, initialCondition, parameter_variance, output_variance);
 
 %%
 opt = nlgreyestOptions;
@@ -38,10 +39,11 @@ toc
 displayTable(parameters, parameter_strings,All_estimation)
 
 figure
-comopt = compareOptions('InitialCondition', initial_states(:,2));
+comopt = compareOptions('InitialCondition', initial_states(:,5));
 
-compare(All_val_data, All_estimation, inf,comopt);
-
+compare(getexp(All_val_data,2), All_estimation, inf,comopt);
+%%
+dist_parameters - parameters
 %%
 % temp_parameters = All_estimation.Report.Parameters.ParVector;
 % save('Allparameters.mat','temp_parameters', 'All_estimation')

@@ -1,4 +1,4 @@
-function [nonlinear_greybox_model, data, val_data, initial_states_out] = ...
+function [nonlinear_greybox_model, data, val_data, initial_states_out, temp_parameters] = ...
     setupEstimation(parameters, parameter_strings, estimation_mode, simulation,...
     filepath, plotting, detrend_enable, sampling_fs, varargin)
 %setupEstimation Setups the nonlinear model of the rov and reads data
@@ -10,7 +10,7 @@ if exist('nakeinterp1.mexa64') ~= 3
     mex('CFLAGS="\$CFLAGS -std=c99"', 'nakeinterp1.c')
 end
     
-
+temp_parameters = parameters;
 %% Read from data files
 switch simulation
     case 0 % Test
@@ -33,12 +33,8 @@ switch simulation
                 data = iddata(output_data, input_data, 1/sampling_fs);
         end
     case 1 % simulation
-        if varargin{3} ~= 0
-            temp_parameters = parameters + varargin{3}*randn(size(parameters));
-        else
-            temp_parmeters = parameters;
-        end
-        [data, initial_states_and_mag] = simulateROV(temp_parameters, sampling_fs, varargin{1}, varargin{2});
+        temp_parameters = parameters + [zeros(12,1); varargin{3}*randn(size(parameters(13:28))); 0];
+        [data, initial_states_and_mag] = simulateROV(temp_parameters , sampling_fs, varargin{1}, varargin{2}, varargin{4});
     otherwise
         error('Simulation can only be 0 or 1');
 end
@@ -56,7 +52,7 @@ if ne == 1
 end
 
 switch estimation_mode 
-    case {'All','AllCong', 'AllCong_c','AllCong_disc_c'}
+    case {'All','AllCong', 'AllCong_c','AllCong_disc_c','AllSuperCong_c'}
         if exist('rovMotionModelAllCong_c.mexa64') ~= 3
             disp('rovMotionModelAllCong_c.mexa64 not found...Compiling')
             mex rovMotionModelAllCong_c.c
@@ -153,6 +149,7 @@ roll_pitch_parameters = [13:19, 23, 24];
 roll_pitch_cong_parameters = [13:19, 26, 27];
 all_parameters = [13:25];
 all_cong_parameters = [13:28];
+all_super_cong_parameters = [13:14, 16:17, 19:20, 22, 26:28];
 % Sets which parameters that will be estimated  
 switch estimation_mode
     case 'Yaw'
@@ -173,6 +170,9 @@ switch estimation_mode
     case {'AllCong', 'AllCong_c','AllCong_disc_c'}
         disp('All rotational dynamics test')
         fixed_parameters = setdiff(fixed_parameters, all_cong_parameters);
+    case 'AllSuperCong_c'
+        disp('All rotational dynamics test')
+        fixed_parameters = setdiff(fixed_parameters, all_super_cong_parameters);
     otherwise
         error('Unkown test: %s', estimation_mode);
 end

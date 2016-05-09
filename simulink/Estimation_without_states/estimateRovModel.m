@@ -133,7 +133,7 @@ estimation_mode = 'AllCong';
 All_filepath = fullfile('bag','test1_all_2016-04-04-15-23-32.bag');
 % All_filepath = fullfile('bag','test2_all_2016-04-04-15-27-58.bag');
 
-All_filepath = 'All0418';
+All_filepath = 'All0404';
 
 [parameters, parameter_strings]= initROVParameters();
 displayTable(parameters, parameter_strings);
@@ -150,7 +150,7 @@ opt = nlgreyestOptions;
 opt.Display = 'on';
 opt.SearchOption.MaxIter = 50;
 tic
-All_estimation = nlgreyest(All_data, All_nonlinear_greybox_model,opt)
+All_estimation = nlgreyest(All_data, All_nonlinear_greybox_model,opt);
 %All_estimation = pem(All_data, All_nonlinear_greybox_model,opt);
 toc
 displayTable(parameters, parameter_strings,All_estimation)

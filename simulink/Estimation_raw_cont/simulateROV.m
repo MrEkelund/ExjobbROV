@@ -1,4 +1,4 @@
-function [data, initialCondition] = simulateROV(parameters, sampling_fs, tau, initialCondition)
+function [data, initialCondition] = simulateROV(parameters, sampling_fs, tau, initialCondition, output_variance)
 %UNTITLED2 Summary of this function goes here
 %   input - parameters: 
 %   input - sampling_fs:
@@ -35,6 +35,6 @@ hws = get_param(bdroot, 'modelworkspace');
 hws.assignin('tauSim', tauSim);
 y=sim('quatSim',configSet);
 simOut=y.get('yout');
-data = iddata(simOut(:,1:9),tau, Ts);
+data = iddata(simOut(:,1:9)+output_variance*rand(size(simOut,1),9),tau, Ts);
 end
 
