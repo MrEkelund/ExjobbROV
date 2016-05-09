@@ -1,8 +1,10 @@
-
+fs= 100;
+Ts = 1/fs;
+data = loadAll0418(0,1/Ts);
 %%
 for ab=1:2
     display(sprintf('Iteration number %i',ab))
-    for k=1:5%length(data.exp)
+    for k=1:4%length(data.exp)
         exp = getexp(data,k);
         tau = exp.InputData;
         measurements = exp.OutputData';
@@ -15,7 +17,7 @@ for ab=1:2
         
         % Set initial variables
         Q = blkdiag(10*eye(4),10*eye(3),0.00000001*eye(3),0.001*eye(16));
-        R = blkdiag(1*eye(3),0.0001*eye(3),10*eye(3));
+        R = blkdiag(0.000001*eye(3),0.0001*eye(3),10*eye(3));
         state = zeros(26,2*length(measurements));
         
         % First run variables
@@ -134,18 +136,30 @@ if(paramsOK)
         sim_data=y.get('yout');
         
         % plot
-        subplot(length(data.exp),3,3*k-2)
-        plot(t,[sim_data(:,1),y_valid(:,1)])
+        %subplot(length(data.exp),3,3*k-2)
+        figure(3*k-2)
+        plot(t,[sim_data(:,1),y_valid(:,1)],'LineWidth',2)
+        xlabel('Time [s]','FontSize',30);
+        ylabel('Angular velocity [rad/s]','FontSize',30);
+        legend({'Simulated data','Validation data'},'FontSize',30)
         str = sprintf('Data set %i p: Fit %f %%',k,100*goodnessOfFit(sim_data(:,1),y_valid(:,1),'NMSE'));
-        title(str)
-        subplot(length(data.exp),3,3*k-1)
-        plot(t,[sim_data(:,2),y_valid(:,2)])
+        title(str,'FontSize',30)
+        %subplot(length(data.exp),3,3*k-1)
+        figure(3*k-1)
+        plot(t,[sim_data(:,2),y_valid(:,2)],'LineWidth',2)
+        xlabel('Time [s]','FontSize',30);
+        ylabel('Angular velocity [rad/s]','FontSize',30);
+        legend({'Simulated data','Validation data'},'FontSize',30)
         str = sprintf('Data set %i q: Fit %f %%',k,100*goodnessOfFit(sim_data(:,2),y_valid(:,2),'NMSE'));
-        title(str)
-        subplot(length(data.exp),3,3*k)
-        plot(t,[sim_data(:,3),y_valid(:,3)])
+        title(str,'FontSize',30)
+        %subplot(length(data.exp),3,3*k)
+        figure(3*k)
+        plot(t,[sim_data(:,3),y_valid(:,3)],'LineWidth',2)
+        xlabel('Time [s]','FontSize',30);
+        ylabel('Angular velocity [rad/s]','FontSize',30);
+        legend({'Simulated data','Validation data'},'FontSize',30)
         str = sprintf('Data set %i r: Fit %f %%',k,100*goodnessOfFit(sim_data(:,3),y_valid(:,3),'NMSE'));
-        title(str)
+        title(str,'FontSize',30)
         
     end
 end
