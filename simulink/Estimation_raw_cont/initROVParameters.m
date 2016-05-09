@@ -20,7 +20,7 @@ if isempty(files)
     lz6 = 0.11;
     
     % Parameters that will be estimated
-        zb = -0.05/2;
+        zb = -0.05/5;
         Kp = -1;
         Kp_dot = -1;
         Kp_abs_p = -1;

@@ -1,7 +1,7 @@
 \chapter{Operation of the \abbrROV} \label{app:operation}
 This Chapter describes normal operation of the \abbrROV, how to implement new controllers and some tips for troubleshooting.
 
-\section{Wiring} \label{sec_wiring}
+\section{Wiring} \label{sec:wiring}
 \todo[inline]{Write about how wire the \abbrROV} 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Start up of the \abbrROV}
@@ -37,7 +37,7 @@ To stop recording data press the red circle and close Bag by Running $\rightarro
 and follow the instructions.
 
 \subsection{Sending test signals}
-For sending telegraph signals to the \abbrROV the logging script in \Sectionref{sec:logging} can be used or dynamic reconfigure can be used. Dynamic reconfigure can be used from the command line or rqt. In rqt start dynamic reconfigure by Plugins $\rightarrow$ Configuration $\rightarrow$ Dynamic Reconfigure. When the dynamic reconfigure box is shown choose matlab\_controller then check telegraph\_signals. In the submenu choose the scaling and switch factor for each thruster. Then the wanted thrusters has to be enabled/disabled by checking/unchecking the option \textit{enable_thrusteri}. To enable tests change the test signal from off $\rightarrow$ on.    
+For sending telegraph signals to the \abbrROV the logging script in \Sectionref{sec:logging} can be used or dynamic reconfigure can be used. Dynamic reconfigure can be used from the command line or rqt. In rqt start dynamic reconfigure by Plugins $\rightarrow$ Configuration $\rightarrow$ Dynamic Reconfigure. When the dynamic reconfigure box is shown choose matlab\_controller then check telegraph\_signals. In the submenu choose the scaling and switch factor for each thruster. Then the wanted thrusters has to be enabled/disabled by checking/unchecking the option \textit{enable\_thrusteri}. To enable tests change the test signal from off $\rightarrow$ on.    
 
 \subsection{Displaying the continuous plots}
 Displaying plots in rqt is enabled by Plugins $\rightarrow$ Visualization $\rightarrow$ Plot. In the plot plugin, data can be plotted by choosing topics in the topic field this is shown in \Figureref{fig:contplot}. The active topics can be seen in the command line by running 
@@ -162,23 +162,7 @@ The rotation of thrusters are important due to the moments they create. Thus are
 
 \begin{figure}
 \centering
-\begin{tikzpicture}        zb = -0.05/2;
-        Kp = -0.5/2;
-        Kp_dot = -1/10;
-        Kp_abs_p = -1/10;
-        Mq = -0.5;
-        Mq_dot = -1/10;
-        Mq_abs_q = -1/10;
-        Nr = -0.5;
-        Nr_dot = -1/10;
-        Nr_abs_r = -1/10;
-        Ix = 0.5;
-        Iy = 0.5;
-        Iz = 0.5;
-        Ix_Kp_dot = Ix - Kp_dot;
-        Iy_Mq_dot = Iy - Mq_dot;
-        Iz_Nr_dot = Iz - Nr_dot;
-
+\begin{tikzpicture}
     \node[anchor=south west,inner sep=0] (image) at (0,0) {\includegraphics[trim={0cm 0cm 0cm 0cm},clip,width=0.9\textwidth]{thrusterRotation12}};
     \begin{scope}[x={(image.south east)},y={(image.north west)}]
         \draw[->,red,ultra thick,rounded corners] (0.28,0.205) arc (-30:30:0.2);
