@@ -1,7 +1,7 @@
 \chapter{Parameter Estimation} \label{cha:parameterEstimation}
-A central part in modelling is parameter estimation and it's often underestimated. If the parameters in the model isn't well estimated several problems arise when trying to synthesise model-based controllers. If a systems dynamics are completely unknown, a black box method is used \textit{i.e.} general equations are fitted to test data. When a system can be completely modelled analytically for example via Newtons laws its called white box modelling. In our case the model of the system is known but several parameters are unknown, that is called gray box modelling. 
+A central part in modelling is parameter estimation and it is often underestimated. If the parameters in the model isn't well estimated several problems arise when trying to synthesise model-based controllers. If a systems dynamics are completely unknown, a black box method is used \textit{i.e.} general equations are fitted to test data. When a system can be completely modelled analytically for example via Newtons laws its called white box modelling. In our case the model of the system is known but several parameters are unknown, that is called gray box modelling. 
 
-\todo{Write about kinetics in \Chapterref{cha:modelling}}
+\todo[inline]{Write about kinetics in \Chapterref{cha:modelling}}
 
 To estimate the unknown parameters in the \abbrROV model described in \Chapterref{cha:modelling} different methods can be used. Relations between states can be used to get better estimates of parameters for example if the angles of the \abbrROV are estimated well the relations
 \begin{align}
@@ -12,7 +12,7 @@ To estimate the unknown parameters in the \abbrROV model described in \Chapterre
 \end{align}
 from \Chapterref{cha:modelling} could be used. Another aspect to consider when estimating model parameters is what to use as inputs and outputs. Inputs to a system is considered to be true signals, thus if they are noisy or inaccurate it can effect the estimation negatively. Outputs from a system are measurements, thus are they considered to be somewhat uncertain. The attitude model structure from \Chapterref{cha:modelling} is reduced to 
 \begin{multline} \label{eq:p_dotWithoutTranslation}
-\dot{p} = \frac{\thrusterfun{1} \distance{y}{1} - \thrusterfun{2} \distance{y}{2} + \thrusterfun{6} \distance{z}{6}}{\Ix - \Kpdot} + \frac{p (Kp + \Kpabsp \abs{p})}{\Ix - \Kpdot} + \frac{-\Mqdot q r}{\Ix - \Kpdot} + \frac{\Nrdot q r}{\Ix - \Kpdot} +\\
+\dot{p} = \frac{\thrusterfun{1} \distance{y}{1} - \thrusterfun{2} \distance{y}{2} + \thrusterfun{6} \distance{z}{6}}{\Ix - \Kpdot} + \frac{p (\Kp + \Kpabsp \abs{p})}{\Ix - \Kpdot} + \frac{-\Mqdot q r}{\Ix - \Kpdot} + \frac{\Nrdot q r}{\Ix - \Kpdot} +\\
 \frac{q r (\Iy - \Iz)}{\Ix - \Kpdot} + \frac{B \cos{\theta} \sin{\phi} z_B}{\Ix - \Kpdot},
 \end{multline} 
 \begin{multline} \label{eq:q_dotWithoutTranslation}
@@ -22,10 +22,10 @@ from \Chapterref{cha:modelling} could be used. Another aspect to consider when e
 \begin{multline} \label{eq:r_dotWithoutTranslation}
 \dot{r} = \frac{\thrusterfun{3} \distance{y}{3} - \thrusterfun{4} \distance{y}{4}}{\Iz - \Nrdot} + \frac{r (\Nr + \Nrabsr \abs{r})}{\Iz - \Nrdot} + \frac{-\Kpdot p q}{\Iz - \Nrdot} + \frac{\Mqdot p q}{\Iz - \Nrdot} + \frac{p q (\Ix - \Iy)}{\Iz - \Nrdot}
 \end{multline} 
-Because the translation dynamics in the attitude model structure are assumed to be small.
+Because the translation dynamics in the attitude model structure are assumed to be small. The \abbrROV has neutral buoyancy thus is $B = W$ in this section.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Parameter Estimation} 
+\section{Parameter Estimation} \index{Parameter Estimation}
 In general parameter estimation is to fit the model structure's parametrising vector $\boldsymbol{\theta}$ to estimation data. The fitting is done by minimising the cost function $V(\boldsymbol{\theta})$ with respect to the parameter vector $\boldsymbol{\theta}$ \emph{i.e.}
 \begin{equation}
 \hat{\boldsymbol{\theta}} = \underset{\boldsymbol{\theta}}{\argmin} V(\boldsymbol{\theta})
@@ -55,25 +55,26 @@ and
   \item $x(t)$ are the states. 
   \item $u(t)$ are the inputs. 
  \end{itemize}
-A measure of how well the model describes the data can be
+
+A model is validated with a dataset which it was not estimated from. If the model describes the validation data well, then is the model accepted. A measure of how well the model describes the data can be the normalised root mean square error
 \begin{equation}
-Fit = 100 \Biggr(1 - \frac{\sqrt{\sum\limits_{t=1}^N (y(k) - \hat{y}(t))^2}}{\sqrt{\sum\limits_{t=1}^N(y(t)-\frac{1}{N}\sum\limits_{t=1}^N y(t))^2}}\Biggl)
-\end{equation} 
-Higher percentage often indicate that the model describes the data well. 
+Fit = 100 \Biggr(1 - \frac{\sqrt{\sum\limits_{t=1}^N \bigr(y(t) - \hat{y}(t)\bigl)^2}}{\sqrt{\sum\limits_{t=1}^N \bigr(y(t)-\frac{1}{N}\sum\limits_{t=1}^N y(t)\bigl)^2}}\Biggl)
+\end{equation} \index{Fit}
+High fit often indicate that the model describes the data well. 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Decoupling the Model}
+\section{Decoupling the Model} \index{Decoupling}
 The attitude model structure of the \abbrROV was divided into three estimation steps. From \eqref{eq:p_dot} - \eqref{eq:r_dot} it can be seen that $\rdot$ aren't effected by the same thrusters as $\pdot$ and $\qdot$. Thus was the yaw models parameters initially estimated by themselves and the roll and pitch models parameters estimated by themselves. The initially estimated parameters was then used in the complete attitude model parameter estimation, \eqref{eq:p_dotWithoutTranslation} - \eqref{eq:r_dotWithoutTranslation}. The initial models for yaw and roll and pitch dynamics that was used was the reduced model structure
 \begin{align} \label{eq:pq_dot_simple}
-\dot{p} &= \frac{\thrusterfun{1} \distance{y}{1} - \thrusterfun{2} \distance{y}{2} + \thrusterfun{6} \distance{z}{6}}{\Ix - \Kpdot} + \frac{p (Kp + \Kpabsp \abs{p})}{\Ix - \Kpdot} + \frac{B \cos{\theta} \sin{\phi} z_B}{\Ix - \Kpdot}, \\ \label{eq:pq_dot_simple2}
-\dot{q} &=\frac{\thrusterfun{1} \distance{x}{1} + \thrusterfun{2} \distance{x}{2} - \thrusterfun{5} \distance{x}{5}}{\Iy - \Mqdot} + \frac{q (\Mq + \Mqabsq \abs{q})}{\Iy - \Mqdot} + \frac{B \sin{\theta} z_B}{\Iy - \Mqdot} 
+\pdot &= \frac{\thrusterfun{1} \distance{y}{1} - \thrusterfun{2} \distance{y}{2} + \thrusterfun{6} \distance{z}{6}}{\Ix - \Kpdot} + \frac{p (Kp + \Kpabsp \abs{p})}{\Ix - \Kpdot} + \frac{B \cos{\theta} \sin{\phi} z_B}{\Ix - \Kpdot}, \\ \label{eq:pq_dot_simple2}
+\qdot &=\frac{\thrusterfun{1} \distance{x}{1} + \thrusterfun{2} \distance{x}{2} - \thrusterfun{5} \distance{x}{5}}{\Iy - \Mqdot} + \frac{q (\Mq + \Mqabsq \abs{q})}{\Iy - \Mqdot} + \frac{B \sin{\theta} z_B}{\Iy - \Mqdot} 
 \end{align} and
 \begin{equation} \label{eq:r_dot_simple}
-\dot{r} = \frac{\thrusterfun{3} \distance{y}{3} - \thrusterfun{4} \distance{y}{4}}{\Iz - \Nrdot} + \frac{r (\Nr + \Nrabsr \abs{r})}{\Iz - \Nrdot}
+\rdot = \frac{\thrusterfun{3} \distance{y}{3} - \thrusterfun{4} \distance{y}{4}}{\Iz - \Nrdot} + \frac{r (\Nr + \Nrabsr \abs{r})}{\Iz - \Nrdot}
 \end{equation}
 This could be done because the tests only excited the states used in that estimation and thus was the coupled terms assumed to be zero.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Data Collection}
+\section{Data Collection} \index{Data preprocessing}
 The main test signals used in the parameter estimation tests was telegraph signals. Both the scaling of the output signals and switch factors was changed in between tests for finding signals that excited the \abbrROV sufficiently.
 Three different tests was conducted 
 \begin{description}
@@ -82,9 +83,19 @@ Three different tests was conducted
 \item[Complete test] Telegraph signals on all the thrusters used for exciting the \abbrROV about every axis.
 \end{description}
 
+Data preprocessing was done by synchronising the data streams and resample them with an appropriate sampling frequency. The thruster data only contained points were the control signals changed thus was the data resampled using zero order hold.  
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Parameter Estimation from Angular Velocities}
-Due to poorly estimated angles as can be seen in \Figureref{fig:integratedAngleVelocities}, the angles was not suited to be used in the parameter estimation. Thus was the parameters estimated using the angular velocities as measurements. This method was used when the sensor fusion algorithms described in \Sectionref{sec:angularVelocityKalman} was used.
+\section{Parameter Estimation from Angular Velocities} \label{sec:estimation_angular}
+Due to poorly estimated angles as can be seen in \Figureref{fig:integratedAngleVelocities}, the angles was not suited to be used in the parameter estimation. Thus was the parameters estimated using the angular velocities as measurements. This method was used when the sensor fusion algorithms described in \Sectionref{sec:angularVelocityKalman} was used. The estimated model structure in which the parameters was estimated was thus \index{model structure}
+\begin{equation}
+\etaVectordot = f(\nuVector, \etaVector, \tauVector),
+\end{equation}
+and
+\begin{equation}
+y = \nuVector
+\end{equation}
+where $\etaVector$ contains the estimated angels from the sensor fusion.
 
 \begin{figure}[tbp]
   \centering
@@ -104,7 +115,7 @@ The roll and pitch dynamics are coupled thus was \eqref{eq:pq_dot_simple} and \e
 The cross terms could be assumed to be zero due to the \abbrROV was mainly excited in \rollAngle-direction and \pitchAngle-direction in the used estimation data.
 
 The estimate of the parameters in \eqref{eq:r_dot_simple} and \eqref{eq:pq_dot_simple} was used as initial estimates of the parameters in \eqref{eq:q_dotWithoutTranslation}-\eqref{eq:r_dotWithoutTranslation}. Due to observational problems the reparametrisation $A_p = \Ix - \Kpdot$, $B_q = \Iy - \Mqdot$ and $C_r = \Iz - \Nrdot$ was done. In \Figureref{fig:velocityCompare} the simulated model without reparametrisation can be seen. A improvement of the fit can be seen in \Figureref{fig:velocityCompareCong} where some parameters has been reparameterised.
-
+\index{Reduced model structure}
 \begin{figure}[tbp]
   \centering
   \subfloat[][\label{fig:velocityComparep}Comparison between a simulated model without reparametrisation and validation data in the \rollAngle-direction.]{\includegraphics[width=0.8\textwidth]{velocityComparep}}
@@ -128,24 +139,89 @@ The estimate of the parameters in \eqref{eq:r_dot_simple} and \eqref{eq:pq_dot_s
 \end{figure}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Extended Kalman filter estimation}
-A \abbEKF was also used to estimate parameters of the \abbROV. A congregreated model used in chapter \ref{cha:Model} was used. Each parameter was modeled as a state using a constant position model as a motion model. The complete model can be seen in equation \ref{eq:motionModelKalman}. The Kalman filter was run on each collected data set with the result of each run used as a starting state for the subsequent run.  
+A \abbrEKF was also used to estimate parameters of the \abbrROV. A congregated model used in \Chapterref{cha:modelling} was used. Each parameter was modelled as a state using a constant position model as a motion model. The complete model can be seen in equation \ref{eq:motionModelKalman}. The Kalman filter was run on each collected data set with the result of each run used as a starting state for the subsequent run.  
 \begin{equation}
 %insert full motion modelfor kalman estimator here.
 \end{equation}
 
-
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Validation}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Parameter Estimation from Angular Velocities and Linear Acceleration}
+The parameters was also estimated from the angular velocities and the linear accelerations as outputs. This is due to bypass the low pass filtering effects from the sensor fusion described in \Chapterref{sec:sensor_fusion}. The used model structure contained quaternions instead of euler angles. With the same reparameterisation as in \Sectionref{sec:estimation_angular} the model structure from \eqref{eq:p_dotWithoutTranslation} - \eqref{eq:r_dotWithoutTranslation} became 
+\begin{multline}
+\pdot = \frac{\thrusterfun{1} \distance{y}{1} - \thrusterfun{2} \distance{y}{2} + \thrusterfun{6} \distance{z}{6}}{A_p} + \frac{B z_B (2 \quatII \quatIII + 2 \quatI \quatO)}{A_p} + \\ \frac{p (\Kp + \Kpabsp \abs(p))}{A_p} + \frac{q r (B_q - C_r)}{A_p}
+\end{multline}
+\begin{multline}
+\qdot = \frac{\thrusterfun{1} \distance{x}{1} + \thrusterfun{2} \distance{x}{2} - \thrusterfun{5} \distance{x}{5}}{B_q} - \frac{B z_B (2 \quatI \quatIII - 2 \quatII \quatO)}{B_q} + \\ \frac{q (\Mq + \Mqabsq \abs(q))}{B_q} - \frac{p r (A_p - C_r)}{B_q}
+\end{multline}
+\begin{multline}
+\rdot = \frac{\thrusterfun{3} \distance{y}{3} - \thrusterfun{4} \distance{y}{4}}{C_r} + \frac{r (\Nr + \Nrabsr \abs(r))}{C_r} + \frac{p q (A_p  - B_q)}{C_r}
+\end{multline}
+
+The model structure in which the parameters was estimated became \index{model structure}
+\begin{equation}
+\etaVectordot = J(\etaVector) \nuVector,
+\end{equation}
+\begin{equation}
+\dot{\nuVector} =  f(\etaVector, \nuVector, \tauVector)
+\end{equation}
+\begin{equation}
+y = \begin{pmatrix}
+\etaVector \\
+a
+\end{pmatrix}
+\end{equation}
+where $a$ is the linear accelerations in the \abbrROV frame. 
+\begin{figure}[tbp]
+  \centering
+  \subfloat[][\label{fig:angVelComparep}Comparison of angular velocity around the \abbrROV's x-axis between validation data and the simulated model.]{\includegraphics[width=0.4\textwidth]{angVelComparep}}
+  \qquad
+  \subfloat[][\label{fig:angVelCompareq}Comparison of angular velocity around the \abbrROV's y-axis between validation data and the simulated model.]{\includegraphics[width=0.4\textwidth]{angVelCompareq}}
+  \qquad
+  \subfloat[][\label{fig:angVelComparer}Comparison of angular velocity around the \abbrROV's z-axis between validation data and the simulated model.]{\includegraphics[width=0.4\textwidth]{angVelComparer}}
+    \qquad
+  \subfloat[][\label{fig:linAccComparex}Comparison of linear acceleration in the \abbrROV's x-axis between validation data and the simulated model.]{\includegraphics[width=0.4\textwidth]{linAccComparex}}
+    \qquad
+  \subfloat[][\label{fig:linAccComparey}Comparison of linear acceleration in the \abbrROV's y-axis between validation data and the simulated model.]{\includegraphics[width=0.4\textwidth]{linAccComparey}}
+    \qquad
+  \subfloat[][\label{fig:linAccComparez}Comparison of linear acceleration in the \abbrROV's z-axis between validation data and the simulated model.]{\includegraphics[width=0.4\textwidth]{linAccComparez}}
+  \caption{\label{fig:angVelCompare}%
+    Comparison of validation data (grey) against the simulated response from the model(blue). The fit for the model in each state is stated in each plot.}
+\end{figure}
+The fit of the model compared to validation data can be seen in \Figureref{fig:angVelCompare}. For estimating the parameters the initial states had to be well estimated. Because if the initial states of the model did not correspond well to the true initial states the parameters did not converge to the true values. This can be seen in \Figureref{fig:angVelSim} were estimation of the parameters are done on simulated data. The data is simulated with the same parameters as the estimation begins with. A Kalman smoother as described in \citet{Wallin} has been used for initial state estimation. In the initial state estimation was the magnetometer used for reducing the uncertainty of the quaternions.
+
+\begin{figure}[tbp]
+  \centering
+  \subfloat[][\label{fig:angVelSimp}Comparison of angular velocity around the \abbrROV's x-axis between validation data and the simulated model.]{\includegraphics[width=0.4\textwidth]{angVelSimp}}
+  \qquad
+  \subfloat[][\label{fig:angVelSimq}Comparison of angular velocity around the \abbrROV's y-axis between simulated validation data and the simulated model.]{\includegraphics[width=0.4\textwidth]{angVelSimq}}
+  \qquad
+  \subfloat[][\label{fig:angVelSimr}Comparison of angular velocity around the \abbrROV's z-axis between simulated validation data and the simulated model.]{\includegraphics[width=0.4\textwidth]{angVelSimr}}
+    \qquad
+  \subfloat[][\label{fig:linAccSimx}Comparison of linear acceleration in the \abbrROV's x-axis between simulated validation data and the simulated model.]{\includegraphics[width=0.4\textwidth]{linAccSimx}}
+    \qquad
+  \subfloat[][\label{fig:linAccSimy}Comparison of linear acceleration in the \abbrROV's y-axis between simulated validation data and the simulated model.]{\includegraphics[width=0.4\textwidth]{linAccSimy}}
+    \qquad
+  \subfloat[][\label{fig:linAccSimz}Comparison of linear acceleration in the \abbrROV's z-axis between simulated validation data and the simulated model.]{\includegraphics[width=0.4\textwidth]{linAccSimz}}
+  \caption{\label{fig:angVelSim}%
+    Comparison of simulated validation data (grey) against the simulated response from the model(blue). The fit for the model in each state is stated in each plot. The validation data has been generated from the initial parameters in the parameter estimation. The initial states of the model has been altered and thus can't the parameter estimation find the correct parameters.}
+\end{figure}
+
+To handle noisy signals an error threshold was introduced. An error threshold means that after a breakpoint the cost function becomes linear instead of squared. This makes the parameter estimation less sensitive to outliers. To reduce the impact of the noise even further the used weight matrix in the cost function was the inverse of the estimated covariance. 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Validation}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Estimated parameters}
-\Tableref{tab:parameterEstimation} shows the constants and parameters used in the \abbrROV model.
+\Tableref{tab:parameterConstants} shows the know and measured parameters used in the \abbrROV. The estimated parameters used in the \abbrROV model are shown in \Tableref{tab:parameterEstimation}.
 
  \begin{table}[tbp]
   \centering
-  \caption{\label{tab:parameterEstimation}%
-    The constants and estimated parameters used in the \abbrROV model.}
+  \caption{\label{tab:parameterConstants}%
+    The known parameters used in the \abbrROV model.}
 \scalebox{0.85}{
   \begin{tabular}{l l p{0.7\linewidth}}
     \toprule%
@@ -153,29 +229,30 @@ A \abbEKF was also used to estimate parameters of the \abbROV. A congregreated m
     \otoprule%
     $m$                 & 6.621 \kilogram                    & Mass of the \abbrROV. \\            
     $g$                 & 9.82  \meter\per\second\squared    & Gravity acceleration.\\   
-    $\rho$              & 1000  \kilogram\per\meter\cubed    & Density of water.\\ 
-    $V$                 &        \meter\cubed                & Displaced volume.\\       
     
     $\distance{x}{1}$   & 0.16 \meter & Distance from \abbrCG to thruster 1 in $\xPosition$-direction.\\
     $\distance{y}{1}$   & 0.11 \meter & Distance from \abbrCG to thruster 1 in $\yPosition$-direction.\\
     $\distance{y}{2}$   & 0.11 \meter & Distance from \abbrCG to thruster 2 in $\yPosition$-direction.\\
     $\distance{x}{2}$   & 0.16 \meter & Distance from \abbrCG to thruster 2 in $\xPosition$-direction.\\
     $\distance{y}{3}$   & 0.11 \meter & Distance from \abbrCG to thruster 3 in $\yPosition$-direction.\\
-    $\distance{x}{5}$   & 0.2  \meter & Distance from \abbrCG to thruster 5 in $\xPosition$-direction.\\
+    $\distance{x}{5}$   & 0.20 \meter & Distance from \abbrCG to thruster 5 in $\xPosition$-direction.\\
     $\distance{y}{4}$   & 0.11 \meter & Distance from \abbrCG to thruster 4 in $\yPosition$-direction.\\
     $\distance{z}{6}$   & 0.11 \meter & Distance from \abbrCG to thruster 6 in $\zPosition$-direction.\\
-    $z_B$               &   \meter& Distance from \abbrCG to \abbrCB.\\
-    
+    \bottomrule%
+  \end{tabular}}
+\end{table}
+
+  \begin{table}[tbp]
+  \centering
+  \caption{\label{tab:parameterEstimation}%
+    The estimated parameters used in the \abbrROV model.}
+\scalebox{0.85}{
+  \begin{tabular}{l l p{0.7\linewidth}}
+    \toprule%
+    \textbf{Notation}   & \textbf{Value} & \textbf{Description} \\
+    \otoprule%   
     % Parameters that will be estimated
-    $\Xu$               &   \kilogram\per\second                        & Linear damping coefficient in $\xPosition$-direction due to translation in water.\\
-    $\Xudot$            &   \kilogram                                   & Added mass in $\xPosition$-direction due to translation in water.\\
-    $\Xuabsu$           &   \kilogram\per\meter                         & Quadratic damping coefficient in $\xPosition$-direction due to translation in water.\\
-    $\Yv$               &   \kilogram\per\second                        & Linear damping coefficient in $\yPosition$-direction due to translation in water.\\
-    $\Yvdot$            &   \kilogram                                   & Added mass in $\yPosition$-direction due to translation in water.\\
-    $\Yvabsv$           &   \kilogram\per\meter                         & Quadratic damping coefficient in $\yPosition$-direction due to translation in water.\\
-    $\Zw$               &   \kilogram\per\second                        & Linear damping coefficient in $\zPosition$-direction due to translation in water.\\
-    $\Zwdot$            &   \kilogram                                   & Added mass in $\zPosition$-direction due to translation in water.\\
-    $\Zwabsw$           &   \kilogram\per\meter                         & Quadratic damping coefficient in $\zPosition$-direction due to translation in water.\\
+	$z_B$               &   \meter& Distance from \abbrCG to \abbrCB.\\
     $\Kp$               &   \kilogram\usk\meter\squared                 & Linear damping coefficient due to rotation in water about the $\xPosition$-axis.\\
     $\Kpdot$            &   \kilogram\usk\meter\squared\per\usk\second  & Increased inertia about the $\xPosition$-axis due to rotation in water.\\
     $\Kpabsp$           &   \kilogram\usk\meter\squared                 & Quadratic damping coefficient due to rotation in water about the $\xPosition$-axis.\\
@@ -185,17 +262,9 @@ A \abbEKF was also used to estimate parameters of the \abbROV. A congregreated m
     $\Nr$               &   \kilogram\usk\meter\squared                 & Linear damping coefficient due to rotation in water about the $\zPosition$-axis.\\
     $\Nrdot$            &   \kilogram\usk\meter\squared\per\usk\second  & Increased inertia about the $\zPosition$-axis due to rotation in water.\\
     $\Nrabsr$           &   \kilogram\usk\meter\squared                 & Quadratic damping coefficient due to rotation in water about the $\zPosition$-axis.\\
-    $\Ix$               &   \kilogram\usk\meter\squared                 & Inertia around the $\xPosition$-axis.\\
-    $\Iy$               &   \kilogram\usk\meter\squared                 & Inertia around the $\yPosition$-axis.\\
-    $\Iz$               &   \kilogram\usk\meter\squared                 & Inertia around the $\zPosition$-axis.\\
+    $A_p$               &   \kilogram\usk\meter\squared                 & Inertia around the $\xPosition$-axis and increased inertia around the $\xPosition$-axis.\\
+    $B_q$               &   \kilogram\usk\meter\squared                 & Inertia around the $\yPosition$-axis and increased inertia around the $\yPosition$-axis.\\
+    $C_r$               &   \kilogram\usk\meter\squared                 & Inertia around the $\zPosition$-axis and increased inertia around the $\zPosition$-axis.\\
     \bottomrule%
   \end{tabular}}
 \end{table}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Parameter Estimation from Angular Velocities and Linear Acceleration}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Validation}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Estimated parameters}

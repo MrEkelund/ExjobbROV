@@ -132,7 +132,7 @@ This coordinate system is used to express buoyancy and gravitational forces on t
         \draw[->] (O) ++(-0.5,0) arc (180:180+\coordRot:0.5) node[left]{\rollAngle};
     
     \end{tikzpicture}
-    \caption{The local and global coordinate systems relate to each other by the rotations \yawAngle, \pitchAngle and \rollAngle.} 
+    \caption{The local and global coordinate systems relate to each other by the rotations \yawAngle, \pitchAngle and \rollAngle. The rotations are defined from the global coordinate system (black) to the body-fixed coordinate system (red).} 
     \label{fig:coordinate_frames}
 \end{figure}
 
@@ -335,7 +335,7 @@ If the matrices and vectors in \eqref{eq:model} are substituted with the matrice
 \frac{m (q u - p v)}{m - \Zwdot} + \frac{-\Xudot q u}{m - \Zwdot} + \frac{\Yvdot p v}{m - \Zwdot},
 \end{multline}
 \begin{multline} \label{eq:p_dot}
-\dot{p} = \frac{\thrusterfun{1} \distance{y}{1} - \thrusterfun{2} \distance{y}{2} + \thrusterfun{6} \distance{z}{6}}{\Ix - \Kpdot} + \frac{p (Kp + \Kpabsp \abs{p})}{\Ix - \Kpdot} + \frac{-\Mqdot q r}{\Ix - \Kpdot} + \frac{\Nrdot q r}{\Ix - \Kpdot} +\\
+\dot{p} = \frac{\thrusterfun{1} \distance{y}{1} - \thrusterfun{2} \distance{y}{2} + \thrusterfun{6} \distance{z}{6}}{\Ix - \Kpdot} + \frac{p (\Kp + \Kpabsp \abs{p})}{\Ix - \Kpdot} + \frac{-\Mqdot q r}{\Ix - \Kpdot} + \frac{\Nrdot q r}{\Ix - \Kpdot} +\\
 \frac{q r (\Iy - \Iz)}{\Ix - \Kpdot} + \frac{- \Yvdot v w}{\Ix - \Kpdot} + \frac{\Zwdot v w}{\Ix - \Kpdot} + \frac{B \cos{\theta} \sin{\phi} z_B}{\Ix - \Kpdot},
 \end{multline}
 \begin{multline} \label{eq:q_dot}

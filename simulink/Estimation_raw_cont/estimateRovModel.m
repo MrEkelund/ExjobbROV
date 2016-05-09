@@ -6,12 +6,12 @@ estimation_mode = 'AllSuperCong_c';
 All_filepath = 'All0418';
 simulation = 0;
 plotting = 0;
-detrend_enable = 1;
+detrend_enable = 0;
 resampling_fs = 50;
 load('rtau.mat') 
 initialCondition = [1 0 0 1 0 0 0].';
-parameter_variance = 0.2;
-output_variance = 0.3;
+parameter_variance = 0;
+output_variance = 0;
 
 
 [parameters, parameter_strings]= initROVParameters();
@@ -26,12 +26,12 @@ displayTable(parameters, parameter_strings);
 %%
 opt = nlgreyestOptions;
 opt.Display = 'on';
-opt.SearchMethod = 'lm';
+% opt.SearchMethod = 'lm';
 opt.SearchOption.MaxIter = 100;
 %  w = diag([100 100 100 50 50 50]);
-opt.OutputWeight = 'noise';
+% opt.OutputWeight = 'noise';
 % opt.Outputweight = w;
-opt.Advanced.ErrorThreshold = 1.6;
+% opt.Advanced.ErrorThreshold = 1.6;
 
 tic
 All_estimation = nlgreyest(All_data, All_nonlinear_greybox_model,opt);
@@ -41,7 +41,7 @@ displayTable(parameters, parameter_strings,All_estimation)
 figure
 comopt = compareOptions('InitialCondition', initial_states(:,5));
 
-compare(getexp(All_val_data,2), All_estimation, inf,comopt);
+compare(getexp(All_val_data,2), All_estimation, inf, comopt);
 %%
 dist_parameters - parameters
 %%
