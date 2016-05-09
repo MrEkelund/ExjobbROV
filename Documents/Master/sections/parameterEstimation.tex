@@ -127,6 +127,16 @@ The estimate of the parameters in \eqref{eq:r_dot_simple} and \eqref{eq:pq_dot_s
     Comparison of simulation of the attitude model against validation data.}
 \end{figure}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Extended Kalman filter estimation}
+A \abbEKF was also used to estimate parameters of the \abbROV. A congregreated model used in chapter \ref{cha:Model} was used. Each parameter was modeled as a state using a constant position model as a motion model. The complete model can be seen in equation \ref{eq:motionModelKalman}. The Kalman filter was run on each collected data set with the result of each run used as a starting state for the subsequent run.  
+\begin{equation}
+%insert full motion modelfor kalman estimator here.
+\end{equation}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Validation}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Estimated parameters}
