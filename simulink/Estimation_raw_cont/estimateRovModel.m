@@ -26,12 +26,12 @@ displayTable(parameters, parameter_strings);
 %%
 opt = nlgreyestOptions;
 opt.Display = 'on';
-% opt.SearchMethod = 'lm';
+opt.SearchMethod = 'lm';
 opt.SearchOption.MaxIter = 100;
 %  w = diag([100 100 100 50 50 50]);
-% opt.OutputWeight = 'noise';
+opt.OutputWeight = 'noise';
 % opt.Outputweight = w;
-% opt.Advanced.ErrorThreshold = 1.6;
+opt.Advanced.ErrorThreshold = 1.6;
 
 tic
 All_estimation = nlgreyest(All_data, All_nonlinear_greybox_model,opt);
