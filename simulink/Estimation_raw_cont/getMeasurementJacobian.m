@@ -1,9 +1,9 @@
-function H = getMeasurementJacobian(state,g,mag_n,mag_e,mag_d)
+function H = getMeasurementJacobian(state,g, mag_n, mag_e, mag_d)
 %extract states
 quat_0=state(1);quat_1=state(2);quat_2=state(3);quat_3=state(4);p=state(5);
 q=state(6);r=state(7);
 
-% return jacobian of measurement equation 
+% return jacobian of measurement equation
 H=[...
     0,                                                   0,                                                     0,                                                   0, 1, 0, 0
     0,                                                   0,                                                     0,                                                   0, 0, 1, 0

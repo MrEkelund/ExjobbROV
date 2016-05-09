@@ -106,7 +106,7 @@ switch estimation_mode
         data.InputUnit =  {'%';'%';'%';'%';'%';'%';'rad';'rad'};
         data.OutputName = {'p','q','r'};
         data.OutputUnit = {'rad/s','rad/s','rad/s'};    
-    case 'AllCong'
+    case {'AllCong','AllSuperCong'}
         data = data(:,[1, 2, 3],[1, 2, 3, 4, 5, 6, 7, 8]);
         data.InputName =  {'Thruster1';'Thruster2';'Thruster3';'Thruster4';'Thruster5';'Thruster6';'fi';'theta'};
         data.InputUnit =  {'%';'%';'%';'%';'%';'%';'rad';'rad'};
@@ -206,6 +206,10 @@ p_dot_cong_only_estimate_parameter_index = [13 23, 25, 35]; % Parameters p_dot e
 q_dot_cong_only_estimate_parameter_index = [13, 26, 28, 36]; % Parameters q_dot estimates
 r_dot_cong_only_estimate_parameter_index = [29, 31, 47]; % Parameters q_dot estimates
 
+p_dot_Super_Cong_estimate_parameter_index = [13, 24, 27, 29, 30, 31, 47, 35]; % Parameters p_dot estimates
+q_dot_Super_Cong_estimate_parameter_index = [13, 24, 26, 27, 28, 30, 36]; % Parameters q_dot estimates
+r_dot_Super_Cong_estimate_parameter_index = [23, 24, 25, 27, 30, 47]; % Parameters r_dot estimates
+
 % With translation dynamics
 %p_dot_estimate_parameter_index = [23, 25, 33, 34, 27, 30, 18, 21, 32, 24]; % Parameters p_dot estimates
 %q_dot_estimate_parameter_index = [26, 28, 32, 34, 24, 30, 15, 21, 33, 27]; % Parameters q_dot estimates
@@ -245,6 +249,11 @@ switch estimation_mode
         fixed_parameters = setdiff(fixed_parameters, p_dot_Cong_estimate_parameter_index);
         fixed_parameters = setdiff(fixed_parameters, q_dot_Cong_estimate_parameter_index);
         fixed_parameters = setdiff(fixed_parameters, r_dot_Cong_estimate_parameter_index);
+    case 'AllSuperCong'
+        disp('All rotational dynamics test')
+        fixed_parameters = setdiff(fixed_parameters, p_dot_Super_Cong_estimate_parameter_index);
+        fixed_parameters = setdiff(fixed_parameters, q_dot_Super_Cong_estimate_parameter_index);
+        fixed_parameters = setdiff(fixed_parameters, r_dot_Super_Cong_estimate_parameter_index);
     otherwise
         error('Unkown test: %s', estimation_mode);
 end

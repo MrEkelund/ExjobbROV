@@ -13,9 +13,9 @@ void compute_dx(double *dx, double *x, double *u, double **p)
 {
   /* Retrieve model parameters. */
   double *m, *g, *rho, *V, *lx1, *ly1, *ly2, *lx2, *ly3, *lx5, *ly4,
-  *lz6, *zb,  *Kp,  *Kp_dot,  *Kp_abs_p, *Mq, *Mq_dot, *Mq_abs_q,
-  *Nr, *Nr_dot, *Nr_abs_r, *Ix, *Iy, *Iz, *Ix_Kp_dot, *Iy_Mq_dot,
-  *Iz_Nr_dot, *gam, *mag_n, *mag_e, *mag_d;
+  *lz6, *zb,  *Kp, *Kp_abs_p, *Mq, *Mq_abs_q,
+  *Nr, *Nr_abs_r, *Ix_Kp_dot, *Iy_Mq_dot,
+  *Iz_Nr_dot, *gam;
   m = p[0];
   g = p[1];
   rho = p[2];
@@ -30,28 +30,19 @@ void compute_dx(double *dx, double *x, double *u, double **p)
   lz6 = p[11];
   zb = p[12];
   Kp = p[13];
-  Kp_dot = p[14];
   Kp_abs_p = p[15];
   Mq = p[16];
-  Mq_dot = p[17];
   Mq_abs_q = p[18];
   Nr = p[19];
-  Nr_dot = p[20];
   Nr_abs_r = p[21];
-  Ix = p[22];
-  Iy = p[23];
-  Iz = p[24];
   Ix_Kp_dot = p[25];
   Iy_Mq_dot = p[26];
   Iz_Nr_dot = p[27];
   gam = p[28];
-  mag_n = p[29];
-  mag_e = p[30];
-  mag_d = p[31];
 
-/*  double W, B;
-  W = m*g;
-  B = W;*/
+  double W, B;
+  W = m[0]*g[0];
+  B = W;
   double p2, q, r, n, e1, e2, e3;
   p2 = x[0];
   q = x[1];
@@ -69,9 +60,9 @@ void compute_dx(double *dx, double *x, double *u, double **p)
   f5 = u[4];
   f6 = u[5];
 
-  dx[0] = (f1*ly1[0]-f2*ly2[0]+f6*lz6[0]+p2*(Kp[0]+Kp_abs_p[0]*fabs(p2))-Mq_dot[0]*q*r+Nr_dot[0]*q*r+q*r*(Iy[0]-Iz[0])+m[0]*g[0]*zb[0]*(e2*e3*2.0+e1*n*2.0))/Ix_Kp_dot[0];
-  dx[1] = (f1*lx1[0]+f2*lx2[0]-f5*lx5[0]+q*(Mq[0]+Mq_abs_q[0]*fabs(q))+Kp_dot[0]*p2*r-Nr_dot[0]*p2*r-p2*r*(Ix[0]-Iz[0])-m[0]*g[0]*zb[0]*(e1*e3*2.0-e2*n*2.0))/Iy_Mq_dot[0];
-  dx[2] = (r*(Nr[0]+Nr_abs_r[0]*fabs(r))+f3*ly3[0]-f4*ly4[0]-Kp_dot[0]*p2*q+Mq_dot[0]*p2*q+p2*q*(Ix[0]-Iy[0]))/Iz_Nr_dot[0];
+  dx[0] = (f1*ly1[0]-f2*ly2[0]+f6*lz6[0]+p2*(Kp[0]+Kp_abs_p[0]*fabs(p2))+Iy_Mq_dot[0]*q*r-Iz_Nr_dot[0]*q*r+B*zb[0]*(e2*e3*2.0+e1*n*2.0))/Ix_Kp_dot[0];
+  dx[1] = (f1*lx1[0]+f2*lx2[0]-f5*lx5[0]+q*(Mq[0]+Mq_abs_q[0]*fabs(q))-Ix_Kp_dot[0]*p2*r+p2*r*Iz_Nr_dot[0]-B*zb[0]*(e1*e3*2.0-e2*n*2.0))/Iy_Mq_dot[0];
+  dx[2] = (r*(Nr[0]+Nr_abs_r[0]*fabs(r))+f3*ly3[0]-f4*ly4[0]+Ix_Kp_dot[0]*p2*q-Iy_Mq_dot[0]*p2*q)/Iz_Nr_dot[0];
   dx[3] = e1*p2*(-1.0/2.0)-e2*q*(1.0/2.0)-e3*r*(1.0/2.0)-gam[0]*n*(e1*e1+e2*e2+e3*e3+n*n-1.0)*(1.0/2.0);
   dx[4] = e3*q*(-1.0/2.0)+e2*r*(1.0/2.0)+n*p2*(1.0/2.0)-e1*gam[0]*(e1*e1+e2*e2+e3*e3+n*n-1.0)*(1.0/2.0);
   dx[5] = e3*p2*(1.0/2.0)-e1*r*(1.0/2.0)+n*q*(1.0/2.0)-e2*gam[0]*(e1*e1+e2*e2+e3*e3+n*n-1.0)*(1.0/2.0);
@@ -83,9 +74,9 @@ void compute_y(double *y, double *x, double *u, double **p)
 {
   /* Retrieve model parameters. */
   double *m, *g, *rho, *V, *lx1, *ly1, *ly2, *lx2, *ly3, *lx5, *ly4,
-  *lz6, *zb,  *Kp,  *Kp_dot,  *Kp_abs_p, *Mq, *Mq_dot, *Mq_abs_q,
-  *Nr, *Nr_dot, *Nr_abs_r, *Ix, *Iy, *Iz, *Ix_Kp_dot, *Iy_Mq_dot,
-  *Iz_Nr_dot, *gam, *mag_n, *mag_e, *mag_d;
+  *lz6, *zb,  *Kp,  *Kp_abs_p, *Mq, *Mq_abs_q,
+  *Nr, *Nr_abs_r, *Ix_Kp_dot, *Iy_Mq_dot,
+  *Iz_Nr_dot, *gam;
   m = p[0];
   g = p[1];
   rho = p[2];
@@ -100,24 +91,15 @@ void compute_y(double *y, double *x, double *u, double **p)
   lz6 = p[11];
   zb = p[12];
   Kp = p[13];
-  Kp_dot = p[14];
   Kp_abs_p = p[15];
   Mq = p[16];
-  Mq_dot = p[17];
   Mq_abs_q = p[18];
   Nr = p[19];
-  Nr_dot = p[20];
   Nr_abs_r = p[21];
-  Ix = p[22];
-  Iy = p[23];
-  Iz = p[24];
   Ix_Kp_dot = p[25];
   Iy_Mq_dot = p[26];
   Iz_Nr_dot = p[27];
   gam = p[28];
-  mag_n = p[29];
-  mag_e = p[30];
-  mag_d = p[31];
 
 /*  double W, B;
   W = m*g;
