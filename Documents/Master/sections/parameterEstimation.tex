@@ -93,7 +93,7 @@ Due to poorly estimated angles as can be seen in \Figureref{fig:integratedAngleV
 \end{equation}
 and
 \begin{equation}
-y = \nuVector
+\boldsymbol{y} = \nuVector
 \end{equation}
 where $\etaVector$ contains the estimated angels from the sensor fusion.
 
@@ -137,73 +137,9 @@ The estimate of the parameters in \eqref{eq:r_dot_simple} and \eqref{eq:pq_dot_s
   \caption{\label{fig:velocityCompareCong}%
     Comparison of simulation of the attitude model against validation data.}
 \end{figure}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Extended Kalman filter estimation}\index{EKF@\abbrEKF!abbreviation}
-A \abbrEKF was also used to estimate parameters of the \abbrROV. The congregated model from \Sectionref{sec:ParameterEstimationAng} was used to model $\etaVector$ and $\nuVector$. Measurement equations were taken from \Chapterref{cha:fusion}. Each model parameter was modelled as a state using a constant position motion model. The entire motion model used in the filter was discretised using the Euler forward discretisation method. The complete discrete model is
-\begin{equation}
-\label{eq:motionModelKalman}
-\begin{pmatrix}
-\etaVector_{k+1}\\ 
-\nuVector_{k+1}\\
-\boldsymbol{b}_{k+1}\\
-\boldsymbol{\theta}_{k+1}
-\end{pmatrix} = 
-\begin{pmatrix}
-\etaVector_k + T_s J(\etaVector_k)\nuVector_k\\
-\nuVector_k + T_s f(\etaVector_k,\nuVector_k,\boldsymbol{\theta}_k)\\
-\boldsymbol{b}_k\\
-\boldsymbol{\theta}_k
-\end{pmatrix}
-+ \begin{pmatrix}
-v_{\etaVector}\\
-v_{\nuVector}\\
-v_{\boldsymbol{b}}\\
-v_{\boldsymbol{\theta}}
-\end{pmatrix}
-\end{equation}.
-Here $\boldsymbol{\theta}$ is a vector containing the congregated parameters that were estimated. $f(\etaVector,\nuVector,\boldsymbol{\theta})$ is the model defined in \Chapterref{cha:model} using quaternions and with congregated parameters defined in \Sectionref{sec:estimation_angular}. $b$ is a vector containing the biases of the gyroscope. $v$ is model noise and is assumed to enter each term directly, this resulted in a diagonal $Q$-matrix when implementing the model in the \abbrEKF. $J(\etaVector)$ is a angular velocity transformation matrix using the quaternion form of $\etaVector$ and is defined in the following way
-\todo{This might be defined in the model section!}
-\begin{equation}
-J(\etaVector) = \begin{pmatrix}
--\quatI  & -\quatII  & -\quatIII \\
-\quatO   & -\quatIII & \quatII   \\
-\quatIII & \quatO    & -\quatI   \\ 
--\quatII & \quatI    & -\quatO   \\ 
-\end{pmatrix}
-\end{equation}.
-
-To increase the performance of the filter a method for outlier detection and rejection was implemented.
-The outlier rejection method is based on the assumption that the normalised innovation $\epsilon^T S^{-1} \epsilon$ should $\chi_{n}^{2}$ distributed. Here $n$ is the number of measurements. To check the validity of a single measurement the previous asumption gives that $\epsilon_i^{2}/S_{i,i} \sim \chi_{1}^{2}$ \citep{sensorfusion}. This is used in the \abbrEKF using the following algorithm:
-\begin{algorithm}[H]
-\label{alg:outlier}
-\caption{The outlier rejection algorithm used during the measurement update step of the parameter estimation \abbrEKF.}
-\textbf{1.} Calculate $S=H P H^T + R$ and the innovation $\epsilon$.
-\\
-\textbf{2.} For each row $i$ in $\epsilon$ do the comparison
-\begin{equation}
-\epsilon_{i}^{2} > \sigma_i S_{i,i}
-\end{equation}
-If the expression holds true remove the $i$:th row from $\epsilon$ and the $i$:th row and column from $S$ and $H$.\\
-\textbf{3.} Proceed with the Kalman algorithm using the cropped $H$, $S$ and $\epsilon$.
-\end{algorithm}
-Here $\sigma$ is a $n\times1$ dimensional design variable and $n$ is the number of measurements that are used in the \abbrEKF. A higher value of $\sigma_i$ decreases the sensitivity of the outlier rejection on the $i$:th measurement.
-
-The filter was run on each collected data set. The final values of $\hat{\theta}$ from a data set were used as initial values for $\hat{\theta}$ when the filter was applied on the next data set. The same was done for the covariance matrix $P$. The final covariance from an earlier run was set as the initial covariance when the filter was applied on subsequent data set. At completion the parameters were entered in a simulator which was feed with the control signals from the corresponding data set. The simulated  output was then compared with the original data. The result from a typical estimation can be viewed in \Figureref{fig:KalmanCompare}.
-\begin{figure}[tbp]
-  \centering
-  \subfloat[][\label{fig:KalmanCompareP}Comparison between a simulated model and validation data in $p$.]{\includegraphics[width=0.5\textwidth]{kalmanEstimatorP}}
-  \qquad
-  \subfloat[][\label{fig:KalmanCompareQ}Comparison between a simulated model and validation data in $q$.]{\includegraphics[width=0.5\textwidth]{kalmanEstimatorQ}}
-  \\
-  \subfloat[][\label{fig:KalmanCompareR}Comparison between a simulated model and validation data in $r$.]{\includegraphics[width=0.5\textwidth]{kalmanEstimatorR}}
-  \caption{\label{fig:KalmanCompare}%
-    Comparison of simulation of $\nuVector$ against validation data. Goodness of fit statistic can be viewed at the top of each sub-figure.}
-\end{figure}
-
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Parameter Estimation from Angular Velocities and Linear Acceleration}
+\section{Parameter Estimation from Angular Velocities and Linear Acceleration} \label{sec:angLinEstim}
 The parameters were also estimated using the angular velocities and the linear accelerations as outputs. This was done to bypass the low-pass filtering effects from the sensor fusion described in \Chapterref{cha:sensor_fusion}. The model structure that was modified to use quaternions instead of euler angles. Using quaternions in the reparameterised model \eqref{eq:p_dotWithoutTranslation} - \eqref{eq:r_dotWithoutTranslation} from \Sectionref{sec:estimation_angular} the following model structure
 \begin{multline}
 \pdot = \frac{\thrusterfun{1} \distance{y}{1} - \thrusterfun{2} \distance{y}{2} + \thrusterfun{6} \distance{z}{6}}{A_p} + \frac{B z_B (2 \quatII \quatIII + 2 \quatI \quatO)}{A_p} + \\ \frac{p (\Kp + \Kpabsp \abs(p))}{A_p} + \frac{q r (B_q - C_r)}{A_p},
@@ -225,12 +161,12 @@ The model structure in which the parameters was estimated became \index{model st
 \end{equation}
 and
 \begin{equation}
-y = \begin{pmatrix}
+\boldsymbol{y} = \begin{pmatrix}
 \etaVector \\
 \boldsymbol{a}
 \end{pmatrix}
 \end{equation}
-where $\boldsymbol{a}$ is the linear accelerations in the \abbrROV frame. 
+where $\boldsymbol{a}$ are the linear accelerations in the \abbrROV frame. 
 \begin{figure}[tbp]
   \centering
   \subfloat[][\label{fig:angVelComparep}Comparison of angular velocity around the \abbrROV's x-axis between validation data and the simulated model.]{\includegraphics[width=0.4\textwidth]{angVelComparep}}
@@ -248,7 +184,6 @@ where $\boldsymbol{a}$ is the linear accelerations in the \abbrROV frame.
     Comparison of validation data (grey) against the simulated response from the model(blue). The fit for the model in each state is stated in each plot.}
 \end{figure}
 The fit of the model compared to validation data can be seen in \Figureref{fig:angVelCompare}. For estimating the parameters the initial states had to be well estimated. Because if the initial states of the model did not correspond well to the true initial states the parameters did not converge to the true values. This can be seen in \Figureref{fig:angVelSim} were estimation of the parameters are done on simulated data. The data is simulated with the same parameters as the estimation begins with. A Kalman smoother as described in \citet{Wallin} has been used for initial state estimation. In the initial state estimation was the magnetometer used for reducing the uncertainty of the quaternions.
-
 \begin{figure}[tbp]
   \centering
   \subfloat[][\label{fig:angVelSimp}Comparison of angular velocity around the \abbrROV's x-axis between validation data and the simulated model.]{\includegraphics[width=0.4\textwidth]{angVelSimp}}
@@ -267,8 +202,64 @@ The fit of the model compared to validation data can be seen in \Figureref{fig:a
 \end{figure}
 
 To handle noisy signals an error threshold was introduced. An error threshold means that after a breakpoint the cost function becomes linear instead of squared. This makes the parameter estimation less sensitive to outliers. To reduce the impact of the noise even further the used weight matrix in the cost function was the inverse of the estimated noise covariance. 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Validation}
+\subsection{Extended Kalman filter estimation}\index{EKF@\abbrEKF!abbreviation}
+A \abbrEKF was also used to estimate parameters of the \abbrROV. The reparametrised model from \Sectionref{sec:angLinEstim} was used to model $\etaVector$ and $\nuVector$. Measurement equations were taken from \Chapterref{cha:sensor_fusion}. Each model parameter was modelled as a state using a constant position motion model. The entire motion model used in the filter was discretised using the Euler forward discretisation method. The complete discrete model is
+\begin{equation}
+\label{eq:motionModelKalman}
+\begin{pmatrix}
+\etaVector_{k+1}\\ 
+\nuVector_{k+1}\\
+\boldsymbol{b}_{k+1}\\
+\boldsymbol{\theta}_{k+1}
+\end{pmatrix} = 
+\begin{pmatrix}
+\etaVector_k + T_s \boldsymbol{T}(\etaVector_k)\nuVector_k\\
+\nuVector_k + T_s f(\etaVector_k,\nuVector_k,\boldsymbol{\theta}_k)\\
+\boldsymbol{b}_k\\
+\boldsymbol{\theta}_k
+\end{pmatrix}
++ \begin{pmatrix}
+\boldsymbol{v}_{\etaVector}\\
+\boldsymbol{v}_{\nuVector}\\
+\boldsymbol{v}_{\boldsymbol{b}}\\
+\boldsymbol{v}_{\boldsymbol{\theta}}
+\end{pmatrix}
+\end{equation}
+Here $\boldsymbol{\theta}$ is a vector containing the reparametrised parameters that were estimated. $f(\etaVector,\nuVector,\boldsymbol{\theta})$ is the model defined in \Chapterref{cha:modelling} using quaternions and with congregated parameters defined in \Sectionref{sec:estimation_angular}. $\boldsymbol{b}$ is a vector containing the biases of the gyroscope. $\boldsymbol{v}$ is model noise and is assumed to enter each term directly, this resulted in a diagonal $\boldsymbol{Q}$-matrix when implementing the model in the \abbrEKF. $\boldsymbol{T}(\etaVector)$ is a angular velocity transformation matrix using the quaternion form of $\etaVector$ and is defined \Chapterref{cha:modelling}.
+
+To increase the performance of the filter a method for outlier detection and rejection was implemented.
+The outlier rejection method is based on the assumption that the normalised innovation $\boldsymbol{\epsilon}^T \boldsymbol{S}^{-1} \boldsymbol{\epsilon}$ should be $\chi_{n}^{2}$ distributed. Here $n$ is the number of measurements. To check the validity of a single measurement the previous asumption gives that $\epsilon_i^{2}/S_{i,i} \sim \chi_{1}^{2}$ \citep{sensorfusion}. This is used in the \abbrEKF using the following algorithm:
+\begin{algorithm}[H]
+\label{alg:outlier}
+\caption{The outlier rejection algorithm used during the measurement update step of the parameter estimation \abbrEKF.}
+\textbf{1.} Calculate $\boldsymbol{S}=\boldsymbol{H} \boldsymbol{P} \boldsymbol{H}^T + \boldsymbol{R}$ and the innovation $\epsilon$.
+\\
+\textbf{2.} For each row $i$ in $\boldsymbol{\epsilon}$ do the comparison
+\begin{equation}
+\epsilon_{i}^{2} > \sigma_i S_{i,i}
+\end{equation}
+If the expression holds true remove the $i$:th row from $\boldsymbol{\epsilon}$ and the $i$:th row and column from $\boldsymbol{S}$ and $\boldsymbol{H}$.\\
+\textbf{3.} Proceed with the Kalman algorithm using the cropped $\boldsymbol{H}$, $\boldsymbol{S}$ and $\boldsymbol{\epsilon}$.
+\end{algorithm}
+Here $\boldsymbol{\sigma}$ is a $n\times1$ dimensional design variable and $n$ is the number of measurements that are used in the \abbrEKF. A higher value of $\sigma_i$ decreases the sensitivity of the outlier rejection on the $i$:th measurement.
+
+The filter was run on each collected data set. The final values of $\hat{\boldsymbol{\theta}}$ from a data set were used as initial values for $\hat{\boldsymbol{\theta}}$ when the filter was applied on the next data set. The same was done for the covariance matrix $\boldsymbol{P}$. The final covariance from an earlier run was set as the initial covariance when the filter was applied on subsequent data set. At completion the parameters were entered in a simulator which was feed with the control signals from the corresponding data set. The simulated  output was then compared with the original data. The result from a typical estimation can be viewed in \Figureref{fig:KalmanCompare}.
+\begin{figure}[tbp]
+  \centering
+  \subfloat[][\label{fig:KalmanCompareP}Comparison between a simulated model and validation data in $p$.]{\includegraphics[width=0.5\textwidth]{kalmanEstimatorP}}
+  \qquad
+  \subfloat[][\label{fig:KalmanCompareQ}Comparison between a simulated model and validation data in $q$.]{\includegraphics[width=0.5\textwidth]{kalmanEstimatorQ}}
+  \\
+  \subfloat[][\label{fig:KalmanCompareR}Comparison between a simulated model and validation data in $r$.]{\includegraphics[width=0.5\textwidth]{kalmanEstimatorR}}
+  \caption{\label{fig:KalmanCompare}%
+    Comparison of simulation of $\nuVector$ against validation data. Goodness of fit statistic can be viewed at the top of each sub-figure.}
+\end{figure}
+
+
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Estimated parameters}
