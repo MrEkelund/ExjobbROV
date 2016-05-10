@@ -1,8 +1,8 @@
-\chapter{Sensor fusion}\label{cha:fusion}
+\chapter{Sensor fusion}\label{cha:sensor_fusion}
 In order to properly estimate its attitude in the global coordinate system the \abbrROV needs sensor to measure inputs from its environment.
 Unfortunately signals from sensors do not necessarily give direct information about attitude and their measurements are to some extent noisy. Smart algorithms and filters can nevertheless be used to extract and combine the information from the different sensors into a high certainty attitude estimate. The combination, or fusion, of several sensor sources into a estimate goes under the name sensor fusion. One filter that can accomplish the task of fusing different measurements and estimating states in a non-linear dynamic system is the extended Kalman filter (\abbrEKF). 
 \section{Filter notation}
-To be able to understand how a filter like the extended Kalman filter works, it is important to understand the notation. In table \ref{tab:notationKalman} the notation used in this chapter is listed.
+To be able to understand how a filter like the extended Kalman filter works, it is important to understand the notation. In  \Tableref{tab:notationKalman} the notation used in this chapter is listed.
  \begin{table}[htbp]
   \centering
   \caption{\label{tab:notationKalman}%
@@ -11,221 +11,176 @@ To be able to understand how a filter like the extended Kalman filter works, it 
     \toprule%
     \textbf{Notation} & \textbf{Description} \\
     \otoprule%
-    $x$ & State vector.\\
-    $\hat{x}$ & State vector estimate.\\
-    $y$    & Measurement vector.\\
-    $u$ & Control signal.\\
-    $v,e$ & Noise.\\
-    $_k$ & At time k.\\
+    $\boldsymbol{x}$ & State vector.\\
+    $\hat{\boldsymbol{x}}$ & State vector estimate.\\
+    $\boldsymbol{y}$ & Measurement vector.\\
+    $\boldsymbol{u}$ & Control signal vector.\\
+    $\boldsymbol{v},\boldsymbol{e}$ & Noise vectors.\\
+    $_k$ & At time $k$.\\
     $_{k|m}$ & At time $k$ given information up to time $m$.\\
-    $f_x$ & Jacobian of $f$ with respect to states.\\
-    $f_v$ & Jacobian of $f$ with respects to noise.\\
-    $E(x)$ & The expected value of x.\\
-    $Cov(x)$ & The covariance of x.\\
+    $f_{\boldsymbol{x}}$ & Jacobian of $f$ with respect to states $\boldsymbol{x}$.\\
+    $f_{\boldsymbol{v}}$ & Jacobian of $f$ with respects to noise $\boldsymbol{v}$.\\
+    $\text{E}(\boldsymbol{x})$ & The expected value of $\boldsymbol{x}$.\\
+    $\text{Cov}(\boldsymbol{x})$ & The covariance of $\boldsymbol{x}$.\\
     \bottomrule%
  \end{tabular}
 \end{table}
 
 \section{The extended Kalman filter}
-According to \citet{sensorfusion} the Kalman filter (\abbrKF) is a linear state space observer, meaning that it estimates states, both measurable and unmeasurable, in a linear system. It utilises a motion model, a model of the systems dynamics, in conjunction with measurements to provide the best possible estimate of the model's states. It's also stated in \citet{sensorfusion} that the Kalman filter finds the best possible linear filter for the given input $y_{k}$. The extended Kalman filter can, unlike the regular Kalman filter, handle non-linear motion models and measurement equations. It accomplishes this by using Taylor expansions of the non-linear system and measurement equations to approximate a linear system. If a \abbrEKF can provide satisfactory results depends on the rest terms from the Taylor expansion and it is therefore dependent on the degree of non-linearity of the system and measurement equations\citep{sensorfusion}. As rule of thumb the rest term will be small enough if the system model is close to linear and if measurements are of good quality, meaning that the signal to noise ration is high\citep{sensorfusion}. 
+According to \citet{sensorfusion} the Kalman filter (\abbrKF) is a linear state space observer, meaning that it estimates states, both measurable and unmeasurable, in a linear system. It utilises a motion model, a model of the systems dynamics, in conjunction with measurements to provide the best possible estimate of the model's states. It's also stated in \citet{sensorfusion} that the Kalman filter finds the best possible linear filter for the given input $\boldsymbol{y}_{k}$. The extended Kalman filter can, unlike the regular Kalman filter, handle non-linear motion models and measurement equations. It accomplishes this by using Taylor expansions of the non-linear system and measurement equations to approximate a linear system. If a \abbrEKF can provide satisfactory results depends on the rest terms from the Taylor expansion and it is therefore dependent on the degree of non-linearity of the system and measurement equations\citep{sensorfusion}. As rule of thumb the rest term will be small enough if the system model is close to linear and if measurements are of good quality, meaning that the signal to noise ration is high\citep{sensorfusion}. 
 
 The \abbrEKF algorithm is comprised of two key steps called updates.
 The time update uses the current states estimates and the user specified motion model to predict the values of the states the next time instant. The second update is called the measurement update and it uses sampled sensor data in conjunction with the user specified measurement equations to strengthen the state estimates. \todo{Reference needed!}
 The order in which to run these updates is dependent on design and on sample time of the sensors used. If the measurements are independent a measurement update can be done at the arrival of each measurement without the need of a time update in between\citep[p.170]{sensorfusion}.
 
-The complete extended Kalman filter algorithm can be viewed in \ref{alg:EKF}.
+The complete extended Kalman filter algorithm can be viewed in \Algoref{alg:EKF}.
 \begin{algorithm}
 \label{alg:EKF}
 \caption{The extended Kalman filter algorithm.}
   The extended Kalman filter applied on a system
     \begin{align*}
-    x_{k+1} &= f(x_{k},u_{k},v_{k})\\
-    y_{k} &= h(x_{k},u_{k},e_{k})
+    \boldsymbol{x}_{k+1} &= f(\boldsymbol{x}_{k},\boldsymbol{u}_{k}, \boldsymbol{v}_{k})\\
+    \boldsymbol{y}_{k} &= h(\boldsymbol{x}_{k},\boldsymbol{u}_{k},\boldsymbol{e}_{k})
     \end{align*} is given by the following algorithm:\\
     \textbf{Initialisation:}
     \begin{align*}
-    \hat{x}_{1|0} &= E(x_{0})\\
-    P_{1|0} &= Cov(x_{0})\\
+    \hat{\boldsymbol{x}}_{1|0} &= \text{E}(\boldsymbol{x}_{0})\\
+    \boldsymbol{P}_{1|0} &= \text{Cov}(\boldsymbol{x}_{0})\\
     \end{align*}
      
     \textbf{Measurement update:}
     \begin{align*}
-    S_{k} &= h_{x}(\hat{x}_{k|k-1},u_ {k}) P_{k|k-1} h_{x}(\hat{x}_{k|k-1},u_ {k})^{T} + R_{k}\\
-    K_{k} &= P_{k|k-1} h_{x}(\hat{x}_{k|k-1},u_ {k})^{T} S_{k}^{-1}\\
-    \hat{x}_{k|k} &= \hat{x}_{k|k-1} + K_{k} (y_{k} - h(\hat{x}_{k|k-1},u_ {k}))\\
-    P_{k|k} &= P_{k|k-1} - P_{k|k-1} h_{x}(\hat{x}_{k|k-1},u_ {k})^{T} S_{k}^{-1} h_{x}(\hat{x}_{k|k-1},u_ {k}) P_{k|k-1}\\
+    \boldsymbol{S}_{k} &= h_{\boldsymbol{x}}(\hat{\boldsymbol{x}}_{k|k-1},\boldsymbol{u}_{k}) \boldsymbol{P}_{k|k-1} h_{\boldsymbol{x}}(\hat{\boldsymbol{x}}_{k|k-1},\boldsymbol{u}_{k})^{T} + \boldsymbol{R}_{k}\\
+    \boldsymbol{K}_{k} &= \boldsymbol{P}_{k|k-1} h_{\boldsymbol{x}}(\hat{\boldsymbol{x}}_{k|k-1},\boldsymbol{u}_{k})^{T} \boldsymbol{S}_{k}^{-1}\\
+    \boldsymbol{\epsilon} &= \boldsymbol{y}_{k} - h(\hat{\boldsymbol{x}}_{k|k-1},\boldsymbol{u}_{k})\\
+    \hat{\boldsymbol{x}}_{k|k} &= \hat{\boldsymbol{x}}_{k|k-1} + \boldsymbol{K}_{k}\boldsymbol{\epsilon}\\
+    \boldsymbol{P}_{k|k} &= \boldsymbol{P}_{k|k-1} - \boldsymbol{P}_{k|k-1} h_{\boldsymbol{x}}(\hat{\boldsymbol{x}}_{k|k-1},\boldsymbol{u}_{k})^{T} \boldsymbol{S}_{k}^{-1} h_{\boldsymbol{x}}(\hat{\boldsymbol{x}}_{k|k-1},\boldsymbol{u}_{k}) \boldsymbol{P}_{k|k-1}\\
     \end{align*}
     
    \textbf{Time update:}
     \begin{align*}
-    \hat{x}_{k+1|k} &= f(\hat{x}_{k|k},u_ {k})\\
-    P_{k+1|k} &= f_{x}(\hat{x}_{k|k},u_ {k})P_{k|k} f_{x}(\hat{x}_{k|k},u_ {k})^{T} + f_{v}(\hat{x}_{k|k},u_ {k}) Q_{k} f_{v}(\hat{x}_{k|k},u_ {k})^{T}
+    \hat{\boldsymbol{x}}_{k+1|k} &= f(\hat{\boldsymbol{x}}_{k|k},\boldsymbol{u}_{k})\\
+    \boldsymbol{P}_{k+1|k} &= f_{\boldsymbol{x}}(\hat{\boldsymbol{x}}_{k|k},\boldsymbol{u}_ {k})\boldsymbol{P}_{k|k} f_{\boldsymbol{x}}(\hat{\boldsymbol{x}}_{k|k},\boldsymbol{u}_{k})^{T} + f_{\boldsymbol{v}}(\hat{\boldsymbol{x}}_{k|k},\boldsymbol{u}_{k}) \boldsymbol{Q}_{k} f_{\boldsymbol{v}}(\hat{\boldsymbol{x}}_{k|k},\boldsymbol{u}_{k})^{T}
     \end{align*}    
 \end{algorithm}
 
-\section{Motion model}
-A Kalman filter uses knowledge of the system dynamics to strengthen the estimates of the models states. It is therefore very important to choose a model the sufficiently describes the systems dynamics. The better the model the better performance of the filter. In this thesis a simple motion model with quaternions $Q$, angular velocities $\omega$, gyro biases $b_{\omega}$ and depth $d$ as states was used. The model is based on the work of \todo{Hitta avhandlingen som Jonas prata om} and when is when discretised 
+\section{Motion model}\index{Motion model}
+A Kalman filter uses knowledge of the system dynamics to strengthen the estimates of the models states. It is therefore very important to choose a model the sufficiently describes the systems dynamics. The better the model the better performance of the filter. In this thesis two different motion models have been used, one model using the measured angular velocites as input and a more advanced model with angular velocites as states. All models in this chapter use quaternions and thus quaternion normalisation    adasd
+
+\subsection{Simple Model}\index{Quaternions}\label{sec:simple_model}
+A simple model using the quaternion representation of $\etaVector$ was based on the quaternion kinematics model in \citet[p.47]{Tornqvist}. The model was expanded with depth as an extra state. The depth was modeled as state with constant position discretised using euler forward. The complete simple model is 
 \begin{equation}
-\begin{split}
 \begin{pmatrix}
-Q_{k+1}\\
-\omega_{k+1}\\
-b_{k+1}\\
+\etaVector_{k+1}\\
 d_{k+1}
-\end{pmatrix}&=
-\left(
-\begin{array}{c|c|c|c}
-I_{4\times4} + \frac{T}{2}S(\omega_{k})& \frac{T^2}{2} \bar{S}(Q_{k}) & 0_{4\times3} & 0_{4\times1} \\
-\hline
-0_{3\times4} & I_{3\times3} & 0_{3\times3} & 0_{3\times1}\\
-\hline
-0_{3\times4} & 0_{3\times3} & I_{3\times3} & 0_{3\times1}\\
-\hline
-0_{1\times4} & 0_{1\times3} & 0_{1\times3} & I_{1\times1}\\
-\end{array}
-\right)
+\end{pmatrix} 
+=
+ \begin{pmatrix}
+ I_{4\times4} + T_s \bar{T}(\nuVector_k) & 0\\
+ 0 & I_{1\times1} 
+ \end{pmatrix}
+ \begin{pmatrix}
+ \etaVector_{k}\\
+ d_k
+ \end{pmatrix}
+ +
+  \begin{pmatrix}
+  T_s T(\etaVector_{k}) & 0\\
+  0 & T_s
+  \end{pmatrix}
+  \begin{pmatrix}
+  \boldsymbol{v}_{\etaVector}\\
+  v_d 
+  \end{pmatrix}
+\end{equation}
+Here $\bar{T}(\nuVector)$ is definded as
+\begin{equation}
+\bar{T}(\nuVector) = \frac{1}{2}
 \begin{pmatrix}
-Q_{k}\\
-\omega_{k}\\
-b_{k}\\
+     0 &-p &-q &-r\\
+     p & 0 & r &-q\\
+     q &-r & 0 & p\\
+     r & q &-p & 0
+\end{pmatrix}
+\end{equation} and $T(\etaVector)$ is given in \eqref{eq:Tquat}.
+It is important to note that this is an attitude model and thus $\etaVector$ and $\nuVector$ only contains quaternions and angular velocites respectively. Note that $\nuVector$ is not modeled as a state but \citet{Tornqvist} instead uses it as an input to reduce the dimension of the model. 
+\subsection{Expanded model}\label{sec:expanded_model}
+A second model was implemented to improve sensor fusion performance. This model incorporated bias estimates, modeled $\nuVector$ as a constant position state. The entire model was discretised using euler forward. The expanded model is 
+\begin{equation}\label{eq:expanded_model}
+\begin{pmatrix}
+\etaVector_{k+1}\\
+\nuVector_{k+1}\\
+\boldsymbol{b}_{k+1}\\
+d_{k+1}
+\end{pmatrix}=
+\begin{pmatrix}
+I_{4\times4} + T_s \bar{T}(\nuVector_{k})& 0_{4\times7}\\
+0_{7\times4} & I_{7\times7}\\
+\end{pmatrix}
+\begin{pmatrix}
+\etaVector_{k}\\
+\nuVector_{k}\\
+\boldsymbol{b}_{k}\\
 d_{k}
 \end{pmatrix}
-\\ &+\left(\begin{array}{c|c|c}
-\frac{T^3}{4}\bar{S}(Q_{k}) & 0_{3\times3} & 0_{3\times1}\\
-\hline
-T I_{3\times3}& 0_{3\times3} & 0_{3\times1}\\
-\hline
-0_{3\times3} & T I_{3\times3} & 0_{3\times1}\\
-\hline
-0_{1\times3} & 0_{1\times3} & T I_{1\times1}\\
-\end{array}
-\right)
-\begin{pmatrix}
-v_{\omega}\\
-v_{bias}\\
-v_{d}
-\end{pmatrix}
-\end{split}
-\end{equation}
-where
-\begin{equation}
-S(\omega_{k}) = \begin{pmatrix}
-    0 & -p_{k} & -q_{k} & -r_{k} \\
-     p_{k} & 0 & r_{k} & -q_{k} \\
-     q_{k} & -r_{k} & 0 & p_{k} \\
-     r_{k} & q_{k} & -p_{k} &0
-\end{pmatrix}
-\end{equation},
-\begin{equation}
-\omega_{k} = \begin{pmatrix}
-p_{k}\\
-q_{k}\\
-r_{k}
++\begin{pmatrix}
+  \boldsymbol{v}_{\etaVector}\\
+  \boldsymbol{v}_{\nuVector}\\
+  \boldsymbol{v}_{\boldsymbol{b}}\\
+  v_d 
 \end{pmatrix}
 \end{equation}
-and
-\begin{equation}
-\bar{S}(Q_{k}) = \begin{pmatrix}
-    -Q_{1,k} & -Q_{2,k} & -Q_{3,k}\\
-    Q_{0,k} & -Q_{3,k} &  Q_{2,k}\\
-    Q_{3,k} &  Q_{0,k} & -Q_{1,k}\\
-    -Q_{2,k} & Q_{1,k} &  Q_{0,k}
-\end{pmatrix}
-\end{equation}. Here $p$, $q$ and $r$ represent roll-, pitch- and yaw-rate. $Q_0$ - $Q_3$ are quaternions which are used to represent the attitude of the \abbrROV.
-
-%Since $Cov(v_{k})$, $Cov(e_{k})$ and $Cov(x_{0})$ often can be hard to properly estimate, the matrices $Q_{k}$, $R_{k}$ and $P_{1|0}$ can be seen as design variables denoting certainty in the model, sensors and initial state.
-%It is important to note that several time updates or measurement updates can be made in a row. One may for example run a time update at a given rate, while measurements are received sporadically.\citep[p.170]{sensorfusion}
 
 \subsection{Gyro measurement equation}
 The \abbrROV is equipped with an \abbrIMU. The gyro measurement equation is 
-\begin{equation}
-\begin{pmatrix}
-\omega_x\\
-\omega_y\\
-\omega_z\\
-\end{pmatrix}= \begin{pmatrix}
+\begin{equation}\label{eq:gyro}
+\boldsymbol{y}_\text{Gyro}= \nuVector + \boldsymbol{b} =
+ \begin{pmatrix}
 p + b_p\\
 q + b_q\\
 r + b_r
 \end{pmatrix}
 \end{equation}
-where $\omega_x$, $\omega_y$ and $\omega_z$ are the readings form the \abbrIMU's gyro in $rad/s$. $b_p$, $b_q$ and $b_r$ are the gyro's biases in roll-, pitch- and yaw-rate. No outlier rejection is performed with the gyro measurements.
+ $\boldsymbol{y}_\text{Gyro}$ is the reading from the \abbrIMU's gyro in $rad/s$. $b_p$, $b_q$ and $b_r$ are the gyro's biases around the \xPosition-, \yPosition- and \zPosition-axes. No outlier rejection is performed with the gyro measurements. Also note that \eqref{eq:gyro} is only used in conjunction with the expanded model \eqref{sec:expanded_model} since it models $\nuVector$ as a state. 
 
 \subsection{Accelerometer measurement equation}
-Since the \abbrIMU sends accelerometer data in addition to angular velocities a accelerometer measurement update can be done with each new \abbrIMU data packet. The measurement equation for the accelerometer is
+Since the \abbrIMU measures acceleration in addition to angular velocities an accelerometer measurement update can be done with each new \abbrIMU data packet. The measurement equation for the accelerometer is
 \begin{equation}
-    \begin{pmatrix}
-    a_x\\
-    a_y\\
-    a_z
-    \end{pmatrix}
-    =
-    R^T
+\boldsymbol{y}_{\text{Acc}} =
+    \boldsymbol{R}^T
     \begin{pmatrix}
     0\\
     0\\
     -g
-    \end{pmatrix}
-    =
-    \begin{pmatrix}
-        2(Q_0^2+Q_1^2) - 1 &  2(Q_1 Q_2-Q_0 Q_3) &    2(Q_1 Q_3+Q_0 Q_2)\\
-        2(Q_1 Q_2+Q_0 Q_3) &    2(Q_0^2+Q_2^2) - 1 &  2(Q_2 Q_3-Q_0 Q_1)\\
-        2(Q_1 Q_3-Q_0 Q_2) &    2(Q_2 Q_3+Q_0 Q_1) &    2(Q_0^2+Q_3^2) - 1
-    \end{pmatrix}^T
-    \begin{pmatrix}
-        0\\
-        0\\
-        -g
     \end{pmatrix}
 \end{equation}
-    where $R$ is a rotation matrix from the local to the global coordinate system and $g$ is the gravitational constant. To ensure that only the gravitational constant $g$ is used to update the \abbrROV's attitude outlier rejection is performed. Accelerometer measurements are used if 
+    where $\boldsymbol{R}$ is the rotation matrix defined in \chapterref{cha:modelling} and $g$ is the gravitational constant. To ensure that only the gravitational constant $g$ is used to update the \abbrROV's attitude outlier rejection is performed. Accelerometer measurements are used if 
 \begin{align*}
     \intertext{Keep if: }
-    \abs{ ||
-    \begin{pmatrix}
-        a_x\\
-        a_y\\
-        a_z
-    \end{pmatrix}||
+    \abs{~||
+    \boldsymbol{y}_{\text{Acc}}
+||
     -g
-     } < \epsilon
+     ~} < \epsilon
 \end{align*} holds true.
-Here epsilon is a design variable that tweaks how harsh the outlier rejection should be.
+Here epsilon is a design variable that tweaks how much the magnitude of the accelerometer measurement may deviate from $g$ before being considered an outlier.
 
 \subsection{Magnetometer measurement equation}
 The internal magnetometer enables the \abbrROV to measure the magnetic field strength in the three local axes $x$, $y$ and $z$. This data is used as a measurement in a measurement update that is constructed the following way:
 \begin{equation}
-    \begin{pmatrix}
-        m_x\\
-        m_y\\
-        m_z
-    \end{pmatrix} = 
-    R^T
-    \begin{pmatrix}
-        m_N\\
-        m_E\\
-        m_D
-    \end{pmatrix}=
-    \begin{pmatrix}
-        2(Q_0^2+Q_1^2) - 1 &  2(Q_1 Q_2-Q_0 Q_3) &    2 (Q_1 Q_3+Q_0 Q_2)\\
-        2(Q_1 Q_2+Q_0 Q_3) &  2(Q_0^2+Q_2^2) - 1 &  2(Q_2 Q_3-Q_0 Q_1)\\
-        2(Q_1 Q_3-Q_0 Q_2) &  2(Q_2*Q_3+Q_0 Q_1) &    2(Q_0^2+Q_3^2) - 1
-    \end{pmatrix}^T
+\boldsymbol{y}_{\text{Mag}} = 
+    \boldsymbol{R}^T
     \begin{pmatrix}
         m_N\\
         m_E\\
         m_D
     \end{pmatrix}
 \end{equation}
-where $m_x$, $m_y$ and $m_z$ are the components of the measured magnetic field in the local coordinate system. $m_N$, $m_E$ and $m_D$ are the components of the Earth's magnetic field in the $NED$ coordinate system and should be set during calibration.
+where $\boldsymbol{y}_{\text{Mag}}$ is the measured magnetic field in the local coordinate system. $m_N$, $m_E$ and $m_D$ are the components of the Earth's magnetic field in the $\north\east\down$ coordinate system and should be set during calibration.
 To ensure that the good measurements are used an outlier rejection equation was implemented. Magnetometer measurements are used if 
 \begin{equation}
-        \abs{ ||
-    \begin{pmatrix}
-        m_x\\
-        m_y\\
-        m_z
-    \end{pmatrix}||
+        \abs{~||
+\boldsymbol{y}_{\text{Mag}}||
     -
     ||
     \begin{pmatrix}
@@ -233,24 +188,24 @@ To ensure that the good measurements are used an outlier rejection equation was 
         m_E\\
         m_D
     \end{pmatrix}||
-     } < \epsilon
+     ~} < \epsilon
 \end{equation}
-holds.
+holds. Here epsilon is a design variable that tweaks how much the magnitude of hte measurements may deviate from the magnitude of the Earth's magnteic field before being rejected.
 
 \subsection{Pressure sensor measurement equation}
 The \abbrROV is also equipped with a pressure sensor. The sensor is placed in the rear, or bow, of the \abbrROV which in turn means that the attitude of the \abbrROV needs to be taken in to account when calculating the depth.
 The measurement equation for the pressure sensor is
 \begin{equation}
-p =  \rho g (d + \begin{pmatrix}
+ \boldsymbol{y}_{\text{Pre}}=  \rho g (d + \begin{pmatrix}
     0 & 0 & 1
-\end{pmatrix} R 
+\end{pmatrix} \boldsymbol{R} 
 \begin{pmatrix}
-x_{\textrm{offset}}\\
+x_{\text{offset}}\\
 0\\
 0
 \end{pmatrix}
-\end{equation}.
-Here $p$ is the measured pressure in pascal, $\rho$ is the density of the water, $d$ is the current depth in meters and $x_{\textrm{offset}}$ is the pressure sensors offset from the \abbrROV's \abbrCO in the x direction. In this case $x_{\textrm{offset}}$ is a negative number. A basic form of outlier rejection is implemented in the pressure sensor measurement update. The update is performed if
+\end{equation}
+Here $\boldsymbol{y}_{\text{Pre}}$ is the measured pressure in pascal, $\rho$ is the density of the water, $d$ is the current depth in meters and $x_{\text{offset}}$ is the pressure sensor's offset from the \abbrROV's \abbrCO in the \xPosition direction. In this case $x_{\textrm{offset}}$ is a negative number. A basic form of outlier rejection is implemented in the pressure sensor measurement update. The update is performed if
 \begin{equation}
     p > 0
 \end{equation}
