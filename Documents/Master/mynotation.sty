@@ -82,7 +82,7 @@
 \newcommand{\etaVector}{\ensuremath{\boldsymbol{\eta}}}
 \newcommand{\etaVectordot}{\ensuremath{\dot{\etaVector}}}
 \newcommand{\listEta}{\ensuremath{\etaVector = %
-    [\xPosition, \yPosition, \zPosition, \rollAngle, \pitchAngle, \yawAngle]^T}}
+    [\north, \east, \down, \rollAngle, \pitchAngle, \yawAngle]^T}}
 \newcommand{\nuVector}{\ensuremath{\boldsymbol{\nu}}}
 \newcommand{\nuVectorLin}{\ensuremath{\boldsymbol{\nu}_1}}
 \newcommand{\nuVectorAng}{\ensuremath{\boldsymbol{\nu}_2}}
@@ -93,6 +93,13 @@
     [\xVelocity, \yVelocity, \zVelocity]^T}}
 \newcommand{\listNuAng}{\ensuremath{\nuVector_2 = %
     [\rollVelocity, \pitchVelocity, \yawVelocity]^T}}
+
+
+\newcommand{\angVelBody}{\ensuremath{\boldsymbol{\omega}^b_{b/n}}}    
+\newcommand{\linVelBody}{\ensuremath{\boldsymbol{v}^b_{b/n}}} 
+
+\newcommand{\linVelGlobal}{\ensuremath{\boldsymbol{v}^n_{b/n}}} 
+\newcommand{\posGlobaldot}{\ensuremath{\dot{\boldsymbol{p}}^n_{b/n}}}    
 
 
 % Notation for the model
@@ -133,6 +140,10 @@
 \newcommand{\quatI}{\ensuremath{\epsilon_1}}
 \newcommand{\quatII}{\ensuremath{\epsilon_2}}
 \newcommand{\quatIII}{\ensuremath{\epsilon_3}}
+\newcommand{\quaternion}{\ensuremath{\boldsymbol{q}}}
+\newcommand{\quaterniondot}{\ensuremath{\dot{\boldsymbol{q}}}}
+\newcommand{\eulerAngles}{\ensuremath{\boldsymbol{\Theta}}}
+\newcommand{\eulerAnglesdot}{\ensuremath{\dot{\boldsymbol{\Theta}}}}
 
 % It's hard to get good-looking underscores in filenames.  This is one attempt...
 \newcommand{\usc}{\hspace{0.1ex}\rule{1ex}{0.1ex}\hspace{0.1ex}}%\raisebox{2.5pt}{\_}

@@ -14,12 +14,9 @@ where
   \listNu 
 \end{equation*}
 are generalised velocities that are used to describe motion in 6 \abbrDOF. The matrices $\inertia$\index{Inertia matrix}, $\coriolis$\index{Coriolis matrix}, $\damping$\index{Damping matrix} and the vector $\gravity$\index{Restoring forces matrix} respectively describes how inertia, Coriolis forces, damping forces, gravity and buoyancy affect the \abbrROV. The vector $\tauVector$ describes the forces and torques produced by the \abbrROV's actuators and disturbances.
-\todo[inline]{Write something about the different coordinate systems}
-
-
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-In this chapter, the vector cross-product $\cross{\cdot}$ is defined as $\cross{a\boldsymbol{A}} \boldsymbol{B} = a\boldsymbol{A} \times \boldsymbol{B}$. The notation used for the parameters in this chapter and \Chapterref{cha:parameterEstimation} can be seen in \Tableref{tab:notationModelling}. The notation for forces, moments, linear and angular velocities, positions and Euler angles used in the model is summarised in \Tableref{tab:notationMarine}.
+In this chapter, the vector cross-product $\cross{\cdot}$ is defined as $\cross{a\boldsymbol{A}} \boldsymbol{B} = a\boldsymbol{A} \times \boldsymbol{B}$. The notation used for the parameters in this chapter and \Chapterref{cha:parameterEstimation} can be seen in \Tableref{tab:notationModelling}. The notation for forces, moments, linear and angular velocities, positions and Euler angles used in the model is summarised in \Tableref{tab:notationMarine}. 
 
  \begin{table}[tbp]
   \centering
@@ -44,7 +41,7 @@ In this chapter, the vector cross-product $\cross{\cdot}$ is defined as $\cross{
     $V$ & Displaced volume. \\
     $\rho$ & Water density. \\
     $g$ & Gravity. \\
-     $r^g_b$ & The distance between \abbrCO and \abbrCG. \\
+    $r^g_b$ & The distance between \abbrCO and \abbrCG. \\
     \bottomrule%
   \end{tabular}
 \end{table}
@@ -72,6 +69,15 @@ In this chapter, the vector cross-product $\cross{\cdot}$ is defined as $\cross{
     \bottomrule%
   \end{tabular}
 \end{table}
+
+To get a more compact way of writing a vector notation has been established
+\begin{itemize}
+\item $\boldsymbol{p}$: Positions.
+\item $\boldsymbol{v}$: Linear velocities.
+\item $\boldsymbol{\eulerAngles}$: Euler Angles.
+\item $\boldsymbol{\quaternion}$: Quaternions.
+\item $\boldsymbol{\omega}$: Angular velocities.
+\end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The body-fixed and global coordinate systems}
@@ -136,9 +142,63 @@ This coordinate system is used to express buoyancy and gravitational forces on t
     \label{fig:coordinate_frames}
 \end{figure}
 
-\todo[inline]{Write about kinetics}
 \missingfigure{Picture of the rov with the coordinate system.}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Kinetics} \index{Kinetics}\index{Transformation matrices}
+The relationship between the body-fixed frame and the global frame can be described by different transformation matrices.
+The transformation for linear velocities from the body-fixed coordinate system to the global coordinate system is according to \citet[22]{fossen2011} 
+\begin{equation}
+\linVelGlobal = \boldsymbol{R}^n_b(\eulerAngles) \linVelBody
+\end{equation}
+where the transformation matrix $\boldsymbol{R}^n_b(\eulerAngles)$ in $zyx$ convention is 
+\begin{equation}
+\boldsymbol{R}^n_b(\eulerAngles) =\begin{bmatrix}
+ c\yawAngle c\pitchAngle & -s\yawAngle c\rollAngle + c\yawAngle s\pitchAngle s\rollAngle & s\yawAngle s\rollAngle + c\yawAngle c\rollAngle s \pitchAngle \\
+ s\yawAngle c\pitchAngle & c\yawAngle c\rollAngle + s\rollAngle  s\pitchAngle s\yawAngle & -c\yawAngle s\rollAngle + s\pitchAngle s\yawAngle c\rollAngle \\
+ -s\pitchAngle & c\pitchAngle s\rollAngle & c\pitchAngle c\rollAngle
+ \end{bmatrix} 
+\end{equation}
+where $s$ stands for $\sin$ and $c$ stands for $\cos$. The inverse of the transformation matrix $\boldsymbol{R}^n_b(\eulerAngles)$ is
+\begin{equation}
+\boldsymbol{R}^n_b(\eulerAngles)^{-1} = \boldsymbol{R}^n_b(\eulerAngles)^T
+\end{equation}
+
+Angular velocities transformation between the from the body-fixed frame to the global frame is given by 
+\begin{equation}
+\eulerAnglesdot = \boldsymbol{T}_{\theta}(\eulerAngles)\angVelBody
+\end{equation}
+where $\boldsymbol{T}_{\theta}(\eulerAngles)$ is 
+\begin{equation}
+\boldsymbol{T}_{\theta}(\eulerAngles) = \begin{bmatrix}
+1 & s\rollAngle t\pitchAngle & c\rollAngle t\pitchAngle \\
+0 & c\rollAngle & -s\rollAngle \\
+0 & s\rollAngle/c\pitchAngle & c\rollAngle/c\pitchAngle
+\end{bmatrix}
+\end{equation}
+where $t$ stands for $\tan$ \citep[24-25]{fossen2011}. Similar to the linear velocities transformation matrix is the inverse of the angular velocities transformation matrix
+\begin{equation}
+\boldsymbol{T}_{\theta}(\eulerAngles)^{-1} = \boldsymbol{T}_{\theta}(\eulerAngles)^T
+\end{equation}
+
+The kinematic equations can then be expressed in vector form as \index{Kinematics}
+\begin{equation} 
+\etaVectordot = \boldsymbol{J}_\theta(\etaVector)\nuVector
+\Leftrightarrow
+\begin{bmatrix}
+\posGlobaldot \\
+\eulerAnglesdot
+\end{bmatrix}
+=
+\begin{bmatrix}
+\boldsymbol{R}^n_b(\eulerAngles) & \zero{3} \\
+\boldsymbol{0}_{4x3} & \boldsymbol{T}_\theta(\eulerAngles)
+\end{bmatrix}
+\begin{bmatrix}
+\linVelBody \\
+\angVelBody
+\end{bmatrix}
+\end{equation} 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Inertia}
 The inertia matrix $\inertia$ describes the resistance of moving and rotating the \abbrROV in its 6 \abbrDOF. It also describes the added mass that comes from rotating and translating a body in a liquid media. The inertia matrix is defined as
@@ -259,14 +319,16 @@ If the \abbrROV is symmetric about the $xz$-plane and the damping is assumed to 
     \end{pmatrix}    
 \end{equation}.
 
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Restoring forces}\index{Restoring forces}\index{buoyancy}
-Since the \abbrROV is submerged it will experience forces and moments caused by the Earths gravitational pull and the buoyancy force, in hydrostatic terms these are called restoring forces and act as spring forces on the \abbrROV \citep{fossen2011}. The restoring forces and moments are calculated using four main parameters; the mass of the vehicle, $m$, its buoyancy $B$ and lastly the coordinates for the \abbrROV's \abbrCG and center of buoyancy (\abbrCB) \citep{fossen2011}.
-The restoring forces matrix, $\gravity(\etaVector)$, according to \citet[p.60]{fossen2011} defined as
-\begin{equation}
-    g(\etaVector) =
+Since the \abbrROV is submerged it will experience forces and moments caused by the Earths gravitational pull and the buoyancy force, in hydrostatic terms these are called restoring forces and act as spring forces on the \abbrROV \citep{fossen2011}. The restoring forces and moments are calculated using four main parameters; the mass of the vehicle, $m$, its buoyancy $B$ and lastly the coordinates for the \abbrROV's \abbrCG and center of buoyancy (\abbrCB) \citep{fossen2011}. The restoring forces vector, $\gravity(\etaVector)$, describes how the forces and moments caused by the buoyancy force and gravitational pull of the Earth act on a 6 \abbrDOF model.It is according to \citet[p.60]{fossen2011} defined as
+\begin{equation} \label{eq:restoring_forces}
+    \gravity(\etaVector) =
+     \begin{pmatrix}
+    \boldsymbol{f}_g + \boldsymbol{f}_b \\
+    \boldsymbol{r}_b \times \boldsymbol{f}_b + \boldsymbol{r}_g \times \boldsymbol{f}_g) 
+     \end{pmatrix} 
+     =
     \begin{pmatrix}
         (W - B) \sin \pitchAngle\\
     -(W - B) \cos \pitchAngle \sin \rollAngle\\
@@ -276,7 +338,8 @@ The restoring forces matrix, $\gravity(\etaVector)$, according to \citet[p.60]{f
     0\\
     \end{pmatrix}
 \end{equation}
-describes how the forces and moments caused by the buoyancy force and gravitational pull of the Earth act on a 6 \abbrDOF model. Here $B$ is given by $B = \rho g V$ and $W = m g$. $m$ is the \abbrROV's mass, $g$ the gravitational constant, $\rho$ the density of water and $V$ the volume of displaced water. In other words the magnitude of the buoyancy forces is equal to the weight of the displaced water. For a fully submerged vehicle, $V$ will naturally be equal the volume of the vehicle.
+where $\boldsymbol{r}_b = [0, 0, z_B]^T$, $\boldsymbol{r}_g = [0, 0, 0]^T$, $\boldsymbol{f}_g = \boldsymbol{R}^n_b(\eulerAngles)^T [0, 0, W]^T$ and $\boldsymbol{f}_b = -\boldsymbol{R}^n_b(\eulerAngles)^T [0, 0, B]^T$.
+Here $B$ is given by $B = \rho g V$ and $W = m g$. $m$ is the \abbrROV's mass, $g$ the gravitational constant, $\rho$ the density of water and $V$ the volume of displaced water. In other words the magnitude of the buoyancy forces is equal to the weight of the displaced water. For a fully submerged vehicle, $V$ will naturally be equal the volume of the vehicle.
 In these calculations it is assumed that the \abbrCG coincides with the \abbrCO and that the \abbrCB lies at coordinate $[0, 0, z_B]$, directly above or below the \abbrCO. Note that the positions of the three centers are described using the coordinate system described in \Sectionref{sec:coordinates}, a roll and pitch stable \abbrROV should thus have a $z_B < 0$.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -286,7 +349,7 @@ The \abbrROV's actuators can be modelled as
 \begin{equation}
     \tauVector = \thrusterGeometry \boldsymbol{\thrusterfun{}} 
 \end{equation}
-where $\thrusterGeometry$\index{thruster geometry} is a matrix describing the geometry of the actuators, see \Figureref{fig:thrusterlocation} \citep[p.401]{fossen2011}.
+where $\thrusterGeometry$\index{thruster geometry} is a matrix describing the geometry of the actuators, see \Figureref{fig:thrusterlocationtop} \citep[p.401]{fossen2011}.
 \begin{equation}
 \begin{split}
     \tauVector = \thrusterGeometry \boldsymbol{\thrusterfun{}} 
@@ -319,7 +382,72 @@ where $\thrusterGeometry$\index{thruster geometry} is a matrix describing the ge
 \end{split}
 \end{equation}
 where \distance{x}{1}, \distance{x}{2}, \distance{y}{1}, \distance{y}{2}, \distance{y}{3}, \distance{y}{4} and \distance{z}{6} are the offsets in the $x$, $y$ or $z$ direction of the $n$:th thruster and $\thrusterfun{i}$ is a lookup table from control signal to thrust in Newtons. See \appref{app:thrustmapping} for details regarding the lookup table.
-\todo[inline]{Write \appref{app:thrustmapping}.}
+
+\begin{figure}
+\centering 
+\begin{tikzpicture}
+    \node[anchor=south west,inner sep=0] (image) at (0,0) {\includegraphics[trim={28cm 0cm 22cm 5cm},clip,width=0.9\textwidth]{thrusterlocationtop}};
+    \begin{scope}[x={(image.south east)},y={(image.north west)}]
+		\pgfmathsetmacro\coordinateRadius{0.025}
+        \pgfmathsetmacro\by{\coordinateRadius*sin(45)}
+        \pgfmathsetmacro\bx{\coordinateRadius*cos(45)}
+        \pgfmathsetmacro\ay{\coordinateRadius*sin(\coordRot)}
+        \pgfmathsetmacro\ax{\coordinateRadius*cos(\coordRot)}
+        \pgfmathsetmacro\coordYRot{sin(\coordRot)}
+        \pgfmathsetmacro\coordXRot{cos(\coordRot)}
+        
+        \coordinate (O) at (0.48,0.52);
+        \draw[red, thick,->] (O) ++(\coordinateRadius,0) -- ++(0.4,0) node[anchor=north east]{\color{red}$\xPosition$};
+        \draw[red, thick,->] (O) ++(0,-\coordinateRadius)-- ++(0,-0.4) node[anchor=south east]{\color{red}$\yPosition$};
+        \draw[red, thick] (O) circle (\coordinateRadius) node[anchor=south,]{\color{red}$\zPosition$};
+        \draw[red, thick] (O) -- ++(\bx,\by) (O) -- ++(-\bx,-\by) (O) -- ++(-\bx,\by) (O)  -- ++(\bx,-\by);
+        
+        \draw[yellow, thick, <->] (O) ++(0.34,0) -- ++(0,0.23)  node [midway, left] {\distance{y}{1}};
+        \draw[yellow, thick, <->] (O) ++(0.34,0) -- ++(0,-0.28) node [midway, left] {\distance{y}{2}};
+        \draw[yellow, thick, <->] (O) ++(0.03,0) -- ++(0,0.24)  node [midway, right] {\distance{y}{3}};
+        \draw[yellow, thick, <->] (O) ++(0.03,0) -- ++(0,-0.28) node [midway, right] {\distance{y}{4}};
+        
+        \draw[yellow, thick, <->] (O) ++(0,0.27) -- ++(0.34,0)  node [midway, below] {\distance{x}{1}};
+        \draw[yellow, thick, <->] (O) ++(0,-0.32) -- ++(0.34,0)  node [midway, below] {\distance{x}{2}};
+        \draw[yellow, thick, <->] (O) -- ++(-0.30,0)  node [midway, below] {\distance{x}{5}};
+    \end{scope}
+\end{tikzpicture}
+    \caption{.}
+    \label{fig:thrusterlocationtop}
+\end{figure}
+
+\begin{figure}
+\centering 
+\begin{tikzpicture}
+    \node[anchor=south west,inner sep=0] (image) at (0,0) {\includegraphics[trim={0cm 0cm 0cm 0cm},clip,width=0.9\textwidth]{thrusterlocationfront}};
+    \begin{scope}[x={(image.south east)},y={(image.north west)}]
+		\pgfmathsetmacro\coordinateRadius{0.025}
+        \pgfmathsetmacro\by{\coordinateRadius*sin(45)}
+        \pgfmathsetmacro\bx{\coordinateRadius*cos(45)}
+        \pgfmathsetmacro\ay{\coordinateRadius*sin(\coordRot)}
+        \pgfmathsetmacro\ax{\coordinateRadius*cos(\coordRot)}
+        \pgfmathsetmacro\coordYRot{sin(\coordRot)}
+        \pgfmathsetmacro\coordXRot{cos(\coordRot)}
+        
+        \coordinate (O) at (0.48,0.52);
+        \draw[red, thick,->] (O) ++(\coordinateRadius,0) -- ++(0.4,0) node[anchor=north east]{\color{red}$\xPosition$};
+        \draw[red, thick,->] (O) ++(0,-\coordinateRadius)-- ++(0,-0.4) node[anchor=south east]{\color{red}$\yPosition$};
+        \draw[red, thick] (O) circle (\coordinateRadius) node[anchor=south,]{\color{red}$\zPosition$};
+        \draw[red, thick] (O) -- ++(\bx,\by) (O) -- ++(-\bx,-\by) (O) -- ++(-\bx,\by) (O)  -- ++(\bx,-\by);
+        
+        \draw[yellow, thick, <->] (O) ++(0.34,0) -- ++(0,0.23)  node [midway, left] {\distance{y}{1}};
+        \draw[yellow, thick, <->] (O) ++(0.34,0) -- ++(0,-0.28) node [midway, left] {\distance{y}{2}};
+        \draw[yellow, thick, <->] (O) ++(0.03,0) -- ++(0,0.24)  node [midway, right] {\distance{y}{3}};
+        \draw[yellow, thick, <->] (O) ++(0.03,0) -- ++(0,-0.28) node [midway, right] {\distance{y}{4}};
+        
+        \draw[yellow, thick, <->] (O) ++(0,0.27) -- ++(0.34,0)  node [midway, below] {\distance{x}{1}};
+        \draw[yellow, thick, <->] (O) ++(0,-0.32) -- ++(0.34,0)  node [midway, below] {\distance{x}{2}};
+        \draw[yellow, thick, <->] (O) -- ++(-0.30,0)  node [midway, below] {\distance{x}{5}};
+    \end{scope}
+\end{tikzpicture}
+    \caption{.}
+    \label{fig:thrusterlocationfront}
+\end{figure}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Equations in Component Form}
 If the matrices and vectors in \eqref{eq:model} are substituted with the matrices and vectors previously defined in this chapter and \eqref{eq:model} then solved for $\nuVectordot$ the following equations can be derived 
@@ -346,3 +474,83 @@ If the matrices and vectors in \eqref{eq:model} are substituted with the matrice
 \dot{r} = \frac{\thrusterfun{3} \distance{y}{3} - \thrusterfun{4} \distance{y}{4}}{\Iz - \Nrdot} + \frac{r (\Nr + \Nrabsr \abs{r})}{\Iz - \Nrdot} + \frac{-\Kpdot p q}{\Iz - \Nrdot} + \frac{\Mqdot p q}{\Iz - \Nrdot} +\\
 \frac{p q (\Ix - \Iy)}{\Iz - \Nrdot} + \frac{- \Xudot u v}{\Iz - \Nrdot} + \frac{\Yvdot u v}{\Iz - \Nrdot}
 \end{multline} 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Quaternions} \index{Quaternions} \index{Transformation matrices}
+Unit quaternions $\quaternion$ are a useful way to express angles. Where Euler angel representations are singular the corresponding quaternion representations are not. To use quaternions instead of Euler angles, $\etaVector$ has to be changed to 
+\begin{equation}
+\etaVector = \begin{pmatrix}
+\north \\
+\east \\
+\down \\
+\quatO \\
+\quatI \\
+\quatII \\
+\quatIII \\
+\end{pmatrix}
+\end{equation}
+and the transformation matrix from body-fixed coordinates to global coordinates is given by 
+\begin{equation}
+\boldsymbol{R}^n_b(\quaternion) = \begin{pmatrix}
+  1 - 2(\quatII^2 + \quatIII^2) & 2(\quatI\quatII - \quatIII\quatO)   & 2(\quatI\quatIII + \quatII\quatO) \\
+     2(\quatI\quatII + \quatIII\quatO) &  1-2(\quatI^2 + \quatIII^2) & 2(\quatII\quatIII-\quatI\quatO)    \\
+     2(\quatI\quatIII - \quatII\quatO) &  2(\quatII\quatIII + \quatI\quatO)  & 1-2(\quatI^2 + \quatII^2) \\
+\end{pmatrix}
+\end{equation}
+
+Changing to quaternions changes \eqref{eq:restoring_forces} to 
+\begin{equation}
+    \boldsymbol{g}(\etaVector) = 
+    \begin{pmatrix}
+    \boldsymbol{f}_g + \boldsymbol{f}_b \\
+    \boldsymbol{r}_b \times \boldsymbol{f}_b + \boldsymbol{r}_g \times \boldsymbol{f}_g) 
+     \end{pmatrix} = 
+    \begin{pmatrix}
+	(B - W) (2 \quatI \quatIII - 2 \quatII \quatO) 	\\
+    (B - W) (2 \quatII \quatIII + 2 \quatI \quatO) 	\\
+ 	(W - B)(2 \quatI^2 + 2\quatII^2 - 1)				\\
+ 	-B z_B (2 \quatII \quatIII + 2 \quatI \quatO)	\\
+  	B z_B (2 \quatI \quatIII - 2 \quatII \quatO)		\\
+    0
+    \end{pmatrix}
+\end{equation}
+
+A unit quaternion satisfies $\quaternion^T\quaternion = 1$, thus does the quaternions need normalisation.
+Quaternion normalisation in continuous time is given by 
+\begin{equation}
+\quaterniondot = \boldsymbol{T}_q(\quaternion) \angVelBody + \frac{\gamma}{2} ( 1 - \quaternion^T\quaternion)\quaternion
+\end{equation}
+according to \citet[31]{fossen2011}. $\gamma$ is a design variable, $\gamma \geq 0$ usually $\gamma = 100$, indicating the convergence rate of the normalisation and $\boldsymbol{T}_q(\quaternion)$ is given by
+\begin{equation} \label{eq:Tquat}
+\boldsymbol{T}_q(\quaternion) = \frac{1}{2}
+\begin{pmatrix}
+-\quatI  & -\quatII  & -\quatIII \\
+\quatO   & -\quatIII & \quatII \\
+\quatIII & \quatO    &  -\quatI \\
+-\quatII & \quatI    & \quatO \\
+\end{pmatrix}
+\end{equation}
+
+In discrete time quaternion normalisation is given by 
+\begin{equation}
+\quaternion(k+1) = \frac{\quaternion(k+1)}{\sqrt{\quaternion^T(k+1)\quaternion(k+1)}}
+\end{equation}
+
+The kinematic equations are changed to \index{Kinematics}
+\begin{equation}
+\etaVectordot = \boldsymbol{J}_q(\etaVector)\nuVector
+\Leftrightarrow
+\begin{bmatrix}
+\posGlobaldot \\
+\quaterniondot
+\end{bmatrix}
+=
+\begin{bmatrix}
+\boldsymbol{R}^n_b(\quaternion) & \zero{3} \\
+\boldsymbol{0}_{4x3} & \boldsymbol{T}_q(\quaternion)
+\end{bmatrix}
+\begin{bmatrix}
+\linVelBody \\
+\angVelBody
+\end{bmatrix}
+\end{equation}  

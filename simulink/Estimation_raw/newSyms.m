@@ -51,9 +51,9 @@ RQ =...
 rb = [0; 0; zb];
 rg = [0; 0; 0];
 fg = transpose(RQ)*[0; 0; W];
-fb = transpose(RQ)*[0; 0; B];
+fb = -transpose(RQ)*[0; 0; B];
 
-gn = [cross(rb,fb) - cross(rg,fg)];
+gn = [cross(rb,fb) + cross(rg,fg)];
 
 T = [...
     ly1, -ly2, 0, 0, 0, lz6;
