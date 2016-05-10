@@ -26,7 +26,7 @@ This can be done because the translation dynamics in the attitude model structur
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Parameter Estimation} \index{Parameter Estimation}
-In general parameter estimation means to fit a model structure's parametrising vector $\boldsymbol{\theta}$ using estimation data. The fitting is done by minimising a cost function $V(\boldsymbol{\theta})$ with respect to the parameter vector $\boldsymbol{\theta}$ \emph{i.e.}
+In general parameter estimation is to fit the model structure's parametrising vector $\boldsymbol{\theta}$ to estimation data. The fitting is done by minimising the cost function $V(\boldsymbol{\theta})$ with respect to the parameter vector $\boldsymbol{\theta}$ \emph{i.e.}
 \begin{equation}
 \hat{\boldsymbol{\theta}} = \underset{\boldsymbol{\theta}}{\argmin} V(\boldsymbol{\theta})
 \end{equation}
@@ -171,6 +171,7 @@ J(\eta) = \begin{pmatrix}
 -\quatII & \quatI    & -\quatO   \\ 
 \end{pmatrix}
 \end{equation}.
+
 To increase the performance of the filter a method for outlier detection and rejection was implemented.
 The outlier rejection is based on the assumption that the normalised innovation $\epsilon^T S^{-1} \epsilon$ is $\chi_{n}^{2}$ distributed. Here $n$ is the number of measurements. To check the validity of a single measurement the previous asumption gives that $\epsilon_i^{2}/S_{i,i} \sim \chi_{1}^{2}$ \citep{sensorfusion}. This is used in the \abbrEKF using the following algorithm:
 \begin{algorithm}[H]
