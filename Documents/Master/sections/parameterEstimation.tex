@@ -67,7 +67,7 @@ The attitude model structure of the \abbrROV was divided into three estimation s
 \begin{align} \label{eq:pq_dot_simple}
 \pdot &= \frac{\thrusterfun{1} \distance{y}{1} - \thrusterfun{2} \distance{y}{2} + \thrusterfun{6} \distance{z}{6}}{\Ix - \Kpdot} + \frac{p (Kp + \Kpabsp \abs{p})}{\Ix - \Kpdot} + \frac{B \cos{\theta} \sin{\phi} z_B}{\Ix - \Kpdot}, \\ \label{eq:pq_dot_simple2}
 \qdot &=\frac{\thrusterfun{1} \distance{x}{1} + \thrusterfun{2} \distance{x}{2} - \thrusterfun{5} \distance{x}{5}}{\Iy - \Mqdot} + \frac{q (\Mq + \Mqabsq \abs{q})}{\Iy - \Mqdot} + \frac{B \sin{\theta} z_B}{\Iy - \Mqdot} 
-\end{align} for and
+\end{align} and
 \begin{equation} \label{eq:r_dot_simple}
 \rdot = \frac{\thrusterfun{3} \distance{y}{3} - \thrusterfun{4} \distance{y}{4}}{\Iz - \Nrdot} + \frac{r (\Nr + \Nrabsr \abs{r})}{\Iz - \Nrdot}
 \end{equation}
@@ -204,10 +204,10 @@ The filter was run on each collected data set. The final values of $\hat{\theta}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Parameter Estimation from Angular Velocities and Linear Acceleration}
-The parameters were also estimated using the angular velocities and the linear accelerations as outputs. This was done to bypass the low-pass filtering effects from the sensor fusion described in \Chapterref{sec:sensor_fusion}. The model structure that was modified to use quaternions instead of euler angles. Using quaternions in the reparameterised model \eqref{eq:p_dotWithoutTranslation} - \eqref{eq:r_dotWithoutTranslation} from \Sectionref{sec:estimation_angular} the following model structure
+The parameters were also estimated using the angular velocities and the linear accelerations as outputs. This was done to bypass the low-pass filtering effects from the sensor fusion described in \Chapterref{cha:sensor_fusion}. The model structure that was modified to use quaternions instead of euler angles. Using quaternions in the reparameterised model \eqref{eq:p_dotWithoutTranslation} - \eqref{eq:r_dotWithoutTranslation} from \Sectionref{sec:estimation_angular} the following model structure
 \begin{multline}
-\pdot = \frac{\thrusterfun{1} \distance{y}{1} - \thrusterfun{2} \distance{y}{2} + \thrusterfun{6} \distance{z}{6}}{A_p} + \frac{B z_B (2 \quatII \quatIII + 2 \quatI \quatO)}{A_p} + \\ \frac{p (\Kp + \Kpabsp \abs(p))}{A_p} + \frac{q r (B_q - C_r)}{A_p}
-\end{multline},
+\pdot = \frac{\thrusterfun{1} \distance{y}{1} - \thrusterfun{2} \distance{y}{2} + \thrusterfun{6} \distance{z}{6}}{A_p} + \frac{B z_B (2 \quatII \quatIII + 2 \quatI \quatO)}{A_p} + \\ \frac{p (\Kp + \Kpabsp \abs(p))}{A_p} + \frac{q r (B_q - C_r)}{A_p},
+\end{multline}
 \begin{multline}
 \qdot = \frac{\thrusterfun{1} \distance{x}{1} + \thrusterfun{2} \distance{x}{2} - \thrusterfun{5} \distance{x}{5}}{B_q} - \frac{B z_B (2 \quatI \quatIII - 2 \quatII \quatO)}{B_q} + \\ \frac{q (\Mq + \Mqabsq \abs(q))}{B_q} - \frac{p r (A_p - C_r)}{B_q}
 \end{multline}
@@ -326,11 +326,3 @@ To handle noisy signals an error threshold was introduced. An error threshold me
     \bottomrule%
   \end{tabular}}
 \end{table}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Parameter Estimation from Angular Velocities and Linear Acceleration}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Validation}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Estimated parameters}
