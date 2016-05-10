@@ -1,5 +1,5 @@
 \chapter{Parameter Estimation} \label{cha:parameterEstimation}
-A central part in modelling is parameter estimation and it is often underestimated. If the parameters in the model isn't well estimated several problems arise when trying to synthesise model-based controllers. If a systems dynamics are completely unknown a black box method is used, \textit{i.e.} general equations are fitted to test data. When a system can be completely modelled analytically for example via Newtons laws its called white box modelling. In our case the model of the system is known but several physical parameters are unknown, this is called gray box modelling. 
+A central part in modelling is parameter estimation and it is often underestimated. If the parameters in the model isn't well estimated several problems arise when trying to synthesise model-based controllers. If a systems dynamics are completely unknown a black box method is used \emph{i.e.} general equations are fitted to test data. When a system can be completely modelled analytically for example via Newtons laws its called white box modelling. In our case the model of the system is known but several physical parameters are unknown, this is called gray box modelling. 
 
 \todo[inline]{Write about kinetics in \Chapterref{cha:modelling}}
 
@@ -32,33 +32,33 @@ In general parameter estimation is to fit the model structure's parametrising ve
 \end{equation}
 The cost function in this thesis has been defined as the squared error
 \begin{equation}
-    V(\boldsymbol{\theta}) = \frac{1}{N} \sum_{t=1}^{N} e^T(t,\boldsymbol{\theta}) W(\boldsymbol{\theta})  e(t,\boldsymbol{\theta})
+    V(\boldsymbol{\theta}) = \frac{1}{N} \sum_{t=1}^{N} \boldsymbol{e}^T(t,\boldsymbol{\theta}) \boldsymbol{W}(\boldsymbol{\theta})  \boldsymbol{e}(t,\boldsymbol{\theta})
 \end{equation}
 where:
 \begin{itemize}
     \item $N$ is the number of samples in the data set.
-    \item $e(t,\boldsymbol{\theta}) = y(t) - \hat{y}(t|\boldsymbol{\theta})$ is the error vector at time t with the parameter vector~$\boldsymbol{\theta}$.
-    \item $W(\boldsymbol{\theta})$ is the positive definite weight matrix.
+    \item $\boldsymbol{e}(t,\boldsymbol{\theta}) = \boldsymbol{y}(t) - \hat{\boldsymbol{y}}(t|\boldsymbol{\theta})$ is the error vector at time t with the parameter vector~$\boldsymbol{\theta}$.
+    \item $\boldsymbol{W}(\boldsymbol{\theta})$ is the positive definite weight matrix.
 \end{itemize}
 
 A general model structure on state space form can be described by
 \begin{equation}
-\dot{x}(t) = f(x(t), u(t), \boldsymbol{\theta})
+\dot{\boldsymbol{x}}(t) = f(\boldsymbol{x}(t), \boldsymbol{u}(t), \boldsymbol{\theta})
 \end{equation}
 and
 \begin{equation}
-\hat{y}(t|\boldsymbol{\theta}) = h(x(t), u(t), \boldsymbol{\theta})
+\hat{\boldsymbol{y}}(t|\boldsymbol{\theta}) = h(\boldsymbol{x}(t), \boldsymbol{u}(t), \boldsymbol{\theta})
 \end{equation}
  where:
  \begin{itemize}
-  \item $\hat{y}(t|\boldsymbol{\theta})$ is the predicted output.
-  \item $x(t)$ are the states. 
-  \item $u(t)$ are the inputs. 
+  \item $\hat{\boldsymbol{y}}(t|\boldsymbol{\theta})$ is the predicted output.
+  \item $\boldsymbol{x}(t)$ are the states. 
+  \item $\boldsymbol{u}(t)$ are the inputs. 
  \end{itemize}
 
 A model is validated with a dataset which was not used during estimation. If the model describes the validation data well, then is the model accepted. A measure of how well the model describes the data can be the normalised root mean square error
 \begin{equation}
-Fit = 100 \Biggr(1 - \frac{\sqrt{\sum\limits_{t=1}^N \bigr(y(t) - \hat{y}(t)\bigl)^2}}{\sqrt{\sum\limits_{t=1}^N \bigr(y(t)-\frac{1}{N}\sum\limits_{t=1}^N y(t)\bigl)^2}}\Biggl)
+\text{Fit} = 100 \Biggr(1 - \frac{\sqrt{\sum\limits_{t=1}^N \bigr(y(t) - \hat{y}(t)\bigl)^2}}{\sqrt{\sum\limits_{t=1}^N \bigr(y(t)-\frac{1}{N}\sum\limits_{t=1}^N y(t)\bigl)^2}}\Biggl)
 \end{equation}. \index{Fit}
 High fit often indicate that the model describes the data well. 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -145,26 +145,26 @@ A \abbrEKF was also used to estimate parameters of the \abbrROV. The congregated
 \begin{pmatrix}
 \etaVector_{k+1}\\ 
 \nuVector_{k+1}\\
-b_{k+1}\\
-\theta_{k+1}
+\boldsymbol{b}_{k+1}\\
+\boldsymbol{\theta}_{k+1}
 \end{pmatrix} = 
 \begin{pmatrix}
 \etaVector_k + T_s J(\etaVector_k)\nuVector_k\\
-\nu_k\\
-b_k\\
-\theta_k
+\nuVector_k + T_s f(\etaVector_k,\nuVector_k,\boldsymbol{\theta}_k)\\
+\boldsymbol{b}_k\\
+\boldsymbol{\theta}_k
 \end{pmatrix}
 + \begin{pmatrix}
 v_{\etaVector}\\
 v_{\nuVector}\\
-v_{b}\\
-v_{\theta}
+v_{\boldsymbol{b}}\\
+v_{\boldsymbol{\theta}}
 \end{pmatrix}
 \end{equation}.
-Here $\theta$ is a vector containing the parameters that were to be estimated, $b$ is a vector containing the biases of the gyroscope. $v$ is model noise and is assumed to enter each term directly. This resulted in a diagonal $Q$-matrix when implementing the model in the \abbrEKF. $J(\eta)$ is a angular velocity transformation matrix using the quaternion form of $\eta$ and is defined in the following 
+Here $\boldsymbol{\theta}$ is a vector containing the congregated parameters that were estimated. $f(\etaVector,\nuVector,\boldsymbol{\theta})$ is the model defined in \Chapterref{cha:model} using quaternions and with congregated parameters defined in \Sectionref{sec:estimation_angular}. $b$ is a vector containing the biases of the gyroscope. $v$ is model noise and is assumed to enter each term directly, this resulted in a diagonal $Q$-matrix when implementing the model in the \abbrEKF. $J(\etaVector)$ is a angular velocity transformation matrix using the quaternion form of $\etaVector$ and is defined in the following way
 \todo{This might be defined in the model section!}
 \begin{equation}
-J(\eta) = \begin{pmatrix}
+J(\etaVector) = \begin{pmatrix}
 -\quatI  & -\quatII  & -\quatIII \\
 \quatO   & -\quatIII & \quatII   \\
 \quatIII & \quatO    & -\quatI   \\ 
@@ -173,7 +173,7 @@ J(\eta) = \begin{pmatrix}
 \end{equation}.
 
 To increase the performance of the filter a method for outlier detection and rejection was implemented.
-The outlier rejection is based on the assumption that the normalised innovation $\epsilon^T S^{-1} \epsilon$ is $\chi_{n}^{2}$ distributed. Here $n$ is the number of measurements. To check the validity of a single measurement the previous asumption gives that $\epsilon_i^{2}/S_{i,i} \sim \chi_{1}^{2}$ \citep{sensorfusion}. This is used in the \abbrEKF using the following algorithm:
+The outlier rejection method is based on the assumption that the normalised innovation $\epsilon^T S^{-1} \epsilon$ should $\chi_{n}^{2}$ distributed. Here $n$ is the number of measurements. To check the validity of a single measurement the previous asumption gives that $\epsilon_i^{2}/S_{i,i} \sim \chi_{1}^{2}$ \citep{sensorfusion}. This is used in the \abbrEKF using the following algorithm:
 \begin{algorithm}[H]
 \label{alg:outlier}
 \caption{The outlier rejection algorithm used during the measurement update step of the parameter estimation \abbrEKF.}
@@ -204,16 +204,17 @@ The filter was run on each collected data set. The final values of $\hat{\theta}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Parameter Estimation from Angular Velocities and Linear Acceleration}
-The parameters were also estimated using the angular velocities and the linear accelerations as outputs. This was done to bypass the low-pass filtering effects from the sensor fusion described in \Chapterref{sec:sensor_fusion}. The model structure that was modified to use quaternions instead of euler angles. Using quaternions in the reparameterised model \eqref{eq:p_dotWithoutTranslation} - \eqref{eq:r_dotWithoutTranslation} from \Sectionref{sec:estimation_angular} the following model structure was obtained
+The parameters were also estimated using the angular velocities and the linear accelerations as outputs. This was done to bypass the low-pass filtering effects from the sensor fusion described in \Chapterref{sec:sensor_fusion}. The model structure that was modified to use quaternions instead of euler angles. Using quaternions in the reparameterised model \eqref{eq:p_dotWithoutTranslation} - \eqref{eq:r_dotWithoutTranslation} from \Sectionref{sec:estimation_angular} the following model structure
 \begin{multline}
 \pdot = \frac{\thrusterfun{1} \distance{y}{1} - \thrusterfun{2} \distance{y}{2} + \thrusterfun{6} \distance{z}{6}}{A_p} + \frac{B z_B (2 \quatII \quatIII + 2 \quatI \quatO)}{A_p} + \\ \frac{p (\Kp + \Kpabsp \abs(p))}{A_p} + \frac{q r (B_q - C_r)}{A_p}
-\end{multline}
+\end{multline},
 \begin{multline}
 \qdot = \frac{\thrusterfun{1} \distance{x}{1} + \thrusterfun{2} \distance{x}{2} - \thrusterfun{5} \distance{x}{5}}{B_q} - \frac{B z_B (2 \quatI \quatIII - 2 \quatII \quatO)}{B_q} + \\ \frac{q (\Mq + \Mqabsq \abs(q))}{B_q} - \frac{p r (A_p - C_r)}{B_q}
 \end{multline}
+and
 \begin{multline}
 \rdot = \frac{\thrusterfun{3} \distance{y}{3} - \thrusterfun{4} \distance{y}{4}}{C_r} + \frac{r (\Nr + \Nrabsr \abs(r))}{C_r} + \frac{p q (A_p  - B_q)}{C_r}
-\end{multline}
+\end{multline} was obtained.
 
 The model structure in which the parameters was estimated became \index{model structure}
 \begin{equation}
@@ -222,6 +223,7 @@ The model structure in which the parameters was estimated became \index{model st
 \begin{equation}
 \dot{\nuVector} =  f(\etaVector, \nuVector, \tauVector)
 \end{equation}
+and
 \begin{equation}
 y = \begin{pmatrix}
 \etaVector \\
