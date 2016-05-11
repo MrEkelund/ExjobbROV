@@ -1,8 +1,8 @@
 \chapter{Sensor fusion}\label{cha:sensor_fusion}
-In order to properly estimate its attitude in the global coordinate system the \abbrROV needs sensors to measure external effects from its environment.
+In order to properly estimate the \abbrROV's attitude in the global coordinate system the \abbrROV needs sensors to measure external effects from its environment.
 Unfortunately signals from sensors do not necessarily give direct information about attitude and their measurements are to some extent noisy. Smart algorithms and filters can nevertheless be used to extract and combine the information from the different sensors into a better attitude estimate. The process of combining, or fusing, the information from several measurements with a motion model to produce an estimate of a state goes under the name sensor fusion. One filter that can accomplish the task of fusing different measurements and estimating states in a non-linear dynamic system is the extended Kalman filter (\abbrEKF). 
 \section{Filter notation}
-To be able to understand how a filter like the extended Kalman filter works, it is important to understand the notation. In  \Tableref{tab:notationKalman} the notation used in this chapter is listed.
+To be able to understand how a filter like the extended Kalman filter works, it is important to understand the notation. In  \Tableref{tab:notationKalman} the notation used in this Chapter is listed.
  \begin{table}[htbp]
   \centering
   \caption{\label{tab:notationKalman}%
@@ -30,7 +30,7 @@ To be able to understand how a filter like the extended Kalman filter works, it 
 According to \citet{sensorfusion} the Kalman filter (\abbrKF) is a linear state space observer, meaning that it estimates states, both measurable and unmeasurable, in a linear system. It utilises a motion model, a model of the systems dynamics, in conjunction with measurements and linear measurement equations to provide the best possible estimate of the model's states. It is also stated in \citet{sensorfusion} that the Kalman filter finds the best possible linear filter for the given input $\boldsymbol{y}_{k}$. The extended Kalman filter can, unlike the regular Kalman filter, handle non-linear motion models and measurement equations. It accomplishes this by using Taylor expansions of the non-linear system and the measurement equations to approximate the non-linear system with a linear system. If a \abbrEKF can provide satisfactory results depends on the rest terms from the Taylor expansion and it is therefore dependent on the degree of non-linearity of the system and measurement equations\citep{sensorfusion}. As rule of thumb the rest term will be small enough if the system model is close to linear and if measurements are of good quality, meaning that the signal to noise ratio (\abbrSNR) is high\citep{sensorfusion}. 
 
 The \abbrEKF algorithm is comprised of two key steps called updates.
-The time update uses the current states estimates and the user specified motion model to predict the values of the states the next time instant. The second update is called the measurement update and it uses sampled sensor data in conjunction with the user specified measurement equations to improve the state estimates \citep{sensorfusion}.
+The time update uses the current state estimates and the user specified motion model to predict the values of the states the next time instant. The second update is called the measurement update and it uses sampled sensor data in conjunction with the user specified measurement equations to improve the state estimates \citep{sensorfusion}.
 The order in which to run these updates, is dependent on design and on the sample time of the sensors. If the measurements are independent a measurement update can be done at the arrival of each measurement without the need of a time update in between\citep[p.170]{sensorfusion}.
 
 The complete extended Kalman filter algorithm can be viewed in \Algoref{alg:EKF}.
@@ -132,7 +132,7 @@ d_{k}
 \end{equation}
 
 \subsection{Gyroscope measurement equation}
-The \abbrROV is equipped with an \abbrIMU. The gyroscope measurement equation is 
+The \abbrROV is equipped with an \abbrIMU which contains a gyroscope and an accelerometer. The gyroscope measurement equation is 
 \begin{equation}\label{eq:gyro}
 \boldsymbol{y}_\text{Gyro}= \nuVector + \boldsymbol{b} =
  \begin{pmatrix}
@@ -163,7 +163,7 @@ Since the \abbrIMU measures acceleration in addition to angular velocities, an a
     -g
      ~} < \epsilon
 \end{align*} holds true.
-Here $\epsilon$ is a design variable that tweaks how much the magnitude of the accelerometer measurement may deviate from $g$ before being considered an outlier.
+Here is $\epsilon$ a design variable that tweaks how much the magnitude of the accelerometer measurement may deviate from $g$ before being considered an outlier.
 
 \subsection{Magnetometer measurement equation}
 The internal magnetometer enables the \abbrROV to measure the magnetic field strength in the three local axes $x$, $y$ and $z$. This data is used as a measurement in a measurement update that is constructed the following way:
@@ -176,7 +176,7 @@ The internal magnetometer enables the \abbrROV to measure the magnetic field str
         m_D
     \end{pmatrix}
 \end{equation}
-where $\boldsymbol{y}_{\text{Mag}}$ is the measured magnetic field in the local coordinate system. $m_N$, $m_E$ and $m_D$ are the components of the Earth's magnetic field in the $\north\east\down$ coordinate system and should be set during calibration.
+where $\boldsymbol{y}_{\text{Mag}}$ is the measured magnetic field in the body-fixed coordinate system. $m_N$, $m_E$ and $m_D$ are the components of the Earth's magnetic field in the $\north\east\down$ coordinate system and should be set during calibration.
 To ensure that the good measurements are used an outlier rejection equation was implemented. Magnetometer measurements are used if 
 \begin{equation}
         \abs{~||
@@ -190,7 +190,7 @@ To ensure that the good measurements are used an outlier rejection equation was 
     \end{pmatrix}||
      ~} < \epsilon
 \end{equation}
-holds. Here $\epsilon$ is a design variable that tweaks how much the magnitude of the measurements may deviate from the magnitude of the Earth's magnetic field before being rejected.
+holds. Here is $\epsilon$ a design variable that tweaks how much the magnitude of the measurements may deviate from the magnitude of the Earth's magnetic field before being rejected.
 
 \subsection{Pressure sensor measurement equation}
 The \abbrROV is also equipped with a pressure sensor. The sensor is placed in the rear, or bow, of the \abbrROV which in turn means that the attitude of the \abbrROV needs to be taken in to account when calculating the depth.
@@ -198,14 +198,14 @@ The measurement equation for the pressure sensor is
 \begin{equation}
  \boldsymbol{y}_{\text{Pre}}=  \rho g (d + \begin{pmatrix}
     0 & 0 & 1
-\end{pmatrix} \boldsymbol{R} 
+\end{pmatrix} \boldsymbol{R}^n_b 
 \begin{pmatrix}
 x_{\text{offset}}\\
 0\\
 0
 \end{pmatrix}
 \end{equation}
-Here $\boldsymbol{y}_{\text{Pre}}$ is the measured pressure in pascal, $\rho$ is the density of the water, $d$ is the current depth in meters and $x_{\text{offset}}$ is the pressure sensor's offset from the \abbrROV's \abbrCO in the \xPosition direction. In this case $x_{\textrm{offset}}$ is a negative number. A basic form of outlier rejection is implemented in the pressure sensor measurement update. The update is performed if
+Here $\boldsymbol{y}_{\text{Pre}}$ is the measured pressure in pascal, $\rho$ is the density of the water, $d$ is the current depth in meters and $x_{\text{offset}}$ is the pressure sensor's offset from the \abbrROV's \abbrCO in the $\xPosition$-direction. In this case $x_{\textrm{offset}}$ is a negative number. A basic form of outlier rejection is implemented in the pressure sensor measurement update. The update is performed if
 \begin{equation}
     p > 0
 \end{equation}
