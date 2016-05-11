@@ -70,7 +70,7 @@ In this chapter, the vector cross-product $\cross{\cdot}$ is defined as $\cross{
   \end{tabular}
 \end{table}
 
-To get a more compact way of writing a vector notation has been established
+To get a more compact way of writing a vector notation has been used
 \begin{itemize}
 \item $\boldsymbol{p}$: Positions.
 \item $\boldsymbol{v}$: Linear velocities.
@@ -85,13 +85,80 @@ To get a more compact way of writing a vector notation has been established
 During modelling it is important to choose proper coordinate systems in which to describe the systems behaviour.
 The \abbrROV model used in this thesis uses two separate coordinate systems.
 The first system, the body-fixed coordinate system, is fixed to the \abbrROV and rotates with the \abbrROV. 
-The body-fix coordinate system is a right-hand system, the $\xPosition$-axis is placed along the length of the \abbrROV pointing towards its bow. The $\yPosition$-axis points starboard, and the $\zPosition$-axis points downwards towards the vehicles keel. The coordinate system is assumed to be centred in the \abbrROV's \abbrCG. The body-fixed coordinate system makes it easier to describe sensor readings, since the sensors rotate with the \abbrROV. It is also easier to express the effect of each thruster in forces and moments described in the body-fixed coordinate system. How the body-fixed coordinate system is placed in the \abbrROV can be seen in \Figureref{fig:thrusterlocationtop} and \Figureref{fig:thrusterlocationfront}.
+The body-fix coordinate system is a right-hand system, the $\xPosition$-axis is placed along the length of the \abbrROV pointing towards its bow. The $\yPosition$-axis points starboard, and the $\zPosition$-axis points downwards towards the vehicles keel. The coordinate system is assumed to be centred in the \abbrROV's  center of gravity (\abbrCG). The body-fixed coordinate system makes it easier to describe sensor readings, since the sensors rotate with the \abbrROV. It is also easier to express the effect of each thruster in forces and moments described in the body-fixed coordinate system. How the body-fixed coordinate system is placed in the \abbrROV can be seen in \Figureref{fig:thrusterlocationtop} and \Figureref{fig:thrusterlocationfront}.
 
 The global coordinate system is Earthfixed, with axes $\north$, $\east$ and $\down$. The $\north$ axis points in the direction of our calibrated North, the $\east$ axis points in the direction of calibrated East and the $\down$ axis points down towards the \abbrCG of the Earth.
 This coordinate system is used to express buoyancy and gravitational forces on the \abbrROV, their effects are transformed to the local coordinate system by a rotation matrix. How the local and global coordinate systems relate to each other can be seen in \Figureref{fig:coordinate_frames}.
 
 \newcommand*{\coordinateRadius}{0.05}
 \newcommand*{\coordRot}{30}
+\begin{figure}
+\centering 
+\begin{tikzpicture}
+    \node[anchor=south west,inner sep=0] (image) at (0,0) {\includegraphics[trim={28cm 0cm 22cm 5cm},clip,width=0.9\textwidth]{thrusterlocationtop}};
+    \begin{scope}[x={(image.south east)},y={(image.north west)}]
+		\pgfmathsetmacro\coordinateRadius{0.025}
+        \pgfmathsetmacro\by{\coordinateRadius*sin(45)}
+        \pgfmathsetmacro\bx{\coordinateRadius*cos(45)}
+        \pgfmathsetmacro\ay{\coordinateRadius*sin(\coordRot)}
+        \pgfmathsetmacro\ax{\coordinateRadius*cos(\coordRot)}
+        \pgfmathsetmacro\coordYRot{sin(\coordRot)}
+        \pgfmathsetmacro\coordXRot{cos(\coordRot)}
+        
+        \coordinate (O) at (0.48,0.52);
+        \draw[red, ultra thick,->] (O) ++(\coordinateRadius,0) -- ++(0.4,0) node[anchor=north east]{\large\color{red}$\xPosition$};
+        \draw[red, ultra thick,->] (O) ++(0,-\coordinateRadius)-- ++(0,-0.4) node[anchor=south east]{\large\color{red}$\yPosition$};
+        \draw[red, ultra thick] (O) circle (\coordinateRadius); 
+        \draw[red, ultra thick] (O) ++(0,\coordinateRadius) node[above]{\large\color{red}$\zPosition$};
+        \draw[red, ultra thick] (O) -- ++(\bx,\by) (O) -- ++(-\bx,-\by) (O) -- ++(-\bx,\by) (O)  -- ++(\bx,-\by);
+        
+        \draw[yellow, ultra thick, <->] (O) ++(0.34,0) -- ++(0,0.23)  node [midway, left] {\large\distance{y}{1}};
+        \draw[red, ultra thick] (O) ++(0.34,0.23) node[right]{\large Thruster 1};
+        \draw[yellow, ultra thick, <->] (O) ++(0.34,0) -- ++(0,-0.28) node [midway, left] {\large\distance{y}{2}};
+        \draw[red, ultra thick] (O) ++(0.34,-0.28) node[right]{\large Thruster 2};
+        \draw[yellow, ultra thick, <->] (O) ++(0.03,0) -- ++(0,0.24)  node [midway, right] {\large\distance{y}{3}};
+        \draw[red, ultra thick] (O) ++(0.03,0.24) node[right]{\large Thruster 3};
+        \draw[yellow, ultra thick, <->] (O) ++(0.03,0) -- ++(0,-0.28) node [midway, right] {\large\distance{y}{4}};
+        \draw[red, ultra thick] (O) ++(0.03,-0.28) node[right]{\large Thruster 4};
+        
+        \draw[yellow, ultra thick, <->] (O) ++(0,0.27) -- ++(0.34,0)  node [midway, above] {\large\distance{x}{1}};
+        \draw[yellow, ultra thick, <->] (O) ++(0,-0.32) -- ++(0.34,0)  node [midway, below] {\large\distance{x}{2}};
+        \draw[yellow, ultra thick, <->] (O) -- ++(-0.30,0)  node [midway, below] {\large\distance{x}{5}};
+        \draw[red, thick] (O) ++(-0.35,0) node[rotate=90]{\large Thruster 5};
+    \end{scope}
+\end{tikzpicture}
+    \caption{Top view of the \abbrROV. The red coordinate system illustrates how the body-fixed coordinate system is fixed in the \abbrROV. Yellow lines shows the different moment arms to the thrusters. Each thruster is numbered in red.}
+    \label{fig:thrusterlocationtop}
+\end{figure}
+
+\begin{figure}
+\centering 
+\begin{tikzpicture}
+    \node[anchor=south west,inner sep=0] (image) at (0,0) {\includegraphics[trim={25cm 2cm 0cm 0cm},clip,width=0.9\textwidth]{thrusterlocationfront}};
+    \begin{scope}[x={(image.south east)},y={(image.north west)}]
+		\pgfmathsetmacro\coordinateRadius{0.025}
+        \pgfmathsetmacro\by{\coordinateRadius*sin(45)}
+        \pgfmathsetmacro\bx{\coordinateRadius*cos(45)}
+        \pgfmathsetmacro\ay{\coordinateRadius*sin(\coordRot)}
+        \pgfmathsetmacro\ax{\coordinateRadius*cos(\coordRot)}
+        \pgfmathsetmacro\coordYRot{sin(\coordRot)}
+        \pgfmathsetmacro\coordXRot{cos(\coordRot)}
+        
+        \coordinate (O) at (0.48,0.55);
+        \draw[red, ultra thick,->] (O) ++(-\coordinateRadius,0) -- ++(-0.4,0) node[anchor=north east]{\large\color{red}$\yPosition$};
+        \draw[red, ultra thick,->] (O) ++(0,-\coordinateRadius)-- ++(0,-0.5) node[anchor=south east]{\large\color{red}$\zPosition$};
+        \draw[red, ultra thick] (O) circle (\coordinateRadius);        
+        \draw[red, ultra thick] (O) ++(0,\coordinateRadius) node[above]{\large\color{red}$\xPosition$};
+		\draw[red, ultra thick] (O) node[circle,fill,inner sep=1pt]{};
+        
+        \draw[yellow, thick, <->] (O) ++(0.04,0) -- ++(0,-0.37)  node [midway, right]{\large\distance{z}{6}};
+        \draw[red, thick] (O) ++(0.04,-0.37) node[right]{\large Thruster 6};
+    \end{scope}
+\end{tikzpicture}
+    \caption{Front view of the \abbrROV. The red coordinate system illustrates how the body-fixed coordinate system is fixed in the \abbrROV. The yellow line show the moment arm to thruster 6 which is marked in red.}
+    \label{fig:thrusterlocationfront}
+\end{figure}
+
 \begin{figure}
     \centering
     \begin{tikzpicture}[scale=2]
@@ -142,73 +209,8 @@ This coordinate system is used to express buoyancy and gravitational forces on t
     \label{fig:coordinate_frames}
 \end{figure}
 
-\begin{figure}
-\centering 
-\begin{tikzpicture}
-    \node[anchor=south west,inner sep=0] (image) at (0,0) {\includegraphics[trim={28cm 0cm 22cm 5cm},clip,width=0.9\textwidth]{thrusterlocationtop}};
-    \begin{scope}[x={(image.south east)},y={(image.north west)}]
-		\pgfmathsetmacro\coordinateRadius{0.025}
-        \pgfmathsetmacro\by{\coordinateRadius*sin(45)}
-        \pgfmathsetmacro\bx{\coordinateRadius*cos(45)}
-        \pgfmathsetmacro\ay{\coordinateRadius*sin(\coordRot)}
-        \pgfmathsetmacro\ax{\coordinateRadius*cos(\coordRot)}
-        \pgfmathsetmacro\coordYRot{sin(\coordRot)}
-        \pgfmathsetmacro\coordXRot{cos(\coordRot)}
-        
-        \coordinate (O) at (0.48,0.52);
-        \draw[red, thick,->] (O) ++(\coordinateRadius,0) -- ++(0.4,0) node[anchor=north east]{\color{red}$\xPosition$};
-        \draw[red, thick,->] (O) ++(0,-\coordinateRadius)-- ++(0,-0.4) node[anchor=south east]{\color{red}$\yPosition$};
-        \draw[red, thick] (O) circle (\coordinateRadius) node[anchor=south,]{\color{red}$\zPosition$};
-        \draw[red, thick] (O) -- ++(\bx,\by) (O) -- ++(-\bx,-\by) (O) -- ++(-\bx,\by) (O)  -- ++(\bx,-\by);
-        
-        \draw[yellow, thick, <->] (O) ++(0.34,0) -- ++(0,0.23)  node [midway, left] {\distance{y}{1}};
-        \draw[red, thick] (O) ++(0.34,0.23) node[right]{Thruster 1};
-        \draw[yellow, thick, <->] (O) ++(0.34,0) -- ++(0,-0.28) node [midway, left] {\distance{y}{2}};
-        \draw[red, thick] (O) ++(0.34,-0.28) node[right]{Thruster 2};
-        \draw[yellow, thick, <->] (O) ++(0.03,0) -- ++(0,0.24)  node [midway, right] {\distance{y}{3}};
-        \draw[red, thick] (O) ++(0.03,0.24) node[right]{Thruster 3};
-        \draw[yellow, thick, <->] (O) ++(0.03,0) -- ++(0,-0.28) node [midway, right] {\distance{y}{4}};
-        \draw[red, thick] (O) ++(0.03,-0.28) node[right]{Thruster 4};
-        
-        \draw[yellow, thick, <->] (O) ++(0,0.27) -- ++(0.34,0)  node [midway, above] {\distance{x}{1}};
-        \draw[yellow, thick, <->] (O) ++(0,-0.32) -- ++(0.34,0)  node [midway, below] {\distance{x}{2}};
-        \draw[yellow, thick, <->] (O) -- ++(-0.30,0)  node [midway, below] {\distance{x}{5}};
-        \draw[red, thick] (O) ++(-0.35,0) node[below]{Thruster 5};
-    \end{scope}
-\end{tikzpicture}
-    \caption{Top view of the \abbrROV. The red coordinate system illustrates how the body-fixed coordinate system is fixed in the \abbrROV. Yellow lines shows the different moment arms to the thrusters. Each thruster is numbered in red.}
-    \label{fig:thrusterlocationtop}
-\end{figure}
-
-\begin{figure}
-\centering 
-\begin{tikzpicture}
-    \node[anchor=south west,inner sep=0] (image) at (0,0) {\includegraphics[trim={25cm 2cm 0cm 0cm},clip,width=0.9\textwidth]{thrusterlocationfront}};
-    \begin{scope}[x={(image.south east)},y={(image.north west)}]
-		\pgfmathsetmacro\coordinateRadius{0.025}
-        \pgfmathsetmacro\by{\coordinateRadius*sin(45)}
-        \pgfmathsetmacro\bx{\coordinateRadius*cos(45)}
-        \pgfmathsetmacro\ay{\coordinateRadius*sin(\coordRot)}
-        \pgfmathsetmacro\ax{\coordinateRadius*cos(\coordRot)}
-        \pgfmathsetmacro\coordYRot{sin(\coordRot)}
-        \pgfmathsetmacro\coordXRot{cos(\coordRot)}
-        
-        \coordinate (O) at (0.48,0.55);
-        \draw[red, thick,->] (O) ++(-\coordinateRadius,0) -- ++(-0.4,0) node[anchor=north east]{\color{red}$\yPosition$};
-        \draw[red, thick,->] (O) ++(0,-\coordinateRadius)-- ++(0,-0.5) node[anchor=south east]{\color{red}$\zPosition$};
-        \draw[red, thick] (O) circle (\coordinateRadius) node[anchor=south,]{\color{red}$\xPosition$};
-		\draw[red,thick] (O) node[circle,fill,inner sep=1pt]{};
-        
-        \draw[yellow, thick, <->] (O) ++(0.04,0) -- ++(0,-0.37)  node [midway, right]{\distance{z}{6}};
-        \draw[red, thick] (O) ++(0.04,-0.37) node[right]{Thruster 6};
-    \end{scope}
-\end{tikzpicture}
-    \caption{Front view of the \abbrROV. The red coordinate system illustrates how the body-fixed coordinate system is fixed in the \abbrROV. The yellow line show the moment arm to thruster 6 which is marked in red.}
-    \label{fig:thrusterlocationfront}
-\end{figure}
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Kinetics} \index{Kinetics}\index{Transformation matrices}\label{sec:kinetics}
+\section{Kinetics} \index{Kinetics}\index{Transformation matrices}
 The relationship between the body-fixed frame and the global frame can be described by different transformation matrices.
 The transformation for linear velocities from the body-fixed coordinate system to the global coordinate system is according to \citet[22]{fossen2011} 
 \begin{equation}
@@ -280,7 +282,7 @@ The inertia matrix, $\inertia_{RB}$, for a rigid-body is defined as
     \end{pmatrix}
 \end{equation}
 where $r^b_g$ is the distance between the \abbrROV's \abbrCO and \abbrCG \citep[p.52]{fossen2011}.
-It has been assumed that the \abbrROV's \abbrCO and \abbrCG coincide, thus simplifying \eqref{eq:inertia} to
+It has been assumed that the \abbrROV's center of origin (\abbrCO) and \abbrCG coincide, thus simplifying \eqref{eq:inertia} to
 \begin{equation}
    \inertia_{RB} = 
     \begin{pmatrix}
@@ -369,7 +371,7 @@ The matrix $\damping$ contains the linear damping terms, while the matrix $\damp
     \end{pmatrix}}
 \end{split}
 \end{equation}
-If the \abbrROV is symmetric about the $xz$-plane and the damping is assumed to be decoupled, $\damping(\nuVector)$ is a diagonal matrix \citep[p.129-130]{fossen2011}. The following vector is obtained when $\damping(\nuVector)$ is multiplied with $\nuVector$
+It has been assumed that the \abbrROV is symmetric about the $xz$-plane and the damping is decoupled, thus are the diagonal matrix $\damping(\nuVector)$ obtained \citep[p.129-130]{fossen2011}. The following vector is obtained when $\damping(\nuVector)$ is multiplied with $\nuVector$
 \begin{equation}
     \damping(\nuVector) \nuVector =
      -\begin{pmatrix}
@@ -384,7 +386,7 @@ If the \abbrROV is symmetric about the $xz$-plane and the damping is assumed to 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Restoring forces}\index{Restoring forces}\index{buoyancy}
-Since the \abbrROV is submerged it will experience forces and moments caused by the Earths gravitational pull and the buoyancy force, in hydrostatic terms these are called restoring forces and act as spring forces on the \abbrROV \citep{fossen2011}. The restoring forces and moments are calculated using four main parameters; the mass of the vehicle, $m$, its buoyancy $B$ and lastly the coordinates for the \abbrROV's \abbrCG and center of buoyancy (\abbrCB) \citep{fossen2011}. The restoring forces vector, $\gravity(\etaVector)$, describes how the forces and moments caused by the buoyancy force and gravitational pull of the Earth act on a 6 \abbrDOF model.It is according to \citet[p.60]{fossen2011} defined as
+Since the \abbrROV is submerged it will experience forces and moments caused by the Earths gravitational pull and the buoyancy force, in hydrostatic terms these are called restoring forces and act as spring forces on the \abbrROV \citep{fossen2011}. The restoring forces and moments are calculated using four main parameters; the mass of the vehicle, $m$, its buoyancy $B$ and lastly the coordinates for the \abbrROV's \abbrCG and center of buoyancy (\abbrCB) \citep{fossen2011}. The restoring forces vector, $\gravity(\etaVector)$, describes how the forces and moments caused by the buoyancy force and gravitational pull of the Earth act on a 6 \abbrDOF model. It is according to \citet[p.60]{fossen2011} defined as
 \begin{equation} \label{eq:restoring_forces}
     \gravity(\etaVector) =
      \begin{pmatrix}
@@ -403,7 +405,7 @@ Since the \abbrROV is submerged it will experience forces and moments caused by 
 \end{equation}
 where $\boldsymbol{r}_b = [0, 0, z_B]^T$, $\boldsymbol{r}_g = [0, 0, 0]^T$, $\boldsymbol{f}_g = \boldsymbol{R}^n_b(\eulerAngles)^T [0, 0, W]^T$ and $\boldsymbol{f}_b = -\boldsymbol{R}^n_b(\eulerAngles)^T [0, 0, B]^T$.
 Here $B$ is given by $B = \rho g V$ and $W = m g$. $m$ is the \abbrROV's mass, $g$ the gravitational constant, $\rho$ the density of water and $V$ the volume of displaced water. In other words the magnitude of the buoyancy forces is equal to the weight of the displaced water. For a fully submerged vehicle, $V$ will naturally be equal the volume of the vehicle.
-In these calculations it is assumed that the \abbrCG coincides with the \abbrCO and that the \abbrCB lies at coordinate $[0, 0, z_B]$, directly above or below the \abbrCO. Note that the positions of the three centers are described using the coordinate system described in \Sectionref{sec:coordinates}, a roll and pitch stable \abbrROV should thus have a $z_B < 0$.
+In these calculations it is assumed that the \abbrCG coincides with the \abbrCO and that the center of buoyancy (\abbrCB) lies at coordinate $[0, 0, z_B]$, directly above or below the \abbrCO. Note that the positions of the three centers are described using the coordinate system described in \Sectionref{sec:coordinates}, a roll and pitch stable \abbrROV should thus have a $z_B < 0$.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Thrust Matrix}
@@ -443,7 +445,7 @@ where $\thrusterGeometry$\index{thruster geometry} is a matrix describing the ge
     \end{pmatrix}
 \end{split}
 \end{equation}
-where \distance{x}{1}, \distance{x}{2}, \distance{y}{1}, \distance{y}{2}, \distance{y}{3}, \distance{y}{4} and \distance{z}{6} are the offsets in the $x$, $y$ or $z$ direction of the $n$:th thruster and $\thrusterfun{i}$ is a lookup table from control signal to thrust in Newtons. See \appref{app:thrustmapping} for details regarding the lookup table.
+where \distance{x}{1}, \distance{x}{2}, \distance{y}{1}, \distance{y}{2}, \distance{y}{3}, \distance{y}{4} and \distance{z}{6} are the offsets in the $x$, $y$ or $z$ direction of the $i$:th thruster and $\thrusterfun{i}$ is a lookup table from control signal to thrust in Newtons. See \appref{app:thrustmapping} for details regarding the lookup table.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Equations in Component Form}

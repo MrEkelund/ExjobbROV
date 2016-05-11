@@ -86,7 +86,7 @@ There are several different \abbrLED lights on the HKPilot Mega 2.7, \Tableref{t
 \subsection{New Parameter Estimation}
 
 \subsection{New Controllers}
-To implement a new controller open the Simulink file Controller.slx. Construct the controller in a suitable location. Then expand the switch that chooses what controller that is used, see \Figureref{fig:controller_simulink}. Connect the new controller to the switch to enable that the controller can be chosen from dynamic reconfigure when operating the \abbrROV.
+To implement a new controller open the Simulink file Controller.slx. Construct the controller in a suitable location. Then expand the switch that chooses what controller that is used, see \Figureref{fig:controller_simulink}. Connect the new controller to the switch to enable that the controller can be chosen from dynamic reconfigure when operating the \abbrROV. Then modify the matlab\_controller.config file accordingly. The matlab\_controller.config file that ought to be modified is located in ExjobbROV/catkin\_ws/src/bluerov/config/matlab\_controller.config.
 
 \begin{figure}
 \centering
