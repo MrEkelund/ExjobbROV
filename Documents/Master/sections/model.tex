@@ -85,7 +85,7 @@ To get a more compact way of writing a vector notation has been established
 During modelling it is important to choose proper coordinate systems in which to describe the systems behaviour.
 The \abbrROV model used in this thesis uses two separate coordinate systems.
 The first system, the body-fixed coordinate system, is fixed to the \abbrROV and rotates with the \abbrROV. 
-The body-fix coordinate system is a right-hand system, the $\xPosition$-axis is placed along the length of the \abbrROV pointing towards its bow. The $\yPosition$-axis points starboard, and the $\zPosition$-axis points downwards towards the vehicles keel. The coordinate system is assumed to be centred in the \abbrROV's \abbrCG. The body-fixed coordinate system makes it easier to describe sensor readings, since the sensors rotate with the \abbrROV. It is also easier to express the effect of each thruster in forces and moments described in the body-fixed coordinate system.
+The body-fix coordinate system is a right-hand system, the $\xPosition$-axis is placed along the length of the \abbrROV pointing towards its bow. The $\yPosition$-axis points starboard, and the $\zPosition$-axis points downwards towards the vehicles keel. The coordinate system is assumed to be centred in the \abbrROV's \abbrCG. The body-fixed coordinate system makes it easier to describe sensor readings, since the sensors rotate with the \abbrROV. It is also easier to express the effect of each thruster in forces and moments described in the body-fixed coordinate system. How the body-fixed coordinate system is placed in the \abbrROV can be seen in \Figureref{fig:thrusterlocationtop} and \Figureref{fig:thrusterlocationfront}.
 
 The global coordinate system is Earthfixed, with axes $\north$, $\east$ and $\down$. The $\north$ axis points in the direction of our calibrated North, the $\east$ axis points in the direction of calibrated East and the $\down$ axis points down towards the \abbrCG of the Earth.
 This coordinate system is used to express buoyancy and gravitational forces on the \abbrROV, their effects are transformed to the local coordinate system by a rotation matrix. How the local and global coordinate systems relate to each other can be seen in \Figureref{fig:coordinate_frames}.
@@ -142,7 +142,70 @@ This coordinate system is used to express buoyancy and gravitational forces on t
     \label{fig:coordinate_frames}
 \end{figure}
 
-\missingfigure{Picture of the rov with the coordinate system.}
+\begin{figure}
+\centering 
+\begin{tikzpicture}
+    \node[anchor=south west,inner sep=0] (image) at (0,0) {\includegraphics[trim={28cm 0cm 22cm 5cm},clip,width=0.9\textwidth]{thrusterlocationtop}};
+    \begin{scope}[x={(image.south east)},y={(image.north west)}]
+		\pgfmathsetmacro\coordinateRadius{0.025}
+        \pgfmathsetmacro\by{\coordinateRadius*sin(45)}
+        \pgfmathsetmacro\bx{\coordinateRadius*cos(45)}
+        \pgfmathsetmacro\ay{\coordinateRadius*sin(\coordRot)}
+        \pgfmathsetmacro\ax{\coordinateRadius*cos(\coordRot)}
+        \pgfmathsetmacro\coordYRot{sin(\coordRot)}
+        \pgfmathsetmacro\coordXRot{cos(\coordRot)}
+        
+        \coordinate (O) at (0.48,0.52);
+        \draw[red, thick,->] (O) ++(\coordinateRadius,0) -- ++(0.4,0) node[anchor=north east]{\color{red}$\xPosition$};
+        \draw[red, thick,->] (O) ++(0,-\coordinateRadius)-- ++(0,-0.4) node[anchor=south east]{\color{red}$\yPosition$};
+        \draw[red, thick] (O) circle (\coordinateRadius) node[anchor=south,]{\color{red}$\zPosition$};
+        \draw[red, thick] (O) -- ++(\bx,\by) (O) -- ++(-\bx,-\by) (O) -- ++(-\bx,\by) (O)  -- ++(\bx,-\by);
+        
+        \draw[yellow, thick, <->] (O) ++(0.34,0) -- ++(0,0.23)  node [midway, left] {\distance{y}{1}};
+        \draw[red, thick] (O) ++(0.34,0.23) node[right]{Thruster 1};
+        \draw[yellow, thick, <->] (O) ++(0.34,0) -- ++(0,-0.28) node [midway, left] {\distance{y}{2}};
+        \draw[red, thick] (O) ++(0.34,-0.28) node[right]{Thruster 2};
+        \draw[yellow, thick, <->] (O) ++(0.03,0) -- ++(0,0.24)  node [midway, right] {\distance{y}{3}};
+        \draw[red, thick] (O) ++(0.03,0.24) node[right]{Thruster 3};
+        \draw[yellow, thick, <->] (O) ++(0.03,0) -- ++(0,-0.28) node [midway, right] {\distance{y}{4}};
+        \draw[red, thick] (O) ++(0.03,-0.28) node[right]{Thruster 4};
+        
+        \draw[yellow, thick, <->] (O) ++(0,0.27) -- ++(0.34,0)  node [midway, above] {\distance{x}{1}};
+        \draw[yellow, thick, <->] (O) ++(0,-0.32) -- ++(0.34,0)  node [midway, below] {\distance{x}{2}};
+        \draw[yellow, thick, <->] (O) -- ++(-0.30,0)  node [midway, below] {\distance{x}{5}};
+        \draw[red, thick] (O) ++(-0.35,0) node[below]{Thruster 5};
+    \end{scope}
+\end{tikzpicture}
+    \caption{Top view of the \abbrROV. The red coordinate system illustrates how the body-fixed coordinate system is fixed in the \abbrROV. Yellow lines shows the different moment arms to the thrusters. Each thruster is numbered in red.}
+    \label{fig:thrusterlocationtop}
+\end{figure}
+
+\begin{figure}
+\centering 
+\begin{tikzpicture}
+    \node[anchor=south west,inner sep=0] (image) at (0,0) {\includegraphics[trim={25cm 2cm 0cm 0cm},clip,width=0.9\textwidth]{thrusterlocationfront}};
+    \begin{scope}[x={(image.south east)},y={(image.north west)}]
+		\pgfmathsetmacro\coordinateRadius{0.025}
+        \pgfmathsetmacro\by{\coordinateRadius*sin(45)}
+        \pgfmathsetmacro\bx{\coordinateRadius*cos(45)}
+        \pgfmathsetmacro\ay{\coordinateRadius*sin(\coordRot)}
+        \pgfmathsetmacro\ax{\coordinateRadius*cos(\coordRot)}
+        \pgfmathsetmacro\coordYRot{sin(\coordRot)}
+        \pgfmathsetmacro\coordXRot{cos(\coordRot)}
+        
+        \coordinate (O) at (0.48,0.55);
+        \draw[red, thick,->] (O) ++(-\coordinateRadius,0) -- ++(-0.4,0) node[anchor=north east]{\color{red}$\yPosition$};
+        \draw[red, thick,->] (O) ++(0,-\coordinateRadius)-- ++(0,-0.5) node[anchor=south east]{\color{red}$\zPosition$};
+        \draw[red, thick] (O) circle (\coordinateRadius) node[anchor=south,]{\color{red}$\xPosition$};
+		\draw[red,thick] (O) node[circle,fill,inner sep=1pt]{};
+        
+        \draw[yellow, thick, <->] (O) ++(0.04,0) -- ++(0,-0.37)  node [midway, right]{\distance{z}{6}};
+        \draw[red, thick] (O) ++(0.04,-0.37) node[right]{Thruster 6};
+    \end{scope}
+\end{tikzpicture}
+    \caption{Front view of the \abbrROV. The red coordinate system illustrates how the body-fixed coordinate system is fixed in the \abbrROV. The yellow line show the moment arm to thruster 6 which is marked in red.}
+    \label{fig:thrusterlocationfront}
+\end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Kinetics} \index{Kinetics}\index{Transformation matrices}\label{sec:kinetics}
@@ -344,12 +407,11 @@ In these calculations it is assumed that the \abbrCG coincides with the \abbrCO 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Thrust Matrix}
-\missingfigure{Picture of the moments and forces including the name of the thrusters.}
 The \abbrROV's actuators can be modelled as
 \begin{equation}
     \tauVector = \thrusterGeometry \boldsymbol{\thrusterfun{}} 
 \end{equation}
-where $\thrusterGeometry$\index{thruster geometry} is a matrix describing the geometry of the actuators, see \Figureref{fig:thrusterlocationtop} \citep[p.401]{fossen2011}.
+where $\thrusterGeometry$\index{thruster geometry} is a matrix describing the geometry of the actuators \citep[p.401]{fossen2011}. \Figureref{fig:thrusterlocationtop} and \Figureref{fig:thrusterlocationfront} illustrates the moment arms to each thruster. The positive rotation of the thrusters can be seen in \Appref{app:operation}.
 \begin{equation}
 \begin{split}
     \tauVector = \thrusterGeometry \boldsymbol{\thrusterfun{}} 
@@ -383,71 +445,6 @@ where $\thrusterGeometry$\index{thruster geometry} is a matrix describing the ge
 \end{equation}
 where \distance{x}{1}, \distance{x}{2}, \distance{y}{1}, \distance{y}{2}, \distance{y}{3}, \distance{y}{4} and \distance{z}{6} are the offsets in the $x$, $y$ or $z$ direction of the $n$:th thruster and $\thrusterfun{i}$ is a lookup table from control signal to thrust in Newtons. See \appref{app:thrustmapping} for details regarding the lookup table.
 
-\begin{figure}
-\centering 
-\begin{tikzpicture}
-    \node[anchor=south west,inner sep=0] (image) at (0,0) {\includegraphics[trim={28cm 0cm 22cm 5cm},clip,width=0.9\textwidth]{thrusterlocationtop}};
-    \begin{scope}[x={(image.south east)},y={(image.north west)}]
-		\pgfmathsetmacro\coordinateRadius{0.025}
-        \pgfmathsetmacro\by{\coordinateRadius*sin(45)}
-        \pgfmathsetmacro\bx{\coordinateRadius*cos(45)}
-        \pgfmathsetmacro\ay{\coordinateRadius*sin(\coordRot)}
-        \pgfmathsetmacro\ax{\coordinateRadius*cos(\coordRot)}
-        \pgfmathsetmacro\coordYRot{sin(\coordRot)}
-        \pgfmathsetmacro\coordXRot{cos(\coordRot)}
-        
-        \coordinate (O) at (0.48,0.52);
-        \draw[red, thick,->] (O) ++(\coordinateRadius,0) -- ++(0.4,0) node[anchor=north east]{\color{red}$\xPosition$};
-        \draw[red, thick,->] (O) ++(0,-\coordinateRadius)-- ++(0,-0.4) node[anchor=south east]{\color{red}$\yPosition$};
-        \draw[red, thick] (O) circle (\coordinateRadius) node[anchor=south,]{\color{red}$\zPosition$};
-        \draw[red, thick] (O) -- ++(\bx,\by) (O) -- ++(-\bx,-\by) (O) -- ++(-\bx,\by) (O)  -- ++(\bx,-\by);
-        
-        \draw[yellow, thick, <->] (O) ++(0.34,0) -- ++(0,0.23)  node [midway, left] {\distance{y}{1}};
-        \draw[yellow, thick, <->] (O) ++(0.34,0) -- ++(0,-0.28) node [midway, left] {\distance{y}{2}};
-        \draw[yellow, thick, <->] (O) ++(0.03,0) -- ++(0,0.24)  node [midway, right] {\distance{y}{3}};
-        \draw[yellow, thick, <->] (O) ++(0.03,0) -- ++(0,-0.28) node [midway, right] {\distance{y}{4}};
-        
-        \draw[yellow, thick, <->] (O) ++(0,0.27) -- ++(0.34,0)  node [midway, below] {\distance{x}{1}};
-        \draw[yellow, thick, <->] (O) ++(0,-0.32) -- ++(0.34,0)  node [midway, below] {\distance{x}{2}};
-        \draw[yellow, thick, <->] (O) -- ++(-0.30,0)  node [midway, below] {\distance{x}{5}};
-    \end{scope}
-\end{tikzpicture}
-    \caption{.}
-    \label{fig:thrusterlocationtop}
-\end{figure}
-
-\begin{figure}
-\centering 
-\begin{tikzpicture}
-    \node[anchor=south west,inner sep=0] (image) at (0,0) {\includegraphics[trim={0cm 0cm 0cm 0cm},clip,width=0.9\textwidth]{thrusterlocationfront}};
-    \begin{scope}[x={(image.south east)},y={(image.north west)}]
-		\pgfmathsetmacro\coordinateRadius{0.025}
-        \pgfmathsetmacro\by{\coordinateRadius*sin(45)}
-        \pgfmathsetmacro\bx{\coordinateRadius*cos(45)}
-        \pgfmathsetmacro\ay{\coordinateRadius*sin(\coordRot)}
-        \pgfmathsetmacro\ax{\coordinateRadius*cos(\coordRot)}
-        \pgfmathsetmacro\coordYRot{sin(\coordRot)}
-        \pgfmathsetmacro\coordXRot{cos(\coordRot)}
-        
-        \coordinate (O) at (0.48,0.52);
-        \draw[red, thick,->] (O) ++(\coordinateRadius,0) -- ++(0.4,0) node[anchor=north east]{\color{red}$\xPosition$};
-        \draw[red, thick,->] (O) ++(0,-\coordinateRadius)-- ++(0,-0.4) node[anchor=south east]{\color{red}$\yPosition$};
-        \draw[red, thick] (O) circle (\coordinateRadius) node[anchor=south,]{\color{red}$\zPosition$};
-        \draw[red, thick] (O) -- ++(\bx,\by) (O) -- ++(-\bx,-\by) (O) -- ++(-\bx,\by) (O)  -- ++(\bx,-\by);
-        
-        \draw[yellow, thick, <->] (O) ++(0.34,0) -- ++(0,0.23)  node [midway, left] {\distance{y}{1}};
-        \draw[yellow, thick, <->] (O) ++(0.34,0) -- ++(0,-0.28) node [midway, left] {\distance{y}{2}};
-        \draw[yellow, thick, <->] (O) ++(0.03,0) -- ++(0,0.24)  node [midway, right] {\distance{y}{3}};
-        \draw[yellow, thick, <->] (O) ++(0.03,0) -- ++(0,-0.28) node [midway, right] {\distance{y}{4}};
-        
-        \draw[yellow, thick, <->] (O) ++(0,0.27) -- ++(0.34,0)  node [midway, below] {\distance{x}{1}};
-        \draw[yellow, thick, <->] (O) ++(0,-0.32) -- ++(0.34,0)  node [midway, below] {\distance{x}{2}};
-        \draw[yellow, thick, <->] (O) -- ++(-0.30,0)  node [midway, below] {\distance{x}{5}};
-    \end{scope}
-\end{tikzpicture}
-    \caption{.}
-    \label{fig:thrusterlocationfront}
-\end{figure}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Equations in Component Form}
 If the matrices and vectors in \eqref{eq:model} are substituted with the matrices and vectors previously defined in this chapter and \eqref{eq:model} then solved for $\nuVectordot$ the following equations can be derived 

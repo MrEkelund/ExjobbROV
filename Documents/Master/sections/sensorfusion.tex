@@ -65,10 +65,10 @@ The complete extended Kalman filter algorithm can be viewed in \Algoref{alg:EKF}
 \end{algorithm}
 
 \section{Motion model}\index{Motion model}
-A \abbrKF uses knowledge of the system dynamics to improve the estimates of the model's states. It is therefore very important to choose a model the sufficiently describes the systems dynamics. The better the model the better performance of the filter. In this thesis two different motion models have been used, one model using the measured angular velocities as input and a more advanced model with angular velocities as states. All models in this chapter use quaternions and thus quaternion normalisation is required as described in \Chapterref{cha:modelling}.
+A \abbrKF uses knowledge of the system dynamics to improve the estimates of the model's states. It is therefore very important to choose a model that sufficiently describes the systems dynamics. The better the model the better performance of the filter. In this thesis two different motion models have been used, one model using the measured angular velocities as input and a more advanced model with angular velocities as states. All models in this chapter use quaternions and thus quaternion normalisation is required as described in \Chapterref{cha:modelling}.
 
 \subsection{Simple Model}\index{Quaternions}\label{sec:simple_model}
-A simple model using the quaternion representation of $\etaVector$ was based on the quaternion kinematics model in \citet[p.47]{Tornqvist}. The model was expanded with depth as an extra state. The depth was modelled as state with constant position discretised using euler forward. The complete simple model is 
+A simple model using the quaternion representation of $\etaVector$ was based on the quaternion kinematics model in \citet[p.47]{Tornqvist}. The model was expanded with depth as an extra state. The depth was modelled as state with constant position discretised using Euler forward. The complete simple model is 
 \begin{equation}
 \begin{pmatrix}
 \etaVector_{k+1}\\
@@ -76,7 +76,7 @@ d_{k+1}
 \end{pmatrix} 
 =
  \begin{pmatrix}
- I_{4\times4} + T_s \bar{T}(\nuVector_k) & 0\\
+ I_{4\times4} + T_s \bar{\boldsymbol{T}}(\nuVector_k) & 0\\
  0 & I_{1\times1} 
  \end{pmatrix}
  \begin{pmatrix}
@@ -85,7 +85,7 @@ d_{k+1}
  \end{pmatrix}
  +
   \begin{pmatrix}
-  T_s T(\etaVector_{k}) & 0\\
+  T_s \boldsymbol{T}(\etaVector_{k}) & 0\\
   0 & T_s
   \end{pmatrix}
   \begin{pmatrix}
@@ -93,7 +93,7 @@ d_{k+1}
   v_d 
   \end{pmatrix}
 \end{equation}
-Here $\bar{T}(\nuVector)$ is defined as
+Here $\bar{\boldsymbol{T}}(\nuVector)$ is defined as
 \begin{equation}
 \bar{T}(\nuVector) = \frac{1}{2}
 \begin{pmatrix}
@@ -102,10 +102,10 @@ Here $\bar{T}(\nuVector)$ is defined as
      q &-r & 0 & p\\
      r & q &-p & 0
 \end{pmatrix}
-\end{equation} and $T(\etaVector)$ is given in \eqref{eq:Tquat}.
-It is important to note that this is an attitude model and thus $\etaVector$ and $\nuVector$ only contains quaternions and angular velocites respectively. Note that $\nuVector$ is not modeled as a state but \citet{Tornqvist} instead uses it as an input to reduce the dimension of the model. 
+\end{equation} and $\boldsymbol{T}(\etaVector)$ is given in \eqref{eq:Tquat}.
+It is important to note that this is an attitude model and thus $\etaVector$ and $\nuVector$ only contains quaternions and angular velocities respectively. Note that $\nuVector$ is not modelled as a state but is used as an input to reduce the dimension of the model as in \citet{Tornqvist}. 
 \subsection{Expanded model}\label{sec:expanded_model}
-A second model was implemented to improve sensor fusion performance. This model incorporated bias estimates, modeled $\nuVector$ as a constant position state. The entire model was discretised using euler forward. The expanded model is 
+A second model was implemented to improve sensor fusion performance. This model incorporated bias estimates and modelled $\nuVector$ as a constant position state. The entire model was discretised using Euler forward. The expanded model is 
 \begin{equation}\label{eq:expanded_model}
 \begin{pmatrix}
 \etaVector_{k+1}\\
@@ -114,7 +114,7 @@ A second model was implemented to improve sensor fusion performance. This model 
 d_{k+1}
 \end{pmatrix}=
 \begin{pmatrix}
-I_{4\times4} + T_s \bar{T}(\nuVector_{k})& 0_{4\times7}\\
+I_{4\times4} + T_s \bar{\boldsymbol{T}}(\nuVector_{k})& 0_{4\times7}\\
 0_{7\times4} & I_{7\times7}\\
 \end{pmatrix}
 \begin{pmatrix}
@@ -131,8 +131,8 @@ d_{k}
 \end{pmatrix}
 \end{equation}
 
-\subsection{Gyro measurement equation}
-The \abbrROV is equipped with an \abbrIMU. The gyro measurement equation is 
+\subsection{Gyroscope measurement equation}
+The \abbrROV is equipped with an \abbrIMU. The gyroscope measurement equation is 
 \begin{equation}\label{eq:gyro}
 \boldsymbol{y}_\text{Gyro}= \nuVector + \boldsymbol{b} =
  \begin{pmatrix}
@@ -141,20 +141,20 @@ q + b_q\\
 r + b_r
 \end{pmatrix}
 \end{equation}
- $\boldsymbol{y}_\text{Gyro}$ is the reading from the \abbrIMU's gyro in $rad/s$. $b_p$, $b_q$ and $b_r$ are the gyro's biases around the \xPosition-, \yPosition- and \zPosition-axes. No outlier rejection is performed with the gyro measurements. Also note that \eqref{eq:gyro} is only used in conjunction with the expanded model \eqref{sec:expanded_model} since it models $\nuVector$ as a state. 
+ $\boldsymbol{y}_\text{Gyro}$ is the reading from the \abbrIMU's gyroscope in $rad/s$. $b_p$, $b_q$ and $b_r$ are the gyroscope's biases in the \xPosition-, \yPosition- and \zPosition-axes. No outlier rejection is performed on the gyroscope measurements. Also note that \eqref{eq:gyro} is only used in conjunction with the expanded model \eqref{sec:expanded_model} since this models $\nuVector$ as a state. 
 
 \subsection{Accelerometer measurement equation}
-Since the \abbrIMU measures acceleration in addition to angular velocities an accelerometer measurement update can be done with each new \abbrIMU data packet. The measurement equation for the accelerometer is
+Since the \abbrIMU measures acceleration in addition to angular velocities, an accelerometer measurement update can be done with each new \abbrIMU data packet. The measurement equation for the accelerometer is
 \begin{equation}
 \boldsymbol{y}_{\text{Acc}} =
-    \boldsymbol{R}^T
+    \boldsymbol{R^n_b}^T
     \begin{pmatrix}
     0\\
     0\\
     -g
     \end{pmatrix}
 \end{equation}
-    where $\boldsymbol{R}$ is the rotation matrix defined in \chapterref{cha:modelling} and $g$ is the gravitational constant. To ensure that only the gravitational constant $g$ is used to update the \abbrROV's attitude outlier rejection is performed. Accelerometer measurements are used if 
+    where $\boldsymbol{R^n_b}$ is the rotation matrix defined in \chapterref{cha:modelling} and $g$ is the gravitational constant. To ensure that only the gravitational constant $g$ is used to update the \abbrROV's attitude outlier rejection is performed. Accelerometer measurements are used if 
 \begin{align*}
     \intertext{Keep if: }
     \abs{~||
@@ -163,13 +163,13 @@ Since the \abbrIMU measures acceleration in addition to angular velocities an ac
     -g
      ~} < \epsilon
 \end{align*} holds true.
-Here epsilon is a design variable that tweaks how much the magnitude of the accelerometer measurement may deviate from $g$ before being considered an outlier.
+Here $\epsilon$ is a design variable that tweaks how much the magnitude of the accelerometer measurement may deviate from $g$ before being considered an outlier.
 
 \subsection{Magnetometer measurement equation}
 The internal magnetometer enables the \abbrROV to measure the magnetic field strength in the three local axes $x$, $y$ and $z$. This data is used as a measurement in a measurement update that is constructed the following way:
 \begin{equation}
 \boldsymbol{y}_{\text{Mag}} = 
-    \boldsymbol{R}^T
+    \boldsymbol{R^n_b}^T
     \begin{pmatrix}
         m_N\\
         m_E\\
@@ -190,7 +190,7 @@ To ensure that the good measurements are used an outlier rejection equation was 
     \end{pmatrix}||
      ~} < \epsilon
 \end{equation}
-holds. Here epsilon is a design variable that tweaks how much the magnitude of hte measurements may deviate from the magnitude of the Earth's magnteic field before being rejected.
+holds. Here $\epsilon$ is a design variable that tweaks how much the magnitude of the measurements may deviate from the magnitude of the Earth's magnetic field before being rejected.
 
 \subsection{Pressure sensor measurement equation}
 The \abbrROV is also equipped with a pressure sensor. The sensor is placed in the rear, or bow, of the \abbrROV which in turn means that the attitude of the \abbrROV needs to be taken in to account when calculating the depth.
