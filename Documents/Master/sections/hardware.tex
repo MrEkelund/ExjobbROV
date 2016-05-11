@@ -11,16 +11,16 @@ The \abbrROV's \abbrIO consists of an HKPilot Mega 2.7 which is based on Ardupil
     \item Inertial measurement unit (\abbrIMU) - MPU6000.
 \end{itemize}
 An external pressure sensor MS5837-30BA which was encased in a watertight case by BlueRobotics was connected to the HKPilot Mega 2.7 by \abbrIC.
-The HKPilot Mega 2.7 also controls the six \abbrESCs. The \abbrESCs are 30A AfroESCs flashed with BlueRobotics linearising firmware. The HKPilot Mega 2.7 is connected to the onboard computer by \abbrUSB cable.The HKPilot Mega 2.7 runs a rosserial-arduino node which is a lite \abbrROS node that communicates with a master node by serial communication. Scaling calibration of the sensors are done automatically. However, the offset of the magnetometer has to be calibrated manually by following the instructions that are produced in the workstation terminal window when the calibration scipt is run. The external pressure sensor uses the internal barometer to remove the atmospheric pressure offset. The atmospheric pressure offset is measured once, at the start up of the \abbrROV.
+The HKPilot Mega 2.7 also controls the six \abbrESC:s. The \abbrESC:s are 30A AfroESCs flashed with BlueRobotics linearising firmware. The HKPilot Mega 2.7 is connected to the onboard computer by \abbrUSB cable. The HKPilot Mega 2.7 runs a rosserial-arduino node which is a lite \abbrROS node that communicates with a master node by serial communication. Scaling calibration of the sensors are done automatically. However, the offset of the magnetometer has to be calibrated manually by following the instructions that are produced in the workstation terminal window when the calibration scipt is run. The external pressure sensor uses the internal barometer to remove the atmospheric pressure offset. The atmospheric pressure offset is measured once, at the start up of the \abbrROV.
 
 \section{Power}
 To power the \abbrROV a Turnigy 5000mAh 4S 25C Lipo Pack was used. This is a high discharge battery which ensures that all thrusters can be run at the same time without distruptive voltage drops.
-To power the Raspberry pi 2 a HobbyKing LIPO to USB Charging Adapter was used. This adapter connects to the JST-XH connector on the Lipo battery and then outputs regular USB voltages and currents. A \abbrUSB to micro-\abbrUSB adapter was used to route the power to the Raspberry pi. 
-The \abbrESC:s are powered via the main lead of the Lipo battery. Lastly the HKPilot Mega 2.7 is powered via \abbrUSB by the Raspberry pi \textbf{and} by the \abbrESC:s. 
+To power the Raspberry pi 2 a HobbyKing LiPo to \abbrUSB Charging Adapter was used. This adapter connects to the JST-XH connector on the LiPo battery and then outputs regular \abbrUSB voltages and currents. A \abbrUSB to micro-\abbrUSB adapter was used to route the power to the Raspberry pi. 
+The \abbrESC:s are powered via the main lead of the LiPo battery. Lastly the HKPilot Mega 2.7 is powered via \abbrUSB by the Raspberry pi \textbf{and} by the \abbrESC:s. 
 
-\section{Onboard Computer}
-The onboard computer was a Raspberry pi 2 Model B which can be seen in \Figureref{fig:raspberryandcamera}. A Raspicam is connected to the Raspberry pi 2. 
-\abbrROS nodes running on the onboard computer can be seen in \Tableref{tab:raspnodes}.
+\section{The Onboard Computer}
+The onboard computer was a Raspberry pi 2 Model B which can be seen in \Figureref{fig:raspberryandcamera}. A Raspicam is connected to the Raspberry pi 2 and is used to in conjunction with a \abbrROS node to create a video feed. 
+The \abbrROS nodes running on the onboard computer can be seen in \Tableref{tab:raspnodes}.
  \begin{table}[tbp]
   \centering
   \caption{\label{tab:raspnodes}%
@@ -57,8 +57,8 @@ The onboard computer was a Raspberry pi 2 Model B which can be seen in \Figurere
     \label{fig:apm}
 \end{figure}
 
-\section{Workstation}
-The workstation used in the thesis is a Lenovo T430 with i5-3210M processor and Intel\textregistered HD Graphics 4000. The workstation was connected via a Cat 6 tether to the Raspberry pi 2.
+\section{The Workstation}
+The workstation used in the thesis is a Lenovo T430 with an Intel\textregistered i5-3210M processor and Intel\textregistered HD Graphics 4000. The workstation was connected via a Cat 6 tether to the Raspberry pi 2.
 \begin{table}[tbp]
   \centering
   \caption{\label{tab:workstationnodes}%

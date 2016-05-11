@@ -24,22 +24,23 @@ Then in a new terminal navigate to the catkin\_ws folder and run the workstation
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Operating the ROV}
 
-\subsection{Modes and controllers}
+\subsection{Modes and Controllers}
 
-\subsubsection{Manual mode}
+\subsubsection{Manual Mode}
 
-\subsection{Logging data}\label{sec:logging}
+\subsection{Logging Data}\label{sec:logging}
 For logging data rqt-bag or the supplied script can be used. In rqt on the workstation start rqt-bag by Plugins $\rightarrow$ Logging $\rightarrow$ Bag. Start the recording of data by pressing the red circle. A menu of available topics is showed, select the topics that you want to record. Then give the logfile a name in the pop-up.
-To stop recording data press the red circle and close Bag by Running $\rightarrow$ Close:Bag. For using the logging scripts use 
+To stop recording data press the red circle and close Bag by Running $\rightarrow$ Close:Bag. To use the supplied logging scripts type 
 \begin{lstlisting}
+cd pathToCatkinWs
 ./test.sh
 \end{lstlisting}
-and follow the instructions.
+in a terminal window and follow the instructions.
 
-\subsection{Sending test signals}
-For sending telegraph signals to the \abbrROV the logging script in \Sectionref{sec:logging} can be used or dynamic reconfigure can be used. Dynamic reconfigure can be used from the command line or rqt. In rqt start dynamic reconfigure by Plugins $\rightarrow$ Configuration $\rightarrow$ Dynamic Reconfigure. When the dynamic reconfigure box is shown choose matlab\_controller then check telegraph\_signals. In the submenu choose the scaling and switch factor for each thruster. Then the wanted thrusters has to be enabled/disabled by checking/unchecking the option \textit{enable\_thrusteri}. To enable tests change the test signal from off $\rightarrow$ on.    
+\subsection{Sending Test Signals}
+To send telegraph signals to the \abbrROV the logging script in \Sectionref{sec:logging} or dynamic reconfigure can be used. Dynamic reconfigure can be used from the command line or rqt. In rqt start dynamic reconfigure by Plugins $\rightarrow$ Configuration $\rightarrow$ Dynamic Reconfigure. When the dynamic reconfigure box is shown choose matlab\_controller then check telegraph\_signals. In the submenu choose the scaling and switch factor for each thruster. Then the wanted thrusters has to be enabled/disabled by checking/unchecking the option \textit{enable\_thrusteri}. To enable tests change the test signal from off $\rightarrow$ on.    
 
-\subsection{Displaying the continuous plots}
+\subsection{Displaying the Continuous Plots}
 Displaying plots in rqt is enabled by Plugins $\rightarrow$ Visualization $\rightarrow$ Plot. In the plot plugin, data can be plotted by choosing topics in the topic field this is shown in \Figureref{fig:contplot}. The active topics can be seen in the command line by running 
 \begin{lstlisting}
 rostopic list
@@ -104,7 +105,7 @@ To implement a new controller open the Simulink file Controller.slx. Construct t
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Known issues and troubleshooting}
+\section{Known Issues and Troubleshooting}
 This sections brings up some of the known issues and how to solve them. Some general debugging and troubleshooting is also brought up.
 
 \subsection{Calibration of Sensors}
@@ -155,9 +156,9 @@ To check for unresponsive thrusters run the following commands
 rostopic pub --once /rovio/thrusters_enable std_msgs/Bool true
 ./thrusterTest.sh
 \end{lstlisting}
-The thruster test will run the thrusters at a minimal torque in incremental order. If the one or several thrusters are unresponsive check that the thrusters are connected according to \Sectionref{sec:wiring}. If all thrusters are unresponsive check that the HKPilot Mega 2.7 and the Raspberry has power and connected to each other. Note that if the \abbrROV is disarmed no control signals will be sent to the thrusters.
+The thruster test will run the thrusters at a minimal torque in incremental order. If one or several thrusters are unresponsive check that the thrusters are connected according to \Sectionref{sec:wiring}. If all thrusters are unresponsive check that the HKPilot Mega 2.7 and the Raspberry has power and connected to each other. Note that if the \abbrROV is disarmed no control signals will be sent to the thrusters.
 
-\subsection{Checking and changing rotation of thrusters}
+\subsection{Checking and Changing Rotation of Thrusters}
 The rotation of thrusters are important due to the moments they create. Thus are two thruster pairs counter-rotating. For checking the rotation of the thrusters the script mentioned in \Subsectionref{subsec:unresponsive} can be run. \Figureref{fig:thrusterRotation12} - \Figureref{fig:thrusterRotation6} shows how the different thrusters should rotate when supplied with a positive control signal. If one or more thrusters are rotating in the wrong direction, change the order the corresponding thruster cables are connected. 
 
 \begin{figure}
@@ -169,7 +170,7 @@ The rotation of thrusters are important due to the moments they create. Thus are
         \draw[->,red,ultra thick,rounded corners] (0.78,0.205) arc (210:150:0.2);
     \end{scope}
 \end{tikzpicture}
-    \caption{The arrows indicate the rotational direction of thruster 1 and thruster 2 when supplying a positive control signal.}
+    \caption{The arrows indicate the direction of rotation of thruster 1 and thruster 2 when supplied with a positive control signal.}
     \label{fig:thrusterRotation12}
 \end{figure}
 
@@ -182,7 +183,7 @@ The rotation of thrusters are important due to the moments they create. Thus are
         \draw[->,red,ultra thick,rounded corners] (0.74,0.405) arc (210:150:0.2);
     \end{scope}
 \end{tikzpicture}
-    \caption{The arrows indicate the rotational direction of thruster 3 and thruster 4 when supplying a positive control signal.}
+    \caption{The arrows indicate the direction of rotation of thruster 3 and thruster 4 when supplied with a positive control signal.}
     \label{fig:thrusterRotation34}
 \end{figure}
 
@@ -194,7 +195,7 @@ The rotation of thrusters are important due to the moments they create. Thus are
         \draw[->,red,ultra thick,rounded corners] (0.44,0.445) arc (210:150:0.2);
     \end{scope}
 \end{tikzpicture}
-    \caption{The arrows indicate the rotational direction of thruster 5 when supplying a positive control signal.}
+    \caption{The arrows indicate the direction of rotation of thruster 5 when supplied with a positive control signal.}
     \label{fig:thrusterRotation5}
 \end{figure}
 
@@ -206,6 +207,6 @@ The rotation of thrusters are important due to the moments they create. Thus are
         \draw[->,red,ultra thick,rounded corners] (0.40,0.45) arc (210:150:0.2);
     \end{scope}
 \end{tikzpicture}
-    \caption{The arrows indicate the rotational direction of thruster 6 when supplying a positive control signal.}
+    \caption{The arrows indicate the direction of rotation of thruster 6 when supplied with a positive control signal.}
     \label{fig:thrusterRotation6}
 \end{figure}

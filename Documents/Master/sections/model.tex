@@ -1,5 +1,5 @@
 \chapter{Modelling the ROV} \label{cha:modelling}
-This chapter will describe how our \abbrROV is modelled using \citet{fossen2011} 6 \abbrDOF model for \abbrROV's.
+This chapter describes how the \abbrROV is modelled using the \citet{fossen2011} 6 \abbrDOF model for \abbrROV:s.
 
 A underwater vehicle with 6 \abbrDOF, like our ROV, can be described by\index{Model of an underwater vehicle}
 \begin{equation} \label{eq:model}
@@ -13,7 +13,7 @@ where
 \begin{equation*}
   \listNu 
 \end{equation*}
-are generalised velocities that are used to describe motion in 6 \abbrDOF. The matrices $\inertia$\index{Inertia matrix}, $\coriolis$\index{Coriolis matrix}, $\damping$\index{Damping matrix} and the vector $\gravity$\index{Restoring forces matrix} respectively describes how inertia, Coriolis forces, damping forces, gravity and buoyancy affect the \abbrROV. The vector $\tauVector$ describes the forces and torques produced by the \abbrROV's actuators and disturbances.
+are generalised velocities that are used to describe motion in 6 \abbrDOF. The matrices $\inertia$\index{Inertia matrix}, $\coriolis$\index{Coriolis matrix}, $\damping$\index{Damping matrix} and the vector $\gravity$\index{Restoring forces matrix} respectively describes how inertia, Coriolis forces, damping forces, gravity and buoyancy affect the \abbrROV. The vector $\tauVector$ describes the forces and torques produced by the \abbrROV's actuators as well as environmental disturbances.
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 In this chapter, the vector cross-product $\cross{\cdot}$ is defined as $\cross{a\boldsymbol{A}} \boldsymbol{B} = a\boldsymbol{A} \times \boldsymbol{B}$. The notation used for the parameters in this chapter and \Chapterref{cha:parameterEstimation} can be seen in \Tableref{tab:notationModelling}. The notation for forces, moments, linear and angular velocities, positions and Euler angles used in the model is summarised in \Tableref{tab:notationMarine}. 
@@ -80,15 +80,15 @@ To get a more compact way of writing a vector notation has been used
 \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{The body-fixed and global coordinate systems}
+\section{The Body-Fixed and Global Coordinate Systems}
 \label{sec:coordinates}\index{NED}\index{body-fixed coordinate system}\index{global coordinate system}
 During modelling it is important to choose proper coordinate systems in which to describe the systems behaviour.
 The \abbrROV model used in this thesis uses two separate coordinate systems.
 The first system, the body-fixed coordinate system, is fixed to the \abbrROV and rotates with the \abbrROV. 
-The body-fix coordinate system is a right-hand system, the $\xPosition$-axis is placed along the length of the \abbrROV pointing towards its bow. The $\yPosition$-axis points starboard, and the $\zPosition$-axis points downwards towards the vehicles keel. The coordinate system is assumed to be centred in the \abbrROV's  center of gravity (\abbrCG). The body-fixed coordinate system makes it easier to describe sensor readings, since the sensors rotate with the \abbrROV. It is also easier to express the effect of each thruster in forces and moments described in the body-fixed coordinate system. How the body-fixed coordinate system is placed in the \abbrROV can be seen in \Figureref{fig:thrusterlocationtop} and \Figureref{fig:thrusterlocationfront}.
+The body-fix coordinate system is a right-hand system, the $\xPosition$-axis is placed along the length of the \abbrROV pointing towards its bow. The $\yPosition$-axis points starboard, and the $\zPosition$-axis points downwards towards the vehicles keel. The coordinate system is assumed to be centred in the \abbrROV's  center of gravity (\abbrCG). The body-fixed coordinate system makes it easier to describe sensor readings, since the sensors rotate with the \abbrROV. It is also easier to express the effect of each thruster with forces and moments expressed in the body-fixed coordinate system. How the body-fixed coordinate system is placed in the \abbrROV can be seen in \Figureref{fig:thrusterlocationtop} and \Figureref{fig:thrusterlocationfront}.
 
-The global coordinate system is Earthfixed, with axes $\north$, $\east$ and $\down$. The $\north$ axis points in the direction of our calibrated North, the $\east$ axis points in the direction of calibrated East and the $\down$ axis points down towards the \abbrCG of the Earth.
-This coordinate system is used to express buoyancy and gravitational forces on the \abbrROV, their effects are transformed to the local coordinate system by a rotation matrix. How the local and global coordinate systems relate to each other can be seen in \Figureref{fig:coordinate_frames}.
+The global coordinate system is Earthfixed, with axes $\north$, $\east$ and $\down$. The $\north$ axis points in the direction of the calibrated North, the $\east$ axis points in the direction of calibrated East and the $\down$ axis points down towards the \abbrCG of the Earth.
+This coordinate system is used to express buoyancy and gravitational forces acting on the \abbrROV, their effects are transformed to the body-fixed coordinate system by a rotation matrix. How the local and global coordinate systems relate to each other can be seen in \Figureref{fig:coordinate_frames}.
 
 \newcommand*{\coordinateRadius}{0.05}
 \newcommand*{\coordRot}{30}
@@ -241,13 +241,13 @@ where $\boldsymbol{T}_{\theta}(\eulerAngles)$ is
 0 & s\rollAngle/c\pitchAngle & c\rollAngle/c\pitchAngle
 \end{bmatrix}
 \end{equation}
-where $t$ stands for $\tan$ \citep[24-25]{fossen2011}. Similar to the linear velocities transformation matrix is the inverse of the angular velocities transformation matrix
+where $t$ stands for $\tan$ \citep[24-25]{fossen2011}. Similar to the linear velocities transformation matrix the inverse of the angular velocities transformation matrix is
 \begin{equation}
 \boldsymbol{T}_{\theta}(\eulerAngles)^{-1} = \boldsymbol{T}_{\theta}(\eulerAngles)^T
 \end{equation}
 
 The kinematic equations can then be expressed in vector form as \index{Kinematics}
-\begin{equation} 
+\begin{equation} \label{eq:kineticsEuler}
 \etaVectordot = \boldsymbol{J}_\theta(\etaVector)\nuVector
 \Leftrightarrow
 \begin{bmatrix}
@@ -304,11 +304,11 @@ The added mass of the water, $\inertia_A$, acting upon the \abbrROV is defined a
 \end{equation}
 under the assumption that the \abbrROV moves at low speeds relative to the water \citep[p.121]{fossen2011}.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Coriolis forces}
+\section{Coriolis Forces}
 Since the \abbrROV travels in a rotating reference frame, the Earth, the \abbrROV is subjected to inertial forces called Coriolis forces. The Coriolis forces acting on the \abbrROV are described in a similar manner to the inertia matrix, $\inertia$, with
 \begin{equation}
     \coriolis(\nuVector) = \coriolis_{RB}(\nuVector) + \coriolis_A(\nuVector)
-\end{equation}\citep[p.110]{fossen2011}. $\coriolis_{RB}(\nuVector)$ describes the Coriolis and centripetal forces caused by the rigid body's mass, while $\coriolis_A(\nuVector)$ describe the same effects but caused by the added inertia and mass.\index{Added mass}\index{Coriolis}
+\end{equation}\citep[p.110]{fossen2011}. $\coriolis_{RB}(\nuVector)$ describes the Coriolis and centripetal forces caused by the rigid body's mass, while $\coriolis_A(\nuVector)$ describes the same effects but caused by the added inertia and added mass.\index{Added mass}\index{Coriolis}
 
 The rigid-body Coriolis vector is given as
 \begin{equation}
@@ -354,7 +354,7 @@ The Coriolis and centripetal effects from the added mass are described as
 \end{split}
 \end{equation} Under the assumption that the \abbrROV is moving slowly and has three planes of symmetry \citep[p.121]{fossen2011}. 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Viscous damping}
+\section{Viscous Damping}
 There are four main sources of hydrodynamic damping acting upon a submersed vehicle \citep[p.122]{fossen2011}.
 Potential damping, skin friction, wave drift damping and damping from vortex shedding. The effects of these four sources on a 6 \abbrDOF vehicle can be described by two 6-by-6 matrices.\index{Viscous damping}
 The matrix $\damping$ contains the linear damping terms, while the matrix $\damping_{n}(\nuVector)$ contains the quadratic, or non-linear, damping terms \citep{fossen2011}. The sum of these two matrices form the Viscous damping matrix $\damping(\nuVector)$ which in turn can be simplified to
@@ -382,11 +382,11 @@ It has been assumed that the \abbrROV is symmetric about the $xz$-plane and the 
     (\Mq + \Mqabsq \abs{q}) q\\
     (\Nr + \Nrabsr \abs{r}) r\\
     \end{pmatrix}    
-\end{equation}.
+\end{equation}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Restoring forces}\index{Restoring forces}\index{buoyancy}
-Since the \abbrROV is submerged it will experience forces and moments caused by the Earths gravitational pull and the buoyancy force, in hydrostatic terms these are called restoring forces and act as spring forces on the \abbrROV \citep{fossen2011}. The restoring forces and moments are calculated using four main parameters; the mass of the vehicle, $m$, its buoyancy $B$ and lastly the coordinates for the \abbrROV's \abbrCG and center of buoyancy (\abbrCB) \citep{fossen2011}. The restoring forces vector, $\gravity(\etaVector)$, describes how the forces and moments caused by the buoyancy force and gravitational pull of the Earth act on a 6 \abbrDOF model. It is according to \citet[p.60]{fossen2011} defined as
+\section{Restoring Forces}\index{Restoring forces}\index{buoyancy}
+Since the \abbrROV is submerged it will experience forces and moments caused by the Earths gravitational pull and the buoyancy force, in hydrostatic terms these are called restoring forces and act as spring forces on the \abbrROV \citep{fossen2011}. The restoring forces and moments are calculated using four main parameters; the mass of the vehicle, $m$, its buoyancy $B$ and lastly the coordinates of the \abbrROV's \abbrCG and center of buoyancy (\abbrCB) \citep{fossen2011}. The restoring forces vector, $\gravity(\etaVector)$, describes how the forces and moments caused by the buoyancy force and gravitational pull of the Earth act on a 6 \abbrDOF model. It is according to \citet[p.60]{fossen2011} defined as
 \begin{equation} \label{eq:restoring_forces}
     \gravity(\etaVector) =
      \begin{pmatrix}
@@ -404,8 +404,8 @@ Since the \abbrROV is submerged it will experience forces and moments caused by 
     \end{pmatrix}
 \end{equation}
 where $\boldsymbol{r}_b = [0, 0, z_B]^T$, $\boldsymbol{r}_g = [0, 0, 0]^T$, $\boldsymbol{f}_g = \boldsymbol{R}^n_b(\eulerAngles)^T [0, 0, W]^T$ and $\boldsymbol{f}_b = -\boldsymbol{R}^n_b(\eulerAngles)^T [0, 0, B]^T$.
-Here $B$ is given by $B = \rho g V$ and $W = m g$. $m$ is the \abbrROV's mass, $g$ the gravitational constant, $\rho$ the density of water and $V$ the volume of displaced water. In other words the magnitude of the buoyancy forces is equal to the weight of the displaced water. For a fully submerged vehicle, $V$ will naturally be equal the volume of the vehicle.
-In these calculations it is assumed that the \abbrCG coincides with the \abbrCO and that the center of buoyancy (\abbrCB) lies at coordinate $[0, 0, z_B]$, directly above or below the \abbrCO. Note that the positions of the three centers are described using the coordinate system described in \Sectionref{sec:coordinates}, a roll and pitch stable \abbrROV should thus have a $z_B < 0$.
+Here $B$ is given by $B = \rho g V$ and $W = m g$. $m$ is the \abbrROV's mass, $g$ the gravitational constant, $\rho$ the density of water and $V$ the volume of displaced water. In other words the magnitude of the buoyancy forces is equal to the weight of the displaced water. For a fully submerged vehicle, $V$ will naturally be equal to the volume of the vehicle.
+In these calculations it has been assumed that the \abbrCG coincides with the \abbrCO and that the center of buoyancy (\abbrCB) lies at coordinate $[0, 0, z_B]$, directly above or below the \abbrCO. Note that the positions of the three centers are described using the coordinate system described in \Sectionref{sec:coordinates}, a roll and pitch stable \abbrROV should thus have a $z_B < 0$.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Thrust Matrix}
@@ -488,7 +488,7 @@ Unit quaternions $\quaternion$ are a useful way to express angles. Where Euler a
 \quatIII \\
 \end{pmatrix}
 \end{equation}
-and the transformation matrix from body-fixed coordinates to global coordinates is given by 
+and the transformation matrix from body-fixed coordinates to global coordinates is changed to 
 \begin{equation}
 \boldsymbol{R}^n_b(\quaternion) = \begin{pmatrix}
   1 - 2(\quatII^2 + \quatIII^2) & 2(\quatI\quatII - \quatIII\quatO)   & 2(\quatI\quatIII + \quatII\quatO) \\
@@ -497,7 +497,7 @@ and the transformation matrix from body-fixed coordinates to global coordinates 
 \end{pmatrix}
 \end{equation}
 
-Changing to quaternions changes \eqref{eq:restoring_forces} to 
+Changing from Euler angles to quaternions also changes \eqref{eq:restoring_forces} to 
 \begin{equation}
     \boldsymbol{g}(\etaVector) = 
     \begin{pmatrix}
@@ -514,8 +514,8 @@ Changing to quaternions changes \eqref{eq:restoring_forces} to
     \end{pmatrix}
 \end{equation}
 
-A unit quaternion satisfies $\quaternion^T\quaternion = 1$, thus does the quaternions need normalisation.
-Quaternion normalisation in continuous time is given by 
+The quaternions needs to satisfy $\quaternion^T\quaternion = 1$ in order to represent angles, thus they need normalisation.
+Quaternion normalisation in a continuous dynamic system time is given by 
 \begin{equation}
 \quaterniondot = \boldsymbol{T}_q(\quaternion) \angVelBody + \frac{\gamma}{2} ( 1 - \quaternion^T\quaternion)\quaternion
 \end{equation}
@@ -535,7 +535,7 @@ In discrete time quaternion normalisation is given by
 \quaternion(k+1) = \frac{\quaternion(k+1)}{\sqrt{\quaternion^T(k+1)\quaternion(k+1)}}
 \end{equation}
 
-The kinematic equations are changed to \index{Kinematics}
+The kinematic equation \eqref{eq:kineticsEuler}  is changed to \index{Kinematics}
 \begin{equation}
 \etaVectordot = \boldsymbol{J}_q(\etaVector)\nuVector
 \Leftrightarrow
