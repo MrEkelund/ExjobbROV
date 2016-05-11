@@ -265,19 +265,17 @@ The filter was run on each collected data set. The final values of $\hat{\boldsy
 \section{Estimated parameters}
 \Tableref{tab:parameterConstants} shows the know and measured parameters used in the \abbrROV. The estimated parameters used in the \abbrROV model are shown in \Tableref{tab:parameterEstimation}.
 
- \begin{table}[tbp]
+\begin{table}[tbp]
   \centering
   \caption{\label{tab:parameterConstants}%
     The known parameters used in the \abbrROV model.}
-\scalebox{0.85}{
   \begin{tabular}{l l p{0.7\linewidth}}
     \toprule%
     \textbf{Notation}   & \textbf{Value} & \textbf{Description} \\
     \otoprule%
     $m$                 & 6.621 \kilogram                    & Mass of the \abbrROV. \\            
     $g$                 & 9.82  \meter\per\second\squared    & Gravity acceleration.\\   
-    $\rho$              & 1000  \kilogram\per\meter\cubed    & Density of water.\\ 
-    $V$                 &        \meter\cubed                & Displaced volume.\\       
+    $\rho$              & 1000  \kilogram\per\meter\cubed    & Density of water.\\       
     
     $\distance{x}{1}$   & 0.16 \meter & Distance from \abbrCG to thruster 1 in $\xPosition$-direction.\\
     $\distance{y}{1}$   & 0.11 \meter & Distance from \abbrCG to thruster 1 in $\yPosition$-direction.\\
@@ -288,10 +286,11 @@ The filter was run on each collected data set. The final values of $\hat{\boldsy
     $\distance{y}{4}$   & 0.11 \meter & Distance from \abbrCG to thruster 4 in $\yPosition$-direction.\\
     $\distance{z}{6}$   & 0.11 \meter & Distance from \abbrCG to thruster 6 in $\zPosition$-direction.\\
     \bottomrule%
-  \end{tabular}}
+  \end{tabular}
 \end{table}
 
-  \begin{table}[tbp]
+
+\begin{table}[tbp]
   \centering
   \caption{\label{tab:parameterEstimation}%
     The estimated parameters used in the \abbrROV model.}
@@ -301,19 +300,16 @@ The filter was run on each collected data set. The final values of $\hat{\boldsy
     \textbf{Notation}   & \textbf{Value} & \textbf{Description} \\
     \otoprule%   
     % Parameters that will be estimated
-	$z_B$               &   \meter& Distance from \abbrCG to \abbrCB.\\
-    $\Kp$               &   \kilogram\usk\meter\squared                 & Linear damping coefficient due to rotation in water about the $\xPosition$-axis.\\
-    $\Kpdot$            &   \kilogram\usk\meter\squared\per\usk\second  & Increased inertia about the $\xPosition$-axis due to rotation in water.\\
-    $\Kpabsp$           &   \kilogram\usk\meter\squared                 & Quadratic damping coefficient due to rotation in water about the $\xPosition$-axis.\\
-    $\Mq$               &   \kilogram\usk\meter\squared                 & Linear damping coefficient due to rotation in water about the $\yPosition$-axis.\\
-    $\Mqdot$            &   \kilogram\usk\meter\squared\per\usk\second  & Increased inertia about the $\yPosition$-axis due to rotation in water.\\
-    $\Mqabsq$           &   \kilogram\usk\meter\squared                 & Quadratic damping coefficient due to rotation in water about the $\yPosition$-axis.\\
-    $\Nr$               &   \kilogram\usk\meter\squared                 & Linear damping coefficient due to rotation in water about the $\zPosition$-axis.\\
-    $\Nrdot$            &   \kilogram\usk\meter\squared\per\usk\second  & Increased inertia about the $\zPosition$-axis due to rotation in water.\\
-    $\Nrabsr$           &   \kilogram\usk\meter\squared                 & Quadratic damping coefficient due to rotation in water about the $\zPosition$-axis.\\
-    $A_p$               &   \kilogram\usk\meter\squared                 & Inertia around the $\xPosition$-axis and increased inertia around the $\xPosition$-axis.\\
-    $B_q$               &   \kilogram\usk\meter\squared                 & Inertia around the $\yPosition$-axis and increased inertia around the $\yPosition$-axis.\\
-    $C_r$               &   \kilogram\usk\meter\squared                 & Inertia around the $\zPosition$-axis and increased inertia around the $\zPosition$-axis.\\
+	$z_B$               & -0.0308 \meter                                      & Distance from \abbrCG to \abbrCB.\\
+    $\Kp$               & -1.1082 \kilogram\usk\meter\squared                 & Linear damping coefficient due to rotation in water about the $\xPosition$-axis.\\
+    $\Kpabsp$           & -0.3450 \kilogram\usk\meter\squared                 & Quadratic damping coefficient due to rotation in water about the $\xPosition$-axis.\\
+    $\Mq$               & -1.2385 \kilogram\usk\meter\squared                 & Linear damping coefficient due to rotation in water about the $\yPosition$-axis.\\
+    $\Mqabsq$           & -0.1111 \kilogram\usk\meter\squared                 & Quadratic damping coefficient due to rotation in water about the $\yPosition$-axis.\\
+    $\Nr$               & -1.5325 \kilogram\usk\meter\squared                 & Linear damping coefficient due to rotation in water about the $\zPosition$-axis.\\
+    $\Nrabsr$           & -1.3977 \kilogram\usk\meter\squared                 & Quadratic damping coefficient due to rotation in water about the $\zPosition$-axis.\\
+    $A_p$               & 0.9625  \kilogram\usk\meter\squared                 & Inertia around the $\xPosition$-axis and increased inertia around the $\xPosition$-axis.\\
+    $B_q$               & 0.7108  \kilogram\usk\meter\squared                 & Inertia around the $\yPosition$-axis and increased inertia around the $\yPosition$-axis.\\
+    $C_r$               & 1.2649  \kilogram\usk\meter\squared                 & Inertia around the $\zPosition$-axis and increased inertia around the $\zPosition$-axis.\\
     \bottomrule%
   \end{tabular}}
 \end{table}
