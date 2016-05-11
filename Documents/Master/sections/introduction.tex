@@ -8,16 +8,16 @@ During the recent years there has been an explosive growth in popularity and pub
 
 \abbrROV:s have a large area of application and commercial \abbrROV:s are at the present time used for inspection of naval structures and divers, seabed examination, underwater welding, ship cleaning, object location and recovery \citep{saab}, while the open source products are more oriented towards exploration. It was of special interest for us to investigate how the control systems of a open source \abbrROV solution, in this thesis the BlueROV from Blue Robotics, could be developed via model-based design and control. The possibility of autonomous operation and underwater positioning was also of interest.
 
-Since a typical \abbrROV solution has 6 \textit{degrees of freedom} (\abbrDOF) and most often isn't decoupled, it is advantageous to use a control system when executing advanced manoeuvres during exploration and missions. The controller structure implemented in the BlueROV platform is an open-loop controller with ad hoc decoupling. This type of control is somewhat capable during manual operation with low requirements on accuracy but might be too inexact in autonomous and more delicate operation. 
+Since a typical \abbrROV solution has 6 \textit{degrees of freedom} (\abbrDOF) and most often isn't decoupled, it is advantageous to use a control system when executing advanced manoeuvres during exploration and missions. The controller structure originally implemented in the BlueROV platform was an open-loop controller with ad hoc decoupling. This type of control is somewhat capable during manual operation with low requirements on accuracy but might be too inexact in autonomous and more delicate operation. 
 
-Autonomous operation places special requirements on the control system. This is due to safety and precision requirements during operation \citep[p.416-417]{safety}. To meet these needs, a model-based control strategy might be used. A model-based control needs a good model of the system. A model can be created via some base knowledge of the system and the underlying physics, via system identification or a combination of both. 
+Autonomous operation places special requirements on a control system. This is due to safety and precision requirements during operation \citep[p.416-417]{safety}. To meet these needs, a model-based control strategy might be used. A model-based control needs a good model of the system. A model can be created via some base knowledge of the system and the underlying physics, via system identification or a combination of both. 
 
 A typical \abbrUV uses a GPS unit to estimate its position and to improve the velocity estimates. Unfortunately GPS signals quickly lose strength in underwater environments, which in turn places extra importance in how system identification of \abbrROV platforms is performed.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Purpose}
-The purpose of this master's thesis was to show how model-based design development could be used to implement a robust control system for a \abbrROV. The result of the master's thesis will also be an input for future work in nautical vehicles. 
+The purpose of this master's thesis was to show how model-based design development could be used to implement a robust control system for a \abbrROV. The result of the master's thesis will also be an input for future work regarding control of nautical vehicles. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -25,7 +25,7 @@ The purpose of this master's thesis was to show how model-based design developme
 The goal of this thesis was to develop a model of a \abbrROV and to use the model for developing a robust control system to the \abbrROV.
 
 \subsubsection{Sub-goals}
-To get a better overview, the goal has been divided into the sub-goals below.
+To get a better overview, the goal has been divided into the following sub-goals:
 \begin{itemize}
     \item Assemble the \abbrROV.
     \item Develop a framework for changing controllers in the \abbrROV.
@@ -37,12 +37,11 @@ To get a better overview, the goal has been divided into the sub-goals below.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Methodology}
-At first, a theoretical study of the \abbrROV's model was performed. A literature study was also performed to gain experience of earlier studies. Then a plan for estimating the model parameters was formulated. Different approaches of system identification was tested and well thought-out before experiments was conducted. The parameter estimation was iterated several times to get well estimated parameters. 
+At first, a theoretical study of the \abbrROV's model was performed. A literature study was also performed to gain experience of earlier studies. Then a plan for estimating the model parameters was formulated. Different approaches of system identification were tested and well thought-out before experiments were conducted. The parameter estimation was iterated several times using several methods to get well estimated parameters. 
 
-The \abbrROV's computer system was be built on top off \textit{Robot Operating System} (\abbrROS) using several different packages a full list of dependencies is available in \appref{app:dependencies}. The different computer system was integrated with the divide and conqueror method, \textit{i.e.} the nodes was implemented stepwise with increasing complexity. The different nodes in the system had only have basal communication in the start and was developed to contain more complex functions, such as sensor fusion and controllers. 
+The \abbrROV's computer system was built on top off \textit{Robot Operating System} (\abbrROS) using several different packages a full list of dependencies is available in \appref{app:dependencies}. The different computer system was integrated with the divide and conqueror method, \textit{i.e.} the nodes were implemented stepwise with increasing complexity. The different nodes in the system had only basal communication in the beginning and were developed to contain more complex functions, such as sensor fusion and controllers. 
 
-Different predetermined tests was conducted to evaluate the different controllers against each other. The controllers was finely tuned before the tests and thus most suitable controller/controllers was found.
+Different predetermined tests were conducted to evaluate the different controllers against each other. The controllers were finely tuned before the tests and thus the most suitable controller/controllers were found.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Exclusions}
