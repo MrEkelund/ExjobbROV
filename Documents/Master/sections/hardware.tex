@@ -1,9 +1,8 @@
 \chapter{Hardware and Software}\label{cha:hardware}
-This chapter describes the hardware used in the thesis. The \abbrROV frame and thrusters was a package from BlueRobotics. In addition to the \abbrROV frame, a Raspberry pi was used as an onboard computer and a HKPilot Mega 2.7  was used as a input/output (\abbrIO) unit. The software in the \abbrROV was built on top of \abbrROS. In \Appref{app:dependencies} and \Appref{app:operation} instruction for installation of software and instructions for using the \abbrROV can be found.
+This chapter describes the hardware used in the thesis. The \abbrROV frame and thrusters were included in a package from BlueRobotics. In addition to the \abbrROV frame, a Raspberry pi was used as an onboard computer and a HKPilot Mega 2.7  was used as a input/output (\abbrIO) unit, see \Figureref{fig:apm}. The software in the \abbrROV was built on top of \abbrROS.  Instructions for installation of software and operation of the \abbrROV can be found in \Appref{app:dependencies} and \Appref{app:operation}.
 
 \section{BlueROV Package}
-In this thesis the BlueRov from BlueRobotics was used. The BlueROV package, see \Figureref{fig:bluerov}, includes the acrylic chassi, acrylic tube, six electronic speed controllers, six BlueRobotics T200 thrusters, cable penetrators and a cradle for mounting of electronics.
-\missingfigure{Missing figure of the bluerov package}
+In this thesis the BlueRov from BlueRobotics was used. The BlueROV package includes an acrylic chassi, an acrylic tube, six electronic speed controllers, six BlueRobotics T200 thrusters, cable penetrators and a cradle for mounting of electronics.
 \section{\abbrROV \abbrIO}
 The \abbrROV's \abbrIO consists of an HKPilot Mega 2.7 which is based on Ardupilot Mega. The HKPilot Mega 2.7 has the following on chip sensors
 \begin{itemize}
@@ -12,16 +11,16 @@ The \abbrROV's \abbrIO consists of an HKPilot Mega 2.7 which is based on Ardupil
     \item Inertial measurement unit (\abbrIMU) - MPU6000.
 \end{itemize}
 An external pressure sensor MS5837-30BA which was encased in a watertight case by BlueRobotics was connected to the HKPilot Mega 2.7 by \abbrIC.
-The HKPilot Mega 2.7 also controls the six \abbrESC. The \abbrESC's are 30A AfroESC's flashed with BlueRobotics linearising software. The HKPilot Mega 2.7 is connected to the onboard computer by \abbrUSB cable.The HKPilot Mega 2.7 runs a rosserial-arduino node which is a lite \abbrROS node that communicates with a master node by serial communication. Scaling calibration of the sensors are done automatically. However, the offset of the magnetometer and \abbrROV has to be done manually by following the instructions that are produced in the workstation terminal window. The external pressure sensor uses the internal barometer to remove the atmospheric pressure offset. The atmospheric pressure offset is measured at the start up of the \abbrROV.
+The HKPilot Mega 2.7 also controls the six \abbrESC. The \abbrESC's are 30A AfroESCs flashed with BlueRobotics linearising firmware. The HKPilot Mega 2.7 is connected to the onboard computer by \abbrUSB cable.The HKPilot Mega 2.7 runs a rosserial-arduino node which is a lite \abbrROS node that communicates with a master node by serial communication. Scaling calibration of the sensors are done automatically. However, the offset of the magnetometer has to be done calibrated manually by following the instructions that are produced in the workstation terminal window when the calibration scipt is run. The external pressure sensor uses the internal barometer to remove the atmospheric pressure offset. The atmospheric pressure offset is measured once, at the start up of the \abbrROV.
 
 \section{Power}
-To power the \abbrROV a Turnigy 5000mAh 4S 25C Lipo Pack was used. This is a high discharge battery which ensures that all thrusters can be run at the same time without any voltage drops.
+To power the \abbrROV a Turnigy 5000mAh 4S 25C Lipo Pack was used. This is a high discharge battery which ensures that all thrusters can be run at the same time without distruptive voltage drops.
 To power the Raspberry pi 2 a HobbyKing LIPO to USB Charging Adapter was used. This adapter connects to the JST-XH connector on the Lipo battery and then outputs regular USB voltages and currents. A \abbrUSB to micro-\abbrUSB adapter was used to route the power to the Raspberry pi. 
-The speed controllers are powered via the main lead of the Lipo battery. Lastly the HKPilot Mega 2.7 is powered by the Raspberry and by the speed controllers. 
+The speed controllers are powered via the main lead of the Lipo battery. Lastly the HKPilot Mega 2.7 is powered via \abbrUSB by the Raspberry \textbf{and} by the speed controllers. 
 
 \section{Onboard Computer}
-The onboard computer was a Raspberry pi 2 Model B which can be seen in \Figureref{fig:raspberryandcamera}. To the Raspberry pi 2 a Raspicam is connected. 
-Nodes running on the onboard computer can be seen in \Tableref{tab:raspnodes}.
+The onboard computer was a Raspberry pi 2 Model B which can be seen in \Figureref{fig:raspberryandcamera}. A Raspicam is connected to the Raspberry pi 2. 
+\abbrROS nodes running on the onboard computer can be seen in \Tableref{tab:raspnodes}.
  \begin{table}[tbp]
   \centering
   \caption{\label{tab:raspnodes}%
@@ -51,8 +50,15 @@ Nodes running on the onboard computer can be seen in \Tableref{tab:raspnodes}.
     \label{fig:raspberryandcamera}
 \end{figure}
 
+\begin{figure}
+    \centering
+    \includegraphics[trim={0 0 4cm 10cm},angle=180,origin=c,clip,width=0.9\textwidth]{apm}
+    \caption{The HKPilot Mega 2.7 used for \abbrIO.}
+    \label{fig:apm}
+\end{figure}
+
 \section{Workstation}
-The used workstation computer in the thesis is a Lenovo T430 with i5-3210M processor and Intel\textregistered HD Graphics 4000. The workstation was connected via a tether to the Raspberry pi 2 which in our case was a cat 6 cable.
+The workstation used in the thesis is a Lenovo T430 with i5-3210M processor and Intel\textregistered HD Graphics 4000. The workstation was connected via a Cat 6 tether to the Raspberry pi 2.
 \begin{table}[tbp]
   \centering
   \caption{\label{tab:workstationnodes}%
