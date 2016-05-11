@@ -1,7 +1,6 @@
-\chapter{Parameter Estimation} \label{cha:parameterEstimation}
-A central part in modelling is parameter estimation and it is often underestimated. If the parameters in the model isn't well estimated several problems arise when trying to synthesise model-based controllers. If a systems dynamics are completely unknown a black box method is used \emph{i.e.} general equations are fitted to test data. When a system can be completely modelled analytically for example via Newtons laws its called white box modelling. In our case the model of the system is known but several physical parameters are unknown, this is called gray box modelling. 
 
-\todo[inline]{Write about kinetics in \Chapterref{cha:modelling}}
+\chapter{Parameter Estimation} \label{cha:parameterEstimation}
+A central part in modelling is parameter estimation and it is often underestimated. If the parameters in the model are not well estimated several problems arise when trying to synthesise model-based controllers. If a system's dynamics are completely unknown a black box method is used \emph{i.e.} general equations are fitted to test data. When a system can be completely modelled analytically for example via Newtons laws it is called white box modelling. In this thesis the model structure of the system is known but several physical parameters are unknown, this is called gray box modelling. 
 
 To estimate the unknown parameters in the \abbrROV model described in \Chapterref{cha:modelling} different methods can be used. Relations between states can be used to get better estimates of parameters for example if the angles of the \abbrROV are estimated well the relations
 \begin{align}
@@ -10,7 +9,7 @@ To estimate the unknown parameters in the \abbrROV model described in \Chapterre
 &\textrm{and} \nonumber \\
 \yawdot &= q \frac{\sin \rollAngle}{\cos \pitchAngle} + r \frac{\cos \rollAngle}{\cos \pitchAngle}
 \end{align}
-from \Chapterref{cha:modelling} could be used. Another aspect to consider when estimating model parameters is what to use as inputs and outputs. Inputs to a system are considered to be true signals, thus if they are noisy or inaccurate they can effect the estimation negatively. Outputs from a system are measurements, thus they are considered to be somewhat uncertain. To make estimation more convenient the attitude model structure from \Chapterref{cha:modelling} is reduced to 
+from \Chapterref{cha:modelling} could be used. Another aspect to consider when estimating model parameters is what to use as inputs and what to use as outputs. Inputs to a system are considered to be true signals, thus if they are noisy or inaccurate they can effect the estimation negatively. Outputs from a system are measurements of a state, thus they are considered to be somewhat uncertain. To make estimation more convenient the attitude model structure from \Chapterref{cha:modelling} is reduced to 
 \begin{multline} \label{eq:p_dotWithoutTranslation}
 \pdot = \frac{\thrusterfun{1} \distance{y}{1} - \thrusterfun{2} \distance{y}{2} + \thrusterfun{6} \distance{z}{6}}{\Ix - \Kpdot} + \frac{p (\Kp + \Kpabsp \abs{p})}{\Ix - \Kpdot} + \frac{-\Mqdot q r}{\Ix - \Kpdot} + \frac{\Nrdot q r}{\Ix - \Kpdot} +\\
 \frac{q r (\Iy - \Iz)}{\Ix - \Kpdot} + \frac{B \cos{\theta} \sin{\phi} z_B}{\Ix - \Kpdot},
@@ -26,7 +25,7 @@ This can be done because the translation dynamics in the attitude model structur
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Parameter Estimation} \index{Parameter Estimation}
-In general parameter estimation is to fit the model structure's parametrising vector $\boldsymbol{\theta}$ to estimation data. The fitting is done by minimising the cost function $V(\boldsymbol{\theta})$ with respect to the parameter vector $\boldsymbol{\theta}$ \emph{i.e.}
+In general parameter estimation is to fit a model structure's parametrising vector $\boldsymbol{\theta}$ to estimation data. The fitting is done by minimising a cost function $V(\boldsymbol{\theta})$ with respect to the parameter vector $\boldsymbol{\theta}$ \emph{i.e.}
 \begin{equation}
 \hat{\boldsymbol{\theta}} = \underset{\boldsymbol{\theta}}{\argmin} V(\boldsymbol{\theta})
 \end{equation}
@@ -36,8 +35,8 @@ The cost function in this thesis has been defined as the squared error
 \end{equation}
 where:
 \begin{itemize}
-    \item $N$ is the number of samples in the data set.
-    \item $\boldsymbol{e}(t,\boldsymbol{\theta}) = \boldsymbol{y}(t) - \hat{\boldsymbol{y}}(t|\boldsymbol{\theta})$ is the error vector at time t with the parameter vector~$\boldsymbol{\theta}$.
+    \item $N$ is the number of samples in the dataset.
+    \item $\boldsymbol{e}(t,\boldsymbol{\theta}) = \boldsymbol{y}(t) - \hat{\boldsymbol{y}}(t|\boldsymbol{\theta})$ is the error vector at time $t$ with the parameter vector~$\boldsymbol{\theta}$.
     \item $\boldsymbol{W}(\boldsymbol{\theta})$ is the positive definite weight matrix.
 \end{itemize}
 
@@ -56,14 +55,14 @@ and
   \item $\boldsymbol{u}(t)$ are the inputs. 
  \end{itemize}
 
-A model is validated with a dataset which was not used during estimation. If the model describes the validation data well, then is the model accepted. A measure of how well the model describes the data can be the normalised root mean square error
+A model is validated with a dataset which was not used during estimation. If the model describes the validation data well, then the model is accepted. A measure of how well a model describes a dataset can be the normalised root mean square error
 \begin{equation}
-\text{Fit} = 100 \Biggr(1 - \frac{\sqrt{\sum\limits_{t=1}^N \bigr(y(t) - \hat{y}(t)\bigl)^2}}{\sqrt{\sum\limits_{t=1}^N \bigr(y(t)-\frac{1}{N}\sum\limits_{t=1}^N y(t)\bigl)^2}}\Biggl)
-\end{equation}. \index{Fit}
+\text{Fit} = 100 \Biggr(1 - \frac{\sqrt{\sum\limits_{t=1}^N \bigr(\boldsymbol{y}(t) - \hat{\boldsymbol{y}}(t)\bigl)^2}}{\sqrt{\sum\limits_{t=1}^N \bigr(\boldsymbol{y}(t)-\frac{1}{N}\sum\limits_{t=1}^N \boldsymbol{y}(t)\bigl)^2}}\Biggl)
+\end{equation} \index{Fit}
 High fit often indicate that the model describes the data well. 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Decoupling the Model} \index{Decoupling}
-The attitude model structure of the \abbrROV was divided into three estimation steps. From \eqref{eq:p_dot} - \eqref{eq:r_dot} it can be seen that $\rdot$ isn't affected by the same thrusters as $\pdot$ and $\qdot$. Thus the $\rdot$ model's parameters were initially estimated by themselves while the parameters in the $\pdot$ and $\qdot$ models were estimated together. The separately estimated parameters were then used as starting values for the complete attitude model parameter estimation, \eqref{eq:p_dotWithoutTranslation} - \eqref{eq:r_dotWithoutTranslation}. The initial models for $\rdot$, $\pdot$ and $\qdot$ dynamics that was used was the reduced model structure
+The estimation of the attitude model structure was divided into three estimation steps. From \eqref{eq:p_dot} - \eqref{eq:r_dot} it can be seen that $\rdot$ is not affected by the same thrusters as $\pdot$ and $\qdot$. Thus the $\rdot$ model's parameters were initially estimated by themselves while the parameters in the $\pdot$ and $\qdot$ models were estimated together. The separately estimated parameters were then used as starting values for a complete attitude model parameter estimation, \eqref{eq:p_dotWithoutTranslation} - \eqref{eq:r_dotWithoutTranslation}. The reduced models for $\rdot$, $\pdot$ and $\qdot$ that were used during initial estimation were
 \begin{align} \label{eq:pq_dot_simple}
 \pdot &= \frac{\thrusterfun{1} \distance{y}{1} - \thrusterfun{2} \distance{y}{2} + \thrusterfun{6} \distance{z}{6}}{\Ix - \Kpdot} + \frac{p (Kp + \Kpabsp \abs{p})}{\Ix - \Kpdot} + \frac{B \cos{\theta} \sin{\phi} z_B}{\Ix - \Kpdot}, \\ \label{eq:pq_dot_simple2}
 \qdot &=\frac{\thrusterfun{1} \distance{x}{1} + \thrusterfun{2} \distance{x}{2} - \thrusterfun{5} \distance{x}{5}}{\Iy - \Mqdot} + \frac{q (\Mq + \Mqabsq \abs{q})}{\Iy - \Mqdot} + \frac{B \sin{\theta} z_B}{\Iy - \Mqdot} 
@@ -71,23 +70,23 @@ The attitude model structure of the \abbrROV was divided into three estimation s
 \begin{equation} \label{eq:r_dot_simple}
 \rdot = \frac{\thrusterfun{3} \distance{y}{3} - \thrusterfun{4} \distance{y}{4}}{\Iz - \Nrdot} + \frac{r (\Nr + \Nrabsr \abs{r})}{\Iz - \Nrdot}
 \end{equation}
-This could be done since excitation in the states not used in a perticular estimation were kept at a minmum duting data collection. Thus the coupled terms in each equation were approxiamted to be zero.
+The simplification could be done since excitation in the states not used in a perticular estimation were kept at a minmum duting data collection. Thus the coupled terms in each equation were approxiamted to be zero.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Data Collection} \index{Data preprocessing}
-The main control signals used in the parameter estimation tests were telegraph signals. Both the scaling of the output signals and switch factors were changed in between tests in order to find signals that excited the desired states sufficiently.
+The main control signals used in the parameter estimation tests were telegraph signals. Both the scaling of the output magnitude and switch factors were changed in between tests in order to find signals that excited the desired states sufficiently.
 Three different tests were conducted 
 \begin{description}
 \item[Yaw test] Telegraph signals on thrusters 3 and 4 was used to excite the \abbrROV in \yawAngle-direction.
 \item[Roll and pitch test] Telegraph signals on thrusters 1, 2, 5 and 6 was used to excite the \abbrROV in \rollAngle- and \pitchAngle-directions.
-\item[Complete test] Telegraph signals on all the thrusters used for exciting the \abbrROV about every axis.
+\item[Complete test] Telegraph signals on all the thrusters used to excite the \abbrROV about every axis.
 \end{description}
 
-Data preprocessing was done by synchronising the data streams and resampling them with an appropriate sampling frequency. The thruster data only contained points were the control signals changed thus was the data resampled using zero order hold.  
+Data preprocessing was done by synchronising the data streams and resampling them with an appropriate sampling frequency. The thruster data only contained points were the control signals changed thus it was resampled using zero order hold.  
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Parameter Estimation from Angular Velocities} \label{sec:estimation_angular}
-Due to poorly estimated angles as can be seen in \Figureref{fig:integratedAngleVelocities}, the angles were not suited to be used in the parameter estimation. Thus the parameters were estimated using the angular velocities as measurements. This method was used when the sensor fusion algorithms described in \Sectionref{sec:angularVelocityKalman} was used. The estimated model structure in which the parameters were estimated was thus \index{model structure}
+The estimated Euler angles from the sensor fusion model described in \Sectionref{sec:simple_model} did not follow the kinematic relation described in \Sectionref{sec:kinetics}. This can be seen in \Figureref{fig:integratedAngleVelocities}. Thus these estimated angles were not suited to be used as outputs in the parameter estimation. The parameters were instead estimated using the angular velocities from the gyroscope as measurements. The model structure in which the parameters were estimated was thus \index{model structure}
 \begin{equation}
 \etaVectordot = f(\nuVector, \etaVector, \tauVector),
 \end{equation}
@@ -95,24 +94,24 @@ and
 \begin{equation}
 \boldsymbol{y} = \nuVector
 \end{equation}
-where $\etaVector$ contains the estimated angels from the sensor fusion.
+where $\etaVector$ contained the estimated Euler angles from the onboard sensor fusion.
 
 \begin{figure}[tbp]
   \centering
-  \subfloat[][\label{fig:velocityAnglePhi}A comparison of integration of angular velocities transformed to the global frame (blue) against the estimated angel \rollAngle (red).]{\includegraphics[width=0.5\textwidth]{velocityAnglePhi}}
+  \subfloat[][\label{fig:velocityAnglePhi}A comparison between integrated angular velocities transformed to the global frame (blue) and the estimated angle \rollAngle (red).]{\includegraphics[width=0.5\textwidth]{velocityAnglePhi}}
   \qquad
-  \subfloat[][\label{fig:velocityAngleTheta}A comparison of integration of angular velocities transformed to the global frame (blue) against the estimated angel \pitchAngle (red).]{\includegraphics[width=0.5\textwidth]{velocityAngleTheta}}
+  \subfloat[][\label{fig:velocityAngleTheta}A comparison between integrated angular velocities transformed to the global frame (blue) and the estimated angle \pitchAngle (red).]{\includegraphics[width=0.5\textwidth]{velocityAngleTheta}}
   \\
-  \subfloat[][\label{fig:velocityAnglePsi}A comparison of integration of angular velocities transformed to the global frame (blue) against the estimated angel \yawAngle (red).]{\includegraphics[width=0.5\textwidth]{velocityAnglePsi}}
+  \subfloat[][\label{fig:velocityAnglePsi}A comparison between integrated angular velocities transformed to the global frame (blue) and the estimated angle \yawAngle (red).]{\includegraphics[width=0.5\textwidth]{velocityAnglePsi}}
   \caption{\label{fig:integratedAngleVelocities}%
     As can be seen in \protect\subref{fig:velocityAnglePhi}-\protect\subref{fig:velocityAnglePsi} the angles are poorly estimated and thus not suitable to use in parameter estimation. The angles are estimated with the method used in \Sectionref{sec:angularVelocityKalman}.}
 \end{figure}
 
 To get an initial estimate on the parameters in the yaw dynamics the reduced model parameters in \eqref{eq:r_dot_simple}
-were estimated. The estimation was done with data collected from a test that mainly excited the \abbrROV in \yawAngle-direction and thus the cross-terms could be assumed to be zero.
+were estimated. The estimation was done with data collected from a test that mainly excited the \abbrROV in the \yawAngle-direction and thus the cross-terms could be assumed to be zero.
 
 The roll and pitch dynamics are coupled thus was \eqref{eq:pq_dot_simple} and \eqref{eq:pq_dot_simple2} estimated at the same time.
-The cross terms could be assumed to be zero due to the \abbrROV was mainly excited in \rollAngle-direction and \pitchAngle-direction in the used estimation data.
+The cross terms could be assumed to be zero due since the \abbrROV was mainly excited in the \rollAngle-direction and \pitchAngle-direction during collection of the used estimation data.
 
 The estimate of the parameters in \eqref{eq:r_dot_simple} and \eqref{eq:pq_dot_simple} was used as initial estimates of the parameters in \eqref{eq:q_dotWithoutTranslation}-\eqref{eq:r_dotWithoutTranslation}. Due to observational problems the reparametrisation $A_p = \Ix - \Kpdot$, $B_q = \Iy - \Mqdot$ and $C_r = \Iz - \Nrdot$ was done. In \Figureref{fig:velocityCompare} the simulated model without reparametrisation can be seen. An improvement of the fit can be seen in \Figureref{fig:velocityCompareCong} where some parameters has been reparameterised.
 \index{Reduced model structure}
@@ -124,7 +123,7 @@ The estimate of the parameters in \eqref{eq:r_dot_simple} and \eqref{eq:pq_dot_s
   \\
   \subfloat[][\label{fig:velocityComparer}Comparison between a simulated model without reparametrisation and validation data in the \yawAngle-direction.]{\includegraphics[width=0.8\textwidth]{velocityComparer}}
   \caption{\label{fig:velocityCompare}%
-    Comparison of simulation of the attitude model against validation data.}
+    Comparison between simulation of the attitude model and validation data.}
 \end{figure}
 
 \begin{figure}[tbp]
@@ -183,22 +182,22 @@ where $\boldsymbol{a}$ are the linear accelerations in the \abbrROV frame.
   \caption{\label{fig:angVelCompare}%
     Comparison of validation data (grey) against the simulated response from the model(blue). The fit for the model in each state is stated in each plot.}
 \end{figure}
-The fit of the model compared to validation data can be seen in \Figureref{fig:angVelCompare}. For estimating the parameters the initial states had to be well estimated. Because if the initial states of the model did not correspond well to the true initial states the parameters did not converge to the true values. This can be seen in \Figureref{fig:angVelSim} were estimation of the parameters are done on simulated data. The data is simulated with the same parameters as the estimation begins with. A Kalman smoother as described in \citet{Wallin} has been used for initial state estimation. In the initial state estimation was the magnetometer used for reducing the uncertainty of the quaternions.
+The fit of the model compared to validation data can be seen in \Figureref{fig:angVelCompare}. For estimating the parameters the initial states had to be well estimated. If the initial states of the model did not correspond well to the true initial states the parameters did not converge to the true values. This can be seen in \Figureref{fig:angVelSim} were estimation of the parameters was done on simulated data. The data was simulated with the same parameter values as the estimation was initlised with. A Kalman smoother as described in \citet{Wallin} has been used for initial state estimation. In the initial state estimation the magnetometer was used to reduce the uncertainty of the initial quaternions.
 \begin{figure}[tbp]
   \centering
-  \subfloat[][\label{fig:angVelSimp}Comparison of angular velocity around the \abbrROV's x-axis between validation data and the simulated model.]{\includegraphics[width=0.4\textwidth]{angVelSimp}}
+  \subfloat[][\label{fig:angVelSimp}Comparison of simulated angular velocity around the \abbrROV's x-axis with simulated validation data.]{\includegraphics[width=0.4\textwidth]{angVelSimp}}
   \qquad
-  \subfloat[][\label{fig:angVelSimq}Comparison of angular velocity around the \abbrROV's y-axis between simulated validation data and the simulated model.]{\includegraphics[width=0.4\textwidth]{angVelSimq}}
+  \subfloat[][\label{fig:angVelSimq}Comparison of simulated angular velocity around the \abbrROV's y-axis with simulated validation data.]{\includegraphics[width=0.4\textwidth]{angVelSimq}}
   \qquad
-  \subfloat[][\label{fig:angVelSimr}Comparison of angular velocity around the \abbrROV's z-axis between simulated validation data and the simulated model.]{\includegraphics[width=0.4\textwidth]{angVelSimr}}
+  \subfloat[][\label{fig:angVelSimr}Comparison of simulated angular velocity around the \abbrROV's z-axis with simulated validation data.]{\includegraphics[width=0.4\textwidth]{angVelSimr}}
     \qquad
-  \subfloat[][\label{fig:linAccSimx}Comparison of linear acceleration in the \abbrROV's x-axis between simulated validation data and the simulated model.]{\includegraphics[width=0.4\textwidth]{linAccSimx}}
+  \subfloat[][\label{fig:linAccSimx}Comparison of simulated linear acceleration in the \abbrROV's x-axis with simulated validation data.]{\includegraphics[width=0.4\textwidth]{linAccSimx}}
     \qquad
-  \subfloat[][\label{fig:linAccSimy}Comparison of linear acceleration in the \abbrROV's y-axis between simulated validation data and the simulated model.]{\includegraphics[width=0.4\textwidth]{linAccSimy}}
+  \subfloat[][\label{fig:linAccSimy}Comparison of simulated linear acceleration in the \abbrROV's y-axis with simulated validation data.]{\includegraphics[width=0.4\textwidth]{linAccSimy}}
     \qquad
-  \subfloat[][\label{fig:linAccSimz}Comparison of linear acceleration in the \abbrROV's z-axis between simulated validation data and the simulated model.]{\includegraphics[width=0.4\textwidth]{linAccSimz}}
+  \subfloat[][\label{fig:linAccSimz}Comparison of simulated linear acceleration in the \abbrROV's z-axis with simulated validation data.]{\includegraphics[width=0.4\textwidth]{linAccSimz}}
   \caption{\label{fig:angVelSim}%
-    Comparison of simulated validation data (grey) against the simulated response from the model(blue). The fit for the model in each state is stated in each plot. The validation data has been generated from the initial parameters in the parameter estimation. The initial states of the model has been altered and thus  the parameter estimation can't find the correct parameters.}
+    Comparison between simulated validation data (grey) and the simulated response from the model(blue). The fit for the model in each state is stated in each plot. The validation data has been generated from the initial parameters in the parameter estimation. The initial states of the model has been altered and thus  the parameter estimation can't find the correct parameters.}
 \end{figure}
 
 To handle noisy signals an error threshold was introduced. An error threshold means that after a breakpoint the cost function becomes linear instead of squared. This makes the parameter estimation less sensitive to outliers. To reduce the impact of the noise even further the used weight matrix in the cost function was the inverse of the estimated noise covariance. 
@@ -245,16 +244,16 @@ If the expression holds true remove the $i$:th row from $\boldsymbol{\epsilon}$ 
 \end{algorithm}
 Here $\boldsymbol{\sigma}$ is a $n\times1$ dimensional design variable and $n$ is the number of measurements that are used in the \abbrEKF. A higher value of $\sigma_i$ decreases the sensitivity of the outlier rejection on the $i$:th measurement.
 
-The filter was run on each collected data set. The final values of $\hat{\boldsymbol{\theta}}$ from a data set were used as initial values for $\hat{\boldsymbol{\theta}}$ when the filter was applied on the next data set. The same was done for the covariance matrix $\boldsymbol{P}$. The final covariance from an earlier run was set as the initial covariance when the filter was applied on subsequent data set. At completion the parameters were entered in a simulator which was feed with the control signals from the corresponding data set. The simulated  output was then compared with the original data. The result from a typical estimation can be viewed in \Figureref{fig:KalmanCompare}.
+The filter was run on each collected dataset. The final values of $\hat{\boldsymbol{\theta}}$ from a dataset were used as initial values for $\hat{\boldsymbol{\theta}}$ when the filter was applied on the next dataset. The same was done for the covariance matrix $\boldsymbol{P}$. The final covariance from an earlier run was set as the initial covariance when the filter was applied on subsequent dataset. At completion the parameters were entered in a simulator which was feed with the control signals from the corresponding dataset. The simulated  output was then compared with the original data. The result from a typical estimation can be viewed in \Figureref{fig:KalmanCompare}.
 \begin{figure}[tbp]
   \centering
-  \subfloat[][\label{fig:KalmanCompareP}Comparison between a simulated model and validation data in $p$.]{\includegraphics[width=0.5\textwidth]{kalmanEstimatorP}}
+  \subfloat[][\label{fig:KalmanCompareP}Comparison between a simulated model response and validation data in $p$.]{\includegraphics[width=0.5\textwidth]{kalmanEstimatorP}}
   \qquad
-  \subfloat[][\label{fig:KalmanCompareQ}Comparison between a simulated model and validation data in $q$.]{\includegraphics[width=0.5\textwidth]{kalmanEstimatorQ}}
+  \subfloat[][\label{fig:KalmanCompareQ}Comparison between a simulated model response and validation data in $q$.]{\includegraphics[width=0.5\textwidth]{kalmanEstimatorQ}}
   \\
-  \subfloat[][\label{fig:KalmanCompareR}Comparison between a simulated model and validation data in $r$.]{\includegraphics[width=0.5\textwidth]{kalmanEstimatorR}}
+  \subfloat[][\label{fig:KalmanCompareR}Comparison between a simulated model response and validation data in $r$.]{\includegraphics[width=0.5\textwidth]{kalmanEstimatorR}}
   \caption{\label{fig:KalmanCompare}%
-    Comparison of simulation of $\nuVector$ against validation data. Goodness of fit statistic can be viewed at the top of each sub-figure.}
+    Comparison between simulation of $\nuVector$ (blue) with validation data (red). Goodness of fit statistic can be viewed at the top of each sub-figure.}
 \end{figure}
 
 
