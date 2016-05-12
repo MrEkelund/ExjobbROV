@@ -6,11 +6,15 @@ trap ctrl_c INT
 
 function ctrl_c() {
   echo "Abort"
+  kill ${pid}
   rostopic pub --once /rovio/thrusters std_msgs/UInt16MultiArray "{data:[1500,1500,1500,1500,1500,1500]}"
   rostopic pub --once /rovio/enable_thrusters std_msgs/Bool false
   exit
 }
 
+roslaunch bluerov heartbeat_rovio.launch &
+pid=$!
+echo ${pid}
 echo "Controller disconnected"
 rosparam set /matlab_controller/enable_thruster1 false
 rosparam set /matlab_controller/enable_thruster2 false
@@ -66,3 +70,4 @@ rosparam set /matlab_controller/enable_thruster3 true
 rosparam set /matlab_controller/enable_thruster4 true
 rosparam set /matlab_controller/enable_thruster5 true
 rosparam set /matlab_controller/enable_thruster6 true
+kill ${pid}
