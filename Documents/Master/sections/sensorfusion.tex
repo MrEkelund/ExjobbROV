@@ -1,7 +1,7 @@
 \chapter{Sensor fusion}\label{cha:sensor_fusion}
 In order to properly estimate the \abbrROV's attitude in the global coordinate system the \abbrROV needs sensors to measure external effects from its environment.
 Unfortunately signals from sensors do not necessarily give direct information about attitude and their measurements are to some extent noisy. Smart algorithms and filters can nevertheless be used to extract and combine the information from the different sensors into a better attitude estimate. The process of combining, or fusing, the information from several measurements with a motion model to produce an estimate of a state goes under the name sensor fusion. One filter that can accomplish the task of fusing different measurements and estimating states in a non-linear dynamic system is the extended Kalman filter (\abbrEKF). 
-\section{Filter notation}
+\section{Filter Notation}
 To be able to understand how a filter like the extended Kalman filter works, it is important to understand the notation. In  \Tableref{tab:notationKalman} the notation used in this Chapter is listed.
  \begin{table}[htbp]
   \centering
@@ -26,7 +26,7 @@ To be able to understand how a filter like the extended Kalman filter works, it 
  \end{tabular}
 \end{table}
 
-\section{The extended Kalman filter}
+\section{The Extended Kalman Filter}
 According to \citet{sensorfusion} the Kalman filter (\abbrKF) is a linear state space observer, meaning that it estimates states, both measurable and unmeasurable, in a linear system. It utilises a motion model, a model of the systems dynamics, in conjunction with measurements and linear measurement equations to provide the best possible estimate of the model's states. It is also stated in \citet{sensorfusion} that the Kalman filter finds the best possible linear filter for the given input $\boldsymbol{y}_{k}$. The extended Kalman filter can, unlike the regular Kalman filter, handle non-linear motion models and measurement equations. It accomplishes this by using Taylor expansions of the non-linear system and the measurement equations to approximate the non-linear system with a linear system. If a \abbrEKF can provide satisfactory results depends on the rest terms from the Taylor expansion and it is therefore dependent on the degree of non-linearity of the system and the measurement equations\citep{sensorfusion}. As rule of thumb the rest term will be small enough if the system model is close to linear and if measurements are of good quality, meaning that the signal to noise ratio (\abbrSNR) is high\citep{sensorfusion}. 
 
 The \abbrEKF algorithm is comprised of two key steps called updates.
@@ -64,7 +64,7 @@ The complete extended Kalman filter algorithm can be viewed in \Algoref{alg:EKF}
     \end{align*}    
 \end{algorithm}
 
-\section{Motion model}\index{Motion model}
+\section{Motion Model}\index{Motion model}
 A \abbrKF uses knowledge of the system dynamics to improve the estimates of the model's states. It is therefore very important to choose a model that sufficiently describes the systems dynamics. The better the model the better the performance of the filter. In this thesis two different motion models have been used, a model using the measured angular velocities as inputs and a more advanced model which used the angular velocities as states. All models in this chapter use quaternions and thus quaternion normalisation is required as described in \Chapterref{cha:modelling}.
 
 \subsection{Simple Model}\index{Quaternions}\label{sec:simple_model}
@@ -192,7 +192,7 @@ To ensure that the good measurements are used an outlier rejection criteria was 
 \end{equation}
 holds. Here is $\epsilon$ a design variable that tweaks how much the magnitude of the measurements may deviate from the magnitude of the Earth's magnetic field before being rejected.
 
-\subsection{Pressure sensor measurement equation}
+\subsection{Pressure Sensor Measurement Equation}
 The \abbrROV is also equipped with a pressure sensor. The sensor is placed in the rear or bow of the \abbrROV which in turn means that the attitude of the \abbrROV needs to be taken in to account when estimating the depth.
 The measurement equation for the pressure sensor is
 \begin{equation}
