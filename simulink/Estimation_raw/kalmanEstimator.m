@@ -1,56 +1,78 @@
-fs= 100;
-Ts = 1/fs;
-data = loadAll0418(0,1/Ts);
+ clear
+ fs= 100;
+ Ts = 1/fs;
+ data = loadAll0418(0,1/Ts);
 %%
-for ab=1:2
-    display(sprintf('Iteration number %i',ab))
-    for k=1:4%length(data.exp)
+nr_sets=1;
+nr_iter=1;
+clear params
+for iter=1:nr_iter
+    display(sprintf('Iteration number %i',iter))
+    for k=1:nr_sets
+        %load data set
         exp = getexp(data,k);
         tau = exp.InputData;
         measurements = exp.OutputData';
-        %measurements(1:3,:)=detrend(measurements(1:3,:),'constant');
+        
         g = 9.81744;
-        %set the first magnetometer reading
+        %Set the first magnetometer reading
         mag_n = measurements(7,1);
         mag_e = measurements(8,1);
         mag_d = measurements(9,1);
         
         % Set initial variables
-        Q = blkdiag(10*eye(4),10*eye(3),0.00000001*eye(3),0.001*eye(16));
-        R = blkdiag(0.000001*eye(3),0.0001*eye(3),10*eye(3));
-        state = zeros(26,2*length(measurements));
+        %Model noise covariance
+        Q = blkdiag(...
+            1000*eye(4),... %Quat
+            1000*eye(3),... %pqr
+            0.001*eye(3),...%Bias
+            0.001*eye(10),...%Params
+            0.001*eye(5));  %Moment arms
+        %measurement covariance
+        R = blkdiag(...
+            1*eye(3),...    %Gyro
+            1*eye(3),...    %Acc
+            1000*eye(3));   %Mag
+        state = zeros(25,2*length(measurements));
         
         % First run variables
         eta = [1;0;0;0];
         nu =  [0;0;0];
         bias = [0;0;0];
         state(1:10,1)=[eta;nu;bias];
-        if (k==1 && ab==1)
+        if (k==1 && iter==1)
+            %Initial state
             zb = -0.05;
             Kp = -1;
-            Kp_dot = -1;
             Kp_abs_p = -1;
             Mq = -1;
-            Mq_dot = -1;
             Mq_abs_q = -1;
             Nr = -1;
-            Nr_dot = -1;
             Nr_abs_r = -1;
-            Ix = 1;
-            Iy = 1;
-            Iz = 1;
-            Ix_Kp_dot = Ix - Kp_dot;
-            Iy_Mq_dot = Iy - Mq_dot;
-            Iz_Nr_dot = Iz - Nr_dot;
-            state(11:end,1) =... %EstimatedParams;
-                [zb; Kp; Kp_dot; Kp_abs_p; Mq;...
-                Mq_dot; Mq_abs_q; Nr; Nr_dot; Nr_abs_r;...
-                Ix; Iy; Iz; Ix_Kp_dot; Iy_Mq_dot; Iz_Nr_dot];
-            P = blkdiag(10*eye(7),0.0000001*eye(3),0.01*eye(16));
-        elseif (k==1 &&ab~=1)
-            state(11:end,1) = params(:,k);
+            Ix_Kp_dot = 1;
+            Iy_Mq_dot = 1;
+            Iz_Nr_dot = 1;
+            lx1=0.16;
+            ly1=0.11;
+            ly3=0.11;
+            lx5=0.2;
+            lz6=0.11;
+            
+            state(11:end,1) =...
+                [zb; Kp; Kp_abs_p; Mq;...
+                Mq_abs_q; Nr; Nr_abs_r;...
+                Ix_Kp_dot; Iy_Mq_dot; Iz_Nr_dot;lx1;ly1;ly3;lx5;lz6];
+            
+            % Initial P matrix                        
+            P = blkdiag(...
+                1000*eye(4),...     %Quat
+                1000*eye(3),...     %pqr
+                0.001*eye(3),...    %Bias
+                0.000001*eye(10),...%Params
+                0.001*eye(5));      %Moment arms
         else
-            state(11:end,1) = params(:,k-1);
+            % if not first run use last runs results as initial state
+            state(11:end,1) = params(:,(iter-1)*nr_sets+k-1);
         end
         
         %display(sprintf('Data set number %i',k))
@@ -80,13 +102,13 @@ for ab=1:2
             P = F*P*F.' + Q;%Gv*Q*Gv.'
             j=j+1;
         end
-        params(:,k) = state(11:end,end);
+        params(:,(iter-1)*nr_sets+k) = state(11:end,end);
     end
 end
 
 % Check if new parameter values are valid
-temp = mean(params');
-if(any(0<temp(1:10))|any(0>temp(11:16)))
+temp = mean(params,2);
+if(any(0<temp(1:7))|any(0>temp(8:15)))
     display('Wrong sign on one or more parameters.');
     display('Not saving.');
     paramsOK = false;
@@ -94,7 +116,8 @@ else
     display('New parameters are OK.')
     display('Starting simulation and saving to params.mat');
     paramsOK = true;
-    EstimatedParams=mean(params');
+    EstimatedParams=params(:,end)
+    mean(params,2);
     save('params.mat','EstimatedParams');
 end
 
@@ -118,8 +141,7 @@ if(paramsOK)
         set_param( 'quatSim1/p', 'InitialCondition', sprintf('%f',initialCondition(5)) )
         set_param( 'quatSim1/q', 'InitialCondition', sprintf('%f',initialCondition(6)) )
         set_param( 'quatSim1/r', 'InitialCondition', sprintf('%f',initialCondition(7)) )
-        for l=1:16
-            
+        for l=1:15
             set_param( sprintf('quatSim1/GetParameters/Params%i',l), 'Value', sprintf('%f',EstimatedParams(l)));
         end
         
@@ -136,30 +158,30 @@ if(paramsOK)
         sim_data=y.get('yout');
         
         % plot
-        %subplot(length(data.exp),3,3*k-2)
-        figure(3*k-2)
+        subplot(length(data.exp),3,3*k-2)
+        %figure(3*k-2)
         plot(t,[sim_data(:,1),y_valid(:,1)],'LineWidth',2)
-        xlabel('Time [s]','FontSize',30);
-        ylabel('Angular velocity [rad/s]','FontSize',30);
-        legend({'Simulated data','Validation data'},'FontSize',30)
+        %xlabel('Time [s]','FontSize',30);
+        %ylabel('Angular velocity [rad/s]','FontSize',30);
+        %legend({'Simulated data','Validation data'},'FontSize',30)
         str = sprintf('Data set %i p: Fit %f %%',k,100*goodnessOfFit(sim_data(:,1),y_valid(:,1),'NMSE'));
-        title(str,'FontSize',30)
-        %subplot(length(data.exp),3,3*k-1)
-        figure(3*k-1)
+        title(str,'FontSize',10)
+        subplot(length(data.exp),3,3*k-1)
+        %figure(3*k-1)
         plot(t,[sim_data(:,2),y_valid(:,2)],'LineWidth',2)
-        xlabel('Time [s]','FontSize',30);
-        ylabel('Angular velocity [rad/s]','FontSize',30);
-        legend({'Simulated data','Validation data'},'FontSize',30)
+        %xlabel('Time [s]','FontSize',30);
+        %ylabel('Angular velocity [rad/s]','FontSize',30);
+        %legend({'Simulated data','Validation data'},'FontSize',30)
         str = sprintf('Data set %i q: Fit %f %%',k,100*goodnessOfFit(sim_data(:,2),y_valid(:,2),'NMSE'));
-        title(str,'FontSize',30)
-        %subplot(length(data.exp),3,3*k)
-        figure(3*k)
+        title(str,'FontSize',10)
+        subplot(length(data.exp),3,3*k)
+        %figure(3*k)
         plot(t,[sim_data(:,3),y_valid(:,3)],'LineWidth',2)
-        xlabel('Time [s]','FontSize',30);
-        ylabel('Angular velocity [rad/s]','FontSize',30);
-        legend({'Simulated data','Validation data'},'FontSize',30)
+        %xlabel('Time [s]','FontSize',30);
+        %ylabel('Angular velocity [rad/s]','FontSize',30);
+        %legend({'Simulated data','Validation data'},'FontSize',30)
         str = sprintf('Data set %i r: Fit %f %%',k,100*goodnessOfFit(sim_data(:,3),y_valid(:,3),'NMSE'));
-        title(str,'FontSize',30)
+        title(str,'FontSize',10)
         
     end
 end

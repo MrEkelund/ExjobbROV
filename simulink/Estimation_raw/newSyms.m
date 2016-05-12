@@ -53,7 +53,7 @@ rg = [0; 0; 0];
 fg = transpose(RQ)*[0; 0; W];
 fb = -transpose(RQ)*[0; 0; B];
 
-gn = - [cross(rb,fb) + cross(rg,fg)];
+gn = -[cross(rb,fb) + cross(rg,fg)];
 
 T = [...
     ly1, -ly2, 0, 0, 0, lz6;
@@ -82,7 +82,7 @@ eta_dot= T_eta*nu +100/2*(1-transpose(eta)*eta)*eta;
 
 %old eta_k_1 = eta + Ts*Q_dot
 %old eta_k_1 =(eye(4) + Ts*T_bar_nu)*eta + (Ts^2*T_eta)*nu;
-eta_k_1=eta+Ts*(T_eta*nu_k_1);
+eta_k_1=eta+Ts*(T_eta*nu);
 eta_k_1 = collect(eta_k_1,[p q r n e1 e2 e3])
 
 % describe noise
@@ -99,9 +99,9 @@ coloured_noise = [coloured_noise_eta;coloured_noise_nu];
  %    [Ts^3/2*T_eta;Ts*eye(3)];
  %Gv_discrete=blkdiag(Gv_discrete,Ts*eye(16));
 
- state = [eta; nu; bias_p; bias_q; bias_r; zb; Kp; Kp_dot; Kp_abs_p; Mq;...
-     Mq_dot; Mq_abs_q; Nr; Nr_dot; Nr_abs_r;...
-     Ix; Iy; Iz; Ix_Kp_dot; Iy_Mq_dot; Iz_Nr_dot];
+ state = [eta; nu; bias_p; bias_q; bias_r; zb; Kp; Kp_abs_p; Mq;...
+     Mq_abs_q; Nr; Nr_abs_r;...
+     Ix_Kp_dot; Iy_Mq_dot; Iz_Nr_dot; lx1; ly1; ly3; lx5; lz6];
  f = [eta_k_1;nu_k_1;state(8:end)];
  
  %%
