@@ -1,7 +1,7 @@
-clear
-fs= 100;
-Ts = 1/fs;
-data = loadAll0418(0,1/Ts);
+ clear
+ fs= 100;
+ Ts = 1/fs;
+ data = loadAll0418(0,1/Ts);
 %%
 nr_sets=1;
 nr_iter=1;
@@ -9,20 +9,31 @@ clear params
 for iter=1:nr_iter
     display(sprintf('Iteration number %i',iter))
     for k=1:nr_sets
+        %load data set
         exp = getexp(data,k);
         tau = exp.InputData;
         measurements = exp.OutputData';
-        %measurements(1:3,:)=detrend(measurements(1:3,:),'constant');
+        
         g = 9.81744;
-        %set the first magnetometer reading
+        %Set the first magnetometer reading
         mag_n = measurements(7,1);
         mag_e = measurements(8,1);
         mag_d = measurements(9,1);
         
         % Set initial variables
-        Q = blkdiag(1000*eye(4),1000*eye(3),0.001*eye(3),0.01*eye(10));
-        R = blkdiag(1*eye(3),1*eye(3),1000*eye(3));
-        state = zeros(20,2*length(measurements));
+        %Model noise covariance
+        Q = blkdiag(...
+            1000*eye(4),... %Quat
+            1000*eye(3),... %pqr
+            0.001*eye(3),...%Bias
+            0.001*eye(10),...%Params
+            0.001*eye(5));  %Moment arms
+        %measurement covariance
+        R = blkdiag(...
+            1*eye(3),...    %Gyro
+            1*eye(3),...    %Acc
+            1000*eye(3));   %Mag
+        state = zeros(25,2*length(measurements));
         
         % First run variables
         eta = [1;0;0;0];
@@ -30,6 +41,7 @@ for iter=1:nr_iter
         bias = [0;0;0];
         state(1:10,1)=[eta;nu;bias];
         if (k==1 && iter==1)
+            %Initial state
             zb = -0.05;
             Kp = -1;
             Kp_abs_p = -1;
@@ -40,14 +52,26 @@ for iter=1:nr_iter
             Ix_Kp_dot = 1;
             Iy_Mq_dot = 1;
             Iz_Nr_dot = 1;
+            lx1=0.16;
+            ly1=0.11;
+            ly3=0.11;
+            lx5=0.2;
+            lz6=0.11;
+            
             state(11:end,1) =...
                 [zb; Kp; Kp_abs_p; Mq;...
                 Mq_abs_q; Nr; Nr_abs_r;...
-                Ix_Kp_dot; Iy_Mq_dot; Iz_Nr_dot];
+                Ix_Kp_dot; Iy_Mq_dot; Iz_Nr_dot;lx1;ly1;ly3;lx5;lz6];
             
-            
-            P = blkdiag(1000*eye(7),0.001*eye(3),0.000001*eye(10));
+            % Initial P matrix                        
+            P = blkdiag(...
+                1000*eye(4),...     %Quat
+                1000*eye(3),...     %pqr
+                0.001*eye(3),...    %Bias
+                0.000001*eye(10),...%Params
+                0.001*eye(5));      %Moment arms
         else
+            % if not first run use last runs results as initial state
             state(11:end,1) = params(:,(iter-1)*nr_sets+k-1);
         end
         
@@ -84,7 +108,7 @@ end
 
 % Check if new parameter values are valid
 temp = mean(params,2);
-if(any(0<temp(2:7))|any(0>temp(8:10)))
+if(any(0<temp(1:7))|any(0>temp(8:15)))
     display('Wrong sign on one or more parameters.');
     display('Not saving.');
     paramsOK = false;
@@ -117,7 +141,7 @@ if(paramsOK)
         set_param( 'quatSim1/p', 'InitialCondition', sprintf('%f',initialCondition(5)) )
         set_param( 'quatSim1/q', 'InitialCondition', sprintf('%f',initialCondition(6)) )
         set_param( 'quatSim1/r', 'InitialCondition', sprintf('%f',initialCondition(7)) )
-        for l=1:10
+        for l=1:15
             set_param( sprintf('quatSim1/GetParameters/Params%i',l), 'Value', sprintf('%f',EstimatedParams(l)));
         end
         
