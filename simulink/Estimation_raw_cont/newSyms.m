@@ -51,9 +51,9 @@ RQ =...
 rb = [0; 0; zb];
 rg = [0; 0; 0];
 fg = transpose(RQ)*[0; 0; W];
-fb = transpose(RQ)*[0; 0; B];
+fb = - transpose(RQ)*[0; 0; B];
 
-gn = [cross(rb,fb) - cross(rg,fg)];
+gn = - [cross(rb,fb) + cross(rg,fg)];
 
 T = [...
     ly1, -ly2, 0, 0, 0, lz6;
@@ -78,7 +78,7 @@ nu_dot = subs(nu_dot,Iz - Nr_dot, Iz_Nr_dot);
 nu_k_1 = nu + Ts*nu_dot;
 nu_k_1 = collect(nu_k_1,[p q r])
 
-eta_dot= T_eta*nu +100/2*(1-transpose(eta)*eta)*eta;
+eta_dot= T_eta*nu +gam/2*(1-transpose(eta)*eta)*eta;
 
 %old eta_k_1 = eta + Ts*Q_dot
 %old eta_k_1 =(eye(4) + Ts*T_bar_nu)*eta + (Ts^2*T_eta)*nu;

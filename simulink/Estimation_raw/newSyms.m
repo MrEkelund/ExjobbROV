@@ -127,6 +127,22 @@ for i=1:length(h)
         H(i,j) = diff(h(i),state(j));
     end
 end
+
+%% control law
+syms a_x a_y a_z cth sth sphi
+a_b = [a_x, a_y, a_z].';
+
+gn = [...
+    -zb*B*cth*sphi;
+    -zb*B*sth;
+    0];
+
+control_law = M*a_b+C+D+gn;
+control_law = collect(control_law, [p q r]);
+control_law = subs(control_law,Ix - Kp_dot, Ix_Kp_dot);
+control_law = subs(control_law,Iy - Mq_dot, Iy_Mq_dot);
+control_law = subs(control_law,Iz - Nr_dot, Iz_Nr_dot);
+
  
  
 
