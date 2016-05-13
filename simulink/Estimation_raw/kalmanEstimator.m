@@ -1,9 +1,9 @@
  clear
- fs= 100;
+ fs= 50;
  Ts = 1/fs;
- data = loadAll0418(0,1/Ts);
+ data = loadAll0418(0,fs);
 %%
-nr_sets=1;
+nr_sets=2;
 nr_iter=1;
 clear params
 for iter=1:nr_iter
@@ -23,16 +23,18 @@ for iter=1:nr_iter
         % Set initial variables
         %Model noise covariance
         Q = blkdiag(...
-            1000*eye(4),... %Quat
-            1000*eye(3),... %pqr
-            0.001*eye(3),...%Bias
-            0.001*eye(10),...%Params
-            0.001*eye(5));  %Moment arms
+            100*eye(4),... %Quat
+            1000,... %pqr
+            1000,....
+            10,...
+            0.01*eye(3),...%Bias
+            0.01*eye(10),...%Params
+            0.000001*eye(4),0.000001);  %Moment arms
         %measurement covariance
         R = blkdiag(...
-            1*eye(3),...    %Gyro
-            1*eye(3),...    %Acc
-            1000*eye(3));   %Mag
+            0.01*eye(3),...    %Gyro
+            0.1*eye(3),...    %Acc
+            100*eye(3));   %Mag
         state = zeros(25,2*length(measurements));
         
         % First run variables
@@ -52,11 +54,11 @@ for iter=1:nr_iter
             Ix_Kp_dot = 1;
             Iy_Mq_dot = 1;
             Iz_Nr_dot = 1;
-            lx1=0.16;
+            lx1=0.19;%0.16;
             ly1=0.11;
             ly3=0.11;
-            lx5=0.2;
-            lz6=0.11;
+            lx5=0.17;%0.2;
+            lz6=0.0;%11;
             
             state(11:end,1) =...
                 [zb; Kp; Kp_abs_p; Mq;...
@@ -65,11 +67,11 @@ for iter=1:nr_iter
             
             % Initial P matrix                        
             P = blkdiag(...
-                1000*eye(4),...     %Quat
-                1000*eye(3),...     %pqr
+                10000*eye(4),...     %Quat
+                10000*eye(3),...     %pqr
                 0.001*eye(3),...    %Bias
-                0.000001*eye(10),...%Params
-                0.001*eye(5));      %Moment arms
+                1*eye(10),...%Params
+                0.000000001*eye(4),0.00000001);      %Moment arms
         else
             % if not first run use last runs results as initial state
             state(11:end,1) = params(:,(iter-1)*nr_sets+k-1);
@@ -108,7 +110,7 @@ end
 
 % Check if new parameter values are valid
 temp = mean(params,2);
-if(any(0<temp(1:7))|any(0>temp(8:15)))
+if(any(0<temp(1:7))|any(0>temp(8:14)))
     display('Wrong sign on one or more parameters.');
     display('Not saving.');
     paramsOK = false;
