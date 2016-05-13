@@ -7,7 +7,7 @@ All_filepath = 'All0418';
 simulation = 0;
 plotting = 0;
 detrend_enable = 0;
-resampling_fs = 50;
+resampling_fs = 100;
 load('rtau.mat') 
 initialCondition = [1 0 0 1 0 0 0].';
 parameter_variance = 0;

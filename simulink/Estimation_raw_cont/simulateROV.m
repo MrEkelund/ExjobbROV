@@ -6,13 +6,13 @@ function [data, initialCondition] = simulateROV(parameters, sampling_fs, tau, in
 %   input - initialCondition:
 
 load_system('quatSim')
-set_param( 'quatSim/n', 'InitialCondition', sprintf('%f',initialCondition(4)) )
-set_param( 'quatSim/e1', 'InitialCondition', sprintf('%f',initialCondition(5)) )
-set_param( 'quatSim/e2', 'InitialCondition', sprintf('%f',initialCondition(6)) )
-set_param( 'quatSim/e3', 'InitialCondition', sprintf('%f',initialCondition(7)) )
-set_param( 'quatSim/p', 'InitialCondition', sprintf('%f',initialCondition(1)) )
-set_param( 'quatSim/q', 'InitialCondition', sprintf('%f',initialCondition(2)) )
-set_param( 'quatSim/r', 'InitialCondition', sprintf('%f',initialCondition(3)) )
+set_param( 'quatSim/n', 'InitialCondition', sprintf('%f',initialCondition(4)))
+set_param( 'quatSim/e1', 'InitialCondition', sprintf('%f',initialCondition(5)))
+set_param( 'quatSim/e2', 'InitialCondition', sprintf('%f',initialCondition(6)))
+set_param( 'quatSim/e3', 'InitialCondition', sprintf('%f',initialCondition(7)))
+set_param( 'quatSim/p', 'InitialCondition', sprintf('%f',initialCondition(1)))
+set_param( 'quatSim/q', 'InitialCondition', sprintf('%f',initialCondition(2)))
+set_param( 'quatSim/r', 'InitialCondition', sprintf('%f',initialCondition(3)))
 
 estimated_parameters = parameters([13:28]);
 for i=1:16
