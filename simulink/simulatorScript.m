@@ -4,27 +4,68 @@ end_time = 50;
 controller_nr = 2;
 
 % Reference signals
+phi_ref_signal = 2;
 phi_step_time = 5;
 phi_initial_value = 0;
 phi_final_value = 1;
+phi_amplitude = 0.5;
+phi_frequency = 1;
+phi_phase = 0;
+phi_constant = 0;
+
+theta_ref_signal = 1;
 theta_step_time = 5;
 theta_initial_value = 0;
 theta_final_value = 1;
+theta_amplitude = 0.5;
+theta_frequency = 1;
+theta_phase = 0;
+theta_constant = 0;
+
+psi_ref_signal = 2;
 psi_step_time = 5;
 psi_initial_value = 0;
 psi_final_value = 1;
+psi_amplitude = 0.5;
+psi_frequency = 1;
+psi_phase = 0;
+psi_constant = 0;
+
+p_ref_signal = 3;
 p_step_time = 5;
 p_initial_value = 0;
-p_final_value = 0;
+p_final_value = 1;
+p_amplitude = 0.5;
+p_frequency = 1;
+p_phase = 0;
+p_constant = 0;
+
+q_ref_signal = 3;
 q_step_time = 5;
 q_initial_value = 0;
-q_final_value = 0;
+q_final_value = 1;
+q_amplitude = 0.5;
+q_frequency = 1;
+q_phase = 0;
+q_constant = 0;
+
+r_ref_signal = 3;
 r_step_time = 5;
 r_initial_value = 0;
-r_final_value = 0;
+r_final_value = 1;
+r_amplitude = 0.5;
+r_frequency = 1;
+r_phase = 0;
+r_constant = 0;
+
+d_ref_signal = 3;
 d_step_time = 5;
 d_initial_value = 0;
-d_final_value = 0;
+d_final_value = 1;
+d_amplitude = 0.5;
+d_frequency = 1;
+d_phase = 0;
+d_constant = 0;
 
 use_noise = 1;
 noise_power = 0.000001;
@@ -94,27 +135,18 @@ set_param('simulator/Controllers/Depth_PI/Ki', 'value', mat2str(Ki_depth));
 set_param('simulator/Controllers/Depth_PI/Ts', 'value', sprintf('%f',Ts));
 
 % Set step time and step size
-set_param('simulator/phi_ref', 'Time', sprintf('%f',phi_step_time));
-set_param('simulator/phi_ref', 'Before', sprintf('%f',phi_initial_value));
-set_param('simulator/phi_ref', 'After', sprintf('%f',phi_final_value));
-set_param('simulator/theta_ref', 'Time', sprintf('%f',theta_step_time));
-set_param('simulator/theta_ref', 'Before', sprintf('%f',theta_initial_value));
-set_param('simulator/theta_ref', 'After', sprintf('%f',theta_final_value));
-set_param('simulator/psi_ref', 'Time', sprintf('%f',psi_step_time));
-set_param('simulator/psi_ref', 'Before', sprintf('%f',psi_initial_value));
-set_param('simulator/psi_ref', 'After', sprintf('%f',psi_final_value));
-set_param('simulator/p_ref', 'Time', sprintf('%f',p_step_time));
-set_param('simulator/p_ref', 'Before', sprintf('%f',p_initial_value));
-set_param('simulator/p_ref', 'After', sprintf('%f',p_final_value));
-set_param('simulator/q_ref', 'Time', sprintf('%f',q_step_time));
-set_param('simulator/q_ref', 'Before', sprintf('%f',q_initial_value));
-set_param('simulator/q_ref', 'After', sprintf('%f',q_final_value));
-set_param('simulator/r_ref', 'Time', sprintf('%f',r_step_time));
-set_param('simulator/r_ref', 'Before', sprintf('%f',r_initial_value));
-set_param('simulator/r_ref', 'After', sprintf('%f',r_final_value));
-set_param('simulator/d_ref', 'Time', sprintf('%f',d_step_time));
-set_param('simulator/d_ref', 'Before', sprintf('%f',d_initial_value));
-set_param('simulator/d_ref', 'After', sprintf('%f',d_final_value));
+sim_list = {'phi','theta','psi','p','q','r','d'};
+for i = 1:length(sim_list)
+    set_param(sprintf('simulator/ref_signals/%s_ref_signal',sim_list{i}), 'Value', sprintf('%f',eval(strcat(sim_list{i},'_ref_signal'))));
+    set_param(sprintf('simulator/ref_signals/%s_step/step_time', sim_list{i}), 'Value', sprintf('%f',eval(strcat(sim_list{i},'_step_time'))));
+    set_param(sprintf('simulator/ref_signals/%s_step/initial_value', sim_list{i}),'Value', sprintf('%f',eval(strcat(sim_list{i},'_initial_value'))));
+    set_param(sprintf('simulator/ref_signals/%s_step/final_value', sim_list{i}),'Value', sprintf('%f',eval(strcat(sim_list{i},'_final_value'))));
+    set_param(sprintf('simulator/ref_signals/%s_sin/sin_amplitude', sim_list{i}),'Value', sprintf('%f',eval(strcat(sim_list{i},'_amplitude'))));
+    set_param(sprintf('simulator/ref_signals/%s_sin/sin_frequency', sim_list{i}),'Value', sprintf('%f',eval(strcat(sim_list{i},'_frequency'))));
+    set_param(sprintf('simulator/ref_signals/%s_sin/sin_phase', sim_list{i}),'Value', sprintf('%f',eval(strcat(sim_list{i},'_phase'))));
+    set_param(sprintf('simulator/ref_signals/%s_ref_constant', sim_list{i}),'Value', sprintf('%f',eval(strcat(sim_list{i},'_constant'))));
+    set_param(sprintf('simulator/ref_signals/%s_zoh', sim_list{i}),'SampleTime', sprintf('%f',Ts));
+end
 
 % Initial condition for the model
 set_param('simulator/ROV_model/n', 'InitialCondition', sprintf('%f',initialCondition(4)))
@@ -140,9 +172,7 @@ for i=1:7
     set_param(sprintf('simulator/ROV_model/white_noise%i',i), 'Ts', sprintf('%f',Ts));
     set_param(sprintf('simulator/ROV_model/white_noise%i',i), 'Cov', sprintf('%f',noise_power));
 end
-set_param('simulator/phi_ref', 'SampleTime', sprintf('%f',Ts));
-set_param('simulator/theta_ref', 'SampleTime', sprintf('%f',Ts));
-set_param('simulator/psi_ref', 'SampleTime', sprintf('%f',Ts));
+
 set_param('simulator/controller', 'value', sprintf('%f',controller_nr));
 
 configSet = getActiveConfigSet('simulator');
