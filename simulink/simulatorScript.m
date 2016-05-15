@@ -210,6 +210,6 @@ figure('units', 'normalized', 'position', [0 0 .5 .41])
 label_name = {'u_1','u_2','u_3','u_4','u_5','u_6'};
 for i = 1:6
     subplot(3,2,i)
-    plot(time,simOut(:,i+13))
+    plot(time,simOut(:,i+14))
     ylabel(label_name(i))
 end
