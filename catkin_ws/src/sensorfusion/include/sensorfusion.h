@@ -2,6 +2,7 @@
 #include <ros/console.h>
 #include <ros/time.h>
 #include <dynamic_reconfigure/server.h>
+// requires catkin_make --pkg sensorfusion first. Else it wont find ekfConfig.h
 #include <sensorfusion/ekfConfig.h>
 #include <math.h>
 #include <iostream>
@@ -27,7 +28,7 @@ public:
   void pressureUpdate();
   void timeUpdate();
   void normQuaternions();
-	
+
 
   void initFilter();
   void setCovMag();
