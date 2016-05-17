@@ -1,8 +1,15 @@
 \chapter{Hardware and Software}\label{cha:hardware}
-This chapter describes the hardware used in the thesis. The \abbrROV frame and thrusters were included in a package from BlueRobotics. In addition to the \abbrROV frame, a Raspberry pi was used as an onboard computer and a HKPilot Mega 2.7  was used as a input/output (\abbrIO) unit, see \Figureref{fig:apm}. The software in the \abbrROV was built on top of \abbrROS.  Instructions for installation of software and operation of the \abbrROV can be found in \Appref{app:dependencies} and \Appref{app:operation}.
+To understand the limitations and opportunities the hardware had on the thesis, are the hardware described in this chapter. The hardware is subdivided into different section and are described in somewhat detail, for example, how things are connected and how things are controlled. The \abbrROV frame and thrusters were included in a package from BlueRobotics. In addition to the \abbrROV frame, a Raspberry pi was used as an onboard computer and a HKPilot Mega 2.7  was used as a input/output (\abbrIO) unit, see \Figureref{fig:apm}. The software in the \abbrROV was built on top of \abbrROS.  Instructions for installation of software and operation of the \abbrROV can be found in Appendices~\ref{app:dependencies} and \ref{app:operation}. \abbrROS is an open source operating system for robot applications and is used in the \abbrROV. The operating system provides message passing, hardware abstraction and thus simplifies communication between different computers \citep{ROS}. The message passing in \abbrROS consists of two parties, subscribers and publishers. When a publisher sends a message on a specific topic receives the subscribers of that topic the message. 
 
 \section{BlueROV Package}
-In this thesis the BlueRov from BlueRobotics was used. The BlueROV package includes an acrylic chassi, an acrylic tube, six electronic speed controllers, six BlueRobotics T200 thrusters, cable penetrators and a cradle for mounting of electronics.
+In this thesis, the BlueRov from BlueRobotics was used which can be seen in \Figureref{fig:rov}. The BlueROV package includes an acrylic chassi, an acrylic tube, six electronic speed controllers, six BlueRobotics T200 thrusters, cable penetrators and a cradle for mounting of electronics.
+\begin{figure}
+\centering
+\includegraphics[trim={16cm 5cm 25cm 5cm},clip,width=0.9\textwidth]{rov}
+\caption{The BlueRov from BlueRobotics that was used in the thesis.}
+\label{fig:rov}
+\end{figure}
+
 \section{\abbrROV \abbrIO}
 The \abbrROV's \abbrIO consists of an HKPilot Mega 2.7 which is based on Ardupilot Mega. The HKPilot Mega 2.7 has the following on chip sensors
 \begin{itemize}
@@ -11,7 +18,7 @@ The \abbrROV's \abbrIO consists of an HKPilot Mega 2.7 which is based on Ardupil
     \item Inertial measurement unit (\abbrIMU) - MPU6000.
 \end{itemize}
 An external pressure sensor MS5837-30BA which was encased in a watertight case by BlueRobotics was connected to the HKPilot Mega 2.7 by \abbrIC.
-The HKPilot Mega 2.7 also controls the six \abbrESC:s. The \abbrESC:s are 30A AfroESCs flashed with BlueRobotics linearising firmware. The HKPilot Mega 2.7 is connected to the onboard computer by \abbrUSB cable. The HKPilot Mega 2.7 runs a rosserial-arduino node which is a lite \abbrROS node that communicates with a master node by serial communication. Scaling calibration of the sensors are done automatically. However, the offset of the magnetometer has to be calibrated manually by following the instructions that are produced in the workstation terminal window when the calibration script is run. The external pressure sensor uses the internal barometer to remove the atmospheric pressure offset. The atmospheric pressure offset is measured once, at the start up of the \abbrROV.
+The HKPilot Mega 2.7 also controls the six \abbrESC:s. The \abbrESC:s are 30A AfroESCs flashed with BlueRobotics linearising firmware. The HKPilot Mega 2.7 is connected to the onboard computer by \abbrUSB cable. The HKPilot Mega 2.7 runs a rosserial-arduino node which is a simpler \abbrROS node that communicates with a master node by serial communication. Scaling and calibration of the sensors are done automatically. However, the offset calibration of the magnetometer has to be performed manually by following the instructions that are produced in the workstation terminal window when the calibration script is run. The external pressure sensor uses the internal barometer to remove the atmospheric pressure offset. The atmospheric pressure offset is measured once, at the start up of the \abbrROV.
 
 \section{Power}
 To power the \abbrROV a Turnigy 5000mAh 4S 25C Lipo Pack was used. This is a high discharge battery which ensures that all thrusters can be run at the same time without distruptive voltage drops.
@@ -58,7 +65,7 @@ The \abbrROS nodes running on the onboard computer can be seen in \Tableref{tab:
 \end{figure}
 
 \section{The Workstation}
-The workstation used in the thesis is a Lenovo T430 with an Intel\textregistered i5-3210M processor and Intel\textregistered HD Graphics 4000. The workstation was connected via a Cat 6 tether to the Raspberry pi 2.
+The workstation used in the thesis is a Lenovo T430 with an Intel\textregistered i5-3210M processor and Intel\textregistered HD Graphics 4000. The workstation was connected via a Cat 6 tether to the Raspberry pi 2. The different \abbrROS nodes that are run on the workstation can be seen in \Tableref{tab:workstationnodes}.
 \begin{table}[tbp]
   \centering
   \caption{\label{tab:workstationnodes}%

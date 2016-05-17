@@ -164,17 +164,52 @@ The thruster test will run the thrusters at a minimal torque in incremental orde
 
 \subsection{Checking and Changing Rotation of Thrusters}
 The rotation of thrusters are important due to the moments they create. Thus are two thruster pairs counter-rotating. For checking the rotation of the thrusters the script mentioned in \Subsectionref{subsec:unresponsive} can be run. \Figureref{fig:thrusterRotation12} - \Figureref{fig:thrusterRotation6} shows how the different thrusters should rotate when supplied with a positive control signal. If one or more thrusters are rotating in the wrong direction, change the order the corresponding thruster cables are connected. 
+%\begin{tikzpicture}
+%    \node[anchor=south west,inner sep=0] (image) at (0,0) {\includegraphics[trim={25cm 2cm 0cm 0cm},clip,width=0.9\textwidth]{thrusterlocationfront}};
+%    \begin{scope}[x={(image.south east)},y={(image.north west)}]
+%		
+%        
+%        \coordinate (O) at (0.48,0.55);
+%        \draw[red, ultra thick,->] (O) ++(-\coordinateRadius,0) -- ++(-0.4,0) node[anchor=north east]{\large\color{red}$\yPosition$};
+%        \draw[red, ultra thick,->] (O) ++(0,-\coordinateRadius)-- ++(0,-0.5) node[anchor=south east]{\large\color{red}$\zPosition$};
+%        \draw[red, ultra thick] (O) circle (\coordinateRadius);        
+%        \draw[red, ultra thick] (O) ++(0,\coordinateRadius) node[above]{\large\color{red}$\xPosition$};
+%		\draw[red, ultra thick] (O) node[circle,fill,inner sep=1pt]{};
+%        
+%        \draw[yellow, thick, <->] (O) ++(0.04,0) -- ++(0,-0.37)  node [midway, right]{\large\distance{z}{6}};
+%        \draw[red, thick] (O) ++(0.04,-0.37) node[right]{\large Thruster 6};
+%    \end{scope}
+%\end{tikzpicture}
 
 \begin{figure}
 \centering
 \begin{tikzpicture}
     \node[anchor=south west,inner sep=0] (image) at (0,0) {\includegraphics[trim={0cm 0cm 0cm 0cm},clip,width=0.9\textwidth]{thrusterRotation12}};
     \begin{scope}[x={(image.south east)},y={(image.north west)}]
-        \draw[->,red,ultra thick,rounded corners] (0.28,0.205) arc (-30:30:0.2);
-        \draw[->,red,ultra thick,rounded corners] (0.78,0.205) arc (210:150:0.2);
+    		\pgfmathsetmacro\coordinateRadius{0.025}
+        \pgfmathsetmacro\by{\coordinateRadius*sin(45)}
+        \pgfmathsetmacro\bx{\coordinateRadius*cos(45)}
+        \pgfmathsetmacro\ay{\coordinateRadius*sin(\coordRot)}
+        \pgfmathsetmacro\ax{\coordinateRadius*cos(\coordRot)}
+        \pgfmathsetmacro\coordYRot{sin(\coordRot)}
+        \pgfmathsetmacro\coordXRot{cos(\coordRot)}
+        
+        \coordinate (left) at (0.28,0.205);
+        \coordinate (right) at (0.78,0.205);
+        \draw[->,red,ultra thick,rounded corners] (left) arc (-30:30:0.2);
+        \draw[->,red,ultra thick,rounded corners] (right) arc (210:150:0.2);
+ 
     \end{scope}
+    \coordinate (left) at (1.8,1.83);
+    \draw[fill=yellow] (left) circle (0.06);
+	\draw[yellow, ultra thick] (left) circle (0.25);
+	\draw (left) ++(0,0.2) node[above]{\color{yellow}$\zForce$};
+	\coordinate (right) at (9.85,1.85);
+    \draw[fill=yellow] (right) circle (0.06);
+	\draw[yellow, ultra thick] (right) circle (0.25);
+	\draw (right) ++(0,0.2) node[above]{\color{yellow}$\zForce$};
 \end{tikzpicture}
-    \caption{The arrows indicate the direction of rotation of thruster 1 and thruster 2 when supplied with a positive control signal.}
+    \caption{The arrows indicate the direction of rotation of thruster 1 and thruster 2 when supplied with a positive control signal. The resulting positive forces are indicated in yellow.}
     \label{fig:thrusterRotation12}
 \end{figure}
 
@@ -185,9 +220,15 @@ The rotation of thrusters are important due to the moments they create. Thus are
     \begin{scope}[x={(image.south east)},y={(image.north west)}]
         \draw[->,red,ultra thick,rounded corners] (0.24,0.405) arc (-30:30:0.2);
         \draw[->,red,ultra thick,rounded corners] (0.74,0.405) arc (210:150:0.2);
+        
+  	  	\coordinate (left) at (0.24,0.405);
+		\draw[->, yellow, ultra thick] (left) ++(-0.12,-0.06) -- ++(-0.05,-0.25) node[right]{\color{yellow}$\xForce$};
+		\coordinate (right) at (0.74,0.405);
+		\draw[->, yellow, ultra thick] (right) ++(0.13,-0.06) -- ++(0.08,-0.25) node[right]{\color{yellow}$\xForce$};
     \end{scope}
+
 \end{tikzpicture}
-    \caption{The arrows indicate the direction of rotation of thruster 3 and thruster 4 when supplied with a positive control signal.}
+    \caption{The arrows indicate the direction of rotation of thruster 3 and thruster 4 when supplied with a positive control signal. The resulting positive forces are indicated in yellow.}
     \label{fig:thrusterRotation34}
 \end{figure}
 
@@ -198,8 +239,12 @@ The rotation of thrusters are important due to the moments they create. Thus are
     \begin{scope}[x={(image.south east)},y={(image.north west)}]
         \draw[->,red,ultra thick,rounded corners] (0.44,0.445) arc (210:150:0.2);
     \end{scope}
+    \coordinate (left) at (5.8,3);
+    \draw[fill=yellow] (left) circle (0.06);
+	\draw[yellow, ultra thick] (left) circle (0.25);
+	\draw (left) ++(0,0.2) node[above]{\color{yellow}$\zForce$};
 \end{tikzpicture}
-    \caption{The arrows indicate the direction of rotation of thruster 5 when supplied with a positive control signal.}
+    \caption{The arrows indicate the direction of rotation of thruster 5 when supplied with a positive control signal. The resulting positive forces are indicated in yellow.}
     \label{fig:thrusterRotation5}
 \end{figure}
 
@@ -210,7 +255,11 @@ The rotation of thrusters are important due to the moments they create. Thus are
     \begin{scope}[x={(image.south east)},y={(image.north west)}]
         \draw[->,red,ultra thick,rounded corners] (0.40,0.45) arc (210:150:0.2);
     \end{scope}
+    \coordinate (left) at (5.45,3.10);
+    \draw[fill=yellow] (left) circle (0.06);
+	\draw[yellow, ultra thick] (left) circle (0.25);
+	\draw (left) ++(0,0.2) node[above]{\color{yellow}$\zForce$};
 \end{tikzpicture}
-    \caption{The arrows indicate the direction of rotation of thruster 6 when supplied with a positive control signal.}
+    \caption{The arrows indicate the direction of rotation of thruster 6 when supplied with a positive control signal. The resulting positive forces are indicated in yellow.}
     \label{fig:thrusterRotation6}
 \end{figure}

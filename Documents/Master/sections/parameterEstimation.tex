@@ -85,7 +85,7 @@ Data preprocessing was done by synchronising the data streams and resampling the
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Parameter Estimation from Angular Velocities} \label{sec:estimation_angular}
-The estimated Euler angles from the sensor fusion model described in \Sectionref{sec:simple_model} did not follow the kinematic relation described in \Sectionref{sec:kinetics}. This can be seen in \Figureref{fig:integratedAngleVelocities}. Thus were these estimated angles not suited to be used as outputs in the parameter estimation. The parameters were instead estimated using the angular velocities from the gyroscope as outputs. The model structure in which the parameters were estimated was thus \index{model structure}
+The estimated Euler angles from the sensor fusion model described in \Sectionref{sec:simple_model} did not follow the kinematic relation described in \Sectionref{sec:kinematics}. This can be seen in \Figureref{fig:integratedAngleVelocities}. Thus were these estimated angles not suited to be used as outputs in the parameter estimation. The parameters were instead estimated using the angular velocities from the gyroscope as outputs. The model structure in which the parameters were estimated was thus \index{model structure}
 \begin{equation}
 \etaVectordot = f(\nuVector, \etaVector, \tauVector),
 \end{equation}
