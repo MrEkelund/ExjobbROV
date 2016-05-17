@@ -129,13 +129,24 @@ for i=1:length(h)
 end
 
 %% control law
-syms a_x a_y a_z cth sth sphi
+syms a_x a_y a_z cth sth sphi cpsi sth cphi spsi
 a_b = [a_x, a_y, a_z].';
 
-gn = [...
-    -zb*B*cth*sphi;
-    -zb*B*sth;
-    0];
+% gn = [...
+%     -zb*B*cth*sphi;
+%     -zb*B*sth;
+%     0];
+
+R = [cpsi*cth -spsi*cphi+cpsi*sth*sphi spsi*sphi + cpsi*cphi*sth;
+    spsi*cth cpsi*cphi + sphi*sth*spsi -cpsi*sphi+sth*spsi*cphi;
+    -sth cth*sphi cth*cphi];
+
+rb = [0; 0; zb];
+rg = [0; 0; 0];
+fg = transpose(R)*[0; 0; W];
+fb = -transpose(R)*[0; 0; B];
+
+gn = -[cross(rb,fb) + cross(rg,fg)];
 
 control_law = M*a_b+C+D+gn;
 control_law = collect(control_law, [p q r]);

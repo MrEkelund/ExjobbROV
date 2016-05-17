@@ -12,6 +12,7 @@
 #include <geometry_msgs/Twist.h>
 #include <sensor_msgs/Joy.h>
 #include <std_msgs/Bool.h>
+#include <std_msgs/Float32.h>
 #include <dynamic_reconfigure/server.h>
 #include <bluerov/teleop_xboxConfig.h>
 
@@ -24,6 +25,7 @@ class TeleopXbox {
     ros::NodeHandle nh;
     ros::Publisher cmd_vel_pub;
     ros::Publisher hazard_enable_pub;
+    ros::Publisher dec_inc_depth_pub;
     ros::Subscriber joy_sub;
 
     dynamic_reconfigure::Server<bluerov::teleop_xboxConfig> server;
@@ -33,6 +35,7 @@ class TeleopXbox {
     bool initRT;
     ros::Time enablePressed;
     ros::Time disablePressed;
+    ros::Time decIncPressed;
 
     void configCallback(bluerov::teleop_xboxConfig &update, uint32_t level);
     void joyCallback(const sensor_msgs::Joy::ConstPtr& joy);
@@ -48,6 +51,7 @@ TeleopXbox::TeleopXbox() {
   // connects subs and pubs
   cmd_vel_pub = nh.advertise<geometry_msgs::Twist>("cmd_vel", 10);
   hazard_enable_pub = nh.advertise<std_msgs::Bool>("rovio/enable_thrusters", 10);
+  dec_inc_depth_pub = nh.advertise<std_msgs::Float32>("dec_inc_depth", 10);
   joy_sub = nh.subscribe<sensor_msgs::Joy>("joy", 1, &TeleopXbox::joyCallback, this);
 
   // set initial values
@@ -100,6 +104,16 @@ void TeleopXbox::joyCallback(const sensor_msgs::Joy::ConstPtr& joy) {
     hmsg.data = true;
     hazard_enable_pub.publish(hmsg);
     // ROS_INFO("Hazards enabled.");
+  } else if(joy->buttons[config.dec_depth] > 0 && (decIncPressed < ros::Time::now())) {
+    decIncPressed = ros::Time::now() + ros::Duration(0.1);
+    std_msgs::Float32 decmsg;
+    decmsg.data = -1;
+    dec_inc_depth_pub.publish(decmsg);
+  } else if(joy->buttons[config.inc_depth] > 0 && (decIncPressed < ros::Time::now())) {
+    decIncPressed = ros::Time::now() + ros::Duration(0.1);
+    std_msgs::Float32 decmsg;
+    decmsg.data = 1;
+    dec_inc_depth_pub.publish(decmsg);
   }
 }
 

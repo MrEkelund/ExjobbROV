@@ -1,38 +1,38 @@
-initialCondition = [0 0 0 1 0 0 0];
+initialCondition = [1 0 0 0 1/sqrt(2) 1/sqrt(2) 0];
 Ts = 0.01;
 end_time = 50;
-controller_nr = 2;
+controller_nr = 4;
 
 % Reference signals
-phi_ref_signal = 2;
+phi_ref_signal = 3;
 phi_step_time = 5;
 phi_initial_value = 0;
 phi_final_value = 1;
 phi_amplitude = 0.5;
-phi_frequency = 1;
+phi_frequency = 0.5;
 phi_phase = 0;
 phi_constant = 0;
 
-theta_ref_signal = 1;
+theta_ref_signal = 3;
 theta_step_time = 5;
 theta_initial_value = 0;
 theta_final_value = 1;
 theta_amplitude = 0.5;
-theta_frequency = 1;
+theta_frequency = 0.5;
 theta_phase = 0;
 theta_constant = 0;
 
-psi_ref_signal = 2;
+psi_ref_signal = 3;
 psi_step_time = 5;
 psi_initial_value = 0;
 psi_final_value = 1;
 psi_amplitude = 0.5;
-psi_frequency = 1;
+psi_frequency = 0.5;
 psi_phase = 0;
 psi_constant = 0;
 
-p_ref_signal = 3;
-p_step_time = 5;
+p_ref_signal = 1;
+p_step_time = 0;
 p_initial_value = 0;
 p_final_value = 1;
 p_amplitude = 0.5;
@@ -40,8 +40,8 @@ p_frequency = 1;
 p_phase = 0;
 p_constant = 0;
 
-q_ref_signal = 3;
-q_step_time = 5;
+q_ref_signal = 1;
+q_step_time = 0;
 q_initial_value = 0;
 q_final_value = 1;
 q_amplitude = 0.5;
@@ -49,8 +49,8 @@ q_frequency = 1;
 q_phase = 0;
 q_constant = 0;
 
-r_ref_signal = 3;
-r_step_time = 5;
+r_ref_signal = 1;
+r_step_time = 0;
 r_initial_value = 0;
 r_final_value = 1;
 r_amplitude = 0.5;
@@ -68,7 +68,7 @@ d_phase = 0;
 d_constant = 0;
 
 use_noise = 1;
-noise_power = 0.000001;
+noise_power = 0.00001;
 % Exact Lin feedforward
 Kd = 2*eye(3);
 Kp = diag([10,10,10]);
@@ -92,9 +92,12 @@ PIDzD = 0;
 PIDzN = 100;
 
 % Exact Lin rate
-Kd_rate = 2*eye(3);
-Kp_rate = diag([10,10,10]);
-Ki_rate = diag([1,1,1]);
+% Kd_rate = 2*eye(3);
+% Kp_rate = diag([10,10,10]);
+% Ki_rate = diag([1,1,1]);
+Kd_rate = 0*eye(3);
+Kp_rate = 0.1*diag([10,10,10]);
+Ki_rate = 0*diag([1,1,1]);
 
 % Depth
 Kd_depth = 1;
