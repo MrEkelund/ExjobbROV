@@ -1,3 +1,6 @@
+#ifndef SENSORFUSION_H
+#define SENSORFUSION_H
+
 #include <ros/ros.h>
 #include <ros/console.h>
 #include <ros/time.h>
@@ -120,3 +123,5 @@ private:
   bool new_pressure_data;
   bool imu_first_data;
 };
+
+#endif // SENSORFUSION_H
