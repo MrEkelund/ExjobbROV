@@ -230,7 +230,7 @@ where $s\cdot$ stands for $\sin(\cdot)$ and $c\cdot$ stands for $\cos(\cdot)$ \c
 \end{equation}
 
 Angular velocities transformation between the from the body-fixed frame to the global frame is given by 
-\begin{equation}
+\begin{equation}\label{eq:eulerAnglesdot}
 \eulerAnglesdot = \boldsymbol{T}_{\theta}(\eulerAngles)\angVelBody
 \end{equation}
 where $\boldsymbol{T}_{\theta}(\eulerAngles)$ is 
@@ -247,7 +247,7 @@ where $t\cdot$ stands for $\tan(\cdot)$ \citep[p. 24-25]{fossen2011}. Similar to
 \end{equation}
 
 The kinematic equations can then be expressed in vector form as \index{Kinematics}
-\begin{equation} \label{eq:kineticsEuler}
+\begin{equation} \label{eq:kinematicsticsEuler}
 \etaVectordot = \boldsymbol{J}_\theta(\etaVector)\nuVector
 \quad\Longleftrightarrow\quad
 \begin{bmatrix}
@@ -327,7 +327,7 @@ In discrete time, quaternion normalisation is given by
 \quaternion(k+1) = \frac{\quaternion(k+1)}{\sqrt{\quaternion^T(k+1)\quaternion(k+1)}}
 \end{equation}
 
-The kinematic equation \eqref{eq:kineticsEuler}  is changed to \index{Kinematics}
+The kinematic equation \eqref{eq:kinematicsticsEuler}  is changed to \index{Kinematics}
 \begin{equation}
 \etaVectordot = \boldsymbol{J}_q(\etaVector)\nuVector
 \quad\Longleftrightarrow\quad
