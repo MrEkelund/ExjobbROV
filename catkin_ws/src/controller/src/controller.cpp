@@ -111,13 +111,10 @@ void Controller::calcLinControl(Eigen::Matrix<double, 6, 1>& acc, Eigen::Matrix<
   Iy_Mq_dot*acc(4) - _ang_vel(1)*(Mq + Mq_abs_q*abs(_ang_vel(1))) - B*_sth*zb + _ang_vel(0)*_ang_vel(2)*(Ix_Kp_dot - Iz_Nr_dot),
   Iz_Nr_dot*acc(5) - _ang_vel(2)*(Nr + Nr_abs_r*abs(_ang_vel(2))) - _ang_vel(0)*_ang_vel(1)*(Ix_Kp_dot - Iy_Mq_dot);
 
-  std::cout << "calc lin tau: " << tau << std::endl;
   Eigen::Matrix<double, 6, 1> moments;
   moments = _T.inverse()*tau;
 
-  std::cout << "calc lin moment: " << moments << std::endl;
   interpolate(moments, control_signals);
-  std::cout << "calc lin interpolated moment: " << control_signals << std::endl;
 }
 
 // Thrust to control signals
@@ -223,7 +220,7 @@ void Controller::calcReferenceSignals() {
   }
 
   if (_psi_reference.enable) {
-    switch (_theta_reference.reference_signal) {
+    switch (_psi_reference.reference_signal) {
       case 1:
       _euler_angles_ref(2) = calcStepReference(_psi_reference);
       break;
@@ -475,8 +472,8 @@ Eigen::Matrix<double, 6, 1> Controller::calcRateControl() {
   eta_tilde =  _ang_vel - _ang_vel_ref;
 
   _rate_integral = _rate_integral + Ki*Ts*eta_tilde;
-  std::cout << "eta_tilde: " << eta_tilde << std::endl;
-  std::cout << "_rate_integral: " << _rate_integral << std::endl;
+//  std::cout << "eta_tilde: " << eta_tilde << std::endl;
+//  std::cout << "_rate_integral: " << _rate_integral << std::endl;
   for (uint i = 0; i < 3; i++) {
     if (_rate_integral(i) > 5) {
       _rate_integral(i) = 5;
@@ -488,8 +485,8 @@ Eigen::Matrix<double, 6, 1> Controller::calcRateControl() {
   Eigen::Matrix<double, 6, 1> velocities_and_rates;
   Eigen::Matrix<double, 6, 1> control_signals;
   velocities_and_rates << _velocity_ref, -Kp*eta_tilde - _rate_integral;
-    std::cout << "rate control: " << -Kp*eta_tilde - Ki*_rate_integral << std::endl;
-    std::cout << "velocities_and_rates: " << velocities_and_rates << std::endl;
+//    std::cout << "rate control: " << -Kp*eta_tilde - Ki*_rate_integral << std::endl;
+//    std::cout << "velocities_and_rates: " << velocities_and_rates << std::endl;
   calcLinControl(velocities_and_rates, control_signals);
   return control_signals;
 }
@@ -523,8 +520,8 @@ Eigen::Matrix<double, 6, 1> Controller::calcAttitudeControl() {
   eta_tilde = _euler_angles - _euler_angles_ref;
 
   _attitude_integral = _attitude_integral + Ki*Ts*eta_tilde;
-  std::cout << "eta_tilde: " << eta_tilde << std::endl;
-  std::cout << "_attitude_integral: " << _attitude_integral << std::endl;
+//  std::cout << "eta_tilde: " << eta_tilde << std::endl;
+//  std::cout << "_attitude_integral: " << _attitude_integral << std::endl;
   for (uint i = 0; i < 3; i++) {
     if (_attitude_integral(i) > 5) {
       _attitude_integral(i) = 5;
@@ -536,7 +533,7 @@ Eigen::Matrix<double, 6, 1> Controller::calcAttitudeControl() {
   Eigen::Matrix<double, 6, 1> control_signals;
   Eigen::Matrix<double, 6, 1> position_and_angles;
   position_and_angles << _velocity_ref, momentsNEDToBody(- Kd*eta_tilde_dot - Kp*eta_tilde - _attitude_integral);
-  std::cout << "attitude control: " << momentsNEDToBody(- Kd*eta_tilde_dot - Kp*eta_tilde - _attitude_integral) << std::endl;
+//  std::cout << "attitude control: " << momentsNEDToBody(- Kd*eta_tilde_dot - Kp*eta_tilde - _attitude_integral) << std::endl;
   calcLinControl(position_and_angles, control_signals);
   return control_signals;
 }
@@ -555,7 +552,7 @@ Eigen::Matrix<double, 6, 1> Controller::calcDepthControl() {
   }
   Eigen::Vector3d forces;
   forces << 0,0,-Kp*eta_tilde - _depth_integral;
-  std::cout << "depth control: " << forcesNEDToBody(forces) << std::endl;
+//  std::cout << "depth control: " << forcesNEDToBody(forces) << std::endl;
   return _T*forcesNEDToBody(forces);
 }
 
@@ -587,7 +584,7 @@ void Controller::sendThrusterSignals(Eigen::Matrix<double, 6, 1>& control_signal
   Eigen::Matrix<double, 6, 1> temp;
   control_signals = enabled_thrusters*control_signals;
 
-  std::cout << "control signals1: " << control_signals << std::endl;
+//  std::cout << "control signals1: " << control_signals << std::endl;
   // Saturate
   for (uint i = 0; i < 6; i++) {
     if (control_signals(i,0) < -1) {
@@ -596,7 +593,7 @@ void Controller::sendThrusterSignals(Eigen::Matrix<double, 6, 1>& control_signal
       control_signals(i,0) = 1;
     }
   }
-  std::cout << "control signals: " << control_signals << std::endl;
+//  std::cout << "control signals: " << control_signals << std::endl;
   // Convert to pwm
   for (uint i = 0; i < 6; i++) {
     control_message.data[i] = (control_signals(i,0) + 1)*400 + 1100;
@@ -647,7 +644,7 @@ void Controller::spin() {
     if (_config.enable_depth) {
       control_signals = control_signals + calcDepthControl();
     }
-    std::cout << "control signals main: " << control_signals << std::endl;
+//    std::cout << "control signals main: " << control_signals << std::endl;
     sendThrusterSignals(control_signals);
     ros::spinOnce();
     loop.sleep();

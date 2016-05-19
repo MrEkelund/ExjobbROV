@@ -21,14 +21,13 @@ find_package(catkin REQUIRED COMPONENTS
 
 
 ## Generate added messages and services
-generate_messages(DEPENDENCIES
-  std_msgs
-)
+##generate_messages(DEPENDENCIES
+##  std_msgs
+##)
 
 ## Add dynamic reconfigure api
 generate_dynamic_reconfigure_options(
   config/teleop_xbox.config
-  config/matlab_controller.config
 )
 
 ## Declare a catkin package
