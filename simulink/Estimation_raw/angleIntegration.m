@@ -1,7 +1,10 @@
 yaw_filepath = fullfile('bag','all_1_low_sensor_cov_7_2016-04-20-10-50-53.bag');
-[lin_vel_data ,lin_acc_data, ang_vel_data, thrusters_data, states, time, Ts]= ...
+[imu_data, mag_data, thrusters_data, states, time, Ts]= ...
 getTestData(yaw_filepath, 0, 0);
 
+
+
+imu_data, mag_data, thrusters_data, time
 states(:,1:3) = antiModAngles(states(:,1:3));
 roll = states(:,1);
 pitch = states(:,2);
@@ -28,7 +31,7 @@ end
 %%
 plot([cumsum(g_ang_vel(:,1))*Ts, antiModAngles(states(:,1))])
 
-ft = 20;
+ft = 30;
 h = legend('\int R(\nu_2)','\phi');
 set(h,'FontSize',ft);
 h = ylabel('Angle [rad]');

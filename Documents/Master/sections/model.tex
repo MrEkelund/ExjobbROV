@@ -2,16 +2,20 @@
 This chapter describes how the \abbrROV is modelled using the \citet{fossen2011} 6 \abbrDOF model for \abbrROV:s. A model describes how an object is affected by forces such as gravity and friction. Models are derived by using different physical laws. Assumptions can often be made how the physical properties of the object affect the model and a simpler model can be derived. Assumptions can be symmetry of the object, no coupling inertia, low speed and several others. 
 
 An underwater vehicle with 6 \abbrDOF can be described by\index{Model of an underwater vehicle}
+\begin{equation}
+\etaVectordot = J(\eta)\nu
+\end{equation}
+
 \begin{equation} \label{eq:model}
  \inertia \nuVectordot + \coriolis(\nuVector)\nuVector + \damping(\nuVector)\nuVector + \gravity(\etaVector) = \tauVector
 \end{equation}
  
 where
 \begin{equation*}
-  \listEta  
+  \eta  
 \end{equation*} are generalised positions and
 \begin{equation*}
-  \listNu 
+  \nu 
 \end{equation*}
 are generalised velocities that are used to describe motion in 6 \abbrDOF \citep[p. 15]{fossen2011}. The matrices $\inertia$\index{Inertia matrix}, $\coriolis(\nuVector)$\index{Coriolis matrix}, $\damping(\nuVector)$\index{Damping matrix} and the vector $\gravity(\nuVector)$\index{Restoring forces matrix} respectively describes how inertia, Coriolis forces, damping forces, gravity and buoyancy affect the \abbrROV. The vector $\tauVector$ describes the forces and torques produced by the \abbrROV's actuators as well as environmental disturbances.
  
@@ -158,7 +162,7 @@ This coordinate system is used to express buoyancy and gravitational forces acti
     \caption{Front view of the \abbrROV. The red coordinate system illustrates how the body-fixed coordinate system is fixed in the \abbrROV. The yellow line show the moment arm to thruster 6 which is marked in red.}
     \label{fig:thrusterlocationfront}
 \end{figure}
-
+\todo{update this figure with N' to indicate that the rotation is around the new axis}
 \begin{figure}
     \centering
     \begin{tikzpicture}[scale=2]
@@ -175,8 +179,8 @@ This coordinate system is used to express buoyancy and gravitational forces acti
         \draw (O) circle (0.05) node[anchor=south,]{$\down$,\color{red}$\zPosition$};
         \draw (O) -- ++(\bx,\by) (O) -- ++(-\bx,-\by) (O) -- ++(-\bx,\by) (O)  -- ++(\bx,-\by);
         
-        \draw[thick,red,->] (O) ++(\ax,-\ay) -- ++(\coordXRot,-\coordYRot) node[anchor=north west]{$\xPosition$};
-        \draw[thick,red,->] (O) ++(-\ay,-\ax) -- ++(-\coordYRot,-\coordXRot) node[anchor=north east]{$\yPosition$};
+        \draw[thick,red,->] (O) ++(\ax,-\ay) -- ++(\coordXRot,-\coordYRot) node[anchor=north west]{$\xPosition$ };
+        \draw[thick,red,->] (O) ++(-\ay,-\ax) -- ++(-\coordYRot,-\coordXRot) node[anchor=north east]{$\yPosition$\color{black},$\east'$};
         \draw[->] (O) ++(0.5,0) arc (0:-\coordRot:0.5) node[right]{\yawAngle};
         
         \def\coordDistance{1.5}
@@ -184,10 +188,10 @@ This coordinate system is used to express buoyancy and gravitational forces acti
          \coordinate (O) at (\coordDistance,0);
          \draw[thick,->] (O) ++(\coordinateRadius,0) -- ++(1,0) node[anchor=north east]{$\north$};
          \draw[thick,->] (O) ++(0,-\coordinateRadius)-- ++(0,-1) node[anchor=south east]{$\down$};
-         \draw (O) circle (0.05) node[anchor=south,]{$\east$,\color{red}$\yPosition$};
+         \draw (O) circle (0.05) node[anchor=south,]{$\east'$,\color{red}$\yPosition$};
          \draw[fill=black] (O) circle (0.0125);
         
-         \draw[thick,red,->] (O) ++(\ax,\ay) -- ++(\coordXRot,\coordYRot) node[anchor=south west]{$\xPosition$};
+         \draw[thick,red,->] (O) ++(\ax,\ay) -- ++(\coordXRot,\coordYRot) node[anchor=south west]{$\xPosition$\color{black},$\north'$};
          \draw[thick,red,->] (O) ++(\ay,-\ax) -- ++(\coordYRot,-\coordXRot) node[anchor=north east]{$\zPosition$};
          \draw[->] (O) ++(0.5,0) arc (0:\coordRot:0.5) node[right]{\pitchAngle};
          
@@ -197,7 +201,7 @@ This coordinate system is used to express buoyancy and gravitational forces acti
          \coordinate (O) at (\coordDistanceZ,0);
          \draw[thick,->] (O) ++(-\coordinateRadius,0) -- ++(-1,0) node[anchor=north west]{$\east$};
          \draw[thick,->] (O) ++(0,-\coordinateRadius) -- ++(0,-1) node[anchor=south east]{$\down$};
-         \draw (O) circle (0.05) node[anchor=south,]{$\north$,\color{red}$\xPosition$};
+         \draw (O) circle (0.05) node[anchor=south,]{$\north'$,\color{red}$\xPosition$};
          \draw[fill=black] (O) circle (0.0125);
         
         \draw[thick,red,->] (O) ++(\ay,-\ax) -- ++(\coordYRot,-\coordXRot) node[anchor=north west]{$\zPosition$};
@@ -208,6 +212,29 @@ This coordinate system is used to express buoyancy and gravitational forces acti
     \caption{The local and global coordinate systems relate to each other by the rotations \yawAngle, \pitchAngle and \rollAngle. The rotations are defined from the global coordinate system (black) to the body-fixed coordinate system (red).} 
     \label{fig:coordinate_frames}
 \end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Quaternions} \index{Quaternions} \index{Transformation matrices}
+Unit quaternions $\quaternion$ are a useful way to express angles. Where Euler angel representations are singular the corresponding quaternion representations are not \citep{sensorfusion}. To use quaternions instead of Euler angles, $\etaVector$ is instead defined as
+\begin{equation}
+\etaVector = \begin{pmatrix}
+\north \\
+\east \\
+\down \\
+\quaternion
+\end{pmatrix}
+\end{equation} where $q =[\quatO \quatI \quatII \quatIII]^T$
+
+The quaternions need to satisfy $\quaternion^T\quaternion = 1$ in order to represent angles, thus they need normalisation.
+Quaternion normalisation in a continuous time can be achieved by adding a normalising term
+%\boldsymbol{T}_q(\quaternion) \angVelBody +
+\begin{equation}
+\frac{\gamma}{2} ( 1 - \quaternion^T\quaternion)\quaternion
+\end{equation}
+to the dynamics of $\dot{q}$ \citep[p. 31]{fossen2011}. The parameter $\gamma$ is a design parameter, $\gamma \geq 0$ usually $\gamma = 100$, indicating the convergence rate of the normalisation.% and $\boldsymbol{T}_q(\quaternion)$ is given by
+In discrete time, quaternion normalisation is given by 
+\begin{equation}
+\quaternion(k+1) = \frac{\quaternion(k+1)}{\sqrt{\quaternion^T(k+1)\quaternion(k+1)}}
+\end{equation}  
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Kinematics} \index{Kinematics}\index{Transformation matrices} \label{sec:kinematics}
@@ -230,7 +257,7 @@ where $s\cdot$ stands for $\sin(\cdot)$ and $c\cdot$ stands for $\cos(\cdot)$ \c
 \end{equation}
 
 Angular velocities transformation between the from the body-fixed frame to the global frame is given by 
-\begin{equation}
+\begin{equation}\label{eq:eulerAnglesdot}
 \eulerAnglesdot = \boldsymbol{T}_{\theta}(\eulerAngles)\angVelBody
 \end{equation}
 where $\boldsymbol{T}_{\theta}(\eulerAngles)$ is 
@@ -247,7 +274,7 @@ where $t\cdot$ stands for $\tan(\cdot)$ \citep[p. 24-25]{fossen2011}. Similar to
 \end{equation}
 
 The kinematic equations can then be expressed in vector form as \index{Kinematics}
-\begin{equation} \label{eq:kineticsEuler}
+\begin{equation} \label{eq:kinematicsticsEuler}
 \etaVectordot = \boldsymbol{J}_\theta(\etaVector)\nuVector
 \quad\Longleftrightarrow\quad
 \begin{bmatrix}
@@ -264,54 +291,14 @@ The kinematic equations can then be expressed in vector form as \index{Kinematic
 \angVelBody
 \end{bmatrix}
 \end{equation}
-see \citet[Ch. 2]{fossen2011} for more information.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Quaternions} \index{Quaternions} \index{Transformation matrices}
-Unit quaternions $\quaternion$ are a useful way to express angles. Where Euler angel representations are singular the corresponding quaternion representations are not \citep{sensorfusion}. To use quaternions instead of Euler angles, $\etaVector$ is instead defined as
-\begin{equation}
-\etaVector = \begin{pmatrix}
-\north \\
-\east \\
-\down \\
-\quatO \\
-\quatI \\
-\quatII \\
-\quatIII \\
-\end{pmatrix}
-\end{equation}
-and the transformation matrix from body-fixed coordinates to global coordinates is given by 
+If quaternions are used to represent attitude the transformation matrix from body-fixed coordinates to global coordinates is defined as 
 \begin{equation}
 \boldsymbol{R}^n_b(\quaternion) = \begin{pmatrix}
   1 - 2(\quatII^2 + \quatIII^2) & 2(\quatI\quatII - \quatIII\quatO)   & 2(\quatI\quatIII + \quatII\quatO) \\
      2(\quatI\quatII + \quatIII\quatO) &  1-2(\quatI^2 + \quatIII^2) & 2(\quatII\quatIII-\quatI\quatO)    \\
      2(\quatI\quatIII - \quatII\quatO) &  2(\quatII\quatIII + \quatI\quatO)  & 1-2(\quatI^2 + \quatII^2) \\
 \end{pmatrix}
-\end{equation}
-
-Changing from Euler angles to quaternions also changes \eqref{eq:restoring_forces} to 
-\begin{equation}
-    \boldsymbol{g}(\etaVector) = -
-    \begin{pmatrix}
-    \boldsymbol{f}_g + \boldsymbol{f}_b \\
-    \boldsymbol{r}_b \times \boldsymbol{f}_b + \boldsymbol{r}_g \times \boldsymbol{f}_g) 
-     \end{pmatrix} = 
-    \begin{pmatrix}
-	(B - W) (2 \quatI \quatIII - 2 \quatII \quatO) 	\\
-    (B - W) (2 \quatII \quatIII + 2 \quatI \quatO) 	\\
- 	(W - B)(2 \quatI^2 + 2\quatII^2 - 1)				\\
- 	-B z_B (2 \quatII \quatIII + 2 \quatI \quatO)	\\
-  	B z_B (2 \quatI \quatIII - 2 \quatII \quatO)		\\
-    0
-    \end{pmatrix}
-\end{equation}
-
-The quaternions needs to satisfy $\quaternion^T\quaternion = 1$ in order to represent angles, thus they need normalisation.
-Quaternion normalisation in a continuous dynamic system time is given by 
-\begin{equation}
-\quaterniondot = \boldsymbol{T}_q(\quaternion) \angVelBody + \frac{\gamma}{2} ( 1 - \quaternion^T\quaternion)\quaternion
-\end{equation}
-according to \citet[p. 31]{fossen2011}. The parameter $\gamma$ is a design parameter, $\gamma \geq 0$ usually $\gamma = 100$, indicating the convergence rate of the normalisation and $\boldsymbol{T}_q(\quaternion)$ is given by
+\end{equation}, the angular velocities transformation matrix is defined as
 \begin{equation} \label{eq:Tquat}
 \boldsymbol{T}_q(\quaternion) = \frac{1}{2}
 \begin{pmatrix}
@@ -321,13 +308,7 @@ according to \citet[p. 31]{fossen2011}. The parameter $\gamma$ is a design param
 -\quatII & \quatI    & \quatO \\
 \end{pmatrix}
 \end{equation}
-
-In discrete time, quaternion normalisation is given by 
-\begin{equation}
-\quaternion(k+1) = \frac{\quaternion(k+1)}{\sqrt{\quaternion^T(k+1)\quaternion(k+1)}}
-\end{equation}
-
-The kinematic equation \eqref{eq:kineticsEuler}  is changed to \index{Kinematics}
+and the kinematic equation \eqref{eq:kinematicsticsEuler} is changed to \index{Kinematics}
 \begin{equation}
 \etaVectordot = \boldsymbol{J}_q(\etaVector)\nuVector
 \quad\Longleftrightarrow\quad
@@ -344,7 +325,8 @@ The kinematic equation \eqref{eq:kineticsEuler}  is changed to \index{Kinematics
 \linVelBody \\
 \angVelBody
 \end{bmatrix}
-\end{equation}   
+\end{equation}
+see \citet[Ch. 2]{fossen2011} for more information. 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{System Inertia Matrix}
 The system inertia matrix $\inertia$ describes the resistance of changing translation and rotation of the \abbrROV in its 6 \abbrDOF. It also describes the added mass that comes from rotating and translating a body in a liquid media. The inertia matrix is defined as
@@ -484,12 +466,28 @@ The \abbrROV will experience forces and moments caused by the Earths gravitation
     0\\
     \end{pmatrix}
 \end{equation}
+or alternatively using quaternions 
+\begin{equation}\label{eq:restoring_forces_quat}
+    \boldsymbol{g}(\etaVector) = -
+    \begin{pmatrix}
+    \boldsymbol{f}_g + \boldsymbol{f}_b \\
+    \boldsymbol{r}_b \times \boldsymbol{f}_b + \boldsymbol{r}_g \times \boldsymbol{f}_g) 
+     \end{pmatrix} = 
+    \begin{pmatrix}
+	(B - W) (2 \quatI \quatIII - 2 \quatII \quatO) 	\\
+    (B - W) (2 \quatII \quatIII + 2 \quatI \quatO) 	\\
+ 	(W - B)(2 \quatI^2 + 2\quatII^2 - 1)				\\
+ 	-B z_B (2 \quatII \quatIII + 2 \quatI \quatO)	\\
+  	B z_B (2 \quatI \quatIII - 2 \quatII \quatO)		\\
+    0
+    \end{pmatrix}
+\end{equation}
 where $\boldsymbol{r}_b = [0, 0, z_B]^T$, $\boldsymbol{r}_g = [0, 0, 0]^T$ are moment arms and $\boldsymbol{f}_g = \boldsymbol{R}^n_b(\eulerAngles)^T [0, 0, W]^T$, $\boldsymbol{f}_b = -\boldsymbol{R}^n_b(\eulerAngles)^T [0, 0, B]^T$ are restoring forces \citep[p. 60]{fossen2011}.
 Here, $B$ is given by $B = \rho g V$ and $W = m g$. The constant $m$ is the \abbrROV's mass, $g$ the gravitational constant, $\rho$ the density of water and $V$ the volume of displaced water. In other words, the magnitude of the buoyancy forces is equal to the weight of the displaced water. For a fully submerged vehicle, $V$ will naturally be equal to the volume of the vehicle.
 In these calculations, it has been assumed that the \abbrCG coincides with the \abbrCO and that the center of buoyancy (\abbrCB) lies at coordinate $[0, 0, z_B]^T$, directly above or below the \abbrCO. Note that the positions of the three centers are described using the coordinate system described in \Sectionref{sec:coordinates}, a roll and pitch stable \abbrROV should thus have a $z_B < 0$.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Thrust Matrix}
+\section{Actuators}
 The \abbrROV's actuators can be modelled as
 \begin{equation}
     \tauVector = \thrusterGeometry \boldsymbol{\thrusterfun{}} 
@@ -529,8 +527,9 @@ where $\thrusterGeometry$\index{thruster geometry} is a matrix describing the ge
 where \distance{x}{i}, \distance{y}{i} and \distance{z}{i} are the offsets in the $x$, $y$ or $z$ directions of the $i^\text{th}$ thruster, respectively, and $\thrusterfun{i}$ is a lookup table from control signal to thrust in Newtons. See \Appref{app:thrustmapping} for details regarding the lookup table.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Equations in Component Form}
+\section{Model in Component Form}
 If the matrices and vectors in \eqref{eq:model} are substituted with the matrices and vectors previously defined in this chapter and \eqref{eq:model} then solved for $\nuVectordot$ the following equations can be derived 
+\begin{subequations}\label{eq:linVelDynamics}
 \begin{multline} \label{eq:u_dot}
 \dot{u} = \frac{\thrusterfun{3} + \thrusterfun{4}}{m -\Xudot} + \frac{u (\Xu + \Xuabsu \abs{u})}{m -\Xudot} + \frac{\sin(\theta)(B - W)}{m -\Xudot} +\\
 \frac{m(r v - q w )}{m -\Xudot} + \frac{-\Yvdot r v}{m -\Xudot} + \frac{\Zwdot q w}{m -\Xudot},
@@ -542,6 +541,8 @@ If the matrices and vectors in \eqref{eq:model} are substituted with the matrice
 \dot{w} = \frac{-\thrusterfun{1} - \thrusterfun{2} - \thrusterfun{5}}{m - \Zwdot} + \frac{w (\Zw + \Zwabsw \abs{w})}{m - \Zwdot} + \frac{-\cos{\phi}\cos{\theta}(B - W)}{m - \Zwdot} +\\
 \frac{m (q u - p v)}{m - \Zwdot} + \frac{-\Xudot q u}{m - \Zwdot} + \frac{\Yvdot p v}{m - \Zwdot},
 \end{multline}
+\end{subequations}
+\begin{subequations}\label{eq:angVelDynamics}
 \begin{multline} \label{eq:p_dot}
 \dot{p} = \frac{\thrusterfun{1} \distance{y}{1} - \thrusterfun{2} \distance{y}{2} + \thrusterfun{6} \distance{z}{6}}{\Ix - \Kpdot} + \frac{p (\Kp + \Kpabsp \abs{p})}{\Ix - \Kpdot} + \frac{-\Mqdot q r}{\Ix - \Kpdot} + \frac{\Nrdot q r}{\Ix - \Kpdot} +\\
 \frac{q r (\Iy - \Iz)}{\Ix - \Kpdot} + \frac{- \Yvdot v w}{\Ix - \Kpdot} + \frac{\Zwdot v w}{\Ix - \Kpdot} + \frac{B \cos{\theta} \sin{\phi} z_B}{\Ix - \Kpdot},
@@ -553,7 +554,50 @@ If the matrices and vectors in \eqref{eq:model} are substituted with the matrice
 \begin{multline} \label{eq:r_dot}
 \dot{r} = \frac{\thrusterfun{3} \distance{y}{3} - \thrusterfun{4} \distance{y}{4}}{\Iz - \Nrdot} + \frac{r (\Nr + \Nrabsr \abs{r})}{\Iz - \Nrdot} + \frac{-\Kpdot p q}{\Iz - \Nrdot} + \frac{\Mqdot p q}{\Iz - \Nrdot} +\\
 \frac{p q (\Ix - \Iy)}{\Iz - \Nrdot} + \frac{- \Xudot u v}{\Iz - \Nrdot} + \frac{\Yvdot u v}{\Iz - \Nrdot}
-\end{multline} 
+\end{multline}
+\end{subequations}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Simplified Model Structures}
+To make estimation more convenient, data-collection experiments can be designed such that linear velocities will be small. The effects of the linear velocities can then be neglected in the dynamics resulting in the reduced model structure
+\begin{subequations}\label{eq:WithoutTranslation}
+\begin{multline} \label{eq:p_dotWithoutTranslation}
+\pdot = \frac{\thrusterfun{1} \distance{y}{1} - \thrusterfun{2} \distance{y}{2} + \thrusterfun{6} \distance{z}{6}}{\Ix - \Kpdot} + \frac{p (\Kp + \Kpabsp \abs{p})}{\Ix - \Kpdot} + \frac{-\Mqdot q r}{\Ix - \Kpdot} + \frac{\Nrdot q r}{\Ix - \Kpdot} +\\
+\frac{q r (\Iy - \Iz)}{\Ix - \Kpdot} + \frac{B \cos{\theta} \sin{\phi} z_B}{\Ix - \Kpdot},
+\end{multline} 
+\begin{multline} \label{eq:q_dotWithoutTranslation}
+\qdot =\frac{\thrusterfun{1} \distance{x}{1} + \thrusterfun{2} \distance{x}{2} - \thrusterfun{5} \distance{x}{5}}{\Iy - \Mqdot} + \frac{q (\Mq + \Mqabsq \abs{q})}{\Iy - \Mqdot} + \frac{\Kpdot p r}{\Iy - \Mqdot} + \frac{-\Nrdot p r}{\Iy - \Mqdot} +\\
+\frac{p r (\Iz - \Ix)}{\Iy - \Mqdot} + \frac{B \sin{\theta} z_B}{\Iy - \Mqdot}\
+\end{multline} 
+\textrm{and}
+\begin{multline} \label{eq:r_dotWithoutTranslation}
+\rdot = \frac{\thrusterfun{3} \distance{y}{3} - \thrusterfun{4} \distance{y}{4}}{\Iz - \Nrdot} + \frac{r (\Nr + \Nrabsr \abs{r})}{\Iz - \Nrdot} + \frac{-\Kpdot p q}{\Iz - \Nrdot} + \frac{\Mqdot p q}{\Iz - \Nrdot} + \frac{p q (\Ix - \Iy)}{\Iz - \Nrdot}
+\end{multline} 
+\end{subequations}
+
+From \eqref{eq:WithoutTranslation} it can be seen that $r$ is not affected by the same thrusters as $p$ and $q$. It can therefore be convenient to excite the \abbrROV mainly in $p$ and $q$ or in $r$. If the \abbrROV is excited in this way, while still keeping the linear velocities low, the effects of $r$ can then be assumed to be small in \eqref{eq:p_dotWithoutTranslation} and \eqref{eq:q_dotWithoutTranslation}. Similarly the effects of $p$ and $q$ can be assumed to be small in \eqref{eq:r_dotWithoutTranslation}. Under these assumptions the model structure \eqref{eq:WithoutTranslation} can be reduced to the decoupled model structure
+\begin{subequations} \label{eq:pq_dot_decouple}
+\begin{align} \label{eq:pq_dot_decouple1}
+\pdot &= \frac{\thrusterfun{1} \distance{y}{1} - \thrusterfun{2} \distance{y}{2} + \thrusterfun{6} \distance{z}{6}}{\Ix - \Kpdot} + \frac{p (Kp + \Kpabsp \abs{p})}{\Ix - \Kpdot} + \frac{B \cos{\theta} \sin{\phi} z_B}{\Ix - \Kpdot}, \\ \label{eq:pq_dot_decouple2}
+\qdot &=\frac{\thrusterfun{1} \distance{x}{1} + \thrusterfun{2} \distance{x}{2} - \thrusterfun{5} \distance{x}{5}}{\Iy - \Mqdot} + \frac{q (\Mq + \Mqabsq \abs{q})}{\Iy - \Mqdot} + \frac{B \sin{\theta} z_B}{\Iy - \Mqdot} 
+\end{align}
+\end{subequations} and
+\begin{equation} \label{eq:r_dot_decouple}
+\rdot = \frac{\thrusterfun{3} \distance{y}{3} - \thrusterfun{4} \distance{y}{4}}{\Iz - \Nrdot} + \frac{r (\Nr + \Nrabsr \abs{r})}{\Iz - \Nrdot}
+\end{equation}
+
+For observability reasons it may be convenient to reparametrise the model by congregating some of the original parameters before conducting parameter estimation. To help with observability the reparametrisation $A_p = \Ix - \Kpdot$, $B_q = \Iy - \Mqdot$ and $C_r = \Iz - \Nrdot$ was introduced in \eqref{eq:WithoutTranslation} and \eqref{eq:restoring_forces_quat} was used to represent the restoring forces. These changes resulted in the following model structure
+\begin{subequations}
+\begin{multline}
+\pdot = \frac{\thrusterfun{1} \distance{y}{1} - \thrusterfun{2} \distance{y}{2} + \thrusterfun{6} \distance{z}{6}}{A_p} + \frac{B z_B (2 \quatII \quatIII + 2 \quatI \quatO)}{A_p} + \\ \frac{p (\Kp + \Kpabsp \abs{p})}{A_p} + \frac{q r (B_q - C_r)}{A_p},
+\end{multline}
+\begin{multline}
+\qdot = \frac{\thrusterfun{1} \distance{x}{1} + \thrusterfun{2} \distance{x}{2} - \thrusterfun{5} \distance{x}{5}}{B_q} - \frac{B z_B (2 \quatI \quatIII - 2 \quatII \quatO)}{B_q} + \\ \frac{q (\Mq + \Mqabsq \abs{q})}{B_q} - \frac{p r (A_p - C_r)}{B_q}
+\end{multline}
+and
+\begin{multline}
+\rdot = \frac{\thrusterfun{3} \distance{y}{3} - \thrusterfun{4} \distance{y}{4}}{C_r} + \frac{r (\Nr + \Nrabsr \abs{r})}{C_r} + \frac{p q (A_p  - B_q)}{C_r}
+\end{multline}
+\end{subequations}
+
+
