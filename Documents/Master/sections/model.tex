@@ -2,16 +2,20 @@
 This chapter describes how the \abbrROV is modelled using the \citet{fossen2011} 6 \abbrDOF model for \abbrROV:s. A model describes how an object is affected by forces such as gravity and friction. Models are derived by using different physical laws. Assumptions can often be made how the physical properties of the object affect the model and a simpler model can be derived. Assumptions can be symmetry of the object, no coupling inertia, low speed and several others. 
 
 An underwater vehicle with 6 \abbrDOF can be described by\index{Model of an underwater vehicle}
+\begin{equation}
+\etaVectordot = J(\eta)\nu
+\end{equation}
+
 \begin{equation} \label{eq:model}
  \inertia \nuVectordot + \coriolis(\nuVector)\nuVector + \damping(\nuVector)\nuVector + \gravity(\etaVector) = \tauVector
 \end{equation}
  
 where
 \begin{equation*}
-  \listEta  
+  \eta  
 \end{equation*} are generalised positions and
 \begin{equation*}
-  \listNu 
+  \nu 
 \end{equation*}
 are generalised velocities that are used to describe motion in 6 \abbrDOF \citep[p. 15]{fossen2011}. The matrices $\inertia$\index{Inertia matrix}, $\coriolis(\nuVector)$\index{Coriolis matrix}, $\damping(\nuVector)$\index{Damping matrix} and the vector $\gravity(\nuVector)$\index{Restoring forces matrix} respectively describes how inertia, Coriolis forces, damping forces, gravity and buoyancy affect the \abbrROV. The vector $\tauVector$ describes the forces and torques produced by the \abbrROV's actuators as well as environmental disturbances.
  
@@ -483,7 +487,7 @@ Here, $B$ is given by $B = \rho g V$ and $W = m g$. The constant $m$ is the \abb
 In these calculations, it has been assumed that the \abbrCG coincides with the \abbrCO and that the center of buoyancy (\abbrCB) lies at coordinate $[0, 0, z_B]^T$, directly above or below the \abbrCO. Note that the positions of the three centers are described using the coordinate system described in \Sectionref{sec:coordinates}, a roll and pitch stable \abbrROV should thus have a $z_B < 0$.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Thrust Matrix}
+\section{Actuators}
 The \abbrROV's actuators can be modelled as
 \begin{equation}
     \tauVector = \thrusterGeometry \boldsymbol{\thrusterfun{}} 
@@ -523,7 +527,7 @@ where $\thrusterGeometry$\index{thruster geometry} is a matrix describing the ge
 where \distance{x}{i}, \distance{y}{i} and \distance{z}{i} are the offsets in the $x$, $y$ or $z$ directions of the $i^\text{th}$ thruster, respectively, and $\thrusterfun{i}$ is a lookup table from control signal to thrust in Newtons. See \Appref{app:thrustmapping} for details regarding the lookup table.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Equations in Component Form}
+\section{Model in Component Form}
 If the matrices and vectors in \eqref{eq:model} are substituted with the matrices and vectors previously defined in this chapter and \eqref{eq:model} then solved for $\nuVectordot$ the following equations can be derived 
 \begin{subequations}\label{eq:linVelDynamics}
 \begin{multline} \label{eq:u_dot}
