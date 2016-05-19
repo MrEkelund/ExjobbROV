@@ -12,7 +12,7 @@ Controller::Controller() {
   _cmd_vel_sub = _node_handle.
       subscribe("/cmd_vel", 50, &Controller::cmdVelCallback, this);
   _dec_inc_depth_sub = _node_handle.
-      subscribe("/dec_inc_depth_sub", 50, &Controller::decIncDepthCallback, this);
+      subscribe("/dec_inc_depth", 50, &Controller::decIncDepthCallback, this);
 
   _control_pub = _node_handle.
       advertise<std_msgs::UInt16MultiArray>("/rovio/thrusters", 50);
@@ -25,7 +25,6 @@ Controller::Controller() {
   _velocity_ref.setZero();
   _euler_angles_ref.setZero();
   _depth_ref = 0;
-  _T.setZero();
   _J.setZero();
   _J_dot.setZero();
   _R.setZero();
@@ -39,7 +38,8 @@ Controller::Controller() {
   _tth = 1;
   _cpsi = 0;
   _spsi = 0;
-  _reference_t0 = 0;
+  _reference_t0 = ros::Time::now().toSec();
+  _reference_started = false;
 }
 
 void Controller::initT() {
@@ -94,11 +94,11 @@ void Controller::calcR() {
 }
 
 // NED to body for forces
-Eigen::Matrix<double, 6, 1> Controller::forcesNEDToBody(Eigen::Vector3d moments) {
+Eigen::Matrix<double, 6, 1> Controller::forcesNEDToBody(Eigen::Vector3d forces) {
   calcR();
 
   Eigen::Matrix<double, 6, 1> temp;
-  temp << _R.transpose(), 0, 0, 0;
+  temp << _R.transpose()*forces, 0, 0, 0;
   return temp;
 }
 
@@ -111,51 +111,50 @@ void Controller::calcLinControl(Eigen::Matrix<double, 6, 1>& acc, Eigen::Matrix<
   Iy_Mq_dot*acc(4) - _ang_vel(1)*(Mq + Mq_abs_q*abs(_ang_vel(1))) - B*_sth*zb + _ang_vel(0)*_ang_vel(2)*(Ix_Kp_dot - Iz_Nr_dot),
   Iz_Nr_dot*acc(5) - _ang_vel(2)*(Nr + Nr_abs_r*abs(_ang_vel(2))) - _ang_vel(0)*_ang_vel(1)*(Ix_Kp_dot - Iy_Mq_dot);
 
+  std::cout << "calc lin tau: " << tau << std::endl;
   Eigen::Matrix<double, 6, 1> moments;
   moments = _T.inverse()*tau;
 
-  control_signals = interpolate(moments);
+  std::cout << "calc lin moment: " << moments << std::endl;
+  interpolate(moments, control_signals);
+  std::cout << "calc lin interpolated moment: " << control_signals << std::endl;
 }
 
-Eigen::Matrix<double, 6, 1> Controller::interpolate(Eigen::Matrix<double, 6, 1>& moments) {
-  Eigen::Matrix<double, 6, 1> control_signals;
-  control_signals.setZero();
+// Thrust to control signals
+void Controller::interpolate(const Eigen::Matrix<double, 6, 1>& moments, Eigen::Matrix<double, 6, 1>& control_signals) {
+  Eigen::Matrix<double, 6, 1> control_signals_temp;
+  control_signals_temp.setZero();
   // Saturate
   for (uint j = 0; j < 6; j++) {
     if (moments(j,0) <= thrustmap[0].x) {
-      control_signals(j,0) = thrustmap[0].y;
+      control_signals_temp(j,0) = thrustmap[0].y;
     } else if (moments(j,0) >= thrustmap[76].x) {
-      control_signals(j,0) = thrustmap[76].y;
+      control_signals_temp(j,0) = thrustmap[76].y;
     }
   }
-
   // Do linear interpolation
   for (uint j = 0; j < 6; j++) {
     // Interpolate if the control signal hasn't been set
-    if (control_signals(j,0) == 0) {
+    if (control_signals_temp(j,0) == 0) {
       for (int i = 0; i < 76-1; i++) {
         if (thrustmap[i].x <= moments(j,0) && thrustmap[i+1].x >= moments(j,0)) {
           double diffx = moments(j,0) - thrustmap[i].x;
           double diffn = thrustmap[i+1].x - thrustmap[i].x;
-
-          control_signals(j,0) = thrustmap[i].y + (thrustmap[i+1].y - thrustmap[i].y)*diffx/diffn;
+          control_signals_temp(j,0) = thrustmap[i].y + (thrustmap[i+1].y - thrustmap[i].y)*diffx/diffn;
         }
       }
     }
   }
+  control_signals = control_signals_temp;
 }
 //****** Reference signals ****************************************************
 void Controller::calcReferenceSignals() {
-  std::cout << "Phi enable: " << _config.phi_enable << std::endl;
-  std::cout << "P enable: " << _config.p_enable << std::endl;
-  if (_config.phi_enable) {
-    switch (_config.phi_reference_signal) {
+  if (_phi_reference.enable) {
+    switch (_phi_reference.reference_signal) {
       case 1:
-      std::cout << "calc step" << std::endl;
       _euler_angles_ref(0) = calcStepReference(_phi_reference);
       break;
       case 2:
-      std::cout << "calc sin" << std::endl;
       _euler_angles_ref(0) = calcSinReference(_phi_reference);
       break;
       case 3:
@@ -165,8 +164,8 @@ void Controller::calcReferenceSignals() {
       _euler_angles_ref(0) = _phi_reference.constant;
       break;
     }
-  } else if (_config.p_enable) {
-    switch (_config.p_reference_signal) {
+  } else if (_p_reference.enable) {
+    switch (_p_reference.reference_signal) {
       case 1:
       _ang_vel_ref(0) = calcStepReference(_p_reference);
       break;
@@ -180,35 +179,112 @@ void Controller::calcReferenceSignals() {
       _ang_vel_ref(0) = _p_reference.constant;
       break;
     }
+  } else if(_config.xbox) {
+    _euler_angles_ref(0) = _euler_angles(0);
   } else {
     _euler_angles_ref(0) = _euler_angles(0);
     _ang_vel_ref(0) = _ang_vel(0);
   }
+  if (_theta_reference.enable) {
+    switch (_theta_reference.reference_signal) {
+      case 1:
+      _euler_angles_ref(1) = calcStepReference(_theta_reference);
+      break;
+      case 2:
+      _euler_angles_ref(1) = calcSinReference(_theta_reference);
+      break;
+      case 3:
+      _euler_angles_ref(1) = _theta_reference.constant;
+      break;
+      default:
+      _euler_angles_ref(1) = _theta_reference.constant;
+      break;
+    }
+  } else if (_q_reference.enable) {
+    switch (_q_reference.reference_signal) {
+      case 1:
+      _ang_vel_ref(1) = calcStepReference(_q_reference);
+      break;
+      case 2:
+      _ang_vel_ref(1) = calcSinReference(_q_reference);
+      break;
+      case 3:
+      _ang_vel_ref(1) = _q_reference.constant;
+      break;
+      default:
+      _ang_vel_ref(1) = _q_reference.constant;
+      break;
+    }
+  } else if(_config.xbox) {
+    _euler_angles_ref(1) = _euler_angles(1);
+  } else {
+    _euler_angles_ref(1) = _euler_angles(1);
+    _ang_vel_ref(1) = _ang_vel(1);
+  }
+
+  if (_psi_reference.enable) {
+    switch (_theta_reference.reference_signal) {
+      case 1:
+      _euler_angles_ref(2) = calcStepReference(_psi_reference);
+      break;
+      case 2:
+      _euler_angles_ref(2) = calcSinReference(_psi_reference);
+      break;
+      case 3:
+      _euler_angles_ref(2) = _psi_reference.constant;
+      break;
+      default:
+      _euler_angles_ref(2) = _psi_reference.constant;
+      break;
+    }
+  } else if (_r_reference.enable) {
+    switch (_r_reference.reference_signal) {
+      case 1:
+      _ang_vel_ref(2) = calcStepReference(_r_reference);
+      break;
+      case 2:
+      _ang_vel_ref(2) = calcSinReference(_r_reference);
+      break;
+      case 3:
+      _ang_vel_ref(2) = _r_reference.constant;
+      break;
+      default:
+      _ang_vel_ref(2) = _r_reference.constant;
+      break;
+    }
+  } else if(_config.xbox) {
+    _euler_angles_ref(2) = _euler_angles(2);
+  } else {
+    _euler_angles_ref(2) = _euler_angles(2);
+    _ang_vel_ref(2) = _ang_vel(2);
+  }
 }
 
 double Controller::calcStepReference(reference_t& ref_struct) {
-  double t = ros::Time::now().toNSec() - _reference_t0;
+  double t = ros::Time::now().toSec() - _reference_t0;
   double V = ref_struct.speed;
   double q0 = ref_struct.bias;
   double qf = ref_struct.final_value;
   double tf = ref_struct.final_time;
+  double ts = ref_struct.start_time;
 
-  double tb = (q0 - qf + V*tf)/V;
+  double tb = (q0 - qf + V*(tf - ts))/V;
   double alfa = V/tb;
-
-  if (0 <= t & t <= tb) {
-    return q0 + alfa*t*t/2;
-  } else if (tb < t & t <= tf - tb) {
-    return (qf + q0 - V*tf)/2 + V*t;
-  } else if (tf - tb < t & t <= tf) {
-    return qf - alfa*tf*tf/2 + alfa*tf*t - alfa*t*t/2;
+  if (t < ts) {
+    return q0;
+  } else if (0 <= (t - ts) && (t - ts) <= tb) {
+    return q0 + alfa*(t - ts)*(t - ts)/2;
+  } else if (tb < (t - ts) & (t - ts) <= (tf - ts - tb)) {
+    return (qf + q0 - V*(tf - ts))/2 + V*(t - ts);
+  } else if (tf - tb - ts < t - ts & t - ts <= tf - ts) {
+    return qf - alfa*(tf - ts)*(tf - ts)/2 + alfa*(tf - ts)*(t - ts) - alfa*(t - ts)*(t - ts)/2;
   } else {
     return qf;
   }
 }
 
 double Controller::calcSinReference(reference_t& ref_struct) {
-  double t = ros::Time::now().toNSec() - _reference_t0;
+  double t = ros::Time::now().toSec() - _reference_t0;
   double frequency = ref_struct.frequency;
   double t_start = ref_struct.start_time;
   double t_final = ref_struct.final_time;
@@ -219,10 +295,10 @@ double Controller::calcSinReference(reference_t& ref_struct) {
   if ( t < t_start ) {
     return bias;
   } else if (t <= t_final) {
-    return amplitude*sin(ref_struct.frequency*(t - t_start)) + bias;
+    return amplitude*sin(2*M_PI*ref_struct.frequency*(t - t_start)) + bias;
   } else if (!time_reached) { // For negating the jerk
-    time_reached = true;
-    ref_struct.bias = amplitude*sin(ref_struct.frequency*(t - t_start)) + bias;
+    ref_struct.time_reached = true;
+    ref_struct.bias = amplitude*sin(2*M_PI*ref_struct.frequency*(t - t_start)) + bias;
     return ref_struct.bias;
   } else {
     return bias;
@@ -230,23 +306,6 @@ double Controller::calcSinReference(reference_t& ref_struct) {
 }
 //****** Callbacks ************************************************************
 bool Controller::checkReferenceValues() {
-  /*
-  double tf = _config.reference_end_time;
-  if (_config.phi_start_time > tf || _config.theta_start_time > tf ||
-    _config.psi_start_time > tf || _config.p_start_time > tf ||
-    _config.q_start_time > tf || _config.r_start_time > tf ||
-    _config.d_start_time > tf) {
-      ROS_INFO("Start time of a reference signal can't be later than the final reference time");
-      return false;
-    }
-
-  if (_config.phi_final_time > tf || _config.theta_final_time > tf ||
-    _config.psi_final_time > tf || _config.p_final_time > tf ||
-    _config.q_final_time > tf || _config.r_final_time > tf ||
-    _config.d_final_time > tf) {
-      ROS_INFO("Final time of a reference signal can't be later than the final reference time");
-      return false;
-    }*/
   if (_config.phi_start_time >= _config.phi_final_time  ||
     _config.theta_start_time >= _config.theta_final_time ||
     _config.psi_start_time >= _config.psi_final_time ||
@@ -263,10 +322,10 @@ bool Controller::checkReferenceValues() {
 void Controller::configCallback(controller::controllerConfig &update, uint level) {
   _config = update;
 
-  if (_config.start_reference_signals) {
-    _node_handle.setParam("/start_reference_signals", false);
+  if (_config.start_reference_signals && !_reference_started) {
+    _reference_started = true;
     if (checkReferenceValues()) {
-      _reference_t0 = ros::Time::now().toNSec();
+      _reference_t0 = ros::Time::now().toSec();
       _phi_reference.start_time = _config.phi_start_time;
       _phi_reference.amplitude = _config.phi_amplitude;
       _phi_reference.frequency = _config.phi_frequency;
@@ -274,9 +333,11 @@ void Controller::configCallback(controller::controllerConfig &update, uint level
       _phi_reference.final_value = _config.phi_final_value;
       _phi_reference.final_time = _config.phi_final_time;
       _phi_reference.speed = _config.phi_speed_scaling*(
-        (_phi_reference.final_value - _phi_reference.bias)/_phi_reference.final_time);
+        (_phi_reference.final_value - _phi_reference.bias)/(_phi_reference.final_time - _phi_reference.start_time));
       _phi_reference.constant = _config.phi_constant;
       _phi_reference.time_reached = false;
+      _phi_reference.enable = _config.phi_enable;
+      _phi_reference.reference_signal = _config.phi_reference_signal;
 
       _theta_reference.start_time = _config.theta_start_time;
       _theta_reference.amplitude = _config.theta_amplitude;
@@ -285,9 +346,11 @@ void Controller::configCallback(controller::controllerConfig &update, uint level
       _theta_reference.final_value = _config.theta_final_value;
       _theta_reference.final_time = _config.theta_final_time;
       _theta_reference.speed = _config.theta_speed_scaling*(
-        (_theta_reference.final_value - _theta_reference.bias)/_theta_reference.final_time);
+        (_theta_reference.final_value - _theta_reference.bias)/(_theta_reference.final_time - _theta_reference.start_time));
       _theta_reference.constant = _config.theta_constant;
       _theta_reference.time_reached = false;
+      _theta_reference.enable = _config.theta_enable;
+      _theta_reference.reference_signal = _config.theta_reference_signal;
 
       _psi_reference.start_time = _config.psi_start_time;
       _psi_reference.amplitude = _config.psi_amplitude;
@@ -296,9 +359,11 @@ void Controller::configCallback(controller::controllerConfig &update, uint level
       _psi_reference.final_value = _config.psi_final_value;
       _psi_reference.final_time = _config.psi_final_time;
       _psi_reference.speed = _config.psi_speed_scaling*(
-        (_psi_reference.final_value - _psi_reference.bias)/_psi_reference.final_time);
+        (_psi_reference.final_value - _psi_reference.bias)/(_psi_reference.final_time - _psi_reference.start_time));
       _psi_reference.constant = _config.psi_constant;
       _psi_reference.time_reached = false;
+      _psi_reference.enable = _config.psi_enable;
+      _psi_reference.reference_signal = _config.psi_reference_signal;
 
       _p_reference.start_time = _config.p_start_time;
       _p_reference.amplitude = _config.p_amplitude;
@@ -307,9 +372,11 @@ void Controller::configCallback(controller::controllerConfig &update, uint level
       _p_reference.final_value = _config.p_final_value;
       _p_reference.final_time = _config.p_final_time;
       _p_reference.speed = _config.p_speed_scaling*(
-        (_p_reference.final_value - _p_reference.bias)/_p_reference.final_time);
+        (_p_reference.final_value - _p_reference.bias)/(_p_reference.final_time - _p_reference.start_time));
       _p_reference.constant = _config.p_constant;
       _p_reference.time_reached = false;
+      _p_reference.enable = _config.p_enable;
+      _p_reference.reference_signal = _config.p_reference_signal;
 
       _q_reference.start_time = _config.q_start_time;
       _q_reference.amplitude = _config.q_amplitude;
@@ -318,9 +385,11 @@ void Controller::configCallback(controller::controllerConfig &update, uint level
       _q_reference.final_value = _config.q_final_value;
       _q_reference.final_time = _config.q_final_time;
       _q_reference.speed = _config.q_speed_scaling*(
-        (_q_reference.final_value - _q_reference.bias)/_q_reference.final_time);
+        (_q_reference.final_value - _q_reference.bias)/(_q_reference.final_time - _q_reference.start_time));
       _q_reference.constant = _config.q_constant;
       _q_reference.time_reached = false;
+      _q_reference.enable = _config.q_enable;
+      _q_reference.reference_signal = _config.q_reference_signal;
 
       _r_reference.start_time = _config.r_start_time;
       _r_reference.amplitude = _config.r_amplitude;
@@ -329,9 +398,11 @@ void Controller::configCallback(controller::controllerConfig &update, uint level
       _r_reference.final_value = _config.r_final_value;
       _r_reference.final_time = _config.r_final_time;
       _r_reference.speed = _config.r_speed_scaling*(
-        (_r_reference.final_value - _r_reference.bias)/_r_reference.final_time);
+        (_r_reference.final_value - _r_reference.bias)/(_r_reference.final_time - _r_reference.start_time));
       _r_reference.constant = _config.r_constant;
       _r_reference.time_reached = false;
+      _r_reference.enable = _config.r_enable;
+      _r_reference.reference_signal = _config.r_reference_signal;
 
       _d_reference.start_time = _config.d_start_time;
       _d_reference.amplitude = _config.d_amplitude;
@@ -340,10 +411,14 @@ void Controller::configCallback(controller::controllerConfig &update, uint level
       _d_reference.final_value = _config.d_final_value;
       _d_reference.final_time = _config.d_final_time;
       _d_reference.speed = _config.d_speed_scaling*(
-        (_d_reference.final_value - _d_reference.bias)/_d_reference.final_time);
+        (_d_reference.final_value - _d_reference.bias)/(_d_reference.final_time - _d_reference.start_time));
       _d_reference.constant = _config.d_constant;
       _d_reference.time_reached = false;
+      _d_reference.enable = _config.d_enable;
+      _d_reference.reference_signal = _config.d_reference_signal;
       }
+    } else {
+      _reference_started = false;
     }
 }
 
@@ -356,26 +431,25 @@ void Controller::stateCallback(const std_msgs::Float64MultiArray &msg) {
   _ang_vel(2) = msg.data[5];
   _depth = msg.data[6];
 
-  _cphi = cos(_euler_angles(0,0));
-  _sphi = sin(_euler_angles(0,0));
-  _cth = cos(_euler_angles(1,0));
-  _sth = sin(_euler_angles(1,0));
-  _tth = tan(_euler_angles(1,0));
-  _cpsi = cos(_euler_angles(2,0));
-  _spsi = sin(_euler_angles(2,0));
+  _cphi = cos(_euler_angles(0));
+  _sphi = sin(_euler_angles(0));
+  _cth = cos(_euler_angles(1));
+  _sth = sin(_euler_angles(1));
+  _tth = tan(_euler_angles(1));
+  _cpsi = cos(_euler_angles(2));
+  _spsi = sin(_euler_angles(2));
 }
 
 void Controller::Controller::cmdVelCallback(const geometry_msgs::Twist &msg) {
 
   if (_config.xbox) {
-    _velocity_ref(0) = msg.linear.x;
-    _velocity_ref(1) = msg.linear.y;
-    _velocity_ref(2) = msg.linear.z;
-
     _ang_vel_ref(0) = msg.angular.x;
     _ang_vel_ref(1) = msg.angular.y;
     _ang_vel_ref(2) = msg.angular.z;
   }
+  _velocity_ref(0) = msg.linear.x;
+  _velocity_ref(1) = msg.linear.y;
+  _velocity_ref(2) = msg.linear.z;
 }
 
 void Controller::Controller::decIncDepthCallback(const std_msgs::Float32 &msg) {
@@ -395,12 +469,14 @@ Eigen::Matrix<double, 6, 1> Controller::calcRateControl() {
   0, _config.ki_q, 0,
   0, 0, _config.ki_r;
 
-  double Ts = 1/_config.loop_rate;
+  double Ts = 1/_loop_rate;
 
   Eigen::Vector3d eta_tilde;
   eta_tilde =  _ang_vel - _ang_vel_ref;
 
-  _rate_integral = _rate_integral + Ts*eta_tilde;
+  _rate_integral = _rate_integral + Ki*Ts*eta_tilde;
+  std::cout << "eta_tilde: " << eta_tilde << std::endl;
+  std::cout << "_rate_integral: " << _rate_integral << std::endl;
   for (uint i = 0; i < 3; i++) {
     if (_rate_integral(i) > 5) {
       _rate_integral(i) = 5;
@@ -411,8 +487,9 @@ Eigen::Matrix<double, 6, 1> Controller::calcRateControl() {
 
   Eigen::Matrix<double, 6, 1> velocities_and_rates;
   Eigen::Matrix<double, 6, 1> control_signals;
-  velocities_and_rates << _velocity_ref, -Kp*eta_tilde - Ki*_rate_integral;
-
+  velocities_and_rates << _velocity_ref, -Kp*eta_tilde - _rate_integral;
+    std::cout << "rate control: " << -Kp*eta_tilde - Ki*_rate_integral << std::endl;
+    std::cout << "velocities_and_rates: " << velocities_and_rates << std::endl;
   calcLinControl(velocities_and_rates, control_signals);
   return control_signals;
 }
@@ -434,7 +511,7 @@ Eigen::Matrix<double, 6, 1> Controller::calcAttitudeControl() {
   0, _config.kd_pitch, 0,
   0, 0, _config.kd_yaw;
 
-  double Ts = 1/_config.loop_rate;
+  double Ts = 1/_loop_rate;
 
   calcJ();
   calcJdot();
@@ -445,7 +522,9 @@ Eigen::Matrix<double, 6, 1> Controller::calcAttitudeControl() {
   Eigen::Vector3d eta_tilde;
   eta_tilde = _euler_angles - _euler_angles_ref;
 
-  _attitude_integral = _attitude_integral + Ts*eta_tilde;
+  _attitude_integral = _attitude_integral + Ki*Ts*eta_tilde;
+  std::cout << "eta_tilde: " << eta_tilde << std::endl;
+  std::cout << "_attitude_integral: " << _attitude_integral << std::endl;
   for (uint i = 0; i < 3; i++) {
     if (_attitude_integral(i) > 5) {
       _attitude_integral(i) = 5;
@@ -456,7 +535,8 @@ Eigen::Matrix<double, 6, 1> Controller::calcAttitudeControl() {
 
   Eigen::Matrix<double, 6, 1> control_signals;
   Eigen::Matrix<double, 6, 1> position_and_angles;
-  position_and_angles << 0,0,0, momentsNEDToBody(- Kd*eta_tilde_dot - Kp*eta_tilde - Ki*_attitude_integral);
+  position_and_angles << _velocity_ref, momentsNEDToBody(- Kd*eta_tilde_dot - Kp*eta_tilde - _attitude_integral);
+  std::cout << "attitude control: " << momentsNEDToBody(- Kd*eta_tilde_dot - Kp*eta_tilde - _attitude_integral) << std::endl;
   calcLinControl(position_and_angles, control_signals);
   return control_signals;
 }
@@ -466,18 +546,16 @@ Eigen::Matrix<double, 6, 1> Controller::calcDepthControl() {
   double Ki = _config.ki_depth;
 
   double eta_tilde = _depth - _depth_ref;
-  double Ts = 1/_config.loop_rate;
-
-  _depth_integral = _depth_integral + Ts*eta_tilde;
-
+  double Ts = 1/_loop_rate;
+  _depth_integral = _depth_integral + Ki*Ts*eta_tilde;
   if (_depth_integral > 1) {
     _depth_integral = 1;
   } else if (_depth_integral < -1) {
     _depth_integral = -1;
   }
-
   Eigen::Vector3d forces;
-  forces << 0,0,-Kp*eta_tilde - Ki*_depth_integral;
+  forces << 0,0,-Kp*eta_tilde - _depth_integral;
+  std::cout << "depth control: " << forcesNEDToBody(forces) << std::endl;
   return _T*forcesNEDToBody(forces);
 }
 
@@ -509,6 +587,7 @@ void Controller::sendThrusterSignals(Eigen::Matrix<double, 6, 1>& control_signal
   Eigen::Matrix<double, 6, 1> temp;
   control_signals = enabled_thrusters*control_signals;
 
+  std::cout << "control signals1: " << control_signals << std::endl;
   // Saturate
   for (uint i = 0; i < 6; i++) {
     if (control_signals(i,0) < -1) {
@@ -517,7 +596,7 @@ void Controller::sendThrusterSignals(Eigen::Matrix<double, 6, 1>& control_signal
       control_signals(i,0) = 1;
     }
   }
-
+  std::cout << "control signals: " << control_signals << std::endl;
   // Convert to pwm
   for (uint i = 0; i < 6; i++) {
     control_message.data[i] = (control_signals(i,0) + 1)*400 + 1100;
@@ -540,41 +619,35 @@ void Controller::sendReferenceSignals() {
 }
 
 void Controller::spin() {
-  ros::Rate loop(_config.loop_rate);
+  _loop_rate = _config.loop_rate;
+  ros::Rate loop(_loop_rate);
   Eigen::Matrix<double, 6, 1> control_signals;
 
   while(ros::ok()) {
-    ros::spinOnce();
-      std::cout << "xbox: " << _config.xbox << std::endl;
+
     if (!_config.xbox) {
-      std::cout << "calc ref" << std::endl;
       calcReferenceSignals();
     }
-    std::cout << "send ref" << std::endl;
+
     sendReferenceSignals();
     switch (_config.controller) {
       case 0:
-      std::cout << "Cont 0" << std::endl;
       control_signals = calcDecControll();
       break;
       case 1:
-      std::cout << "Cont 1" << std::endl;
       control_signals = calcRateControl();
       break;
       case 2:
-      std::cout << "Cont 2" << std::endl;
       control_signals = calcAttitudeControl();
       break;
       default:
-      std::cout << "Cont default" << std::endl;
       control_signals << 0, 0, 0, 0, 0, 0;
     }
 
     if (_config.enable_depth) {
-      std::cout << "Cont depth" << std::endl;
       control_signals = control_signals + calcDepthControl();
     }
-    std::cout << "send control" << std::endl;
+    std::cout << "control signals main: " << control_signals << std::endl;
     sendThrusterSignals(control_signals);
     ros::spinOnce();
     loop.sleep();

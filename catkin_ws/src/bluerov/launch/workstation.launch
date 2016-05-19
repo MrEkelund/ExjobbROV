@@ -6,7 +6,6 @@
   <include file="$(find bluerov)/launch/heartbeat_rovio.launch" />
    <!-- start teleop -->
   <include file="$(find bluerov)/launch/teleop_xbox.launch" />
-
   <!-- start rqt -->
   <include file="$(find bluerov)/launch/rqt.launch" />
   <!-- start Sensorfusion -->

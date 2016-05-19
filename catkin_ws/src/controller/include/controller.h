@@ -5,7 +5,9 @@
 #include <ros/console.h>
 #include <ros/time.h>
 #include <dynamic_reconfigure/server.h>
-// requires catkin_make --pkg sensorfusion first. Else it wont find controllerConfig.h
+#include <dynamic_reconfigure/BoolParameter.h>
+#include <dynamic_reconfigure/Reconfigure.h>
+#include <dynamic_reconfigure/Config.h>
 #include <controller/controllerConfig.h>
 #include <math.h>
 #include <iostream>
@@ -123,7 +125,7 @@ thrustmap_t thrustmap[76] = {
 
 typedef struct {double start_time; double amplitude; double frequency;
   double bias; double speed; double final_value; double final_time;
-  double constant; bool time_reached;} reference_t;
+  double constant; bool time_reached; bool enable; int reference_signal;} reference_t;
 
 class Controller {
 public:
@@ -143,6 +145,7 @@ private:
   void calcR();
   Eigen::Matrix<double, 6, 1> forcesNEDToBody(Eigen::Vector3d moments);
   void calcLinControl(Eigen::Matrix<double, 6, 1>& acc, Eigen::Matrix<double, 6, 1>& control_signals);
+  void interpolate(const Eigen::Matrix<double, 6, 1>& moments, Eigen::Matrix<double, 6, 1>& control);
 
   void calcReferenceSignals();
   double calcStepReference(reference_t& ref_struct);
@@ -158,7 +161,7 @@ private:
   Eigen::Matrix<double, 6, 1> calcAttitudeControl();
   Eigen::Matrix<double, 6, 1> calcDepthControl();
   Eigen::Matrix<double, 6, 1> calcDecControll();
-  Eigen::Matrix<double, 6, 1> interpolate(Eigen::Matrix<double, 6, 1> & moments);
+
 
   void sendThrusterSignals(Eigen::Matrix<double, 6,1>&);
   void sendReferenceSignals();
@@ -176,11 +179,9 @@ private:
   Eigen::Matrix<double, 3, 3> _J_dot;
   Eigen::Matrix<double, 3, 3> _R;
 
-  //Eigen::Matrix<double, 6, 1> _control_signals;
   Eigen::Vector3d _rate_integral;
   Eigen::Vector3d _attitude_integral;
   double _depth_integral;
-//  Eigen::Matrix<double, >
 
   double _cphi;
   double _sphi;
@@ -190,6 +191,8 @@ private:
   double _cpsi;
   double _spsi;
   double _reference_t0;
+  bool _reference_started;
+  double _loop_rate;
 
   reference_t _phi_reference;
   reference_t _theta_reference;

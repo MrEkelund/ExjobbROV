@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
 
 <launch>
-  <node respawn="true" pkg="controller2" type="controller2_node" name="controller_node" output="screen"></node>
+  <node respawn="true" pkg="controller" type="controller" name="controller" output="screen"></node>
 </launch>
