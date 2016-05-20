@@ -385,9 +385,76 @@ It has been assumed that the \abbrROV is symmetric about the $xyz$-plane to elim
 \section{Hydrodynamics}
 Since the \abbrROV is submerged in water it experiences forces and effects caused by the waters un-willingness to move with the \abbrROV. These hydrodynamic effects can be modelled as
 \begin{equation}
-\Inertia_{\text{A}} \dot{\nuVector} +\boldsymbol{C}_{\text{A}}(\nuvector)\nuVector + \boldsymbol{D}(\nuVector) = \tau_{Hydro} 
+\inertia_{\text{A}} \dot{\nuVector} +\coriolis_{\text{A}}(\nuVector)\nuVector + \damping(\nuVector) = \tau_\text{{Hydro}} 
 \end{equation} 
-where $\boldsymbol{C}_{\text{A}}(\nuvector)\nuVector$ and $\Inertia_{\text{A}}$ models the Coriolis forces and inertia from the added mass of the water respectively. The vector $\boldsymbol{D}(\nuVector)$ models the waters linear and quadratic damping effects.
+where $\coriolis_{\text{A}}(\nuVector)\nuVector$ and $\inertia_{\text{A}}$ models the Coriolis forces and inertia from the added mass of the water respectively. The vector $\damping(\nuVector)$ models the waters linear and quadratic damping effects.
+The added mass of the water $\inertia_\text{A}$ acting upon the \abbrROV is defined as
+\begin{equation}
+\inertia_\text{A} =
+-\begin{bmatrix}
+    \Xudot & 0 & 0 & 0 & 0 & 0 \\
+    0 & \Yvdot & 0 & 0 & 0 & 0 \\
+    0 & 0 & \Zwdot & 0 & 0 & 0 \\
+    0 & 0 & 0 & \Kpdot& 0 & 0 \\
+    0 & 0 & 0 & 0 & \Mqdot & 0 \\
+    0 & 0 & 0 & 0 & 0 & \Nrdot \\
+    \end{bmatrix}
+\end{equation}
+under the assumption that the \abbrROV moves at low speeds relative to the water \citep[p. 121]{fossen2011}.
+The Coriolis and centripetal effects from the added mass are described as
+\begin{equation}
+\begin{split}
+    \coriolis_\text{A}(\nuVector) \nuVector &= 
+    \begin{bmatrix}
+    0 & 0 & 0 & 0 & -\Zwdot w & \Yvdot v \\
+    0 & 0 & 0 & \Zwdot w & 0 & -\Xudot u \\
+    0 & 0 & 0 & -\Yvdot v & \Xudot u & 0 \\
+    0 & -\Zwdot w & \Yvdot v & 0 & -\Nrdot r & \Mqdot q \\
+    \Zwdot w & 0 & -\Xudot u & \Nrdot r & 0 & -\Kpdot p \\
+    -\Yvdot v & \Xudot u & 0 & - \Mqdot q & \Kpdot p & 0 \\
+    \end{bmatrix}
+    \nuVector = \\ 
+    &= \begin{bmatrix}
+        \Yvdot v r - \Zwdot w q\\
+        \Zwdot w p - \Xudot u r\\
+        \Xudot u q - \Yvdot v p \\
+        (\Yvdot - \Zwdot) v w + (\Mqdot - \Nrdot) q r\\
+        (\Zwdot - \Xudot) u w + (\Nrdot - \Kpdot) p r\\
+        (\Xudot - \Yvdot) u v + (\Kpdot - \Mqdot) p q \\
+    \end{bmatrix}
+\end{split}
+\end{equation} Under the assumption that the \abbrROV is moving slowly and has three planes of symmetry \citep[p. 121]{fossen2011}. 
+
+There are three main sources of hydrodynamic damping acting upon a submersed vehicle \citep[p. 122]{fossen2011}.
+Potential damping, skin friction and damping from vortex shedding. The effects these three sources have on a 6 \abbrDOF vehicle can be described by two 6-by-6 matrices.\index{Viscous damping}
+The matrix $\damping$ contains the linear damping terms, while the matrix $\damping_{\text{n}}(\nuVector)$ contains the quadratic, or non-linear, damping terms \citep{fossen2011}. The sum of these two matrices form the Viscous damping matrix $\damping(\nuVector)$ which in turn can be simplified to
+\begin{equation}
+\begin{split}
+    \damping(\nuVector) &= \damping + \damping_{\text{n}}(\nuVector) = \\
+    -& \scalemath{0.7}{\begin{bmatrix}
+        \Xu+\Xuabsu\abs{u} & 0 & 0 & 0 & 0 & 0 \\
+        0 & \Yv+\Yvabsv\abs{v} & 0 & 0 & 0 & 0 \\
+        0 & 0 & \Zw+\Zwabsw\abs{w} & 0 & 0 & 0 \\
+        0 & 0 & 0 & \Kp+\Kpabsp\abs{p} & 0 & 0 \\
+        0 & 0 & 0 & 0 & \Mq+\Mqabsq\abs{q} & 0 \\
+        0 & 0 & 0 & 0 & 0 & \Nr+\Nrabsr\abs{r} \\
+    \end{bmatrix}}
+\end{split}
+\end{equation}
+It has been assumed that the \abbrROV is symmetric about the $xz$-plane and that the damping is decoupled, thus a diagonal matrix $\damping(\nuVector)$ is obtained \citep[p. 129-130]{fossen2011}. When the matrix $\damping(\nuVector)$following vector is obtained when $\damping(\nuVector)$ is multiplied with $\nuVector$
+\begin{equation}
+    \damping(\nuVector) \nuVector =
+     -\begin{bmatrix}
+    (\Xu + \Xuabsu \abs{u}) u\\
+    (\Yv + \Yvabsv \abs{v}) v\\
+    (\Zw + \Zwabsw \abs{w}) w\\
+    (\Kp + \Kpabsp \abs{p}) p\\
+    (\Mq + \Mqabsq \abs{q}) q\\
+    (\Nr + \Nrabsr \abs{r}) r\\
+    \end{bmatrix}    
+\end{equation}
+
+\section{Hydrostatics}
 
 
 \section{System Inertia Matrix}
