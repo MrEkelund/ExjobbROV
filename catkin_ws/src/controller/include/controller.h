@@ -21,25 +21,25 @@
 
 
 const double lx1 = 0.19;
-const double  ly1 = 0.11;
-const double  ly2 = 0.11;
-const double  lx2 = 0.19;
-const double  ly3 = 0.11;
-const double  lx5 = 0.17;
-const double  ly4 = 0.11;
-const double  lz6 = 0;
-const double  zb = -0.033120007018861;
-const double  Kp = -0.832583865050131;
-const double  Kp_abs_p = -0.493305055639320;
-const double  Mq = -0.848713697434902;
-const double  Mq_abs_q = -0.250737627230074;
-const double  Nr = -1.758097465526971;
-const double  Nr_abs_r = -1.459511824869412;
-const double  Ix_Kp_dot = 0.602410402365800;
-const double  Iy_Mq_dot = 0.783497332223251;
-const double  Iz_Nr_dot = 1.399324614234730;
-const double  m = 6.621;
-const double  g = 9.81744;
+const double ly1 = 0.11;
+const double ly2 = 0.11;
+const double lx2 = 0.19;
+const double ly3 = 0.11;
+const double lx5 = 0.17;
+const double ly4 = 0.11;
+const double lz6 = 0;
+const double zb = -0.033120007018861;
+const double Kp = 0.9*-0.832583865050131;
+const double Kp_abs_p = 0.9*-0.493305055639320;
+const double Mq = 0.9*-0.848713697434902;
+const double Mq_abs_q = 0.9*-0.250737627230074;
+const double Nr = 0.9*-1.758097465526971;
+const double Nr_abs_r = 0.9*-1.459511824869412;
+const double Ix_Kp_dot = 0.602410402365800;
+const double Iy_Mq_dot = 0.783497332223251;
+const double Iz_Nr_dot = 1.399324614234730;
+const double m = 6.621;
+const double g = 9.81744;
 const double B = m*g;
 
 typedef struct {double x; double y;} thrustmap_t;
@@ -139,6 +139,7 @@ private:
   controller::controllerConfig _config;
 
   void initT();
+  void initPseudoInvT();
   void calcJ();
   void calcJdot();
   Eigen::Vector3d momentsNEDToBody(Eigen::Vector3d moments);
@@ -178,6 +179,7 @@ private:
   Eigen::Matrix<double, 3, 3> _J;
   Eigen::Matrix<double, 3, 3> _J_dot;
   Eigen::Matrix<double, 3, 3> _R;
+  Eigen::Matrix<double, 6, 6> _pseudo_inv_T;
 
   Eigen::Vector3d _rate_integral;
   Eigen::Vector3d _attitude_integral;
