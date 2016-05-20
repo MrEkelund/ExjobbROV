@@ -12,10 +12,10 @@ An underwater vehicle with 6 \abbrDOF can be described by\index{Model of an unde
  
 where
 \begin{equation*}
-  \eta  
+  \etaVector  
 \end{equation*} are generalised positions and
 \begin{equation*}
-  \nu 
+  \nuVector
 \end{equation*}
 are generalised velocities that are used to describe motion in 6 \abbrDOF \citep[p. 15]{fossen2011}. The matrices $\inertia$\index{Inertia matrix}, $\coriolis(\nuVector)$\index{Coriolis matrix}, $\damping(\nuVector)$\index{Damping matrix} and the vector $\gravity(\nuVector)$\index{Restoring forces matrix} respectively describes how inertia, Coriolis forces, damping forces, gravity and buoyancy affect the \abbrROV. The vector $\tauVector$ describes the forces and torques produced by the \abbrROV's actuators as well as environmental disturbances.
  
@@ -84,7 +84,7 @@ To get a more compact way of writing a vector notation has been used
 \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{The Body-Fixed and Global Coordinate Systems}
+\section{Coordinate Systems and Kinematics}
 \label{sec:coordinates}\index{NED}\index{body-fixed coordinate system}\index{global coordinate system}
 During modelling it is important to choose proper coordinate systems in which to describe the systems behaviour.
 In this thesis, are two coordinate systems used in the \abbrROV model.
@@ -176,69 +176,45 @@ This coordinate system is used to express buoyancy and gravitational forces acti
         \coordinate (O) at (0,0);
         \draw[thick,->] (O) ++(\coordinateRadius,0) -- ++(1,0) node[anchor=north east]{$\north$};
         \draw[thick,->] (O) ++(0,-\coordinateRadius)-- ++(0,-1) node[anchor=south east]{$\east$};
-        \draw (O) circle (0.05) node[anchor=south,]{$\down$,\color{red}$\zPosition$};
+        \draw (O) circle (0.05) node[anchor=south,]{$\down$,\color{red}$z''$};
         \draw (O) -- ++(\bx,\by) (O) -- ++(-\bx,-\by) (O) -- ++(-\bx,\by) (O)  -- ++(\bx,-\by);
         
-        \draw[thick,red,->] (O) ++(\ax,-\ay) -- ++(\coordXRot,-\coordYRot) node[anchor=north west]{$\xPosition$ };
-        \draw[thick,red,->] (O) ++(-\ay,-\ax) -- ++(-\coordYRot,-\coordXRot) node[anchor=north east]{$\yPosition$\color{black},$\east'$};
+        \draw[thick,red,->] (O) ++(\ax,-\ay) -- ++(\coordXRot,-\coordYRot) node[anchor=north west]{$x''$ };
+        \draw[thick,red,->] (O) ++(-\ay,-\ax) -- ++(-\coordYRot,-\coordXRot) node[anchor=north east]{$y''$};
         \draw[->] (O) ++(0.5,0) arc (0:-\coordRot:0.5) node[right]{\yawAngle};
         
         \def\coordDistance{1.5}
         
          \coordinate (O) at (\coordDistance,0);
-         \draw[thick,->] (O) ++(\coordinateRadius,0) -- ++(1,0) node[anchor=north east]{$\north$};
-         \draw[thick,->] (O) ++(0,-\coordinateRadius)-- ++(0,-1) node[anchor=south east]{$\down$};
-         \draw (O) circle (0.05) node[anchor=south,]{$\east'$,\color{red}$\yPosition$};
+         \draw[thick,->] (O) ++(\coordinateRadius,0) -- ++(1,0) node[anchor=north east]{$x''$};
+         \draw[thick,->] (O) ++(0,-\coordinateRadius)-- ++(0,-1) node[anchor=south east]{$z''$};
+         \draw (O) circle (0.05) node[anchor=south,]{$y''$,\color{red}$y'$};
          \draw[fill=black] (O) circle (0.0125);
         
-         \draw[thick,red,->] (O) ++(\ax,\ay) -- ++(\coordXRot,\coordYRot) node[anchor=south west]{$\xPosition$\color{black},$\north'$};
-         \draw[thick,red,->] (O) ++(\ay,-\ax) -- ++(\coordYRot,-\coordXRot) node[anchor=north east]{$\zPosition$};
+         \draw[thick,red,->] (O) ++(\ax,\ay) -- ++(\coordXRot,\coordYRot) node[anchor=south west]{$x'$};
+         \draw[thick,red,->] (O) ++(\ay,-\ax) -- ++(\coordYRot,-\coordXRot) node[anchor=north east]{$z'$};
          \draw[->] (O) ++(0.5,0) arc (0:\coordRot:0.5) node[right]{\pitchAngle};
          
           
         \pgfmathsetmacro\coordDistanceZ{2*\coordDistance+1}
         
          \coordinate (O) at (\coordDistanceZ,0);
-         \draw[thick,->] (O) ++(-\coordinateRadius,0) -- ++(-1,0) node[anchor=north west]{$\east$};
-         \draw[thick,->] (O) ++(0,-\coordinateRadius) -- ++(0,-1) node[anchor=south east]{$\down$};
-         \draw (O) circle (0.05) node[anchor=south,]{$\north'$,\color{red}$\xPosition$};
+         \draw[thick,->] (O) ++(-\coordinateRadius,0) -- ++(-1,0) node[anchor=north west]{$y'$};
+         \draw[thick,->] (O) ++(0,-\coordinateRadius) -- ++(0,-1) node[anchor=south east]{$z'$};
+         \draw (O) circle (0.05) node[anchor=south,]{$x'$,\color{red}$x$};
          \draw[fill=black] (O) circle (0.0125);
         
-        \draw[thick,red,->] (O) ++(\ay,-\ax) -- ++(\coordYRot,-\coordXRot) node[anchor=north west]{$\zPosition$};
-        \draw[thick,red,->] (O) ++(-\ax,-\ay) -- ++(-\coordXRot,-\coordYRot) node[anchor=south east]{$\yPosition$};
+        \draw[thick,red,->] (O) ++(\ay,-\ax) -- ++(\coordYRot,-\coordXRot) node[anchor=north west]{$z$};
+        \draw[thick,red,->] (O) ++(-\ax,-\ay) -- ++(-\coordXRot,-\coordYRot) node[anchor=south east]{$y$};
         \draw[->] (O) ++(-0.5,0) arc (180:180+\coordRot:0.5) node[left]{\rollAngle};
     
     \end{tikzpicture}
     \caption{The local and global coordinate systems relate to each other by the rotations \yawAngle, \pitchAngle and \rollAngle. The rotations are defined from the global coordinate system (black) to the body-fixed coordinate system (red).} 
     \label{fig:coordinate_frames}
 \end{figure}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Quaternions} \index{Quaternions} \index{Transformation matrices}
-Unit quaternions $\quaternion$ are a useful way to express angles. Where Euler angel representations are singular the corresponding quaternion representations are not \citep{sensorfusion}. To use quaternions instead of Euler angles, $\etaVector$ is instead defined as
-\begin{equation}
-\etaVector = \begin{pmatrix}
-\north \\
-\east \\
-\down \\
-\quaternion
-\end{pmatrix}
-\end{equation} where $q =[\quatO \quatI \quatII \quatIII]^T$
 
-The quaternions need to satisfy $\quaternion^T\quaternion = 1$ in order to represent angles, thus they need normalisation.
-Quaternion normalisation in a continuous time can be achieved by adding a normalising term
-%\boldsymbol{T}_q(\quaternion) \angVelBody +
-\begin{equation}
-\frac{\gamma}{2} ( 1 - \quaternion^T\quaternion)\quaternion
-\end{equation}
-to the dynamics of $\dot{q}$ \citep[p. 31]{fossen2011}. The parameter $\gamma$ is a design parameter, $\gamma \geq 0$ usually $\gamma = 100$, indicating the convergence rate of the normalisation.% and $\boldsymbol{T}_q(\quaternion)$ is given by
-In discrete time, quaternion normalisation is given by 
-\begin{equation}
-\quaternion(k+1) = \frac{\quaternion(k+1)}{\sqrt{\quaternion^T(k+1)\quaternion(k+1)}}
-\end{equation}  
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Kinematics} \index{Kinematics}\index{Transformation matrices} \label{sec:kinematics}
-The relationship between the body-fixed frame and the global frame can be described by different transformation matrices \citep{fossen2011}.
+\index{Kinematics}\index{Transformation matrices} %\label{sec:kinematics}
+The relationship between velocities in the body-fixed frame and the global frame can be described by different transformation matrices \citep{fossen2011}.
 The transformation for linear velocities from the body-fixed coordinate system to the global coordinate system is 
 \begin{equation}
 \linVelGlobal = \boldsymbol{R}^n_b(\eulerAngles) \linVelBody
@@ -256,7 +232,7 @@ where $s\cdot$ stands for $\sin(\cdot)$ and $c\cdot$ stands for $\cos(\cdot)$ \c
 \boldsymbol{R}^n_b(\eulerAngles)^{-1} = \boldsymbol{R}^n_b(\eulerAngles)^T
 \end{equation}
 
-Angular velocities transformation between the from the body-fixed frame to the global frame is given by 
+Transformation of angular velocities from the the body-fixed frame to the global frame is given by 
 \begin{equation}\label{eq:eulerAnglesdot}
 \eulerAnglesdot = \boldsymbol{T}_{\theta}(\eulerAngles)\angVelBody
 \end{equation}
@@ -291,6 +267,36 @@ The kinematic equations can then be expressed in vector form as \index{Kinematic
 \angVelBody
 \end{bmatrix}
 \end{equation}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\section{Quaternions} 
+\index{Quaternions} \index{Transformation matrices}
+Unit quaternions $\quaternion$ are a useful way to express angles. Where Euler angel representations are singular the corresponding quaternion representations are not \citep{sensorfusion}. To use quaternions instead of Euler angles, $\etaVector$ is instead defined as
+\begin{equation}
+\etaVector = \begin{pmatrix}
+\north \\
+\east \\
+\down \\
+\quaternion
+\end{pmatrix}
+\end{equation} where $\boldsymbol{q} =[\quatO \quatI \quatII \quatIII]^T$
+
+The quaternions need to satisfy $\quaternion^T\quaternion = 1$ in order to represent angles, thus they need normalisation.
+Quaternion normalisation in a continuous time can be achieved by adding a normalising term
+%\boldsymbol{T}_q(\quaternion) \angVelBody +
+\begin{equation}
+\frac{\gamma}{2} ( 1 - \quaternion^T\quaternion)\quaternion
+\end{equation}
+to the dynamics of $\dot{q}$ \citep[p. 31]{fossen2011}. The parameter $\gamma$ is a design parameter, $\gamma \geq 0$ usually $\gamma = 100$, indicating the convergence rate of the normalisation.% and $\boldsymbol{T}_q(\quaternion)$ is given by
+In discrete time, quaternion normalisation is given by 
+\begin{equation}
+\quaternion(k+1) = \frac{\quaternion(k+1)}{\sqrt{\quaternion^T(k+1)\quaternion(k+1)}}
+\end{equation}  
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 If quaternions are used to represent attitude the transformation matrix from body-fixed coordinates to global coordinates is defined as 
 \begin{equation}
 \boldsymbol{R}^n_b(\quaternion) = \begin{pmatrix}
@@ -328,6 +334,30 @@ and the kinematic equation \eqref{eq:kinematicsticsEuler} is changed to \index{K
 \end{equation}
 see \citet[Ch. 2]{fossen2011} for more information. 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Rigid-body Kinetics}
+The rigid-body kinetic relations of the \abbrROV can derived using the Newton-Euler formulation and can be expressed as
+\begin{equation}
+\inertia_{\text{RB}}\eta + C_{\text{RB}}(\nu)\nu = \tau_{\text{RB}}
+\end{equation}
+using the vectors \etaVector and \nuVector defined in \Sectionref{sec:coordinates} \citep[p. 45]{fossen2011}.
+The rigid-body inertia matrix $\inertia_{\text{RB}}$ describes the resistance to change in velocity and angular velocity in the \abbrROV's  6 \abbrDOF. The rigid-body inertia matrix is defined as \index{Inertia}
+\begin{equation}
+\label{eq:inertia}
+    \inertia_{RB} = 
+    \begin{pmatrix}
+    m\eye{3}       & -m\cross{r^b_g} \\
+    m\cross{r^b_g} & \bodyinertia{b}
+    \end{pmatrix}
+\end{equation}
+where $r^b_g$ is the distance between the \abbrROV's \abbrCO and \abbrCG \citep[p. 52]{fossen2011}.
+It has been assumed that the \abbrROV's center of origin (\abbrCO) and \abbrCG coincide, thus simplifying \eqref{eq:inertia} to
+\begin{equation}
+   \inertia_{RB} = 
+    \begin{pmatrix}
+        m\eye{3} & \zero{3} \\
+        \zero{3} & \bodyinertia{g}
+    \end{pmatrix}
+\end{equation}
 \section{System Inertia Matrix}
 The system inertia matrix $\inertia$ describes the resistance of changing translation and rotation of the \abbrROV in its 6 \abbrDOF. It also describes the added mass that comes from rotating and translating a body in a liquid media. The inertia matrix is defined as
 \begin{equation}
