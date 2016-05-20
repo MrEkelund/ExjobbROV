@@ -5,7 +5,9 @@
 #include <ros/console.h>
 #include <ros/time.h>
 #include <dynamic_reconfigure/server.h>
-// requires catkin_make --pkg sensorfusion first. Else it wont find controllerConfig.h
+#include <dynamic_reconfigure/BoolParameter.h>
+#include <dynamic_reconfigure/Reconfigure.h>
+#include <dynamic_reconfigure/Config.h>
 #include <controller/controllerConfig.h>
 #include <math.h>
 #include <iostream>
@@ -19,25 +21,25 @@
 
 
 const double lx1 = 0.19;
-const double  ly1 = 0.11;
-const double  ly2 = 0.11;
-const double  lx2 = 0.19;
-const double  ly3 = 0.11;
-const double  lx5 = 0.17;
-const double  ly4 = 0.11;
-const double  lz6 = 0;
-const double  zb = -0.033120007018861;
-const double  Kp = -0.832583865050131;
-const double  Kp_abs_p = -0.493305055639320;
-const double  Mq = -0.848713697434902;
-const double  Mq_abs_q = -0.250737627230074;
-const double  Nr = -1.758097465526971;
-const double  Nr_abs_r = -1.459511824869412;
-const double  Ix_Kp_dot = 0.602410402365800;
-const double  Iy_Mq_dot = 0.783497332223251;
-const double  Iz_Nr_dot = 1.399324614234730;
-const double  m = 6.621;
-const double  g = 9.81744;
+const double ly1 = 0.11;
+const double ly2 = 0.11;
+const double lx2 = 0.19;
+const double ly3 = 0.11;
+const double lx5 = 0.17;
+const double ly4 = 0.11;
+const double lz6 = 0;
+const double zb = -0.033120007018861;
+const double Kp = 0.9*-0.832583865050131;
+const double Kp_abs_p = 0.9*-0.493305055639320;
+const double Mq = 0.9*-0.848713697434902;
+const double Mq_abs_q = 0.9*-0.250737627230074;
+const double Nr = 0.9*-1.758097465526971;
+const double Nr_abs_r = 0.9*-1.459511824869412;
+const double Ix_Kp_dot = 0.602410402365800;
+const double Iy_Mq_dot = 0.783497332223251;
+const double Iz_Nr_dot = 1.399324614234730;
+const double m = 6.621;
+const double g = 9.81744;
 const double B = m*g;
 
 typedef struct {double x; double y;} thrustmap_t;
@@ -123,7 +125,7 @@ thrustmap_t thrustmap[76] = {
 
 typedef struct {double start_time; double amplitude; double frequency;
   double bias; double speed; double final_value; double final_time;
-  double constant; bool time_reached;} reference_t;
+  double constant; bool time_reached; bool enable; int reference_signal;} reference_t;
 
 class Controller {
 public:
@@ -137,12 +139,14 @@ private:
   controller::controllerConfig _config;
 
   void initT();
+  void initPseudoInvT();
   void calcJ();
   void calcJdot();
   Eigen::Vector3d momentsNEDToBody(Eigen::Vector3d moments);
   void calcR();
   Eigen::Matrix<double, 6, 1> forcesNEDToBody(Eigen::Vector3d moments);
   void calcLinControl(Eigen::Matrix<double, 6, 1>& acc, Eigen::Matrix<double, 6, 1>& control_signals);
+  void interpolate(const Eigen::Matrix<double, 6, 1>& moments, Eigen::Matrix<double, 6, 1>& control);
 
   void calcReferenceSignals();
   double calcStepReference(reference_t& ref_struct);
@@ -158,7 +162,7 @@ private:
   Eigen::Matrix<double, 6, 1> calcAttitudeControl();
   Eigen::Matrix<double, 6, 1> calcDepthControl();
   Eigen::Matrix<double, 6, 1> calcDecControll();
-  Eigen::Matrix<double, 6, 1> interpolate(Eigen::Matrix<double, 6, 1> & moments);
+
 
   void sendThrusterSignals(Eigen::Matrix<double, 6,1>&);
   void sendReferenceSignals();
@@ -175,12 +179,11 @@ private:
   Eigen::Matrix<double, 3, 3> _J;
   Eigen::Matrix<double, 3, 3> _J_dot;
   Eigen::Matrix<double, 3, 3> _R;
+  Eigen::Matrix<double, 6, 6> _pseudo_inv_T;
 
-  //Eigen::Matrix<double, 6, 1> _control_signals;
   Eigen::Vector3d _rate_integral;
   Eigen::Vector3d _attitude_integral;
   double _depth_integral;
-//  Eigen::Matrix<double, >
 
   double _cphi;
   double _sphi;
@@ -190,6 +193,8 @@ private:
   double _cpsi;
   double _spsi;
   double _reference_t0;
+  bool _reference_started;
+  double _loop_rate;
 
   reference_t _phi_reference;
   reference_t _theta_reference;
