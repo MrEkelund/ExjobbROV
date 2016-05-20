@@ -32,12 +32,12 @@ Controller::Controller() {
   _rate_integral.setZero();
   _attitude_integral.setZero();
   _depth_integral = 0;
-  _cphi = 0;
-  _cphi = 0;
-  _cth = 0;
+  _cphi = 1;
+  _sphi = 0;
+  _cth = 1;
   _sth = 0;
-  _tth = 1;
-  _cpsi = 0;
+  _tth = 0;
+  _cpsi = 1;
   _spsi = 0;
   _reference_t0 = ros::Time::now().toSec();
   _reference_started = false;
@@ -121,15 +121,16 @@ void Controller::calcLinControl(Eigen::Matrix<double, 6, 1>& acc, Eigen::Matrix<
     Ix_Kp_dot*acc(3) - _ang_vel(0)*(Kp + Kp_abs_p*abs(_ang_vel(0))) - _ang_vel(1)*_ang_vel(2)*(Iy_Mq_dot - Iz_Nr_dot) - _config.zb_scaling*B*_cth*_sphi*zb,
     Iy_Mq_dot*acc(4) - _ang_vel(1)*(Mq + Mq_abs_q*abs(_ang_vel(1))) - _config.zb_scaling*B*_sth*zb + _ang_vel(0)*_ang_vel(2)*(Ix_Kp_dot - Iz_Nr_dot),
     Iz_Nr_dot*acc(5) - _ang_vel(2)*(Nr + Nr_abs_r*abs(_ang_vel(2))) - _ang_vel(0)*_ang_vel(1)*(Ix_Kp_dot - Iy_Mq_dot);
-    std::cout << "lin tau: " << tau << std::endl;
+//    std::cout << "lin tau: " << tau << std::endl;
   } else {
     tau << acc(0), acc(1), acc(2), acc(3), acc(4), acc(5);
-    std::cout << "tau: " << tau << std::endl;
+//    std::cout << "tau: " << tau << std::endl;
   }
   Eigen::Matrix<double, 6, 1> moments;
   moments = _T.inverse()*tau;
-  std::cout << "lin moments: " << moments << std::endl;
+//  std::cout << "lin moments: " << moments << std::endl;
   interpolate(moments, control_signals);
+//  std::cout << "lin inter:" << std::endl;
 }
 
 // Thrust to control signals
@@ -485,8 +486,12 @@ Eigen::Matrix<double, 6, 1> Controller::calcRateControl() {
 
   Eigen::Vector3d eta_tilde;
   eta_tilde =  _ang_vel - _ang_vel_ref;
-
   _rate_integral = _rate_integral + Ki*Ts*eta_tilde;
+  for (uint i = 0; i < 3; i++) {
+    if (Ki(i,i) == 0) {
+      _rate_integral(i) = 0;
+    }
+  }
 //  std::cout << "eta_tilde: " << eta_tilde << std::endl;
 //  std::cout << "_rate_integral: " << _rate_integral << std::endl;
   for (uint i = 0; i < 3; i++) {
@@ -537,7 +542,13 @@ Eigen::Matrix<double, 6, 1> Controller::calcAttitudeControl() {
   eta_tilde = _euler_angles - _euler_angles_ref;
 
   _attitude_integral = _attitude_integral + Ki*Ts*eta_tilde;
-  std::cout << "eta_tilde: " << eta_tilde << std::endl;
+
+  for (uint i = 0; i < 3; i++) {
+    if (Ki(i,i) == 0) {
+      _attitude_integral(i) = 0;
+    }
+  }
+//  std::cout << "eta_tilde: " << eta_tilde << std::endl;
 //  std::cout << "_attitude_integral: " << _attitude_integral << std::endl;
   for (uint i = 0; i < 3; i++) {
     if (_attitude_integral(i) > 5) {
@@ -550,10 +561,11 @@ Eigen::Matrix<double, 6, 1> Controller::calcAttitudeControl() {
   Eigen::Matrix<double, 6, 1> control_signals;
   Eigen::Matrix<double, 6, 1> position_and_angles;
   position_and_angles << 0, 0 ,0, momentsNEDToBody(- Kd*eta_tilde_dot - Kp*eta_tilde - _attitude_integral);
-  std::cout << "attitude control: " << momentsNEDToBody(- Kd*eta_tilde_dot - Kp*eta_tilde - _attitude_integral) << std::endl;
+  //std::cout << "attitude control: " << momentsNEDToBody(- Kd*eta_tilde_dot - Kp*eta_tilde - _attitude_integral) << std::endl;
   calcLinControl(position_and_angles, control_signals);
   Eigen::Matrix<double, 6, 1> vel_control_signals;
   vel_control_signals << _velocity_ref, 0, 0, 0;
+
   return control_signals+_pseudo_inv_T*vel_control_signals;
 }
 
@@ -571,6 +583,9 @@ Eigen::Matrix<double, 6, 1> Controller::calcDepthControl() {
   }
   Eigen::Vector3d forces;
   forces << 0,0,-Kp*eta_tilde - Ki*_depth_integral;
+  if (Ki == 0) {
+    _depth_integral = 0;
+  }
   //std::cout << "depth control: " << forcesNEDToBody(forces) << std::endl;
   //std::cout << "depth control: " << pseudo_inv_T*forcesNEDToBody(forces) << std::endl;
   return _pseudo_inv_T*forcesNEDToBody(forces);
@@ -647,9 +662,11 @@ void Controller::spin() {
       break;
       case 1:
       control_signals = calcRateControl();
+      _attitude_integral << 0, 0, 0;
       break;
       case 2:
       control_signals = calcAttitudeControl();
+      _rate_integral << 0, 0, 0;
       break;
       default:
       control_signals << 0, 0, 0, 0, 0, 0;
@@ -657,6 +674,8 @@ void Controller::spin() {
 
     if (_config.enable_depth) {
       control_signals = control_signals + calcDepthControl();
+    } else {
+      _depth_integral = 0;
     }
 
     sendThrusterSignals(control_signals);
