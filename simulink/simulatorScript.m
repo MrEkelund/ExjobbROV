@@ -6,65 +6,79 @@ controller_nr = 2;
 % Reference signals
 phi_ref_signal = 1;
 phi_step_time = 5;
+phi_final_step_time = 10;
+phi_v_scaling = 1.5; % has to be between 1 and 2
 phi_initial_value = 0;
-phi_final_value =0;
+phi_final_value = 2;
 phi_amplitude = 0.5;
 phi_frequency = 0.5;
-phi_phase = 0;
+phi_bias = 0;
 phi_constant = 0;
 
 theta_ref_signal = 3;
 theta_step_time = 5;
+theta_final_step_time = 10;
+theta_v_scaling = 1.5; % has to be between 1 and 2
 theta_initial_value = 0;
 theta_final_value = 0;
 theta_amplitude = 0.5;
 theta_frequency = 0.5;
-theta_phase = 0;
+theta_bias = 0;
 theta_constant = 0;
 
 psi_ref_signal = 3;
 psi_step_time = 5;
+psi_final_step_time = 10;
+psi_v_scaling = 1.5; % has to be between 1 and 2
 psi_initial_value = 0;
 psi_final_value = 0;
 psi_amplitude = 0.5;
 psi_frequency = 0.5;
-psi_phase = 0;
+psi_bias = 0;
 psi_constant = 0;
 
 p_ref_signal = 1;
 p_step_time = 10;
+p_final_step_time = 10;
+p_v_scaling = 1.5; % has to be between 1 and 2
 p_initial_value = 0;
 p_final_value = 0;
 p_amplitude = 0.5;
 p_frequency = 1;
-p_phase = 0;
+p_bias = 0;
 p_constant = 0;
 
 q_ref_signal = 1;
 q_step_time = 0;
+q_final_step_time = 10;
+q_v_scaling = 1.5; % has to be between 1 and 2
 q_initial_value = 0;
 q_final_value = 0;
 q_amplitude = 0.5;
 q_frequency = 1;
-q_phase = 0;
+q_bias = 0;
 q_constant = 0;
 
 r_ref_signal = 1;
 r_step_time = 0;
+r_final_step_time = 10;
+r_v_scaling = 1.5; % has to be between 1 and 2
 r_initial_value = 0;
 r_final_value = 0;
 r_amplitude = 0.5;
 r_frequency = 1;
-r_phase = 0;
+r_bias = 0;
 r_constant = 0;
 
 d_ref_signal = 3;
 d_step_time = 5;
+d_final_step_time = 10;
+d_v_scaling = 1.5; % has to be between 1 and 2
 d_initial_value = 0;
 d_final_value = 1;
 d_amplitude = 0.5;
 d_frequency = 1;
-d_phase = 0;
+d_bias = 0;
 d_constant = 0;
 
 use_noise = 0;
@@ -141,14 +155,15 @@ set_param('simulator/Controllers/Depth_PI/Ts', 'value', sprintf('%f',Ts));
 sim_list = {'phi','theta','psi','p','q','r','d'};
 for i = 1:length(sim_list)
     set_param(sprintf('simulator/ref_signals/%s_ref_signal',sim_list{i}), 'Value', sprintf('%f',eval(strcat(sim_list{i},'_ref_signal'))));
-    set_param(sprintf('simulator/ref_signals/%s_step/step_time', sim_list{i}), 'Value', sprintf('%f',eval(strcat(sim_list{i},'_step_time'))));
+    set_param(sprintf('simulator/ref_signals/%s_step/start_step_time', sim_list{i}), 'Value', sprintf('%f',eval(strcat(sim_list{i},'_step_time'))));
+    set_param(sprintf('simulator/ref_signals/%s_step/step_time_final', sim_list{i}), 'Value', sprintf('%f',eval(strcat(sim_list{i},'_final_step_time'))));
+    set_param(sprintf('simulator/ref_signals/%s_step/v_scaling', sim_list{i}), 'Value', sprintf('%f',eval(strcat(sim_list{i},'_v_scaling'))));
     set_param(sprintf('simulator/ref_signals/%s_step/initial_value', sim_list{i}),'Value', sprintf('%f',eval(strcat(sim_list{i},'_initial_value'))));
     set_param(sprintf('simulator/ref_signals/%s_step/final_value', sim_list{i}),'Value', sprintf('%f',eval(strcat(sim_list{i},'_final_value'))));
     set_param(sprintf('simulator/ref_signals/%s_sin/sin_amplitude', sim_list{i}),'Value', sprintf('%f',eval(strcat(sim_list{i},'_amplitude'))));
     set_param(sprintf('simulator/ref_signals/%s_sin/sin_frequency', sim_list{i}),'Value', sprintf('%f',eval(strcat(sim_list{i},'_frequency'))));
-    set_param(sprintf('simulator/ref_signals/%s_sin/sin_phase', sim_list{i}),'Value', sprintf('%f',eval(strcat(sim_list{i},'_phase'))));
+    set_param(sprintf('simulator/ref_signals/%s_sin/sin_bias', sim_list{i}),'Value', sprintf('%f',eval(strcat(sim_list{i},'_bias'))));
     set_param(sprintf('simulator/ref_signals/%s_ref_constant', sim_list{i}),'Value', sprintf('%f',eval(strcat(sim_list{i},'_constant'))));
-    set_param(sprintf('simulator/ref_signals/%s_zoh', sim_list{i}),'SampleTime', sprintf('%f',Ts));
 end
 
 % Initial condition for the model
