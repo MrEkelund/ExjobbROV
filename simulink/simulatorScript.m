@@ -1,4 +1,4 @@
-initialCondition = [0 0 0 1 0 0 0];
+initialCondition = [0.1 0 0 1 0 0 0];
 Ts = 0.01;
 end_time = 50;
 controller_nr = 2;
@@ -7,7 +7,7 @@ controller_nr = 2;
 phi_ref_signal = 1;
 phi_step_time = 5;
 phi_initial_value = 0;
-phi_final_value =10*pi/180;
+phi_final_value =0;
 phi_amplitude = 0.5;
 phi_frequency = 0.5;
 phi_phase = 0;
@@ -70,9 +70,9 @@ d_constant = 0;
 use_noise = 0;
 noise_power = 0.00001;
 % Exact Lin feedforward
-Kd = 3*eye(3);
-Kp = 1*diag([1,1,1]);
-Ki = 0.3*diag([1,1,1]);
+Kd = 0*eye(3);
+Kp = 0*diag([1,1,1]);
+Ki = 0*diag([1,1,1]);
 
 
 % global_to_local_and_thrust_alloc
