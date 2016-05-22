@@ -1,7 +1,11 @@
 \chapter{Controlling the ROV} \label{cha:controller}
-
+Automatic control is way of regulating a process without direct human interaction. This can range from approximately decoupling a dynamic system via a decoupling matrix to advanced more advanced controllers. There are two main concepts of control, open-loop and feedback control. Open-loop control is a controller that computes its output based on a model of the system and sometimes the current states. Feedback control is a controller that uses the error of the direct measurement or estimated state minus the reference value \textit{i.e.} 
+\begin{equation}
+e = \hat{x} - x_{\text{ref}}
+\end{equation}
+to control. The result of how the controller effect the system is feedback via the sensors and thus its name. A feedback controller can as the open-loop control use a model of the system. This can produce better performance and remove unwanted effects such as non-linearities. 
 \todo[inline]{Write some control theory. Exact lin... Background}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Open-Loop Control} \label{sec:openloop}
 The open loop control of the \abbrROV consists of an static thrust allocation matrix which is
 \begin{equation}
