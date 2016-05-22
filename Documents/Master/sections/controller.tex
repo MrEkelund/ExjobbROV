@@ -1,12 +1,70 @@
-\chapter{Controlling the ROV} \label{cha:controller}
-Automatic control is way of regulating a process without direct human interaction. This can range from approximately decoupling a dynamic system via a decoupling matrix to advanced more advanced controllers. There are two main concepts of control, open-loop and feedback control. Open-loop control is a controller that computes its output based on a model of the system and sometimes the current states. Feedback control is a controller that uses the error of the direct measurement or estimated state minus the reference value \textit{i.e.} 
+\chapter{Controlling the ROV} \label{cha:controller} \index{Open-Loop Control} \index{Controller} \index{Exact Linearisation}
+Automatic control is way of regulating a process without direct human interaction. This can range from approximately decoupling a dynamic system via a decoupling matrix to advanced more advanced controllers. There are two main concepts of control, open-loop and feedback control. Open-loop control is a controller that computes its output based on a model of the system and sometimes the current states. \Figureref{fig:control_system_open} illustrates the open-loop control scheme used in the \abbrROV. Feedback control is a controller that uses the error of the direct measurement or estimated state minus the reference value \textit{i.e.} 
 \begin{equation}
 e = \hat{x} - x_{\text{ref}}
 \end{equation}
-to control. The result of how the controller effect the system is feedback via the sensors and thus its name. A feedback controller can as the open-loop control use a model of the system. This can produce better performance and remove unwanted effects such as non-linearities. 
+to control. The control scheme for the \abbrROV can be seen in \Figureref{fig:control_system}. A feedback controller can as the open-loop control use a model of the system. Using the model in the control structure can produce better performance and remove unwanted effects such as non-linearities, this is wanted due to the fact that a lot of control principles are based on linear systems \citep{reglerteori}. 
+
+\begin{figure}
+	\centering
+		\begin{tikzpicture}[auto, thick, node distance=2cm,>=latex',
+			 block/.style  = {draw, rectangle,minimum height=3em, minimum width=6em},
+			 sum/.style    = {draw, circle, inner sep=0pt, text width=4mm,align=center, node distance=1cm},
+			 input/.style  = {coordinate},
+			 output/.style = {coordinate},
+			 pinstyle/.style = {pin edge={to-,thin,black}}]
+			 
+		    \node [input, name=input] {};
+		    \node [block, right of=input, node distance=3cm] (controller) {F};
+		    \node [block, right of=controller, node distance=3cm] (system) {\abbrROV};
+		
+		    \draw [->] (controller) -- node[name=u] {$u$} (system);
+		    \node [output, right of=system] (output) {};
+		
+		    \draw [draw,->] (input) -- node {$u_{\text{control}}$} (controller);
+		    \draw [->] (system) -- node [name=y] {$y$}(output);
+		\end{tikzpicture}
+	\caption{The open-loop control scheme used in the \abbrROV. The control block F can be any type of open-loop control. Notice that this is an ideal case were no disturbances affect the system.}
+	\label{fig:control_system_open}
+\end{figure}
+
+\begin{figure}
+	\centering
+		\begin{tikzpicture}[auto, thick, node distance=2cm,>=latex',
+			 block/.style  = {draw, rectangle,minimum height=3em, minimum width=6em},
+			 sum/.style    = {draw, circle, inner sep=0pt, text width=4mm,align=center, node distance=1cm},
+			 input/.style  = {coordinate},
+			 output/.style = {coordinate},
+			 pinstyle/.style = {pin edge={to-,thin,black}}]
+			 
+		    \node [input, name=input] {};
+		    \node [sum, right of=input] (sum) {+};
+		    \node [block, right of=sum] (controller) {F};
+		    \node [block, right of=controller, node distance=3cm] (system) {\abbrROV};
+		
+		    \draw [->] (controller) -- node[name=u] {$u$} (system);
+		    \node [output, right of=system] (output) {};
+		    \node [block, below of=u] (sensorfusion) {Sensor Fusion};
+		
+		    \draw [draw,->] (input) -- node {$x_{\text{ref}}$} (sum);
+		    \draw [->] (sum) -- node {$e$} (controller);
+		    \draw [->] (system) -- node [name=y] {$y$}(output);
+		    \draw [->] (y) |- (sensorfusion);
+		    \draw [->] (sensorfusion) -| node[pos=0.99] {$-$} 
+		        node [near end] {$\hat{x}$} (sum);
+		\end{tikzpicture}
+	\caption{The feedback control scheme used in the \abbrROV. The controller F can be any of the controllers discussed in this chapter. Notice that this is an ideal case were no disturbances affect the system.}
+	\label{fig:control_system}
+\end{figure}
+
+Exact linearisation is when the dynamics of the system is compensated by a non-linear control signal and thus can linear control principles be used \citep{reglerteori}. Using the model structure from \Chapterref{cha:modelling} and the estimated parameters from \Chapterref{cha:parameterEstimation} the exact linearisation for the \abbrROV  is defined as
+\begin{equation}
+f^{-1}(\etaVector,\nuVector) = \inertia \accVector^{\text{b}} + \damping(\nuVector) + \coriolis(\nuVector) + \gravity(\etaVector)
+\end{equation}
+where $\accVector^b$ is the commanded angular acceleration in the body-fixed frame \citep[p.451]{fossen2011}.
 \todo[inline]{Write some control theory. Exact lin... Background}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Open-Loop Control} \label{sec:openloop}
+\section{Open-Loop Control} \label{sec:openloop} \index{Open-Loop Control}
 The open loop control of the \abbrROV consists of an static thrust allocation matrix which is
 \begin{equation}
     \thrusterGeometryOnes[*] = \thrusterGeometryOnes[T](\thrusterGeometryOnes \thrusterGeometryOnes[T])^{-1}
@@ -38,7 +96,7 @@ The static thrust allocation matrix $\thrusterGeometryOnes[*]$ is the pseudo inv
 
 \begin{figure}
     \centering
-    \begin{tikzpicture}[auto, thick, node distance=3cm, >=triangle 45,%
+    \begin{tikzpicture}[auto, thick, node distance=3cm, >=latex',%
         block/.style    = {draw, thick, rectangle, minimum height = 3em,%
         minimum width = 3em},%
       sum/.style      = {draw, circle, node distance = 2cm},% 
@@ -52,22 +110,15 @@ The static thrust allocation matrix $\thrusterGeometryOnes[*]$ is the pseudo inv
     	node [output, right of=inte1] (output1) {};
         % Joining blocks. 
         % Commands \draw with options like [->] must be written individually
-    	\draw[->](input1) -- node {$u_{control}$}(inte1);
-     	\draw[->](inte1) -- node {$u_{allocated}$} (output1);
+    	\draw[->](input1) -- node {$u_{\text{control}}$}(inte1);
+     	\draw[->](inte1) -- node {$u$} (output1);
     \end{tikzpicture}
     \caption{The open-loop control allocate control signals by the thrust allocation matrix $\thrusterGeometryOnes[*]$. The static thrust allocation matrix gives an approximately decoupled control.}
     \label{fig:open_control}
 \end{figure}
-\todo[inline]{fix variable names in \figureref{fig:open_loop}}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Exact Linearisation}
 
-\begin{equation}
-f^{-1}(\etaVector,\nuVector) = \inertia \accVector^{\text{b}} + \damping(\nuVector) + \coriolis(\nuVector) + \gravity(\etaVector)
-\end{equation}
-where $\accVector^b$ is the commanded angular acceleration in the body-fixed frame \citep[p.451]{fossen2011}.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Angular Velocities Controller}
+\section{Angular Velocities Controller} \index{Angular Velocities Controller} \index{PI@\abbrPI!abbreviation}
 \todo[inline]{Write some fluff about the rate controller}
 
 If the angular velocities error are defined as 
@@ -85,11 +136,11 @@ where $K_{\text{p}}$ and $K_{\text{i}}^b$ are the design parameters \citep{fosse
 \todo[inline]{page on fossen cite}
 Using the exact linearisation for the angular velocities controller and open-loop control for the linear velocities, are the control signals defined as
 \begin{equation}
-	u_{\text{lin}} = f^{-1}(\etaVector,\nuVector) + \thrusterGeometryOnes[*] \begin{bmatrix} \nuVectorLin \\ \zeroCol{3} \end{bmatrix}	
+	u_{\etaVectorAng} = f^{-1}(\etaVector,\nuVector) + \thrusterGeometryOnes[*] \begin{bmatrix} \nuVectorLin \\ \zeroCol{3} \end{bmatrix}	
 \end{equation}
 or the control signals can be defined as 
 \begin{equation}
-	u_{\text{lin}} = \accVector^b + \thrusterGeometryOnes[*] \begin{bmatrix} \nuVectorLin \\ \zeroCol{3} \end{bmatrix}
+	u_{\etaVectorAng} = \accVector^b + \thrusterGeometryOnes[*] \begin{bmatrix} \nuVectorLin \\ \zeroCol{3} \end{bmatrix}
 \end{equation}
 if the exact linearisation is not wanted. \Figureref{fig:ratecontroller} illustrates how the angular velocities controller are implemented with the open-loop control of the linear velocities.
 \begin{figure}
@@ -108,7 +159,7 @@ if the exact linearisation is not wanted. \Figureref{fig:ratecontroller} illustr
     ]
    		\draw node at (0,0) [input] (vel_input) {};
    		\draw node [input,below of=vel_input] (ang_input) {};
-   		\draw node[PID, right of=ang_input] (pid) {$\abbrPID$};
+   		\draw node[PID, right of=ang_input] (pid) {$\abbrPI$};
    		
    		%from input to pid
    		\draw[->] (ang_input) -- node[align=center, below] {$\nuVectorAng - \nuVectorAng[,\text{ref}]$} ($(pid.west)$);
@@ -116,7 +167,7 @@ if the exact linearisation is not wanted. \Figureref{fig:ratecontroller} illustr
    		
    		%from pid to switch and making the switch 
    		\draw (pid.east) ++(2,0.5) node[](switchup){};
-   		\draw (pid.east) ++(2,-0.5) node[block, name=exactlin] {$f^{-1}$};
+   		\draw (pid.east) ++(2,-0.5) node[block, name=exactlin] {$f^{-1}(\etaVector,\nuVector)$};
    		\draw (pid.east) ++(0.8,0.5) -| (switchup);
    		\draw (pid.east) ++(0.8,-0.5) -| (exactlin.west);
    		\draw (pid.east) ++(0.5,0) -- ++(0.3,0.5);
@@ -133,20 +184,18 @@ if the exact linearisation is not wanted. \Figureref{fig:ratecontroller} illustr
    		
    		%To sum
    		\draw (thrust.east) ++(4,0) node[sum, name=sum] {$+$};
-		\draw[->] (thrust.east) -- (sum.west);
-   		\draw[->] (merge) -| (sum.south);   		   		
+		\draw[->] (thrust.east) -- node[align=center, below] {$u_{\nuVectorLin}$} (sum.west);
+   		\draw[->] (merge) -| node[align=center, below] {$u_{\nuVectorAng}$} (sum.south);   		   		
    		% From sum to output
    		\draw node [output, right of=sum, node distance=2cm] (output) {};
-    		\draw[->] (sum.east) -- node[align=center, below] {$u_{allocated}$} (output);
+    		\draw[->] (sum.east) -- node[align=center, below] {$u$} (output);
 	\end{tikzpicture}
     \caption{The linear velocities are controlled in the same way as in \Sectionref{sec:openloop}. However, the angular velocities are controlled via an \abbrPID and exact linearisation can be enabled.} 
     \label{fig:ratecontroller}
 \end{figure}
-\todo[inline]{fix the t inverse in \Figureref{fig:ratecontroller} and fix block names.}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Attitude Controller}
-
+\section{Attitude Controller} \index{PID@\abbrPID!abbreviation} \index{Attitude Controller}
 Using the relations in \Chapterref{cha:modelling} the derivative of the attitude error can be defined as 
 \begin{equation}
 \etaTildeAngdot = \dot{\boldsymbol{T}}_\theta(\eulerAngles)\etaVectorAng
@@ -165,11 +214,11 @@ This gives the \abbrPID attitude controller
 where $K_{\text{p}}$, $K_{\text{i}}$ and $K_{\text{d}}$ are design parameters \citep{fossen2011}. 
 Using the open-loop control of the linear velocities with exact linearisation of the attitude controller gives
 \begin{equation}
-	u_{\text{lin}} = f^{-1}(\etaVector,\nuVector) + \thrusterGeometryOnes[*] \begin{bmatrix} \nuVectorLin \\ \zeroCol{3} \end{bmatrix}
+	u_{\etaVectorAng} = f^{-1}(\etaVector,\nuVector) + \thrusterGeometryOnes[*] \begin{bmatrix} \nuVectorLin \\ \zeroCol{3} \end{bmatrix}
 \end{equation}
 or
 \begin{equation}
-	u_{\text{lin}} = \accVector^b + \thrusterGeometryOnes[*] \begin{bmatrix} \nuVectorLin \\ \zeroCol{3} \end{bmatrix}
+	u_{\etaVectorAng} = \accVector^b + \thrusterGeometryOnes[*] \begin{bmatrix} \nuVectorLin \\ \zeroCol{3} \end{bmatrix}
 \end{equation}
 without the exact linearisation. An illustration of how the attitude controller with open-loop control is implemented can be seen in \Figureref{fig:attitudecontroller}.
 
@@ -197,7 +246,7 @@ without the exact linearisation. An illustration of how the attitude controller 
    		
    		%from pid to switch and making the switch 
    		\draw (pid.east) ++(2,0.5) node[](switchup){};
-   		\draw (pid.east) ++(2,-0.5) node[block, name=exactlin] {$f^{-1}$};
+   		\draw (pid.east) ++(2,-0.5) node[block, name=exactlin] {$f^{-1}(\etaVector,\nuVector)$};
    		\draw (pid.east) ++(0.8,0.5) -| (switchup);
    		\draw (pid.east) ++(0.8,-0.5) -| (exactlin.west);
    		\draw (pid.east) ++(0.5,0) -- ++(0.3,0.5);
@@ -214,19 +263,18 @@ without the exact linearisation. An illustration of how the attitude controller 
    		
    		%To sum
    		\draw (thrust.east) ++(4,0) node[sum, name=sum] {$+$};
-		\draw[->] (thrust.east) -- (sum.west);
-   		\draw[->] (merge) -| (sum.south);   		   		
+		\draw[->] (thrust.east) -- node[align=center, below] {$u_{\nuVectorLin}$} (sum.west);
+   		\draw[->] (merge) -| node[align=center, below] {$u_{\etaVectorAng}$} (sum.south);   		   		
    		% From sum to output
    		\draw node [output, right of=sum, node distance=2cm] (output) {};
-    		\draw[->] (sum.east) -- node[align=center, below] {$u_{allocated}$} (output);	
+    		\draw[->] (sum.east) -- node[align=center, below] {$u$} (output);	
 	\end{tikzpicture}
     \caption{The linear velocities are controlled in the same way as in \Sectionref{sec:openloop}. However, the attitude are controlled via an \abbrPID and exact linearisation can be enabled.} 
     \label{fig:attitudecontroller}
 \end{figure}
-\todo[inline]{fix the t inverse in \Figureref{fig:attitudecontroller}, fix block names and fix the exact lin name.}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Depth Controller} \index{Depth Controller} \index{\abbrPI}
+\section{Depth Controller} \index{Depth Controller} \index{PI@\abbrPI!abbreviation}
 \todo[inline]{write some fluff} 
 If the error in $\zPosition$ is defined as 
 \begin{equation}
@@ -276,15 +324,15 @@ where $K_{\text{p}}$ and $K_{\text{i}}$ are design parameters. The rotation matr
    		
    		%Input to thrust
    		\draw node[block, right of=vel_input] (controller) {F};
-   		\draw[->] (vel_input) -- node[align=center, below] {input} (controller.west);
+   		\draw[->] (vel_input) -- node[align=center, below] {$x_{\text{ref}}$} (controller.west);
    		
    		%To sum
    		\draw (controller.east) ++(4,0) node[sum, name=sum] {$+$};
 		\draw[->] (controller.east) -- (sum.west);
-   		\draw[->] (merge) -| (sum.south);   		   		
+   		\draw[->] (merge) -| node[align=center, below] {$u_{\zPosition}$}  (sum.south);   		   		
    		% From sum to output
    		\draw node [output, right of=sum, node distance=2cm] (output) {};
-    		\draw[->] (sum.east) -- node[align=center, below] {$u_{allocated}$} (output);
+    		\draw[->] (sum.east) -- node[align=center, below] {$u$} (output);
 	\end{tikzpicture}
     \caption{The \abbrPI depth controller can be used when the open-loop control is engaged or when the other controllers are used. In this figure the F symbolises the chosen way of controlling the \abbrROV.} 
     \label{fig:depthcontroller}
