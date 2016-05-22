@@ -80,13 +80,13 @@ void Controller::calcJdot() {
 
   _J_dot(0,0) = 0;
   _J_dot(0,1) = _cphi*_tth*euler_angles_dot(0) + _sphi*(1+_tth*_tth)*euler_angles_dot(1);
-  _J_dot(0,2) = -_sphi*_tth*euler_angles_dot(1)+_cphi*(1+_tth*_tth)*euler_angles_dot(1);
+  _J_dot(0,2) = -_sphi*_tth*euler_angles_dot(0)+_cphi*(1+_tth*_tth)*euler_angles_dot(1);
   _J_dot(1,0) = 0;
-  _J_dot(1,1) = -_sphi*euler_angles_dot(1);
-  _J_dot(1,2) = -_cphi*euler_angles_dot(1);
+  _J_dot(1,1) = -_sphi*euler_angles_dot(0);
+  _J_dot(1,2) = -_cphi*euler_angles_dot(0);
   _J_dot(2,0) = 0;
-  _J_dot(2,1) = (_cphi*_cth*euler_angles_dot(1)+_sphi*_sth*euler_angles_dot(1))/(_cth*_cth);
-  _J_dot(2,2) = (-_sphi*_cth*euler_angles_dot(1)+_cphi*_sth*euler_angles_dot(2))/(_cth*_cth);
+  _J_dot(2,1) = (_cphi*_cth*euler_angles_dot(0)+_sphi*_sth*euler_angles_dot(1))/(_cth*_cth);
+  _J_dot(2,2) = (-_sphi*_cth*euler_angles_dot(0)+_cphi*_sth*euler_angles_dot(1)/(_cth*_cth);
 }
 
 // NED to body for moments
