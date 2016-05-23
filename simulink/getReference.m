@@ -3,10 +3,48 @@ bag = rosbag(filepath);
 resampling_fs = 100;
 ft = 30;
 
-filepath = fullfile('Estimation','bag','sinPa05hz05_2016-05-23-15-13-18.bag');
-start_time = 1; 
-%end_time = 100;
-    
+% filepath = fullfile('Estimation','bag','sinPa05hz05_2016-05-23-15-13-18.bag');
+% start_time = 200; 
+% end_time = 2100;
+
+% filepath = fullfile('Estimation','bag','sinPA1Hz05_2016-05-23-15-25-06.bag');
+% start_time = 300; 
+% end_time = 2125;
+% axis([0 (end_time - start_time)/resampling_fs -1.5 1.5])
+
+% filepath = fullfile('Estimation','bag','sinAllA05Hz05_2016-05-23-15-31-03.bag');
+% start_time = 300; 
+% end_time = 2300;
+%axis([0 (end_time - start_time)/resampling_fs -0.7 0.7])
+
+% filepath = fullfile('Estimation','bag','sinAllA1hz05_2016-05-23-15-28-28.bag');
+% start_time = 350; 
+% end_time = 1200;
+% axis([0 (end_time - start_time)/resampling_fs -1.3 1.3])
+
+% filepath = fullfile('Estimation','bag','sinQA1Hz05_2016-05-23-15-27-20.bag');
+% start_time = 400; 
+% end_time = 2200;
+% axis([0 (end_time - start_time)/resampling_fs -1.3 1.3])
+
+
+% filepath = fullfile('Estimation','bag','sinQNewA05Hz05_2016-05-23-15-20-56.bag');
+% start_time = 600; 
+% end_time = 1800;
+% axis([0 (end_time - start_time)/resampling_fs -0.8 0.8])
+
+filepath = fullfile('Estimation','bag','sinRA1Hz05_2016-05-23-15-23-40.bag');
+start_time = 300; 
+end_time = 1900;
+axis([0 (end_time - start_time)/resampling_fs -1.2 1.2])
+
+filepath = fullfile('Estimation','bag','sinRNewA05Hz05_2016-05-23-15-21-51.bag');
+start_time = 400; 
+end_time = 1200;
+axis([0 (end_time - start_time)/resampling_fs -1.2 1.2])
+
+
+%%    
 bag = rosbag(filepath);
 ref_bag = select(bag,'Topic','/reference');
 ref_msgs = readMessages(ref_bag);
@@ -39,22 +77,22 @@ states_time_series = timeseries(states_data, states_time);
 %%
 ref_data = ref_time_series.data;
 state_data = state_time_series.data;
-time = ref_time_series.Time - ref_time_series.Time(1);
+time = ref_time_series.Time(start_time:end_time) - ref_time_series.Time(start_time);
 legend_ent = {'\phi', '\theta', '\psi', 'p',  'q',  'r',  'd'};
 legend_ent_ref = {'\phi_{ref}', '\theta_{ref}', '\psi_{ref}', 'p_{ref}', 'q_{ref}', 'r_{ref}', 'd_{ref}'};
 units = {'rad', 'rad', 'rad', 'rad/s', 'rad/s', 'rad/s', 'm'};
 ylabel_ent = {'Angle', 'Angle', 'Angle', 'Angle Velocity', 'Angle Velocity', 'Angle Velocity', 'Depth'};
 for i=1:7
     h = figure(i);
-    plot(time(start_time:end),[ref_data(start_time:end,i), state_data(start_time:end,i)],'LineWidth',2)
-    h = legend({legend_ent{i}, legend_ent_ref{i}});
-    
+    plot(time,[ref_data(start_time:end_time,i), state_data(start_time:end_time,i)],'LineWidth',2)
+    h = legend({legend_ent_ref{i}, legend_ent{i}});
     set(h,'FontSize',ft);
     h = ylabel(strcat(ylabel_ent{i},'[', units{i}, ']'));
     set(h,'FontSize',ft);
     h = xlabel('Time [s]');
     set(h,'FontSize',ft);
+    title(legend_ent{i})
     set(gca,'FontSize',ft)
 end
-
-% print -fx -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/something.eps'
+%%
+print -f6 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/testSinRA05.eps'
