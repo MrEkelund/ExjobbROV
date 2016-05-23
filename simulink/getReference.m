@@ -3,6 +3,11 @@ bag = rosbag(filepath);
 resampling_fs = 100;
 ft = 30;
 
+filepath = fullfile('Estimation','bag','sinPa05hz05_2016-05-23-15-13-18.bag');
+start_time = 1; 
+%end_time = 100;
+    
+bag = rosbag(filepath);
 ref_bag = select(bag,'Topic','/reference');
 ref_msgs = readMessages(ref_bag);
 
@@ -41,7 +46,7 @@ units = {'rad', 'rad', 'rad', 'rad/s', 'rad/s', 'rad/s', 'm'};
 ylabel_ent = {'Angle', 'Angle', 'Angle', 'Angle Velocity', 'Angle Velocity', 'Angle Velocity', 'Depth'};
 for i=1:7
     h = figure(i);
-    plot(time,[ref_data(:,i), state_data(:,i)],'LineWidth',2)
+    plot(time(start_time:end),[ref_data(start_time:end,i), state_data(start_time:end,i)],'LineWidth',2)
     h = legend({legend_ent{i}, legend_ent_ref{i}});
     
     set(h,'FontSize',ft);
