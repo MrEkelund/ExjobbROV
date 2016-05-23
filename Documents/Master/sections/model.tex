@@ -601,7 +601,7 @@ From \eqref{eq:WithoutTranslation} it can be seen that $r$ is not affected by th
 \end{equation}
 
 For observability reasons it may be convenient to reparametrise the model by congregating some of the original parameters before conducting parameter estimation. To help with observability the reparametrisation $A_p = \Ix - \Kpdot$, $B_q = \Iy - \Mqdot$ and $C_r = \Iz - \Nrdot$ was introduced in \eqref{eq:WithoutTranslation} and \eqref{eq:restoring_forces_quat} was used to represent the restoring forces. These changes resulted in the following model structure
-\begin{subequations}
+\begin{subequations}\label{eq:quatModel}
 \begin{multline}
 \pdot = \frac{\thrusterfun{1} \distance{y}{1} - \thrusterfun{2} \distance{y}{2} + \thrusterfun{6} \distance{z}{6}}{A_p} + \frac{B z_B (2 \quatII \quatIII + 2 \quatI \quatO)}{A_p} + \\ \frac{p (\Kp + \Kpabsp \abs{p})}{A_p} + \frac{q r (B_q - C_r)}{A_p},
 \end{multline}
