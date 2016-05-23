@@ -72,12 +72,13 @@ The main control signals used during data collection tests were telegraph signal
 
 Data preprocessing was done by synchronising the data streams by checking the start and end times of each experiment, here chosen as the time of arrival of the first control signal. The sensor data was aligned such that the data sample of each sensor whose arrival time was closest to the starting time of the test was chosen as the initial sample of each data stream. Data outside the test interval was discarded. After alignment the data was resampled to a chosen frequency in this case 100 Hz. The sensor data was resampled using first-order hold while the control signals were resampled using zero-order hold since the control signal data only contained points were the control signals changed.  
 
-\begin{figure}[tbp]\todo{these figs need refs!}
+\begin{figure}[tbp]
 \centering
 \includegraphics[width=0.8\textwidth]{telegraph}
 \caption{An example of a telegraph signal which was sent to a thruster during data collection experiments.}
 \label{fig:telegraph}
 \end{figure}
+\todo{these figs need refs \figureref{fig:telegraph}!(todo maste tydligen ligga utanfor figurer)}
 
 
 \begin{figure}[tbp]
@@ -296,7 +297,7 @@ To handle noisy signals an error threshold was introduced. An error threshold me
 
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Estimated Parameters}\todo{Update Parameters, lz6 = 0}
 \Tableref{tab:parameterConstants} shows the know and measured parameters used in the \abbrROV. The estimated parameters used in the \abbrROV model are shown in \Tableref{tab:parameterEstimation}.
 

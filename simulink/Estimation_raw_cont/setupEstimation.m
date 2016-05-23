@@ -149,7 +149,7 @@ roll_pitch_parameters = [13:19, 23, 24];
 roll_pitch_cong_parameters = [13:19, 26, 27];
 all_parameters = [13:25];
 all_cong_parameters = [13:28];
-all_super_cong_parameters = [4:14, 16:17, 19:20, 22, 26:28];
+all_super_cong_parameters = [13:14, 16:17, 19:20, 22, 26:28];
 % Sets which parameters that will be estimated  
 switch estimation_mode
     case 'Yaw'
