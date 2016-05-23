@@ -64,7 +64,7 @@ f^{-1}(\etaVector,\nuVector) = \inertia \accVector^{\text{b}} + \damping(\nuVect
 where $\accVector^b$ is the commanded angular acceleration in the body-fixed frame \citep[p.451]{fossen2011}.
 \todo[inline]{Write some control theory. Exact lin... Background}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Open-Loop Control} \label{sec:openloop} \index{Open-Loop Control} \index{thrust allocation}
+\section{Open-Loop Control} \label{sec:openloop} \index{Open-Loop Control} \index{thrust allocation} \index{thruster geometry}
 The open loop control of the \abbrROV consists of an static thrust allocation matrix which is
 \begin{equation}
     \thrusterGeometryOnes[*] = \thrusterGeometryOnes[T](\thrusterGeometryOnes \thrusterGeometryOnes[T])^{-1}
@@ -398,7 +398,7 @@ for each controller separately.
   \caption{\label{fig:StepD}%
     Comparison between simulation and a real test of a smooth step reference in.}
 \end{figure}
-\todo[inlin]{Fix figures with real results.}
+\todo[inline]{Fix figures with real results.}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Simulated Performance}
 

@@ -157,6 +157,7 @@ private:
   void stateCallback(const std_msgs::Float64MultiArray &msg);
   void cmdVelCallback(const geometry_msgs::Twist &msg);
   void decIncDepthCallback(const std_msgs::Float32 &msg);
+  void enableCallback(const std_msgs::Bool &msg);
 
   Eigen::Matrix<double, 6, 1> calcRateControl();
   Eigen::Matrix<double, 6, 1> calcAttitudeControl();
@@ -207,7 +208,9 @@ private:
   ros::Subscriber _states_sub;
   ros::Subscriber _cmd_vel_sub;
   ros::Subscriber _dec_inc_depth_sub;
+  ros::Subscriber _enable_sub;
   ros::Publisher _control_pub;
   ros::Publisher _reference_pub;
+
 };
 #endif // CONTROLLER_H

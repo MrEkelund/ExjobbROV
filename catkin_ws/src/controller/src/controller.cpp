@@ -14,6 +14,9 @@ Controller::Controller() {
   _dec_inc_depth_sub = _node_handle.
       subscribe("/dec_inc_depth", 50, &Controller::decIncDepthCallback, this);
 
+  _enable_sub = _node_handle.
+      subscribe("rovio/enable_thrusters", 50, &Controller::enableCallback, this);
+
   _control_pub = _node_handle.
       advertise<std_msgs::UInt16MultiArray>("/rovio/thrusters", 50);
   _reference_pub = _node_handle.
@@ -86,7 +89,7 @@ void Controller::calcJdot() {
   _J_dot(1,2) = -_cphi*euler_angles_dot(0);
   _J_dot(2,0) = 0;
   _J_dot(2,1) = (_cphi*_cth*euler_angles_dot(0)+_sphi*_sth*euler_angles_dot(1))/(_cth*_cth);
-  _J_dot(2,2) = (-_sphi*_cth*euler_angles_dot(0)+_cphi*_sth*euler_angles_dot(1)/(_cth*_cth);
+  _J_dot(2,2) = (-_sphi*_cth*euler_angles_dot(0)+_cphi*_sth*euler_angles_dot(1))/(_cth*_cth);
 }
 
 // NED to body for moments
@@ -163,6 +166,7 @@ void Controller::interpolate(const Eigen::Matrix<double, 6, 1>& moments, Eigen::
 //****** Reference signals ****************************************************
 void Controller::calcReferenceSignals() {
   if (_phi_reference.enable) {
+    _rate_integral << 0, 0, 0;
     switch (_phi_reference.reference_signal) {
       case 1:
       _euler_angles_ref(0) = calcStepReference(_phi_reference);
@@ -178,6 +182,7 @@ void Controller::calcReferenceSignals() {
       break;
     }
   } else if (_p_reference.enable) {
+    _attitude_integral << 0, 0, 0;
     switch (_p_reference.reference_signal) {
       case 1:
       _ang_vel_ref(0) = calcStepReference(_p_reference);
@@ -199,6 +204,7 @@ void Controller::calcReferenceSignals() {
     _ang_vel_ref(0) = _ang_vel(0);
   }
   if (_theta_reference.enable) {
+        _rate_integral << 0, 0, 0;
     switch (_theta_reference.reference_signal) {
       case 1:
       _euler_angles_ref(1) = calcStepReference(_theta_reference);
@@ -214,6 +220,7 @@ void Controller::calcReferenceSignals() {
       break;
     }
   } else if (_q_reference.enable) {
+    _attitude_integral << 0, 0, 0;
     switch (_q_reference.reference_signal) {
       case 1:
       _ang_vel_ref(1) = calcStepReference(_q_reference);
@@ -236,6 +243,7 @@ void Controller::calcReferenceSignals() {
   }
 
   if (_psi_reference.enable) {
+        _rate_integral << 0, 0, 0;
     switch (_psi_reference.reference_signal) {
       case 1:
       _euler_angles_ref(2) = calcStepReference(_psi_reference);
@@ -251,6 +259,7 @@ void Controller::calcReferenceSignals() {
       break;
     }
   } else if (_r_reference.enable) {
+    _attitude_integral << 0, 0, 0;
     switch (_r_reference.reference_signal) {
       case 1:
       _ang_vel_ref(2) = calcStepReference(_r_reference);
@@ -271,6 +280,23 @@ void Controller::calcReferenceSignals() {
     _euler_angles_ref(2) = _euler_angles(2);
     _ang_vel_ref(2) = _ang_vel(2);
   }
+  if (_d_reference.enable) {
+    switch (_d_reference.reference_signal) {
+      case 1:
+      _depth_ref = calcStepReference(_d_reference);
+      break;
+      case 2:
+      _depth_ref = calcSinReference(_d_reference);
+      break;
+      case 3:
+      _depth_ref = _d_reference.constant;
+      break;
+      default:
+      _depth_ref = _d_reference.constant;
+      break;
+    }
+  }
+
 }
 
 double Controller::calcStepReference(reference_t& ref_struct) {
@@ -331,6 +357,13 @@ bool Controller::checkReferenceValues() {
     }
   return true;
 }
+
+void Controller::enableCallback(const std_msgs::Bool &msg) {
+  _rate_integral << 0, 0, 0;
+  _attitude_integral << 0, 0, 0;
+  _depth_integral = 0;
+}
+
 
 void Controller::configCallback(controller::controllerConfig &update, uint level) {
   _config = update;
@@ -466,7 +499,9 @@ void Controller::Controller::cmdVelCallback(const geometry_msgs::Twist &msg) {
 }
 
 void Controller::Controller::decIncDepthCallback(const std_msgs::Float32 &msg) {
+  if(!_d_reference.enable){
   _depth_ref = _depth_ref + 0.1*msg.data;
+}
 }
 
 //****** Controllers **********************************************************
@@ -659,6 +694,8 @@ void Controller::spin() {
     switch (_config.controller) {
       case 0:
       control_signals = calcDecControll();
+      _rate_integral << 0, 0, 0;
+      _attitude_integral << 0, 0, 0;
       break;
       case 1:
       control_signals = calcRateControl();

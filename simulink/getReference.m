@@ -1,4 +1,4 @@
-filepath= fullfile('Estimation','bag','ratetest2_2016-05-20-08-30-09.bag');
+filepath= fullfile('Estimation','bag','sinPa05hz05_2016-05-23-15-13-18.bag');
 bag = rosbag(filepath);
 resampling_fs = 100;
 ft = 30;
@@ -51,3 +51,5 @@ for i=1:7
     set(h,'FontSize',ft);
     set(gca,'FontSize',ft)
 end
+
+% print -fx -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/something.eps'
