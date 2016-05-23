@@ -2,7 +2,7 @@
 This Chapter describes normal operation of the \abbrROV, how to implement new controllers and some tips for troubleshooting.
 
 \section{Wiring} \label{sec:wiring}
-\todo[inline]{Write about how wire the \abbrROV} 
+\todo[inline]{Write about how wire the \abbrROV}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Start up of the \abbrROV}
 For starting the \abbrROV connect all cables according to \Sectionref{sec:wiring}.
@@ -22,7 +22,11 @@ Then in a new terminal navigate to the catkin\_ws folder and run the workstation
  ./startworkstation.sh
 \end{lstlisting} 
 \section{Shutdown of the \abbrROV}\todo{Finnish this section}
-To shut down the \abbrROV 
+To shut down the \abbrROV run the following command
+\begin{lstlisting}
+ ./shutdownrasp.sh
+\end{lstlisting}
+otherwise can the micro SD card in the Raspberry pi take damage.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Operating the ROV}
 

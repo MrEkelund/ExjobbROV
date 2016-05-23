@@ -57,14 +57,14 @@ to control. The control scheme for the \abbrROV can be seen in \Figureref{fig:co
 	\label{fig:control_system}
 \end{figure}
 
-Exact linearisation is when the dynamics of the system is compensated by a non-linear control signal and thus can linear control principles be used \citep{reglerteori}. Using the model structure from \Chapterref{cha:modelling} and the estimated parameters from \Chapterref{cha:parameterEstimation} the exact linearisation for the \abbrROV  is defined as
+Exact linearisation is when the dynamics of the system are compensated by a non-linear control signal and thus can linear control principles be used \citep{reglerteori}. Using the model structure from \Chapterref{cha:modelling} and the estimated parameters from \Chapterref{cha:parameterEstimation} the exact linearisation for the \abbrROV  is defined as
 \begin{equation}
 f^{-1}(\etaVector,\nuVector) = \inertia \accVector^{\text{b}} + \damping(\nuVector) + \coriolis(\nuVector) + \gravity(\etaVector)
 \end{equation}
 where $\accVector^b$ is the commanded angular acceleration in the body-fixed frame \citep[p.451]{fossen2011}.
 \todo[inline]{Write some control theory. Exact lin... Background}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Open-Loop Control} \label{sec:openloop} \index{Open-Loop Control}
+\section{Open-Loop Control} \label{sec:openloop} \index{Open-Loop Control} \index{thrust allocation}
 The open loop control of the \abbrROV consists of an static thrust allocation matrix which is
 \begin{equation}
     \thrusterGeometryOnes[*] = \thrusterGeometryOnes[T](\thrusterGeometryOnes \thrusterGeometryOnes[T])^{-1}
@@ -132,8 +132,7 @@ then are the \abbrPI angular velocities controller defined as
 	\boldsymbol{T}^{-1}_\theta(\eulerAngles)(-K_{\text{p}}*\nuTildeAng - K_{\text{i}}\int \! \nuTildeAng \, \mathrm{d}t)
 	\end{bmatrix}
 \end{equation}
-where $K_{\text{p}}$ and $K_{\text{i}}^b$ are the design parameters \citep{fossen2011}.
-\todo[inline]{page on fossen cite}
+where $K_{\text{p}}$ and $K_{\text{i}}^b$ are positive definite design matrices \citep[p. 453]{fossen2011}.
 Using the exact linearisation for the angular velocities controller and open-loop control for the linear velocities, are the control signals defined as
 \begin{equation}
 	u_{\etaVectorAng} = f^{-1}(\etaVector,\nuVector) + \thrusterGeometryOnes[*] \begin{bmatrix} \nuVectorLin \\ \zeroCol{3} \end{bmatrix}	
@@ -142,7 +141,7 @@ or the control signals can be defined as
 \begin{equation}
 	u_{\etaVectorAng} = \accVector^b + \thrusterGeometryOnes[*] \begin{bmatrix} \nuVectorLin \\ \zeroCol{3} \end{bmatrix}
 \end{equation}
-if the exact linearisation is not wanted. \Figureref{fig:ratecontroller} illustrates how the angular velocities controller are implemented with the open-loop control of the linear velocities.
+if the exact linearisation is not wanted. \Figureref{fig:ratecontroller} illustrates how the angular velocities controller is implemented with the open-loop control of the linear velocities.
 \begin{figure}
 	\centering
 	\begin{tikzpicture}[auto, thick, node distance=2cm, >=latex',%
@@ -211,7 +210,7 @@ This gives the \abbrPID attitude controller
 	\boldsymbol{T}^{-1}_\theta(\eulerAngles)(-K_{\text{p}} \etaTildeAng - K_{\text{i}}\int \! \etaTildeAng \, \mathrm{d}t - K_{\text{d}} \etaTildeAngdot - \dot{\boldsymbol{T}}_\theta(\eulerAngles) \etaVectorAng)
 	\end{bmatrix}
 \end{equation}
-where $K_{\text{p}}$, $K_{\text{i}}$ and $K_{\text{d}}$ are design parameters \citep{fossen2011}. 
+where $K_{\text{p}}$, $K_{\text{i}}$ and $K_{\text{d}}$ are positive definite design matrices \citep[p. 453]{fossen2011}. 
 Using the open-loop control of the linear velocities with exact linearisation of the attitude controller gives
 \begin{equation}
 	u_{\etaVectorAng} = f^{-1}(\etaVector,\nuVector) + \thrusterGeometryOnes[*] \begin{bmatrix} \nuVectorLin \\ \zeroCol{3} \end{bmatrix}
@@ -337,10 +336,6 @@ where $K_{\text{p}}$ and $K_{\text{i}}$ are design parameters. The rotation matr
     \caption{The \abbrPI depth controller can be used when the open-loop control is engaged or when the other controllers are used. In this figure the F symbolises the chosen way of controlling the \abbrROV.} 
     \label{fig:depthcontroller}
 \end{figure}
-\todo[inline]{fix in \Figureref{fig:depthcontroller} and fix block names.}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Linear-Quadratic Controller}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Benchmarking}
@@ -348,11 +343,65 @@ To be able to draw any conclusions about the performance of the controllers the 
 \begin{description}
 \item[Constant] A constant reference was applied to all \abbrDOF.
 \item[Sine] A $\sin(\cdot)$ signal  was applied to one \abbrDOF at the time and then to all \abbrDOF. Two different $\sin$ signals were used, with amplitude {\color{red} 9999999, 1111111} and frequency {\color{red} 9999999, 11111} $\hertz$ respectively. \todo[inline]{fix amplitude and frequency}
-\item[Smooth step] A smooth step was applied to one \abbrDOF at the time and then to all \abbrDOF at the same time. The used smooth step was the same as in \citet{robotics} \todo[inline]{fix reference}. The smooth step parameters was $q_{\text{0}} = $, $q_{\text{f}}$, $t_{\text{s}} = $ ,$t_{\text{f}} = $ and $V = 1.5 (q_{\text{f}} - q_{\text{0}})/(t_{\text{f}} - t_{\text{s}}))$ \todo[inline]{fix parameter values}.  
+\item[Smooth step] A smooth step was applied to one \abbrDOF at the time and then to all \abbrDOF at the same time. The used smooth step was the same as in \citet[p. 192-195]{robotics}. The smooth step parameters was $q_{\text{0}} = $, $q_{\text{f}}$, $t_{\text{s}} = $ ,$t_{\text{f}} = $ and $V = 1.5 (q_{\text{f}} - q_{\text{0}})/(t_{\text{f}} - t_{\text{s}}))$ \todo[inline]{fix parameter values}.  
 \end{description}
 for each controller separately.
+
+\begin{figure}[tbp]
+  \centering
+  \subfloat[][\label{fig:testStepPhi} An step was applied to $\rollAngle$ .]{\includegraphics[width=0.4\textwidth]{velocityComparep}}
+  \qquad
+  \subfloat[][\label{fig:simStepPhi} An step was applied to the simulated \abbrROV in $\rollAngle$.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
+  \qquad
+  \subfloat[][\label{fig:testStepTheta} An step was applied to $\pitchAngle$ .]{\includegraphics[width=0.4\textwidth]{velocityComparep}}
+  \qquad
+  \subfloat[][\label{fig:simStepTheta} An step was applied to the simulated \abbrROV in $\pitchAngle$.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
+  \qquad
+  \subfloat[][\label{fig:testStepPsi} An step was applied to $\yawAngle$ .]{\includegraphics[width=0.4\textwidth]{velocityComparep}}
+  \qquad
+  \subfloat[][\label{fig:simStepPsi} An step was applied to the simulated \abbrROV in $\yawAngle$.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
+    \qquad
+  \subfloat[][\label{fig:testStepAll} An step was applied to all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{velocityComparep}}
+  \qquad
+  \subfloat[][\label{fig:simStepAll} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
+  \caption{\label{fig:StepAttitude}%
+    Comparison between simulation and a real test of a smooth step reference in.}
+\end{figure}
+
+
+\begin{figure}[tbp]
+  \centering
+  \subfloat[][\label{fig:testStepP} An step was applied to $\rollVelocity$ .]{\includegraphics[width=0.4\textwidth]{velocityComparep}}
+  \qquad
+  \subfloat[][\label{fig:simStepP} An step was applied to the simulated \abbrROV in $\rollVelocity$.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
+  \qquad
+  \subfloat[][\label{fig:testStepQ} An step was applied to $\pitchVelocity$ .]{\includegraphics[width=0.4\textwidth]{velocityComparep}}
+  \qquad
+  \subfloat[][\label{fig:simStepQ} An step was applied to the simulated \abbrROV in $\pitchVelocity$.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
+  \qquad
+  \subfloat[][\label{fig:testStepR} An step was applied to $\yawVelocity$ .]{\includegraphics[width=0.4\textwidth]{velocityComparep}}
+  \qquad
+  \subfloat[][\label{fig:simStepR} An step was applied to the simulated \abbrROV in $\yawVelocity$.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
+    \qquad
+  \subfloat[][\label{fig:testStepAllRate} An step was applied to all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{velocityComparep}}
+  \qquad
+  \subfloat[][\label{fig:simStepAllRate} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
+  \caption{\label{fig:StepRate}%
+    Comparison between simulation and a real test of a smooth step reference in.}
+\end{figure}
+
+\begin{figure}[tbp]
+  \centering
+  \subfloat[][\label{fig:testStepD} An step was applied to all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{velocityComparep}}
+  \qquad
+  \subfloat[][\label{fig:simStepD} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
+  \caption{\label{fig:StepD}%
+    Comparison between simulation and a real test of a smooth step reference in.}
+\end{figure}
+\todo[inlin]{Fix figures with real results.}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Simulated Performance}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Test Performance}
