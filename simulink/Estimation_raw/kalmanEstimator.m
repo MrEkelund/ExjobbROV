@@ -3,8 +3,8 @@
  Ts = 1/fs;
  data = loadAll0418(0,fs);
 %%
-nr_sets=4;
-nr_iter=1;
+nr_sets=2;
+nr_iter=5;
 clear params
 for iter=1:nr_iter
     display(sprintf('Iteration number %i',iter))
@@ -32,7 +32,7 @@ for iter=1:nr_iter
             0.000001*eye(4),0.000001);  %Moment arms
         %measurement covariance
         R = blkdiag(...
-            0.01*eye(3),...    %Gyro
+            0.001*eye(3),...    %Gyro
             0.1*eye(3),...    %Acc
             100*eye(3));   %Mag
         state = zeros(25,2*length(measurements));
@@ -58,7 +58,7 @@ for iter=1:nr_iter
             ly1=0.11;
             ly3=0.11;
             lx5=0.17;%0.2;
-            lz6=0.11;
+            lz6=0;%.11;
             
             state(11:end,1) =...
                 [zb; Kp; Kp_abs_p; Mq;...
