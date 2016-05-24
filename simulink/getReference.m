@@ -70,16 +70,6 @@ ft = 30;
 % end_time = 7960;
 % axis([0 (end_time - start_time)/resampling_fs 0 3])
 
-filepath = fullfile('Estimation','bag','attitudestepallamp1_2016-05-23-16-45-03.bag');
-start_time = 1; 
-end_time = 6000;
-axis([0 (end_time - start_time)/resampling_fs 0 3])
-
-filepath = fullfile('Estimation','bag','attitudestepallamp1_2016-05-23-16-45-03.bag');
-start_time = 1; 
-end_time = 6000;
-axis([0 (end_time - start_time)/resampling_fs 0 3])
-
 %%    
 bag = rosbag(filepath);
 ref_bag = select(bag,'Topic','/reference');
@@ -131,4 +121,4 @@ for i=1:7
     set(gca,'FontSize',ft)
 end
 %%
-%print -f7 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/testConstantD2.eps'
+% print -f6 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/testStepAllRs3e10a1.eps'
