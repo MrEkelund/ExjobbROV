@@ -3,8 +3,8 @@
  Ts = 1/fs;
  data = loadAll0418(0,fs);
 %%
-nr_sets=2;
-nr_iter=5;
+nr_sets=4;
+nr_iter=1;
 clear params
 for iter=1:nr_iter
     display(sprintf('Iteration number %i',iter))
@@ -32,7 +32,7 @@ for iter=1:nr_iter
             0.000001*eye(4),0.000001);  %Moment arms
         %measurement covariance
         R = blkdiag(...
-            0.001*eye(3),...    %Gyro
+            0.01*eye(3),...    %Gyro
             0.1*eye(3),...    %Acc
             100*eye(3));   %Mag
         state = zeros(25,2*length(measurements));
@@ -58,7 +58,7 @@ for iter=1:nr_iter
             ly1=0.11;
             ly3=0.11;
             lx5=0.17;%0.2;
-            lz6=0;%.11;
+            lz6=0.11;
             
             state(11:end,1) =...
                 [zb; Kp; Kp_abs_p; Mq;...
@@ -168,6 +168,7 @@ if(paramsOK)
         legend({'Simulated data','Validation data'},'FontSize',30)
         str = sprintf('Data set %i p: Fit %f %%',k,100*goodnessOfFit(sim_data(:,1),y_valid(:,1),'NMSE'));
         title(str,'FontSize',30)
+        set(gca,'FontSize',30)
         %subplot(length(data.exp),3,3*k-1)
         figure(3*k-1)
         plot(t,[sim_data(:,2),y_valid(:,2)],'LineWidth',2)
@@ -176,6 +177,7 @@ if(paramsOK)
         legend({'Simulated data','Validation data'},'FontSize',30)
         str = sprintf('Data set %i q: Fit %f %%',k,100*goodnessOfFit(sim_data(:,2),y_valid(:,2),'NMSE'));
         title(str,'FontSize',30)
+        set(gca,'FontSize',30)
         %subplot(length(data.exp),3,3*k)
         figure(3*k)
         plot(t,[sim_data(:,3),y_valid(:,3)],'LineWidth',2)
@@ -184,6 +186,7 @@ if(paramsOK)
         legend({'Simulated data','Validation data'},'FontSize',30)
         str = sprintf('Data set %i r: Fit %f %%',k,100*goodnessOfFit(sim_data(:,3),y_valid(:,3),'NMSE'));
         title(str,'FontSize',30)
+        set(gca,'FontSize',30)
         
     end
 end
