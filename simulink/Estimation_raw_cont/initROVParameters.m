@@ -17,7 +17,7 @@ if isempty(files)
     ly3 = 0.11;
     lx5 = 0.2;
     ly4 = 0.11;
-    lz6 = 0;
+    lz6 = 0.11;% = 0;
     
     % Parameters that will be estimated
         zb = -0.01;
