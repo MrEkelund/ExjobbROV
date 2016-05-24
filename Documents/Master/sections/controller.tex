@@ -195,6 +195,7 @@ if the exact linearisation is not wanted. \Figureref{fig:ratecontroller} illustr
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Attitude Controller} \index{PID@\abbrPID!abbreviation} \index{Attitude Controller}
+\todo[inline]{Write some fluff}
 Using the relations in \Chapterref{cha:modelling} the derivative of the attitude error can be defined as 
 \begin{equation}
 \etaTildeAngdot = \dot{\boldsymbol{T}}_\theta(\eulerAngles)\etaVectorAng
@@ -341,112 +342,114 @@ where $K_{\text{p}}$ and $K_{\text{i}}$ are design parameters. The rotation matr
 \section{Benchmarking}
 To be able to draw any conclusions about the performance of the controllers the following reference signals was used
 \begin{description}
-\item[Constant] A constant reference was applied to all \abbrDOF.
-\item[Sine] A $\sin(\cdot)$ signal  was applied to one \abbrDOF at the time and then to all \abbrDOF. Two different $\sin$ signals were used, with amplitude {\color{red} 9999999, 1111111} and frequency {\color{red} 9999999, 11111} $\hertz$ respectively. \todo[inline]{fix amplitude and frequency}
-\item[Smooth step] A smooth step was applied to one \abbrDOF at the time and then to all \abbrDOF at the same time. The used smooth step was the same as in \citet[p. 192-195]{robotics}. The smooth step parameters was $q_{\text{0}} = $, $q_{\text{f}}$, $t_{\text{s}} = $ ,$t_{\text{f}} = $ and $V = 1.5 (q_{\text{f}} - q_{\text{0}})/(t_{\text{f}} - t_{\text{s}}))$ \todo[inline]{fix parameter values}.  
+\item[Constant] A constant reference was applied to all \abbrDOF. This reference signal was only used for trimming the controllers initially, thus will no results be presented.
+
+\item[Sine] A $\sin(\cdot)$ signal was applied to one \abbrDOF at the time and then to all \abbrDOF. Two $\sin$ signals with different amplitudes were used, amplitude $1$ and $0.5$. The used frequency was $0.5 \hertz$.
+
+\item[Smooth step] A smooth step was applied to one \abbrDOF at the time and then to all \abbrDOF at the same time. The used smooth step was the same as in \citet[p. 192-195]{robotics}. The smooth step parameters were $q_{\text{0}} = 0$, $q_{\text{f}} = 1$, $t_{\text{s}} = 3$ ,$t_{\text{f}} = 15$ and $V = 1.5 (q_{\text{f}} - q_{\text{0}})/(t_{\text{f}} - t_{\text{s}}))$
 \end{description}
-for each controller separately.
-%%%%%%%%%%%%%%%%%%%%%%%%%%%Attitude%%%%%%%%%%%%%%%% velocityCompareq
+for each controller separately. \Figureref{fig:StepAttitude} and \Figureref{fig:StepAllAttitude} shows the smooth step reference signal for the attitude controller, both in real test case and simulation. \Figureref{fig:Sin05Attitude} - \Figureref{fig:SinAll05Attitude} illustrates the sine reference signal for the when using the attitude controller.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%Attitude%%%%%%%%%%%%%%%% 
 \begin{figure}[tbp]
   \centering
-  \subfloat[][\label{fig:testStepP} An step was applied to $\rollVelocity$ .]{\includegraphics[width=0.4\textwidth]{testStepPs3e10a1}}
+  \subfloat[][\label{fig:testStepRoll} An step was applied to $\rollVelocity$ .]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
   \qquad
-  \subfloat[][\label{fig:simStepP} An step was applied to the simulated \abbrROV in $\rollVelocity$.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
+  \subfloat[][\label{fig:simStepRoll} An step was applied to the simulated \abbrROV in $\rollVelocity$.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
   \qquad
-  \subfloat[][\label{fig:testStepQ} An step was applied to $\pitchVelocity$ .]{\includegraphics[width=0.4\textwidth]{testStepQs3e10a1}}
+  \subfloat[][\label{fig:testStepPitch} An step was applied to $\pitchVelocity$ .]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
   \qquad
-  \subfloat[][\label{fig:simStepQ} An step was applied to the simulated \abbrROV in $\pitchVelocity$.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
+  \subfloat[][\label{fig:simStepPitch} An step was applied to the simulated \abbrROV in $\pitchVelocity$.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
   \qquad
-  \subfloat[][\label{fig:testStepR} An step was applied to $\yawVelocity$ .]{\includegraphics[width=0.4\textwidth]{testStepRs3e10a1}}
+  \subfloat[][\label{fig:testStepYaw} An step was applied to $\yawVelocity$ .]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
   \qquad
-  \subfloat[][\label{fig:simStepR} An step was applied to the simulated \abbrROV in $\yawVelocity$.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
-   \caption{\label{fig:StepRate}%
+  \subfloat[][\label{fig:simStepYaw} An step was applied to the simulated \abbrROV in $\yawVelocity$.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
+   \caption{\label{fig:StepAttitude}%
     step 3 dof A1.}
 \end{figure}
 
 \begin{figure}
 \centering
-  \subfloat[][\label{fig:testStepAllPRate} An step was applied to all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{testStepAllPs3e10a1}}
+  \subfloat[][\label{fig:testStepAllRollAttitude} An step was applied to all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
   \qquad
-  \subfloat[][\label{fig:simStepAllPRate} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
+  \subfloat[][\label{fig:simStepAllRollAttitude} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
   \qquad
-  \subfloat[][\label{fig:simStepAllQRate} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
+  \subfloat[][\label{fig:TestStepAllPitchAttitude} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
   \qquad
-  \subfloat[][\label{fig:simStepAllQRate} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
+  \subfloat[][\label{fig:simStepAllPitchAttitude} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
   \qquad
-  \subfloat[][\label{fig:simStepAllRRate} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
+  \subfloat[][\label{fig:TestStepAllYawAttitude} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
   \qquad
-  \subfloat[][\label{fig:simStepAllRRate} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
-  \caption{\label{fig:StepAllRate}% 
+  \subfloat[][\label{fig:simStepAllYawAttitude} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
+  \caption{\label{fig:StepAllAttitude}% 
   step All dof A1}
 \end{figure}
 
 \begin{figure}[tbp]
   \centering
-  \subfloat[][\label{fig:testSinP} An step was applied to $\rollVelocity$ .]{\includegraphics[width=0.4\textwidth]{testSinPA1}}
+  \subfloat[][\label{fig:testSinRoll} An step was applied to $\rollVelocity$ .]{\includegraphics[width=0.4\textwidth]{testSinPA1}}
   \qquad
-  \subfloat[][\label{fig:simSinP} An step was applied to the simulated \abbrROV in $\rollVelocity$.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
+  \subfloat[][\label{fig:simSinRoll} An step was applied to the simulated \abbrROV in $\rollVelocity$.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
   \qquad
-  \subfloat[][\label{fig:testSinQ} An step was applied to $\pitchVelocity$ .]{\includegraphics[width=0.4\textwidth]{testSinQA1}}
+  \subfloat[][\label{fig:testSinPitch} An step was applied to $\pitchVelocity$ .]{\includegraphics[width=0.4\textwidth]{testSinQA1}}
   \qquad
-  \subfloat[][\label{fig:simSinQ} An step was applied to the simulated \abbrROV in $\pitchVelocity$.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
+  \subfloat[][\label{fig:simSinPitch} An step was applied to the simulated \abbrROV in $\pitchVelocity$.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
   \qquad
-  \subfloat[][\label{fig:testSinR} An step was applied to $\yawVelocity$ .]{\includegraphics[width=0.4\textwidth]{testSinRA1}}
+  \subfloat[][\label{fig:testSinYaw} An step was applied to $\yawVelocity$ .]{\includegraphics[width=0.4\textwidth]{testSinRA1}}
   \qquad
-  \subfloat[][\label{fig:simSinR} An step was applied to the simulated \abbrROV in $\yawVelocity$.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
-    \caption{\label{fig:Sin1Rate}% 
+  \subfloat[][\label{fig:simSinYaw} An step was applied to the simulated \abbrROV in $\yawVelocity$.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
+    \caption{\label{fig:Sin1Attitude}% 
     sin 3 dof A1.}
 \end{figure}
 
 \begin{figure}
 \centering
-  \subfloat[][\label{fig:testSinAllPRate} An step was applied to all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{testSinAllPA1}}
+  \subfloat[][\label{fig:testSinAllRollAttitude} An step was applied to all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{testSinAllPA1}}
   \qquad
-  \subfloat[][\label{fig:simSinAllPRate} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
+  \subfloat[][\label{fig:simSinAllRollAttitude} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
   \qquad
-  \subfloat[][\label{fig:testSinAllQRate} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
+  \subfloat[][\label{fig:testSinAllPitchAttitude} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
   \qquad
-  \subfloat[][\label{fig:simSinAllQRate} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
+  \subfloat[][\label{fig:simSinAllPitchAttitude} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
   \qquad
-  \subfloat[][\label{fig:testSinAllRRate} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
+  \subfloat[][\label{fig:testSinAllYawAttitude} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
   \qquad
-  \subfloat[][\label{fig:simSinAllRRate} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
-  \caption{\label{fig:SinAllRate}%
+  \subfloat[][\label{fig:simSinAllYawAttitude} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
+  \caption{\label{fig:SinAllAttitude}%
   sin All dof A1.}
 \end{figure}
 
 
 \begin{figure}[tbp]
   \centering
-  \subfloat[][\label{fig:testSin05P} An step was applied to $\rollVelocity$ .]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
+  \subfloat[][\label{fig:testSin05Roll} An step was applied to $\rollVelocity$ .]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
   \qquad
-  \subfloat[][\label{fig:simSin05P} An step was applied to the simulated \abbrROV in $\rollVelocity$.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
+  \subfloat[][\label{fig:simSin05Roll} An step was applied to the simulated \abbrROV in $\rollVelocity$.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
   \qquad
-  \subfloat[][\label{fig:testSin05Q} An step was applied to $\pitchVelocity$ .]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
+  \subfloat[][\label{fig:testSin05Pitch} An step was applied to $\pitchVelocity$ .]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
   \qquad
-  \subfloat[][\label{fig:simSin05Q} An step was applied to the simulated \abbrROV in $\pitchVelocity$.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
+  \subfloat[][\label{fig:simSin05Pitch} An step was applied to the simulated \abbrROV in $\pitchVelocity$.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
   \qquad
-  \subfloat[][\label{fig:testSin05R} An step was applied to $\yawVelocity$ .]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
+  \subfloat[][\label{fig:testSin05Yaw} An step was applied to $\yawVelocity$ .]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
   \qquad
-  \subfloat[][\label{fig:simSin50R} An step was applied to the simulated \abbrROV in $\yawVelocity$.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
-    \caption{\label{fig:Sin05Rate}%
+  \subfloat[][\label{fig:simSin50Yaw} An step was applied to the simulated \abbrROV in $\yawVelocity$.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
+    \caption{\label{fig:Sin05Attitude}%
     sin 3 dof A05.}
 \end{figure}
 
 \begin{figure}
 \centering
-  \subfloat[][\label{fig:testSinAll05PRate} An step was applied to all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
+  \subfloat[][\label{fig:testSinAll05RollAttitude} An step was applied to all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
   \qquad
-  \subfloat[][\label{fig:simSinAll05PRate} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
+  \subfloat[][\label{fig:simSinAll05RollAttitude} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
   \qquad
-  \subfloat[][\label{fig:TestSinAll05QRate} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
+  \subfloat[][\label{fig:TestSinAll05PitchAttitude} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
   \qquad
-  \subfloat[][\label{fig:simSinAll05QRate} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
+  \subfloat[][\label{fig:simSinAll05PitchAttitude} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
   \qquad
-  \subfloat[][\label{fig:TestSinAll05RRate} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
+  \subfloat[][\label{fig:TestSinAll05YawAttitude} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
   \qquad
-  \subfloat[][\label{fig:simSinAll05RRate} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
-  \caption{\label{fig:SinAll05Rate}%
+  \subfloat[][\label{fig:simSinAll05YawAttitude} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
+  \caption{\label{fig:SinAll05Attitude}%
   sin All dof A05}
 \end{figure}
 
@@ -475,11 +478,11 @@ for each controller separately.
   \qquad
   \subfloat[][\label{fig:simStepAllPRate} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{simStepAllPs3e10a1}}
   \qquad
-  \subfloat[][\label{fig:simStepAllQRate} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{testStepAllQs3e10a1}}
+  \subfloat[][\label{fig:testStepAllQRate} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{testStepAllQs3e10a1}}
   \qquad
   \subfloat[][\label{fig:simStepAllQRate} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{simStepAllQs3e10a1}}
   \qquad
-  \subfloat[][\label{fig:simStepAllRRate} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{testStepAllRs3e10a1}}
+  \subfloat[][\label{fig:testStepAllRRate} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{testStepAllRs3e10a1}}
   \qquad
   \subfloat[][\label{fig:simStepAllRRate} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{simStepAllRs3e10a1}}
   \caption{\label{fig:StepAllRate}% 

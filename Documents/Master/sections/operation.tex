@@ -38,7 +38,6 @@ otherwise can the micro SD card in the Raspberry pi take damage.
 For logging data rqt-bag or the supplied script can be used. In rqt on the workstation start rqt-bag by Plugins $\rightarrow$ Logging $\rightarrow$ Bag. Start the recording of data by pressing the red circle. A menu of available topics is showed, select the topics that you want to record. Then give the logfile a name in the pop-up.
 To stop recording data press the red circle and close Bag by Running $\rightarrow$ Close:Bag. To use the supplied logging scripts type 
 \begin{lstlisting}
-cd pathToCatkinWs
 ./test.sh
 \end{lstlisting}
 in a terminal window and follow the instructions.
@@ -93,22 +92,12 @@ There are several different \abbrLED lights on the HKPilot Mega 2.7, \Tableref{t
 \section{New Parameter Estimation and New Controllers}
 
 \subsection{New Parameter Estimation}
+When a new parameter estimation is done the exact linearisation has to be updated. The model parameters that ought to be updated is in controller.h. If the simulator shall be used, ought the EstimatedParams.mat file be updated.
 
 \subsection{New Controllers}
 \todo{This i no longer up-to date}
-To implement a new controller open the Simulink file Controller.slx. Construct the controller in a suitable location. Then expand the switch that chooses what controller that is used, see \Figureref{fig:controller_simulink}. Connect the new controller to the switch to enable that the controller can be chosen from dynamic reconfigure when operating the \abbrROV. Then modify the matlab\_controller.config file accordingly. The matlab\_controller.config file that ought to be modified is located in ExjobbROV/catkin\_ws/src/bluerov/config/matlab\_controller.config.
-
-\begin{figure}
-\centering
-\begin{tikzpicture}
-    \node[anchor=south west,inner sep=0] (image) at (0,0) {\includegraphics[trim={18cm 7cm 2.5cm 9cm},clip,width=0.9\textwidth]{Controller}};
-    \begin{scope}[x={(image.south east)},y={(image.north west)}]
-        \draw[red,ultra thick,rounded corners] (0.20,0.48) rectangle (0.28,0.75);
-    \end{scope}
-\end{tikzpicture}
-    \caption{When implementing new controllers in the control node the red marked switch has to be expanded. The new controller ought to be connected to the new connector for enabling the usage of the controller.}
-    \label{fig:controller_simulink}
-\end{figure}
+To implement a new controller edit the controller source files controller.cpp and controller.h. 
+For easy online trimming use dynamic reconfigure parameters in the controller. Modify the controller.config file so that all wanted parameters can be modified. The controller.config file that ought to be modified is located in ExjobbROV/catkin\_ws/src/controller/config/controller.config. To implement the new controller in the simulator modify the simulator.slx file located in ExjobbROV/simulink.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Known Issues and Troubleshooting}

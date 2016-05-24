@@ -68,7 +68,7 @@ The added parameters are modelled as static states that don't move with time giv
 Since the \abbrEKF tries to minimise state variance it will also try to estimate the parameters $\boldsymbol{\theta}$ since they are included in the state vector \citep{Roger}.
 
 \subsection{Implementation}\label{sec:KalmanEstimatorImpl}
-The reparametrised model from \Sectionref{sec:angLinEstim} was used to model $\etaVector$ and $\nuVector$. Measurement equations were taken from \Chapterref{cha:sensor_fusion}. Each model parameter was modelled as a state using a constant position motion model and the motion model was discretised using the Euler forward discretisation method. The complete discrete model is
+The reparametrised model \eqref{eq:quatModel} was used to model $\etaVector$ and $\nuVector$. Measurement equations were taken from \Chapterref{cha:sensor_fusion}. Each model parameter was modelled as a state using a constant position motion model and the motion model was discretised using the Euler forward discretisation method. The complete discrete model is
 \begin{equation}
 \label{eq:motionModelKalman}
 \begin{pmatrix}
@@ -112,8 +112,7 @@ The filter was run on each collected dataset. The final values of $\hat{\boldsym
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Data Collection and Processing} \index{Data preprocessing}
 To conduct parameter estimation experiments data from live tests had to be collected. To be able to use the assumptions in \eqref{eq:pq_dot_decouple} and \eqref{eq:r_dot_decouple} data collection had to be done in three specific ways.
-First the \abbrROV was excited in $p$ and $q$, then in $r$ and lastly the \abbrROV was excited in all rotations.
-All experiments were conducted in such a way that linear velocities were kept at a minimum.
+First the \abbrROV was excited in $p$ and $q$, then in $r$ and lastly the \abbrROV was excited in all rotations. \Figureref{fig:pqTest} illustrates that $r$ is approximately small while exciting $p$ and $q$, the other way around in \Figureref{fig:rTest}. All experiments were conducted in such a way that linear velocities were kept at a minimum.
 The main control signals used during data collection tests were telegraph signals. Both the scaling of the output magnitude and switch factors were changed in between tests in order to find signals that excited the desired states sufficiently. An example of a such a signal can be seen in \Figureref{fig:telegraph}.
 
 Data preprocessing was done by synchronising the data streams by checking the start and end times of each experiment, here chosen as the time of arrival of the first control signal. The sensor data was aligned such that the data sample of each sensor whose arrival time was closest to the starting time of the test was chosen as the initial sample of each data stream. Data outside the test interval was discarded. After alignment the data was resampled to a chosen frequency in this case 100 Hz. The sensor data was resampled using first-order hold while the control signals were resampled using zero-order hold since the control signal data only contained points were the control signals changed.  
@@ -124,8 +123,6 @@ Data preprocessing was done by synchronising the data streams by checking the st
 \caption{An example of a telegraph signal which was sent to a thruster during data collection experiments.}
 \label{fig:telegraph}
 \end{figure}
-\todo{these figs need refs \figureref{fig:telegraph}!(todo maste tydligen ligga utanfor figurer)}
-
 
 \begin{figure}[htbp]
   \centering
@@ -151,9 +148,10 @@ Data preprocessing was done by synchronising the data streams by checking the st
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Results}
+In this section will the results from the different parameter estimation methods be presented. Estimated parameter values and the fit of the models compared to validation data are presented.
 
 \subsection{Prediction-Error Method}
-Using the model defined in \sectionref{sec:estimation_angular} with the estimated angles as inputs and angular velocities as outputs gave the following model structure to be estimated
+Using the model structure \eqref{eq:pq_dot_decouple} and \eqref{eq:r_dot_decouple} with the reparametrisation done in \eqref{eq:quatModel} and using the estimated angles as inputs and angular velocities as outputs gave the following model structure to be estimated
 \begin{equation}
 \etaVectordot = f(\nuVector, \hat{\etaVector}, \tauVector),
 \end{equation}
@@ -198,7 +196,7 @@ The result of the estimation can be seen in \Tableref{tab:ResultEstimAngular}. T
     Comparison of simulation of the attitude model against validation data using the estimated angels as inputs and angular velocities as outputs.}
 \end{figure}
 
-Using the model defined in \sectionref{sec:angLinEstim} with angular velocities and linear acceleration as outputs resulted in the model structure
+Using the model structure defined in \eqref{eq:pq_dot_decouple} with angular velocities and linear acceleration as outputs resulted in the model structure
 \begin{equation}
 \etaVectordot = J(\etaVector) \nuVector,
 \end{equation}
@@ -213,7 +211,7 @@ with
 \end{pmatrix}
 \end{equation}
 where $\boldsymbol{a}$ is the linear acceleration in the \abbrROV frame.
-The estimated parameter values obtained using this model structure can be seen in \tableref{tab:ResultangVellz60} and \Tableref{tab:ResultangVellz6}. The estimation was done with four datasets and two datasets was used for validation.
+The estimated parameter values obtained using this model structure can be seen in \Tableref{tab:ResultangVellz60} and \Tableref{tab:ResultangVellz}. The estimation was done with four datasets and two datasets was used for validation.
 
 \begin{table}[hbp]
   \centering
@@ -238,7 +236,7 @@ The estimated parameter values obtained using this model structure can be seen i
   \end{tabular}
 \end{table}
 
-The fit of the model using the estimated parameters, with $\distance{z}{6} = 0$, can be viewed in \figureref{fig:angVelCompare} and the fit of the model with $\distance{z}{6} = 0.11$ can be seen in \Figureref{fig:angVelComparelz6}. 
+The fit of the model using the estimated parameters, with $\distance{z}{6} = 0$, can be viewed in \Figureref{fig:angVelCompare} and the fit of the model with $\distance{z}{6} = 0.11$ can be seen in \Figureref{fig:angVelComparelz6}. 
 
 \begin{figure}[tbp]
   \centering %simulation of estimation. Estimator given wrong initial state
@@ -306,7 +304,7 @@ measurement noise matrix
 \begin{equation*}
 \boldsymbol{R} = \text{diag}[\underbrace{\overbrace{0.01}^{\times3}}_{\text{Gyro}}... \underbrace{\overbrace{0.1}^{\times3}}_{\text{Acc}}... \underbrace{\overbrace{100}^{\times3}}_{\text{mag}}]
 \end{equation*}
-The extremely low values of the last five elements in $\boldsymbol{Q}$ were chosen to fix the measured moment arms of the thrusters. Four data sets were feed in to the estimator and a fifth was used as validation data. All data sets were of excitations in $p$, $q$ and $r$. Parameter values from the estimation can be viewed together with the starting state in \tableref{tab:ResultKalmanFixedMomentArms}.
+The extremely low values of the last five elements in $\boldsymbol{Q}$ were chosen to fixate the measured moment arms of the thrusters. Four data sets were feed in to the estimator and a fifth was used as validation data. All data sets were of excitations in $p$, $q$ and $r$. Parameter values from the estimation can be viewed together with the starting state in \tableref{tab:ResultKalmanFixedMomentArms}.
 \begin{table}[hbp]
   \centering
   \caption{\label{tab:ResultKalmanFixedMomentArms}%
@@ -411,7 +409,7 @@ The estimation was done with three data sets, of which the first two were used f
 
 
 \section{Discussion}
-To estimate parameters in the reduced 6-\abbrDOF model was harder than it at first seemed. When using the error -prediction method problems were encountered with bad fit in $p$ and the estimate of $\etaVector$ did not follow the kinematic relations described in \sectionref{sec:kinematics}. The problem with $\etaVector$ not following the kinematic relations was further investigated by comparing integration of \eqref{eq:eulerAnglesdot} with $\hat{\etaVector}$ from the sensor fusion. As can be seen in \Figureref{fig:integratedAngleVelocities} the result was not satisfactory, with the estimated angles and the integration of \eqref{eq:eulerAnglesdot} being very dissimilar. It was therefore concluded that the estimated angles were unfit for use as outputs during parameter estimation unless a new motion model for the sensor fusion was created to solve the issue. It is therefore recommended that the validity of ones observer is controlled using relations such as those in \sectionref{sec:kinematics} before collecting data. 
+To estimate parameters in the reduced 6-\abbrDOF model was harder than it at first seemed. When using the error-prediction method problems were encountered with bad fit in $p$ and the estimate of $\etaVector$ did not follow the kinematic relations described in \sectionref{sec:coordinates}. The problem with $\etaVector$ not following the kinematic relations was further investigated by comparing integration of \eqref{eq:eulerAnglesdot} with $\hat{\etaVector}$ from the sensor fusion. As can be seen in \Figureref{fig:integratedAngleVelocities} the result was not satisfactory, with the estimated angles and the integration of \eqref{eq:eulerAnglesdot} being very dissimilar. It was therefore concluded that the estimated angles were unfit for use as outputs during parameter estimation unless a new motion model for the sensor fusion was created to solve the issue. It is therefore recommended that the validity of the observer is controlled using relations such as those in \sectionref{sec:coordinates} before collecting data. 
 
 \begin{figure}[htbp]
   \centering
@@ -424,7 +422,7 @@ To estimate parameters in the reduced 6-\abbrDOF model was harder than it at fir
   A comparison between integration of euler angles (blue) using \eqref{eq:eulerAnglesdot} and the estimated euler angles from the \abbrEKF (red). The angles are poorly estimated and thus not suitable to use as outputs in parameter estimation.}
 \end{figure}
 
-Another issue that was encountered when using the prediction-error method was that when angular velocities and linear accelerations were used as outputs, the model was extremely sensitive to the initial value of $\etaVector$. This was even more complicated since the model was modified to use quaternions to represent the \abbrROV's attitude. To examine this problem further data was generated using a simulator and the simulated data was used in the prediction-error method. The estimator was initialised with the correct initial parameter values from the simulator, but it was free to estimate the initial value of the quaternions. As expected, the estimated starting quaternion was not well estimated, which in turn led to the parameters diverging from their true values and a low fit was obtained. A result from such a test can be seen in figure \Figureref{fig:angVelSimp}.
+Another issue that was encountered when using the prediction-error method was that when angular velocities and linear accelerations were used as outputs, the model was extremely sensitive to the initial value of $\etaVector$. This was even more complicated since the model was modified to use quaternions to represent the \abbrROV's attitude. To examine this problem further data was generated using a simulator and the simulated data was used in the prediction-error method. The estimator was initialised with the correct initial parameter values from the simulator, but it was free to estimate the initial value of the quaternions. As expected, the estimated starting quaternion was not well estimated, which in turn led to the parameters diverging from their true values and a low fit was obtained. A result from such a test can be seen in \Figureref{fig:angVelSim}.
 
 \begin{figure}[htbp]
   \centering %comparison betwwen two simulations
@@ -442,9 +440,10 @@ Another issue that was encountered when using the prediction-error method was th
   \caption{\label{fig:angVelSim}%
     Comparison between simulated validation data (grey) and the simulated response from the estimated model(blue). The fit for the model in each state is stated in each plot. The validation data has been generated using the initial parameters used in the parameter estimation. The poor initial state estimate results in that the estimated parameters diverge from their true values.}
 \end{figure}
-Since data had already been collected with Euler angles instead of quaternions and no simple way of estimating the initial state of the quaternions a Kalman smoother as described in \citet{Wallin} was used introduced. The magnetometer was also added as a output to further reduce the uncertainty of the initial quaternions. It is therefore recommended that when using quaternions during parameter estimation, that attitude data on quaternion form is logged so that the initial quaternions can easily be obtained. 
 
-A problem that was consistent in all early estimations was a low fit value in$p$. Several adjustments were attempted in order to fix this issue and it was later found that the effect in $p$ of thruster 6 was minimal. A later test showed that thruster 6 only effected $p$ when it was quickly actuated. If the sixth thrusters power was incremented slowly an initial response in $p$ was noted before it settled at zero again. \todo{Add picture of this phenomenon}. This might be because of unmodelled translational dynamics of the \abbrROV meaning that the dynamics in $y$ may be coupled with $r$.
+Since data had been collected with Euler angles instead of quaternions and no simple way of estimating the initial state of the quaternions was thought of, a Kalman smoother as described in \citet{Wallin} was used introduced. The magnetometer was also added as a output, in the Kalman smoother, to further reduce the uncertainty of the initial quaternions. It is therefore recommended that when using quaternions during parameter estimation, that attitude data on quaternion form is logged so that the initial quaternions can easily be obtained. 
+
+A problem that was consistent in all early estimations was a low fit value in $p$. Several adjustments were attempted in order to fix this issue and it was later found that the effect in $p$ of thruster 6 was minimal. A later test showed that thruster 6 only effected $p$ when it was quickly actuated. If the sixth thrusters power was incremented slowly an initial response in $p$ was noted before it settled at zero again. \todo{Add picture of this phenomenon}. This might be because of unmodelled translational dynamics of the \abbrROV meaning that the dynamics in $y$ may be coupled with $r$.
 
 When deciding on which parameters to use for controller design, the choice was based solely on the fit of the simulated output had against validation data. The reasoning behind this being quite simple, the better the fit against validation data the less robust the controllers would have to be.
 

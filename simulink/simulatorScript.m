@@ -212,34 +212,34 @@ legend_ent_ref = {'\phi_{ref}', '\theta_{ref}', '\psi_{ref}', 'p_{ref}', 'q_{ref
 % close all
 %figure('units', 'normalized', 'position', [0 0.5 .5 .41])
 label_name = {'p','q','r'};
-for i = 1:3
-    %subplot(3,1,i)
-    figure(i+3)
-    plot(time,[simOut(:,i+10) simOut(:,i+3)],'LineWidth',2)
-    h = legend({legend_ent_ref{i+3}, legend_ent{i+3}});
-    set(h,'FontSize',ft);
-    h = ylabel(strcat(ylabel_ent{i+3},'[', units{i+3}, ']'));
-    set(h,'FontSize',ft);
-    h = xlabel('Time [s]');
-    set(h,'FontSize',ft);
-    title(legend_ent{i+3})
-    set(gca,'FontSize',ft)
-end
-
-%figure('units', 'normalized', 'position', [0.5 0 .5 1])
 % for i = 1:3
-%     figure(i)
-% %     subplot(3,1,i)
-%     plot(time,[simOut(:,i+7) simOut(:,i)],'LineWidth',2)
-%     h = legend({legend_ent_ref{i}, legend_ent{i}});
+%     %subplot(3,1,i)
+%     figure(i+3)
+%     plot(time,[simOut(:,i+10) simOut(:,i+3)],'LineWidth',2)
+%     h = legend({legend_ent_ref{i+3}, legend_ent{i+3}});
 %     set(h,'FontSize',ft);
-%     h = ylabel(strcat(ylabel_ent{i},'[', units{i}, ']'));
+%     h = ylabel(strcat(ylabel_ent{i+3},'[', units{i+3}, ']'));
 %     set(h,'FontSize',ft);
 %     h = xlabel('Time [s]');
 %     set(h,'FontSize',ft);
-%     title(legend_ent{i})
+%     title(legend_ent{i+3})
 %     set(gca,'FontSize',ft)
 % end
+
+figure('units', 'normalized', 'position', [0.5 0 .5 1])
+for i = 1:3
+    figure(i)
+%     subplot(3,1,i)
+    plot(time,[simOut(:,i+7) simOut(:,i)],'LineWidth',2)
+    h = legend({legend_ent_ref{i}, legend_ent{i}});
+    set(h,'FontSize',ft);
+    h = ylabel(strcat(ylabel_ent{i},'[', units{i}, ']'));
+    set(h,'FontSize',ft);
+    h = xlabel('Time [s]');
+    set(h,'FontSize',ft);
+    title(legend_ent{i})
+    set(gca,'FontSize',ft)
+end
 
 %figure('units', 'normalized', 'position', [0 0 .5 .41])
 % label_name = {'u_1','u_2','u_3','u_4','u_5','u_6'};
@@ -250,6 +250,18 @@ end
 %     ylabel(label_name{i})
 % end
 %%
+%print -f1 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simStepRolls3e10a1.eps'
+%print -f1 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simSinRollA05.eps'
+%print -f1 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simSinRollA1.eps'
+
+%print -f2 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simStepPitchs3e10a1.eps'
+%print -f2 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simSinPitchA05.eps'
+%print -f2 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simSinPitchA1.eps'
+
+%print -f3 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simStepYaws3e10a1.eps'
+%print -f3 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simSinYawA05.eps'
+%print -f3 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simSinYawA1.eps'
+
 %print -f4 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simStepPs3e10a1.eps'
 %print -f4 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simSinPA05.eps'
 %print -f4 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simSinPA1.eps'
@@ -259,5 +271,5 @@ end
 %print -f5 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simSinQA1.eps'
 
 %print -f6 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simStepRs3e10a1.eps'
-print -f6 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simSinRA05.eps'
+%print -f6 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simSinRA05.eps'
 %print -f6 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simSinRA1.eps'
