@@ -33,16 +33,47 @@ ft = 30;
 % end_time = 1800;
 % axis([0 (end_time - start_time)/resampling_fs -0.8 0.8])
 
-filepath = fullfile('Estimation','bag','sinRA1Hz05_2016-05-23-15-23-40.bag');
-start_time = 300; 
-end_time = 1900;
-axis([0 (end_time - start_time)/resampling_fs -1.2 1.2])
+% filepath = fullfile('Estimation','bag','sinRA1Hz05_2016-05-23-15-23-40.bag');
+% start_time = 300; 
+% end_time = 1900;
+% axis([0 (end_time - start_time)/resampling_fs -1.2 1.2])
 
-filepath = fullfile('Estimation','bag','sinRNewA05Hz05_2016-05-23-15-21-51.bag');
-start_time = 400; 
-end_time = 1200;
-axis([0 (end_time - start_time)/resampling_fs -1.2 1.2])
+% filepath = fullfile('Estimation','bag','sinRNewA05Hz05_2016-05-23-15-21-51.bag');
+% start_time = 400; 
+% end_time = 1200;
+% axis([0 (end_time - start_time)/resampling_fs -1.2 1.2])
 
+% filepath = fullfile('Estimation','bag','stepAlls3e10a1_2016-05-23-14-55-40.bag');
+% start_time = 300; 
+% end_time = 2000;
+% axis([0 (end_time - start_time)/resampling_fs -0.5 1.6])
+
+% filepath = fullfile('Estimation','bag','stepPs3e10_2016-05-23-13-53-27.bag');
+% start_time = 300; 
+% end_time = 2000;
+% axis([0 (end_time - start_time)/resampling_fs -0.5 1.6])
+
+% filepath = fullfile('Estimation','bag','stepQs3e10_2016-05-23-13-56-33.bag');
+% start_time = 300; 
+% end_time = 1900;
+% axis([0 (end_time - start_time)/resampling_fs -0.5 1.6])
+
+% filepath = fullfile('Estimation','bag','stepRs3e10_2016-05-23-13-59-06.bag');
+% start_time = 1; 
+% end_time = 1600;
+% axis([0 (end_time - start_time)/resampling_fs -0.5 1.6])
+
+% filepath = fullfile('Estimation','bag','constDepth_2016-05-23-15-53-10.bag');
+% start_time = 700; 
+% end_time = 5000;
+% start_time = 5000; 
+% end_time = 7960;
+% axis([0 (end_time - start_time)/resampling_fs 0 3])
+
+filepath = fullfile('Estimation','bag','attitudestepallamp1_2016-05-23-16-45-03.bag');
+start_time = 1; 
+end_time = 6000;
+axis([0 (end_time - start_time)/resampling_fs 0 3])
 
 %%    
 bag = rosbag(filepath);
@@ -95,4 +126,4 @@ for i=1:7
     set(gca,'FontSize',ft)
 end
 %%
-print -f6 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/testSinRA05.eps'
+%print -f7 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/testConstantD2.eps'

@@ -1,9 +1,9 @@
 \chapter{Parameter Estimation} \label{cha:parameterEstimation}\index{Parameter Estimation}
 A central part in modelling is parameter estimation and its importance is often underestimated. If the model is not well estimated several problems arise when trying to synthesise model-based controllers. If a system's dynamics are completely unknown, a black-box method is used, \emph{i.e.} general equations are fitted to test data and the parameters have no physical significance. When a system can be completely modelled using first principles, for example, Newtons laws, it is called white-box modelling. In this thesis, the model structure of the system is assumed to be known but several of the parameters are unknown and it can be written in state-space form
-\begin{multline}
+\begin{align}
 x_{k+1} &=f(x_k,u_k,w_k)\\
 y_{k} &= h(x_k,u_k,v_k)
-\end{multline} 
+\end{align} 
 To estimate parameters in a know model structure is called-gray box modelling. 
 
 In general, parameter estimation is to fit a model structure's parametrising vector $\boldsymbol{\theta}$ such that the model best describes the estimation data.
@@ -270,6 +270,18 @@ where $\boldsymbol{a}$ are the linear accelerations in the \abbrROV frame.
   \caption{\label{fig:angVelCompare}%
     Comparison of validation data (grey) against the simulated response from the model(blue). The fit for the model in each state is stated in each plot.}
 \end{figure}
+
+%    zb           -0.01              -0.010625       
+%    Kp              -1                -2.4079       
+%    Kp_abs_p        -1                      0       
+%    Mq              -1               -0.14202       
+%    Mq_abs_q        -1               -0.80813       
+%    Nr              -1                -2.4975       
+%    Nr_abs_r        -1                -1.7811       
+%    Ix_Kp_dot      1.5                0.55821       
+%    Iy_Mq_dot      1.5                0.49512       
+%    Iz_Nr_dot      1.5                  1.026  
+
 The fit of the model compared to validation data can be seen in \Figureref{fig:angVelCompare}. To properly estimate the parameters the initial states had to be well estimated. The importance of a correct initial state estimate can be seen in \Figureref{fig:angVelSim}. Here the estimator was fed simulated data and was initialised with the true parameter values but had to estimate the starting state.   The estimated starting state was not well estimated, which in turn led to the parameters diverging from the true parameters and a low fit. A Kalman smoother as described in \citet{Wallin} was used introduced in order to alleviate this problem. During initial state estimation using the Kalman smoother the magnetometer was added as a output to reduce the uncertainty of the initial quaternions.
 \begin{figure}[tbp]
   \centering %comparison betwwen two simulations
