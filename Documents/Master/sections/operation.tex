@@ -63,9 +63,9 @@ rostopic list
 \label{fig:contplot}
 \end{figure}
 
-For multiarray messages an extra \textit{\textbackslash data} field has to be added to the topic. Data is then accessed by indexing with hard brackets. 
+For multi-array messages an extra \textit{\textbackslash data} field has to be added to the topic. Data is then accessed by indexing with hard brackets. 
 \begin{example}
-Plot the data with index 1 in the multiarray message on topics \textit{/rovio/imu/data}. Type /rovio/imu/data/data[1] in the into the topic field and press the green plus.  
+Plot the data with index 1 in the multi-array message on topics \textit{/rovio/imu/data}. Type /rovio/imu/data/data[1] in the into the topic field and press the green plus.  
 \end{example}
 
 \subsection{\abbrLED lights on the HKPilot}
@@ -109,9 +109,6 @@ To implement a new controller open the Simulink file Controller.slx. Construct t
     \caption{When implementing new controllers in the control node the red marked switch has to be expanded. The new controller ought to be connected to the new connector for enabling the usage of the controller.}
     \label{fig:controller_simulink}
 \end{figure}
-
-\subsection{Code Generation of the Controller Node}
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Known Issues and Troubleshooting}
