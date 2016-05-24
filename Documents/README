@@ -2,4 +2,4 @@ COPY texmf to ~/ and run sudo texhash
 
 sudo apt-get install texlive-science
 sudo apt-get install texlive-fonts-recommended
-
+sudo apt-get install texlive-fonts-extra

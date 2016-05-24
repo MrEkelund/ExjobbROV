@@ -131,7 +131,7 @@ d_{k}
 \end{bmatrix}
 \end{equation}
 
-\section{Measurement Equations}
+\section{Measurement Equations}\label{sec:Meas}
 To fuse information from different sensors the readings of each sensor has to be related with the modelled states and noise sources which is done using measurement equations.
 
 The \abbrROV is equipped with an \abbrIMU which contains a gyroscope. Since readings from a gyroscope might not be zero in all axes even if the gyroscope is at a rest, it is important to incorporate biases in when modelling it. Otherwise a constant reading offset would imply that the gyroscope is in motion even at rest. Modelling for biases in the gyroscope gives the following gyroscope measurement equation
