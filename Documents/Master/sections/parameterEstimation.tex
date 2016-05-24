@@ -278,47 +278,44 @@ Using the model defined in \sectionref{sec:KalmanEstimatorImpl} with process noi
 \end{equation*}
 measurement noise matrix
 \begin{equation*}
-\boldsymbol{R} = \text{diag}[\overbrace{0.01}^{\times3}... \overbrace{0.1}^{\times3}... \overbrace{100}^{\times3}... \overbrace{0.000001}^{\times5}]
+\boldsymbol{R} = \text{diag}[\underbrace{\overbrace{0.01}^{\times3}}_{\text{Gyro}}... \underbrace{\overbrace{0.1}^{\times3}}_{\text{Acc}}... \underbrace{\overbrace{100}^{\times3}}_{\text{mag}}]
 \end{equation*}
-and initial state vector
-\begin{align}
-\hat{\boldsymbol{x}}_0 &= [1 \overbrace{0}^{\times9}... \overbrace{0}^{\times9}... -0.05 \overbrace{-1}^{\times6}... \overbrace{1}^{\times3}...\\
-\qquad\qquad& 0.19~ 0.11~ 0.11~ 0.17~ 0.11]^T
-\end{align}
-The extremely low values of the last five elements in $\boldsymbol{Q}$ were chosen to fix the measured moment arms of the thrusters. Four data sets were feed in to the estimator and a fifth was used as validation data. All data sets were of excitations in $p$, $q$ and $r$. Parameter values form the estimation can be vied in \tableref{tab:ResultKalmanFixedMomentArms}.
+The extremely low values of the last five elements in $\boldsymbol{Q}$ were chosen to fix the measured moment arms of the thrusters. Four data sets were feed in to the estimator and a fifth was used as validation data. All data sets were of excitations in $p$, $q$ and $r$. Parameter values from the estimation can be viewed together with the starting state in \tableref{tab:ResultKalmanFixedMomentArms}.
 \begin{table}[hbp]
   \centering
   \caption{\label{tab:ResultKalmanFixedMomentArms}%
-    The estimated parameters from \abbrEKF estimation with fixed moment arms.}
-  \begin{tabular}{l l p{0.7\linewidth}}
+    The estimated parameters from the Kalman estimator method. Moment arms are fixed to measured values.}
+  \begin{tabular}{l l p{0.25\linewidth}}
     \toprule%
-    \textbf{Notation}   & \textbf{Value} \\
+    \textbf{Notation}  & \textbf{Starting Value} & \textbf{Estimated Value} \\
     \otoprule%   
     % Parameters that will be estimated
-	$z_B$               & -0.0606\meter\\
-    $\Kp$               & -0.8745 \kilogram\usk\meter\squared\\
-    $\Kpabsp$           & -0.6279 \kilogram\usk\meter\squared\\
-    $\Mq$               & -0.8529 \kilogram\usk\meter\squared\\
-    $\Mqabsq$           & -0.2505 \kilogram\usk\meter\squared\\
-    $\Nr$               & -1.0469 \kilogram\usk\meter\squared\\
-    $\Nrabsr$           & -1.0405 \kilogram\usk\meter\squared\\
-    $A_p$               & 0.9728  \kilogram\usk\meter\squared\\
-    $B_q$               & 0.7266 \kilogram\usk\meter\squared\\
-    $C_r$               & 1.2013  \kilogram\usk\meter\squared\\
-    $\distance{x}{1}$   & 0.1900\meter\\
-    $\distance{y}{1}$   & 0.1106\meter\\
-    $\distance{y}{2}$   & 0.1106\meter\\
-    $\distance{x}{2}$   & 0.1900\meter\\
-    $\distance{y}{3}$   & 0.1099\meter\\
-    $\distance{x}{5}$   & 0.20\meter\\
-    $\distance{y}{4}$   & 0.1704\meter\\
-    $\distance{z}{6}$   & 0.1091\meter\\ 
+    $\etaVector$			&$[1\ 0\ 0\ 0]^T$					&\\
+    $\nuVector$			&$[0\ 0\ 0]^T$						&\\
+    $\boldsymbol{b}$		&$[0\ 0\ 0]^T$						&\\
+	$z_B$               & -0.05 	\meter 						& -0.0606  	\meter\\
+    $\Kp$               & -1   	\kilogram\usk\meter\squared 	& -0.8745 		\kilogram\usk\meter\squared\\
+    $\Kpabsp$           & -1  	\kilogram\usk\meter\squared	& -0.6279  		\kilogram\usk\meter\squared\\
+    $\Mq$               & -1  	\kilogram\usk\meter\squared	& -0.8529  		\kilogram\usk\meter\squared\\
+    $\Mqabsq$           & -1  	\kilogram\usk\meter\squared	& -0.2505  	\kilogram\usk\meter\squared\\
+    $\Nr$               & -1  	\kilogram\usk\meter\squared	& -1.0469		\kilogram\usk\meter\squared\\
+    $\Nrabsr$           & -1  	\kilogram\usk\meter\squared	& -1.0405 		\kilogram\usk\meter\squared\\
+    $A_p$               & 1 	\kilogram\usk\meter\squared	&  0.9728 		\kilogram\usk\meter\squared\\
+    $B_q$               & 1 	\kilogram\usk\meter\squared	&  0.7266		\kilogram\usk\meter\squared\\
+    $C_r$               & 1 	\kilogram\usk\meter\squared	&  1.2013		\kilogram\usk\meter\squared\\
+    $\distance{x}{1}$  &0.19 \meter & 0.1900 \meter\\
+    $\distance{y}{1}$  &0.11 \meter & 0.1106 \meter\\
+    $\distance{x}{2}$  &0.19 \meter & 0.1900 \meter\\
+    $\distance{y}{2}$  &0.11 \meter & 0.1106 \meter\\
+    $\distance{y}{3}$  &0.11 \meter & 0.1099 \meter\\
+    $\distance{x}{5}$  &0.17 \meter & 0.1704 \meter\\
+    $\distance{y}{4}$  &0.11 \meter & 0.1099 \meter\\
+    $\distance{z}{6}$  &0.11 \meter & 0.1091 \meter\\ 
     \bottomrule%
   \end{tabular}
 \end{table}
-
 The fit of the model using the estimated parameters can be viewed in \figureref{fig:ResultKalmanFixedMomentArms}
-
+% results kalman fixed moment arms
 \begin{figure}[tbp]
   \centering
   \subfloat[][Comparison between a simulated model response and validation data in $p$.]{\includegraphics[width=0.7\textwidth]{ResultKalmanFixedMomentP}}
@@ -327,8 +324,72 @@ The fit of the model using the estimated parameters can be viewed in \figureref{
   \\
   \subfloat[][Comparison between a simulated model response and validation data in $r$.]{\includegraphics[width=0.7\textwidth]{ResultKalmanFixedMomentR}}
   \caption{\label{fig:ResultKalmanFixedMomentArms}%
-    Comparison between simulation of $\nuVector$ (blue) with validation data (red). Moment-arms parameters are fixed. Goodness of fit statistic can be viewed at the top of each sub-figure.}
+    Comparison between simulation of $\nuVector$ (blue) with validation data (red). Moment-arm parameters are fixed. Goodness of fit statistic is displayed at the top of each sub-figure.}
 \end{figure}
+
+
+A second estimation was run using same model with the following settings
+\begin{equation*}
+\boldsymbol{Q}=\text{diag}[\underbrace{\overbrace{100}^{\times4}}_{\etaVector}... \underbrace{\overbrace{1000}^{\times3}}_{\nuVector}...\underbrace{\overbrace{0.01}^{\times3}}_{\boldsymbol{b}}... \underbrace{\overbrace{0.01}^{\times10}... \overbrace{0.000001}^{\times5}}_{\boldsymbol{\theta}}]\text{ ,}
+\end{equation*},
+\begin{equation*}
+\boldsymbol{R} = \text{diag}[\underbrace{\overbrace{0.001}^{\times3}}_{\text{Gyro}}... \underbrace{\overbrace{0.1}^{\times3}}_{\text{Acc}}... \underbrace{\overbrace{100}^{\times3}}_{\text{mag}}]
+\end{equation*}
+The estimation was done with three data sets of which the first two were used for estimation and the third for validation. The estimator was also iterated five times, using the parameter values from the previous estimation as the new initial states. The resulting parameter values and their initial values can be viewed in \tableref{tab:ResultKalmanFixedMomentArmsLz6} and a comparison against validation data is shown in \figureref{fig:ResultKalmanFixedMomentArmsLz6}
+
+% results kalman lz6=0 fixed moment arms
+\begin{table}[hbp]
+  \centering
+  \caption{\label{tab:ResultKalmanFixedMomentArmsLz6}%
+    The estimated parameters from the Kalman estimator method with moment arms fixed to measured values but with $\distance{z}{6}$ fixed to zero.}
+  \begin{tabular}{l l p{0.25\linewidth}}
+    \toprule%
+    \textbf{Notation}  & \textbf{Starting Value} & \textbf{Estimated Value} \\
+    \otoprule%   
+    % Parameters that will be estimated
+    $\etaVector$			&$[1\ 0\ 0\ 0]^T$							&\\
+    $\nuVector$			&$[0\ 0\ 0]^T$							&\\
+    $\boldsymbol{b}$					&$[0\ 0\ 0]^T$							&\\
+	$z_B$               & -0.05	\meter 						& -0.0606  	\meter\\
+    $\Kp$               & -1   	\kilogram\usk\meter\squared 	& -0.8745 		\kilogram\usk\meter\squared\\
+    $\Kpabsp$           & -1  	\kilogram\usk\meter\squared	& -0.6279  		\kilogram\usk\meter\squared\\
+    $\Mq$               & -1  	\kilogram\usk\meter\squared	& -0.8529  		\kilogram\usk\meter\squared\\
+    $\Mqabsq$           & -1  	\kilogram\usk\meter\squared	& -0.2505  	\kilogram\usk\meter\squared\\
+    $\Nr$               & -1  	\kilogram\usk\meter\squared	& -1.0469		\kilogram\usk\meter\squared\\
+    $\Nrabsr$           & -1  	\kilogram\usk\meter\squared	& -1.0405 		\kilogram\usk\meter\squared\\
+    $A_p$               & 1 	\kilogram\usk\meter\squared	&  0.9728 		\kilogram\usk\meter\squared\\
+    $B_q$               & 1 	\kilogram\usk\meter\squared	&  0.7266		\kilogram\usk\meter\squared\\
+    $C_r$               & 1 	\kilogram\usk\meter\squared	&  1.2013		\kilogram\usk\meter\squared\\
+    $\distance{x}{1}$  &0.19 \meter & 0.19 \meter\\
+    $\distance{y}{1}$  &0.11 \meter & 0.1102 \meter\\
+    $\distance{x}{2}$  &0.19 \meter & 0.19 \meter\\
+    $\distance{y}{2}$  &0.11 \meter & 0.1102 \meter\\
+    $\distance{y}{3}$  &0.11 \meter & 0.11 \meter\\
+    $\distance{x}{5}$  &0.17 \meter & 0.1701 \meter\\
+    $\distance{y}{4}$  &0.11 \meter & 0.11 \meter\\
+    $\distance{z}{6}$  &0.0 \meter & 0.0 \meter\\ 
+    \bottomrule%
+  \end{tabular}
+\end{table}
+
+% results kalman lz6=0 fixed moment arms
+\begin{figure}[tbp]
+  \centering
+  \subfloat[][Comparison between a simulated model response and validation data in $p$.]{\includegraphics[width=0.7\textwidth]{ResultKalmanFixedMomentPLz0}}
+  \qquad
+  \subfloat[][Comparison between a simulated model response and validation data in $q$.]{\includegraphics[width=0.7\textwidth]{ResultKalmanFixedMomentQLz0}}
+  \\
+  \subfloat[][Comparison between a simulated model response and validation data in $r$.]{\includegraphics[width=0.7\textwidth]{ResultKalmanFixedMomentRLz0}}
+  \caption{\label{fig:ResultKalmanFixedMomentArmsLz6}%
+    Comparison between simulation of $\nuVector$ (blue) with validation data (red). Moment-arm parameters are fixed and \distance{z}{6} is set to zero. Goodness of fit statistic is displayed at the top of each sub-figure.}
+\end{figure}
+
+
+
+
+
+
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
