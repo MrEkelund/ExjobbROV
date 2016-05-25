@@ -604,7 +604,7 @@
 \ifrt@usebibunits
 \RequirePackage{bibunits}% Load before natbib.  We should not pass sectionbib here.  It is better to let some magic work out the correct level.  At the time of writing, I can't see how this works.  But it works.
 \fi
-\RequirePackage{natbib}% This should be loaded early.  It is much too late to postpone it until a user decision after the class has been loaded.
+\RequirePackage[round]{natbib}% This should be loaded early.  It is much too late to postpone it until a user decision after the class has been loaded.
 \RequirePackage{bibentry}% Load after natbib, and before hyperref.
 \AtBeginDocument{\relax\nobibliography*}% See the bibentry documentation!
 \makeindex

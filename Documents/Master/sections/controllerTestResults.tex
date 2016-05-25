@@ -1,5 +1,5 @@
 \chapter{Controller Test Results}\label{app:controllerTestResults}
-
+\todo[inline]{Fix figures with sim results.}
 \begin{figure}[tbp]
   \centering
   \subfloat[][\label{fig:ApptestStepRoll} A smooth step applied in $\rollAngle$.]{\includegraphics[width=0.4\textwidth]{testStepPhis3e10a1}}
@@ -21,15 +21,15 @@
 \centering
   \subfloat[][\label{fig:ApptestStepAllRollAttitude} A smooth step applied in $\rollAngle$.]{\includegraphics[width=0.4\textwidth]{testStepAllPhis3e10a1}}
   \qquad
-  \subfloat[][\label{fig:AppsimStepAllRollAttitude} A smooth step applied to the simulated \abbrROV in $\rollAngle$.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
+  \subfloat[][\label{fig:AppsimStepAllRollAttitude} A smooth step applied to the simulated \abbrROV in $\rollAngle$.]{\includegraphics[width=0.4\textwidth]{simStepAllPhis3e10a1}}
   \qquad
   \subfloat[][\label{fig:AppTestStepAllPitchAttitude} A smooth step applied in $\pitchAngle$.]{\includegraphics[width=0.4\textwidth]{testStepAllThetas3e10a1}}
   \qquad
-  \subfloat[][\label{fig:AppsimStepAllPitchAttitude} A smooth step applied to the simulated \abbrROV in $\pitchAngle$.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
+  \subfloat[][\label{fig:AppsimStepAllPitchAttitude} A smooth step applied to the simulated \abbrROV in $\pitchAngle$.]{\includegraphics[width=0.4\textwidth]{simStepAllThetas3e10a1}}
   \qquad
   \subfloat[][\label{fig:AppTestStepAllYawAttitude} A smooth step applied in $\yawAngle$.]{\includegraphics[width=0.4\textwidth]{testStepAllPsis3e10a1}}
   \qquad
-  \subfloat[][\label{fig:AppsimStepAllYawAttitude} A smooth step applied to the simulated \abbrROV in $\yawAngle$.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
+  \subfloat[][\label{fig:AppsimStepAllYawAttitude} A smooth step applied to the simulated \abbrROV in $\yawAngle$.]{\includegraphics[width=0.4\textwidth]{simStepAllPsis3e10a1}}
   \caption{\label{fig:AppStepAllAttitude}% 
   Smooth steps were applied in all attitude angles at the same time while using the attitude controller.}
 \end{figure}
@@ -55,15 +55,15 @@
 \centering
   \subfloat[][\label{fig:ApptestSinAllRollAttitude} A sine signal with amplitude $1$ and frequency $0.5\hertz$ applied in $\rollAngle$.]{\includegraphics[width=0.4\textwidth]{testSinAllPhiA1}}
   \qquad
-  \subfloat[][\label{fig:AppsimSinAllRollAttitude} A sine signal with amplitude $1$ and frequency $0.5\hertz$ applied to the simulated \abbrROV in $\rollAngle$.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
+  \subfloat[][\label{fig:AppsimSinAllRollAttitude} A sine signal with amplitude $1$ and frequency $0.5\hertz$ applied to the simulated \abbrROV in $\rollAngle$.]{\includegraphics[width=0.4\textwidth]{simSinAllPhiA1}}
   \qquad
   \subfloat[][\label{fig:ApptestSinAllPitchAttitude} A sine signal with amplitude $1$ and frequency $0.5\hertz$ applied in $\pitchAngle$.]{\includegraphics[width=0.4\textwidth]{testSinAllThetaA1}}
   \qquad
-  \subfloat[][\label{fig:AppsimSinAllPitchAttitude} A sine signal with amplitude $1$ and frequency $0.5\hertz$ applied to the simulated \abbrROV in $\pitchAngle$.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
+  \subfloat[][\label{fig:AppsimSinAllPitchAttitude} A sine signal with amplitude $1$ and frequency $0.5\hertz$ applied to the simulated \abbrROV in $\pitchAngle$.]{\includegraphics[width=0.4\textwidth]{simSinAllThetaA1}}
   \qquad
   \subfloat[][\label{fig:ApptestSinAllYawAttitude} A sine signal with amplitude $1$ and frequency $0.5\hertz$ applied in $\yawAngle$.]{\includegraphics[width=0.4\textwidth]{testSinAllPsiA1}}
   \qquad
-  \subfloat[][\label{fig:AppsimSinAllYawAttitude} A sine signal with amplitude $1$ and frequency $0.5\hertz$ applied to the simulated \abbrROV in $\yawAngle$.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
+  \subfloat[][\label{fig:AppsimSinAllYawAttitude} A sine signal with amplitude $1$ and frequency $0.5\hertz$ applied to the simulated \abbrROV in $\yawAngle$.]{\includegraphics[width=0.4\textwidth]{simSinAllPsiA1}}
   \caption{\label{fig:AppSinAllAttitude}%
   Sine signals were applied in all attitude angles at the same time while using the attitude controller.}
 \end{figure}
@@ -107,11 +107,11 @@
 \centering
   \subfloat[][\label{fig:ApptestStepPhiTheta05RollAttitude} A smooth step applied in $\rollAngle$.]{\includegraphics[width=0.4\textwidth]{testStepThetaPhiPhis3e10a1}}
   \qquad
-  \subfloat[][\label{fig:AppsimStepPhiTheta05RollAttitude} A smooth step applied to the simulated \abbrROV in $\rollAngle$.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
+  \subfloat[][\label{fig:AppsimStepPhiTheta05RollAttitude} A smooth step applied to the simulated \abbrROV in $\rollAngle$.]{\includegraphics[width=0.4\textwidth]{simStepThetaPhiPhis3e10a1}}
   \qquad
   \subfloat[][\label{fig:ApptestStepPhiTheta05PitchAttitude} A smooth step applied in $\pitchAngle$.]{\includegraphics[width=0.4\textwidth]{testStepThetaPhiThetas3e10a1}}
   \qquad
-  \subfloat[][\label{fig:AppsimStepPhiTheta05PitchAttitude} A smooth step applied to the simulated \abbrROV in $\pitchAngle$.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
+  \subfloat[][\label{fig:AppsimStepPhiTheta05PitchAttitude} A smooth step applied to the simulated \abbrROV in $\pitchAngle$.]{\includegraphics[width=0.4\textwidth]{simStepThetaPhiThetas3e10a1}}
   \caption{\label{fig:AppStepPhiThetaAttitude}%
   Smooth steps were applied in \pitchAngle and \rollAngle at the same time while using the attitude controller. The attitude angle \yawAngle was kept free during the test.}
 \end{figure}
