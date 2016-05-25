@@ -352,7 +352,6 @@ for each controller separately. For each conducted test was there a simulated te
 
 \todo[inline]{Exact lin for attitude}
 \todo[inline]{Parameter values for the controllers}
-\todo[inline]{Fix figures with sim results.}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%Attitude%%%%%%%%%%%%%%%% 
 \begin{figure}
 \centering
@@ -371,7 +370,7 @@ for each controller separately. For each conducted test was there a simulated te
   Smooth steps were applied in all attitude angles at the same time while using the attitude controller.}
 \end{figure}
 
-\Figureref{fig:StepAllAttitude} shows smooth step reference signals applied in all attitude angles while using the attitude controller. Initially did $\rollAngle$ and $\pitchAngle$ follow the reference signals well. The $\rollAngle$ oscillated with a steady state error of 0.9. However, $\pitchAngle$ was kept closer to the reference signal with a steady state error of 0.4. The attitude angle $\yawAngle$ could not be stabilised and drifted throughout the test. 
+\Figureref{fig:StepAllAttitude} shows smooth step reference signals applied in all attitude angles while using the attitude controller. Initially did $\rollAngle$ and $\pitchAngle$ follow the reference signals well in the real test. The $\rollAngle$ oscillated with a steady state error of 0.9 in the real test. However, $\pitchAngle$ was kept closer to the reference signal with a steady state error of 0.4. The attitude angle $\yawAngle$ could not be stabilised during the real test and drifted throughout the test. In the simulated test case did not the attitude angles reach the reference signal. The attitude angle $\pitchAngle$ had a steady state error of 0.3 and the other angles had a steady state error of 0.5.
 
 \begin{figure}
 \centering
@@ -390,7 +389,7 @@ for each controller separately. For each conducted test was there a simulated te
   Sine signals were applied in all attitude angles at the same time while using the attitude controller.}
 \end{figure}
 
-Sine reference signals with amplitude 1 and frequency $0.5 \hertz$ can be seen in \Figureref{fig:SinAllAttitude}. The angles $\rollAngle$ and $\pitchAngle$ did not reached the assigned amplitude. However, did they have the general form of a sine but phase shifted relative to the reference signals. The $\yawAngle$ follows the reference signal well but with a phase shift and a bias.
+Sine reference signals with amplitude 1 and frequency $0.5 \hertz$ can be seen in \Figureref{fig:SinAllAttitude}. The angles $\rollAngle$ and $\pitchAngle$ did not reached the assigned amplitude in the real test. However, did they have the general form of a sine but phase shifted relative to the reference signals. The $\yawAngle$ follows the reference signal well but with a phase shift and a bias. In simulation tests the same phase shift and lack of amplitude happened in $\rollAngle$ and $\pitchAngle$. The simulated result in $\yawAngle$ did not follow the reference signal at all. 
 
 \begin{figure}
 \centering
@@ -405,8 +404,7 @@ Sine reference signals with amplitude 1 and frequency $0.5 \hertz$ can be seen i
   Smooth steps were applied in \pitchAngle and \rollAngle at the same time while using the attitude controller. The attitude angle $\yawAngle$ was kept free during the test.}
 \end{figure}
 
-A smoothed step in $\rollAngle$ and $\pitchAngle$ can be seen in \Figureref{fig:StepPhiThetaAttitude}. During the test was the attitude angle $\yawAngle$ kept free. Both $\rollAngle$ and $\pitchAngle$ followed the reference signal well did not reach the reference angle. The steady state error for $\rollAngle$ and $\pitchAngle$ was approximately $0.35$.
-\todo[inline]{Compare the test results with the simulation.}
+A smoothed step in $\rollAngle$ and $\pitchAngle$ can be seen in \Figureref{fig:StepPhiThetaAttitude}. During the test was the attitude angle $\yawAngle$ kept free. Both $\rollAngle$ and $\pitchAngle$ followed the reference signal well did not reach the reference angle. The steady state error for $\rollAngle$ and $\pitchAngle$ was approximately $0.35$. The simulated results in $\rollAngle$ and $\pitchAngle$ were worse than the real test. The attitude $\rollAngle$ had a steady state error 0.5 and the steady state error for $\pitchAngle$ was 0.4.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%Rate%%%%%%%%%%%%%%%%
 \begin{figure}
