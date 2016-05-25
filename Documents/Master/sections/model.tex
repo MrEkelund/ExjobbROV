@@ -1,26 +1,19 @@
 \chapter{Modelling the ROV} \label{cha:modelling}
-This chapter describes how the \abbrROV is modelled using the \citet{fossen2011} 6 \abbrDOF model for \abbrROV:s. A model describes how an object is affected by forces such as gravity and friction. Models are derived by using different physical laws. Assumptions can often be made how the physical properties of the object affect the model and a simpler model can be derived. Assumptions can be symmetry of the object, no coupling inertia, low speed and several others. 
+This chapter describes how the \abbrROV is modelled using the framework of \citet{fossen2011}. A model describes how an object is affected by forces such as gravity and friction. Models can be derived by using different physical laws. Assumptions can often be made how the physical properties of the object affect the model and a simpler model can be derived. Assumptions can be symmetry of the object, no coupling inertia, low speed and several others. 
 
 An underwater vehicle with 6 \abbrDOF can be described by\index{Model of an underwater vehicle}
 \begin{equation}
-\etaVectordot = J(\eta)\nu
+\etaVectordot = \boldsymbol{J}(\etaVector)\nuVector
 \end{equation}
 \todo{How to express disturbances}
 \begin{equation} \label{eq:model}
  \inertia \nuVectordot + \coriolis(\nuVector)\nuVector + \damping(\nuVector)\nuVector + \gravity(\etaVector) = \tauVector 
 \end{equation}
   %= \tauVector_{\text{Rb}} + \tauVector_{\text{Dyn}} +\tauVector_{\text{Stat}} + \tauVector_{\text{Act}}+ \tauVector_{\text{Env}}
-where
-\begin{equation*}
-  \etaVector  
-\end{equation*} are generalised positions and
-\begin{equation*}
-  \nuVector
-\end{equation*}
-are generalised velocities that are used to describe motion in 6 \abbrDOF \citep[p. 15]{fossen2011}. The matrices $\inertia$\index{Inertia matrix}, $\coriolis(\nuVector)$\index{Coriolis matrix}, $\damping(\nuVector)$\index{Damping matrix} and the vector $\gravity(\nuVector)$\index{Restoring forces matrix} respectively describes how inertia, Coriolis forces, damping forces, gravity and buoyancy affect the \abbrROV. The vector $\tauVector$ describes the forces and torques produced by the \abbrROV's actuators as well as environmental disturbances.
+where $\etaVector$ are generalised positions and $\nuVector$ are generalised velocities that are used to describe motion in 6 \abbrDOF \citep[p. 15]{fossen2011}. The matrices $\inertia$\index{Inertia matrix}, $\coriolis(\nuVector)$\index{Coriolis matrix}, $\damping(\nuVector)$\index{Damping matrix} and the vector $\gravity(\nuVector)$\index{Restoring forces matrix} respectively describes how inertia, Coriolis forces, damping forces, gravity and buoyancy affect the \abbrROV. The vector $\tauVector$ describes the forces and torques produced by the \abbrROV's actuators as well as environmental and other disturbances.
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-In this chapter, the vector cross-product $\cross{\cdot}$ is defined as $\cross{a\boldsymbol{A}} \boldsymbol{B} = a\boldsymbol{A} \times \boldsymbol{B}$. The notation used for the parameters in this chapter and \Chapterref{cha:parameterEstimation} can be seen in \Tableref{tab:notationModelling}. The notation for forces, moments, linear and angular velocities, positions and Euler angles used in the model is summarised in \Tableref{tab:notationMarine}. 
+In this chapter, the vector cross-product $\cross{\cdot}$ is defined as $\cross{a\boldsymbol{A}} \boldsymbol{B} = a\boldsymbol{A} \times \boldsymbol{B}$. The notation used for the parameters in this thesis can be seen in \Tableref{tab:notationModelling}. The notation for forces, moments, linear and angular velocities, positions and Euler angles used in the model is summarised in \Tableref{tab:notationMarine}. 
 
  \begin{table}[tbp]
   \centering
@@ -44,7 +37,7 @@ In this chapter, the vector cross-product $\cross{\cdot}$ is defined as $\cross{
     $z_B$ & Distance between \abbrCB and \abbrCG along the $z$-axis. \\
     $V$ & Displaced volume. \\
     $\rho$ & Water density. \\
-    $g$ & Gravity. \\
+    $g$ & Gravitational constant. \\
     $r^g_b$ & The distance between \abbrCO and \abbrCG. \\
     \bottomrule%
   \end{tabular}
@@ -59,22 +52,22 @@ In this chapter, the vector cross-product $\cross{\cdot}$ is defined as $\cross{
     \toprule%
     \textbf{DOF} & \textbf{Description}  & \textbf{Forces and moments} & \textbf{Linear and angular velocities} & \textbf{Positions and Euler angles} \\
     \otoprule%
-    1 & Motions in the x direction (surge).     & \xForce       & \xVelocity        & \xPosition \\
+    1 & Motions in the $x$ direction (surge).     & \xForce       & \xVelocity        & \xPosition \\
         
-    2 & Motions in the y direction (sway).      & \yForce       & \yVelocity        & \yPosition \\
+    2 & Motions in the $y$ direction (sway).      & \yForce       & \yVelocity        & \yPosition \\
     
-    3 & Motions in the z direction (heave).     & \zForce       & \zVelocity        & \zPosition \\
+    3 & Motions in the $z$ direction (heave).     & \zForce       & \zVelocity        & \zPosition \\
     
-    4 & Rotation about the x axis (roll, heel). & \rollMoment   & \rollVelocity     & \rollAngle \\
+    4 & Rotation about the $x$ axis (roll, heel). & \rollMoment   & \rollVelocity     & \rollAngle \\
     
-    5 & Rotation about the y axis (pitch, trim).& \pitchMoment  & \pitchVelocity    & \pitchAngle \\
+    5 & Rotation about the $y$ axis (pitch, trim).& \pitchMoment  & \pitchVelocity    & \pitchAngle \\
     
-    6 & Rotation about the z axis (yaw).        & \yawMoment    & \yawVelocity      & \yawAngle \\
+    6 & Rotation about the $z$ axis (yaw).        & \yawMoment    & \yawVelocity      & \yawAngle \\
     \bottomrule%
   \end{tabular}
 \end{table}
 
-To get a more compact way of writing a vector notation has been used
+To get a more compact way of writing, the following vector notation has been used
 \begin{itemize}
 \item $\boldsymbol{p}$: Positions.
 \item $\boldsymbol{v}$: Linear velocities.
@@ -87,12 +80,81 @@ To get a more compact way of writing a vector notation has been used
 \section{Coordinate Systems and Kinematics}
 \label{sec:coordinates}\index{NED}\index{body-fixed coordinate system}\index{global coordinate system}
 During modelling it is important to choose proper coordinate systems in which to describe the systems behaviour.
-In this thesis, are two coordinate systems used in the \abbrROV model.
-The first system, the body-fixed coordinate system, is fixed to the \abbrROV and rotates with the \abbrROV. 
-The body-fix coordinate system is a right-hand system, the $\xPosition$-axis is placed along the length of the \abbrROV pointing towards its bow. The $\yPosition$-axis points starboard, and the $\zPosition$-axis points downwards towards the vehicles keel. The coordinate system is assumed to be centred in the \abbrROV's  center of gravity (\abbrCG). The body-fixed coordinate system makes it easier to describe sensor readings, since the sensors rotate with the \abbrROV. It is also easier to express the effect of each thruster with forces and moments expressed in the body-fixed coordinate system. How the body-fixed coordinate system is placed in the \abbrROV can be seen in \Figureref{fig:thrusterlocationtop} and \Figureref{fig:thrusterlocationfront}.
+In this thesis, two coordinate systems are used in the \abbrROV model. 
 
-The global coordinate system is Earth fixed, with axes $\north$, $\east$ and $\down$. The $\north$ axis points in the direction of the calibrated North, the $\east$ axis points in the direction of calibrated East and the $\down$ axis points down towards the \abbrCG of the Earth.
-This coordinate system is used to express buoyancy and gravitational forces acting on the \abbrROV, their effects are transformed to the body-fixed coordinate system by a rotation matrix. How the local and global coordinate systems relate to each other can be seen in \Figureref{fig:coordinate_frames}.
+The first system, the body-fixed coordinate system, is fixed to the \abbrROV and rotates with the \abbrROV. 
+The body-fixed coordinate system is a right-hand system, the $\xPosition$-axis is placed along the length of the \abbrROV pointing towards its bow. The $\yPosition$-axis points starboard, and the $\zPosition$-axis points downwards towards the vehicles keel. The coordinate system is assumed to be centred in the \abbrROV's  center of gravity (\abbrCG) \emph{i.e.} $r^g_b = 0$. The body-fixed coordinate system makes it easier to describe sensor readings, since the sensors rotate with the \abbrROV. It is also easier to express the effect of each thruster with forces and moments expressed in the body-fixed coordinate system. How the body-fixed coordinate system is placed in the \abbrROV can be seen in \Figureref{fig:thrusterlocationtop} and \Figureref{fig:thrusterlocationfront}.
+
+The second coordinate system, the global coordinate system is Earth fixed, with axes $\north$, $\east$ and $\down$. The $\north$ axis points in the direction of the calibrated North, the $\east$ axis points in the direction of calibrated East and the $\down$ axis points down towards the \abbrCG of the Earth.
+This coordinate system is used to express buoyancy and gravitational forces acting on the \abbrROV, their effects are transformed to the body-fixed coordinate system by a rotation matrix. The transformation for linear velocities from the body-fixed coordinate system to the global coordinate system is 
+\begin{equation}
+\linVelGlobal = \boldsymbol{R}^n_b(\eulerAngles) \linVelBody
+\end{equation}
+where the transformation matrix $\boldsymbol{R}^n_b(\eulerAngles)$ in $zyx$ convention is 
+\begin{equation}
+\boldsymbol{R}^n_b(\eulerAngles) =\begin{bmatrix}
+ c\yawAngle c\pitchAngle & -s\yawAngle c\rollAngle + c\yawAngle s\pitchAngle s\rollAngle & s\yawAngle s\rollAngle + c\yawAngle c\rollAngle s \pitchAngle \\
+ s\yawAngle c\pitchAngle & c\yawAngle c\rollAngle + s\rollAngle  s\pitchAngle s\yawAngle & -c\yawAngle s\rollAngle + s\pitchAngle s\yawAngle c\rollAngle \\
+ -s\pitchAngle & c\pitchAngle s\rollAngle & c\pitchAngle c\rollAngle
+ \end{bmatrix} 
+\end{equation}
+where $s\cdot$ stands for $\sin(\cdot)$ and $c\cdot$ stands for $\cos(\cdot)$ \citep[p. 22]{fossen2011}. The inverse of the transformation matrix $\boldsymbol{R}^n_b(\eulerAngles)$ is
+\begin{equation}
+\boldsymbol{R}^n_b(\eulerAngles)^{-1} = \boldsymbol{R}^n_b(\eulerAngles)^T
+\end{equation}
+ The super- and subscript notation is defined the following way
+\begin{equation}
+\boldsymbol{v}^{\text{to}}=\boldsymbol{R}^{\text{to}}_{\text{from}}(\eulerAngles)\boldsymbol{v}^{\text{from}}
+\end{equation}
+and $n$ denotes the global coordinate system, while $b$ denotes the body-fixed coordinate system.
+The notation $v_{b/n}$ means that $v$ is measured in $b$ relative $n$.
+
+Transformation of angular velocities from the body-fixed to the global frame is given by 
+\begin{equation}\label{eq:eulerAnglesdot}
+\eulerAnglesdot = \boldsymbol{T}_{\theta}(\eulerAngles)\angVelBody
+\end{equation}
+where
+\begin{equation}
+\boldsymbol{T}_{\theta}(\eulerAngles) = \begin{bmatrix}
+1 & s\rollAngle t\pitchAngle & c\rollAngle t\pitchAngle \\
+0 & c\rollAngle & -s\rollAngle \\
+0 & s\rollAngle/c\pitchAngle & c\rollAngle/c\pitchAngle
+\end{bmatrix}
+\end{equation}
+and $t\cdot$ stands for $\tan(\cdot)$ \citep[p. 24]{fossen2011}. Similar to the linear velocities transformation matrix, the inverse of the angular velocities transformation matrix is
+\begin{equation}
+\boldsymbol{T}_{\theta}(\eulerAngles)^{-1} = \boldsymbol{T}_{\theta}(\eulerAngles)^T
+\end{equation}
+
+The kinematic equations can then be expressed in vector form as \index{Kinematics}
+\begin{equation} \label{eq:kinematicsticsEuler}
+\etaVectordot = \boldsymbol{J}_\theta(\etaVector)\nuVector
+\quad\Longleftrightarrow\quad
+\begin{bmatrix}
+\posGlobaldot \\
+\eulerAnglesdot
+\end{bmatrix}
+=
+\begin{bmatrix}
+\boldsymbol{R}^n_b(\eulerAngles) & \zero{3} \\
+\boldsymbol{0}_{3x3} & \boldsymbol{T}_\theta(\eulerAngles)
+\end{bmatrix}
+\begin{bmatrix}
+\linVelBody \\
+\angVelBody
+\end{bmatrix}
+\end{equation}
+Where \begin{equation}
+\etaVector = \begin{bmatrix}
+N\\
+E\\
+D\\
+\phi\\
+\theta\\
+\psi
+\end{bmatrix}
+\end{equation}
+
 
 \newcommand*{\coordinateRadius}{0.05}
 \newcommand*{\coordRot}{30}
@@ -131,7 +193,7 @@ This coordinate system is used to express buoyancy and gravitational forces acti
         \draw[red, thick] (O) ++(-0.35,0) node[rotate=90]{\large Thruster 5};
     \end{scope}
 \end{tikzpicture}
-    \caption{Top view of the \abbrROV. The red coordinate system illustrates how the body-fixed coordinate system is fixed in the \abbrROV. Yellow lines shows the different moment arms to the thrusters. Each thruster is numbered in red.}
+    \caption{Top view of the \abbrROV. The body-fixed coordinate system (red) is fixed in the \abbrROV. Yellow lines show the different moment arms to the thrusters. Each thruster is numbered in red.}
     \label{fig:thrusterlocationtop}
 \end{figure}
 
@@ -159,7 +221,7 @@ This coordinate system is used to express buoyancy and gravitational forces acti
         \draw[red, thick] (O) ++(0.04,-0.37) node[right]{\large Thruster 6};
     \end{scope}
 \end{tikzpicture}
-    \caption{Front view of the \abbrROV. The red coordinate system illustrates how the body-fixed coordinate system is fixed in the \abbrROV. The yellow line show the moment arm to thruster 6 which is marked in red.}
+    \caption{Front view of the \abbrROV. The body-fixed coordinate system (red) is fixed in the \abbrROV. The yellow line shows the moment arm to thruster 6 which is numbered in red.}
     \label{fig:thrusterlocationfront}
 \end{figure}
 
@@ -213,60 +275,6 @@ This coordinate system is used to express buoyancy and gravitational forces acti
     \label{fig:coordinate_frames}
 \end{figure}
 
-\index{Kinematics}\index{Transformation matrices} %\label{sec:kinematics}
-The relationship between velocities in the body-fixed frame and the global frame can be described by different transformation matrices \citep{fossen2011}.
-The transformation for linear velocities from the body-fixed coordinate system to the global coordinate system is 
-\begin{equation}
-\linVelGlobal = \boldsymbol{R}^n_b(\eulerAngles) \linVelBody
-\end{equation}
-where the transformation matrix $\boldsymbol{R}^n_b(\eulerAngles)$ in $zyx$ convention is 
-\begin{equation}
-\boldsymbol{R}^n_b(\eulerAngles) =\begin{bmatrix}
- c\yawAngle c\pitchAngle & -s\yawAngle c\rollAngle + c\yawAngle s\pitchAngle s\rollAngle & s\yawAngle s\rollAngle + c\yawAngle c\rollAngle s \pitchAngle \\
- s\yawAngle c\pitchAngle & c\yawAngle c\rollAngle + s\rollAngle  s\pitchAngle s\yawAngle & -c\yawAngle s\rollAngle + s\pitchAngle s\yawAngle c\rollAngle \\
- -s\pitchAngle & c\pitchAngle s\rollAngle & c\pitchAngle c\rollAngle
- \end{bmatrix} 
-\end{equation}
-where $s\cdot$ stands for $\sin(\cdot)$ and $c\cdot$ stands for $\cos(\cdot)$ \citep[p. 22]{fossen2011}. The inverse of the transformation matrix $\boldsymbol{R}^n_b(\eulerAngles)$ is
-\begin{equation}
-\boldsymbol{R}^n_b(\eulerAngles)^{-1} = \boldsymbol{R}^n_b(\eulerAngles)^T
-\end{equation}
-
-Transformation of angular velocities from the the body-fixed frame to the global frame is given by 
-\begin{equation}\label{eq:eulerAnglesdot}
-\eulerAnglesdot = \boldsymbol{T}_{\theta}(\eulerAngles)\angVelBody
-\end{equation}
-where $\boldsymbol{T}_{\theta}(\eulerAngles)$ is 
-\begin{equation}
-\boldsymbol{T}_{\theta}(\eulerAngles) = \begin{bmatrix}
-1 & s\rollAngle t\pitchAngle & c\rollAngle t\pitchAngle \\
-0 & c\rollAngle & -s\rollAngle \\
-0 & s\rollAngle/c\pitchAngle & c\rollAngle/c\pitchAngle
-\end{bmatrix}
-\end{equation}
-where $t\cdot$ stands for $\tan(\cdot)$ \citep[p. 24-25]{fossen2011}. Similar to the linear velocities transformation matrix the inverse of the angular velocities transformation matrix is
-\begin{equation}
-\boldsymbol{T}_{\theta}(\eulerAngles)^{-1} = \boldsymbol{T}_{\theta}(\eulerAngles)^T
-\end{equation}
-
-The kinematic equations can then be expressed in vector form as \index{Kinematics}
-\begin{equation} \label{eq:kinematicsticsEuler}
-\etaVectordot = \boldsymbol{J}_\theta(\etaVector)\nuVector
-\quad\Longleftrightarrow\quad
-\begin{bmatrix}
-\posGlobaldot \\
-\eulerAnglesdot
-\end{bmatrix}
-=
-\begin{bmatrix}
-\boldsymbol{R}^n_b(\eulerAngles) & \zero{3} \\
-\boldsymbol{0}_{3x3} & \boldsymbol{T}_\theta(\eulerAngles)
-\end{bmatrix}
-\begin{bmatrix}
-\linVelBody \\
-\angVelBody
-\end{bmatrix}
-\end{equation}
 
 
 
@@ -281,30 +289,29 @@ Unit quaternions $\quaternion$ are a useful way to express angles. Where Euler a
 \down \\
 \quaternion
 \end{bmatrix}
-\end{equation} where $\boldsymbol{q} =[\quatO \quatI \quatII \quatIII]^T$
+\end{equation} where $\boldsymbol{q} =[\quatO\quad \quatI\quad \quatII\quad \quatIII]^T$
 
 The quaternions need to satisfy $\quaternion^T\quaternion = 1$ in order to represent angles and thus needs to be normalised.
-Quaternion normalisation in a continuous time can be achieved by adding a normalising term
+Approximate quaternion normalisation in a continuous time can be achieved by adding a normalising term
 %\boldsymbol{T}_q(\quaternion) \angVelBody +
 \begin{equation}
 \frac{\gamma}{2} ( 1 - \quaternion^T\quaternion)\quaternion
 \end{equation}
-to the dynamics of $\dot{q}$ \citep[p. 31]{fossen2011}. The parameter $\gamma$ is a design parameter, $\gamma \geq 0$ usually $\gamma = 100$, indicating the convergence rate of the normalisation.% and $\boldsymbol{T}_q(\quaternion)$ is given by
-In discrete time, quaternion normalisation is given by 
+to the dynamics of $\dot{q}$ \citep[p. 31]{fossen2011}. The parameter $\gamma$ is a design parameter, $\gamma \geq 0$ usually $\gamma = 100$, indicating the convergence rate of the normalisation. In discrete time, approximate quaternion normalisation is given by 
 \begin{equation}
 \quaternion(k+1) = \frac{\quaternion(k+1)}{\sqrt{\quaternion^T(k+1)\quaternion(k+1)}}
 \end{equation}  
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-If quaternions are used to represent attitude the transformation matrix from body-fixed coordinates to global coordinates is defined as 
+If quaternions are used to represent attitude, the transformation matrix from body-fixed coordinates to global coordinates is defined as 
 \begin{equation}
 \boldsymbol{R}^n_b(\quaternion) = \begin{bmatrix}
   1 - 2(\quatII^2 + \quatIII^2) & 2(\quatI\quatII - \quatIII\quatO)   & 2(\quatI\quatIII + \quatII\quatO) \\
      2(\quatI\quatII + \quatIII\quatO) &  1-2(\quatI^2 + \quatIII^2) & 2(\quatII\quatIII-\quatI\quatO)    \\
      2(\quatI\quatIII - \quatII\quatO) &  2(\quatII\quatIII + \quatI\quatO)  & 1-2(\quatI^2 + \quatII^2) \\
-\end{bmatrix}
-\end{equation}, the angular velocities transformation matrix is defined as
+\end{bmatrix},
+\end{equation} the angular velocities transformation matrix is defined as
 \begin{equation} \label{eq:Tquat}
 \boldsymbol{T}_q(\quaternion) = \frac{1}{2}
 \begin{bmatrix}
@@ -330,15 +337,15 @@ and the kinematic equation \eqref{eq:kinematicsticsEuler} is changed to \index{K
 \begin{bmatrix}
 \linVelBody \\
 \angVelBody
-\end{bmatrix}
+\end{bmatrix},
 \end{equation}
 see \citet[Ch. 2]{fossen2011} for more information. 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Rigid-body Kinetics}
 The rigid-body kinetic relations of the \abbrROV can derived using the Newton-Euler formulation and can be expressed as
 \begin{equation}\label{eq:rb}
-\inertia_{\text{RB}}\dot{\nuVector} + \coriolis_{\text{Rb}}(\nuVector)\nuVector = \tauVector_{\text{Rb}}
-\end{equation} where $\inertia_{\text{Rb}}$ is the rigid-body inertia matrix, $\coriolis_{\text{Rb}}(\nuVector)$ is a matrix describing the centripetal and Coriolis effects and $\tauVector_{\text{Rb}}$ are the forces and moments acting on the rigid body \citep[p. 45]{fossen2011}.
+\inertia_{\text{RB}}\dot{\nuVector} + \coriolis_{\text{RB}}(\nuVector)\nuVector = \tauVector_{\text{RB}}
+\end{equation} where $\inertia_{\text{RB}}$ is the rigid-body inertia matrix, $\coriolis_{\text{RB}}(\nuVector)\nuVector$ is a vector describing the centripetal and Coriolis effects and $\tauVector_{\text{RB}}$ are the forces and moments acting on the rigid body \citep[p. 45]{fossen2011}.
 The rigid-body inertia matrix $\inertia_{\text{RB}}$ describes the resistance to change in linear- and angular velocity in the \abbrROV's 6 \abbrDOF and is defined as \index{Inertia}
 \begin{equation}
 \label{eq:inertia}
@@ -380,12 +387,12 @@ Since the \abbrROV travels in a rotating reference frame, the Earth, the \abbrRO
 It has been assumed that the \abbrROV is symmetric about the $xyz$-plane to eliminate cross-terms in $\coriolis(\nuVector)$ \citep[p. 55]{fossen2011}.
 
 \section{Hydrodynamics}
-Since the \abbrROV is submerged in water it experiences forces and effects caused by the waters resistance to move with the \abbrROV. These hydrodynamic effects can be modelled as
+Since the \abbrROV is submerged in water, it experiences forces and effects caused by the waters interaction with the \abbrROV. These hydrodynamic effects can be modelled as
 \begin{equation}\label{eq:dyn}
-\inertia_{\text{A}} \dot{\nuVector} +\coriolis_{\text{A}}(\nuVector)\nuVector + \damping(\nuVector)\nuVector = \tauVector_\text{{Dyn}} 
+ \tauVector_\text{{Dyn}}=-\inertia_{\text{A}} \dot{\nuVector} -\coriolis_{\text{A}}(\nuVector)\nuVector - \damping(\nuVector)\nuVector  
 \end{equation} 
-where $\coriolis_{\text{A}}(\nuVector)\nuVector$ and $\inertia_{\text{A}}$ models the Coriolis forces and inertia from the added mass of the water respectively and the vector $\damping(\nuVector)$ models the waters linear and quadratic damping effects.
-The added mass of the water $\inertia_\text{A}$ acting upon the \abbrROV is defined as
+where $\coriolis_{\text{A}}(\nuVector)\nuVector$ and $\inertia_{\text{A}}$ models the Coriolis forces and inertia from the added mass and moment of inertia of the water respectively and the vector $\damping(\nuVector)$ models the waters linear and quadratic damping effects.
+The added mass and moment of inertia of the water $\inertia_\text{A}$ acting upon the \abbrROV is defined as
 \begin{equation}
 \inertia_\text{A} =
 -\begin{bmatrix}
@@ -395,10 +402,10 @@ The added mass of the water $\inertia_\text{A}$ acting upon the \abbrROV is defi
     0 & 0 & 0 & \Kpdot& 0 & 0 \\
     0 & 0 & 0 & 0 & \Mqdot & 0 \\
     0 & 0 & 0 & 0 & 0 & \Nrdot \\
-    \end{bmatrix}
+    \end{bmatrix},
 \end{equation}
 under the assumption that the \abbrROV moves at low speeds relative to the water \citep[p. 121]{fossen2011}.
-The Coriolis and centripetal effects from the added mass are described as
+The Coriolis and centripetal effects from the added mass and added moment of inertia are described as
 \begin{equation}
 \begin{split}
     \coriolis_\text{A}(\nuVector) \nuVector &= 
@@ -418,12 +425,12 @@ The Coriolis and centripetal effects from the added mass are described as
         (\Yvdot - \Zwdot) v w + (\Mqdot - \Nrdot) q r\\
         (\Zwdot - \Xudot) u w + (\Nrdot - \Kpdot) p r\\
         (\Xudot - \Yvdot) u v + (\Kpdot - \Mqdot) p q \\
-    \end{bmatrix}
+    \end{bmatrix},
 \end{split}
-\end{equation} Under the assumption that the \abbrROV is moving slowly and has three planes of symmetry \citep[p. 121]{fossen2011}. 
+\end{equation} under the assumption that the \abbrROV is moving slowly and has three planes of symmetry \citep[p. 121]{fossen2011}. 
 
 There are three main sources of hydrodynamic damping acting upon a submersed vehicle \citep[p. 122]{fossen2011}.
-Potential damping, skin friction and damping from vortex shedding. The effects these three sources have on a 6 \abbrDOF vehicle can be described by two 6-by-6 matrices.\index{Viscous damping}
+Potential damping, skin friction and damping from vortex shedding. The effects are split in to two parts , linear damping and quadratic damping.\index{Viscous damping}
 The matrix $\damping$ contains the linear damping terms, while the matrix $\damping_{\text{n}}(\nuVector)$ contains the quadratic, or non-linear, damping terms \citep{fossen2011}. The sum of these two matrices form the Viscous damping matrix $\damping(\nuVector)$ which in turn can be simplified to
 \begin{equation}
 \begin{split}
@@ -438,7 +445,7 @@ The matrix $\damping$ contains the linear damping terms, while the matrix $\damp
     \end{bmatrix}}
 \end{split}
 \end{equation}
-It has been assumed that the \abbrROV is symmetric about the $xz$-plane and that the damping is decoupled, thus a diagonal matrix $\damping(\nuVector)$ is obtained \citep[p. 129-130]{fossen2011}. When the matrix $\damping(\nuVector)$following vector is obtained when $\damping(\nuVector)$ is multiplied with $\nuVector$
+It has been assumed that the \abbrROV is symmetric about the $xz$-plane and that the damping is decoupled, thus a diagonal matrix $\damping(\nuVector)$ is obtained \citep[p. 129-130]{fossen2011}. When the matrix $\damping(\nuVector)$ is multiplied with $\nuVector$ the following vector is obtained 
 \begin{equation}
     \damping(\nuVector) \nuVector =
      -\begin{bmatrix}
@@ -454,10 +461,10 @@ It has been assumed that the \abbrROV is symmetric about the $xz$-plane and that
 \section{Hydrostatics}\index{Restoring forces}\index{buoyancy}
 The \abbrROV will experience forces and moments caused by the Earths gravitational pull and the buoyancy force, in hydrostatic terms these are called restoring forces and act as spring forces on the \abbrROV \citep{fossen2011}. These forces and moments can be modelled on the form 
 \begin{equation}\label{eq:stat}
-\gravity(\etaVector) = \tauVector_{\text{Stat}}
-\end{equation} where $\tauVector_{\text{Stat}}$ are generalised forces. The vector $\gravity(\etaVector)$ is the restoring forces vector, which describes how the forces and moments caused by the buoyancy force and gravitational pull of the Earth effect the \abbrROV. The restoring forces and moments are calculated using four main parameters; the mass of the vehicle $m$ its buoyancy $B$ and lastly the coordinates of the \abbrROV's \abbrCG and center of buoyancy (\abbrCB) and their effects are computed as follows
+\tauVector_{\text{Stat}}=-\gravity(\etaVector) 
+\end{equation} where $\tauVector_{\text{Stat}}$ are generalised forces. The restoring forces and moments are calculated using four main parameters; the mass $m$ of the vehicle,  its buoyancy $B$ and lastly the coordinates of the \abbrROV's \abbrCG and center of buoyancy (\abbrCB). Their effects are computed as follows
 \begin{equation} \label{eq:restoring_forces}
-    \gravity(\etaVector) = -
+    -\tauVector_{\text{Stat}}=\gravity(\etaVector) = -
      \begin{bmatrix}
     \boldsymbol{f}_g + \boldsymbol{f}_b \\
     \boldsymbol{r}_b \times \boldsymbol{f}_b + \boldsymbol{r}_g \times \boldsymbol{f}_g) 
@@ -466,7 +473,7 @@ The \abbrROV will experience forces and moments caused by the Earths gravitation
     \begin{bmatrix}
         (W - B) \sin \pitchAngle\\
     -(W - B) \cos \pitchAngle \sin \rollAngle\\
-    -(W - B) \cos \pitchAngle \sin \rollAngle\\
+    -(W - B) \cos \pitchAngle \cos \rollAngle\\
     -z_B B \cos \pitchAngle \sin \rollAngle\\
     -z_B B \sin \pitchAngle\\
     0\\
@@ -474,7 +481,7 @@ The \abbrROV will experience forces and moments caused by the Earths gravitation
 \end{equation}
 or alternatively using quaternions 
 \begin{equation}\label{eq:restoring_forces_quat}
-    \boldsymbol{g}(\etaVector) = -
+    -\tauVector_{\text{Stat}}=\boldsymbol{g}(\etaVector) = -
     \begin{bmatrix}
     \boldsymbol{f}_g + \boldsymbol{f}_b \\
     \boldsymbol{r}_b \times \boldsymbol{f}_b + \boldsymbol{r}_g \times \boldsymbol{f}_g) 
@@ -488,17 +495,16 @@ or alternatively using quaternions
     0
     \end{bmatrix}
 \end{equation}
-where $\boldsymbol{r}_b = [0, 0, z_B]^T$, $\boldsymbol{r}_g = [0, 0, 0]^T$ are moment arms and $\boldsymbol{f}_g = \boldsymbol{R}^n_b(\eulerAngles)^T [0, 0, W]^T$, $\boldsymbol{f}_b = -\boldsymbol{R}^n_b(\eulerAngles)^T [0, 0, B]^T$ are restoring forces \citep[p. 60]{fossen2011}.
-Here, $B$ is given by $B = \rho g V$ and $W = m g$. The constant $m$ is the \abbrROV's mass, $g$ the gravitational constant, $\rho$ the density of water and $V$ the volume of displaced water. In other words, the magnitude of the buoyancy forces is equal to the weight of the displaced water. For a fully submerged vehicle, $V$ will naturally be equal to the volume of the vehicle.
-In these calculations, it has been assumed that the \abbrCG coincides with the \abbrCO and that the center of buoyancy (\abbrCB) lies at coordinate $[0, 0, z_B]^T$, directly above or below the \abbrCO. Note that the positions of the three centers are described using the coordinate system described in \Sectionref{sec:coordinates}, a roll and pitch stable \abbrROV should thus have a $z_B < 0$.
+where $\boldsymbol{r}_b = [0, 0, z_B]^T$ and $\boldsymbol{r}_g = [0, 0, 0]^T$ are moment arms, and $\boldsymbol{f}_g = \boldsymbol{R}^n_b(\eulerAngles)^T [0, 0, W]^T$ and $\boldsymbol{f}_b = -\boldsymbol{R}^n_b(\eulerAngles)^T [0, 0, B]^T$ are restoring forces \citep[p. 60]{fossen2011}.
+Here, $B = \rho g V$ and $W = m g$. In other words, the magnitude of the buoyancy forces is equal to the weight of the displaced water. For a fully submerged vehicle, $V$ will naturally be equal to the volume of the vehicle. Note that the positions of the three centers are described using the coordinate system described in \Sectionref{sec:coordinates}, a roll and pitch stable \abbrROV should thus have a $z_B < 0$.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Actuators}
-The \abbrROV is equipped with six identical, three-bladed thrusters which are used as actuators. These can be modelled as
+The \abbrROV is equipped with six identical, three-bladed thrusters. These can be modelled as
 \begin{equation}\label{eq:act}
     \tauVector_{\text{Act}} = \thrusterGeometry \boldsymbol{\thrusterfun{}} 
 \end{equation}
-where $\thrusterGeometry$\index{thruster geometry} is a matrix describing the geometry of the actuators \citep[p. 401]{fossen2011}. \Figureref{fig:thrusterlocationtop} and \Figureref{fig:thrusterlocationfront} illustrates the moment arms to each thruster. The positive rotation of the thrusters and the resulting positive forces can be seen in \Appref{app:operation}.
+where $\thrusterGeometry$\index{thruster geometry} is a matrix describing the geometry of the actuators \citep[p. 401]{fossen2011}. Figures~\ref{fig:thrusterlocationtop} and \ref{fig:thrusterlocationfront} illustrates the moment arms to each thruster. The positive rotation of the thrusters and the resulting positive forces can be seen in Figures~\ref{fig:thrusterRotation12} to \ref{fig:thrusterRotation6}.
 \begin{equation}
 \begin{split}
     \tauVector_{\text{Act}} = \thrusterGeometry \boldsymbol{\thrusterfun{}} 
@@ -534,83 +540,88 @@ where \distance{x}{i}, \distance{y}{i} and \distance{z}{i} are the offsets in th
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Model in Component Form}
-If the generalised forces and moments expressed in \eqref{eq:rb}, \eqref{eq:dyn}, \eqref{eq:stat} and \eqref{eq:rb} are added the following model
+Using the relation
 \begin{equation}
-\inertia_{\text{RB}}\dot{\nuVector} + \boldsymbol{C}_{\text{RB}}(\nuVector)\nuVector + \inertia_{\text{A}} \dot{\nuVector} +\coriolis_{\text{A}}(\nuVector)\nuVector + \damping(\nuVector) + \gravity(\etaVector) = \tauVector_{\text{Rb}} +\tauVector_\text{{Dyn}} +\tauVector_{\text{Stat}} + \tauVector_{\text{Dist}}
-\end{equation} is formed.
+\tauVector_{\text{RB}} = \tauVector_{\text{Dyn}} + \tauVector_{\text{Stat}} + \tauVector_{\text{Act}} + \tauVector_{\text{Dist}}
+\end{equation} \eqref{eq:rb}, \eqref{eq:dyn} and \eqref{eq:stat} can be combined to form the following equation
+\begin{equation}
+\inertia_{\text{RB}}\dot{\nuVector} + \coriolis_{\text{RB}}(\nuVector)\nuVector + \inertia_{\text{A}} \dot{\nuVector} +\coriolis_{\text{A}}(\nuVector)\nuVector + \damping(\nuVector) + \gravity(\etaVector) = \tauVector_\text{{Dyn}} +\tauVector_{\text{Stat}} + \tauVector_{\text{Dist}}
+\end{equation}
 This equation can be rearranged to
 \begin{equation}
-[\overbrace{\inertia_{\text{Rb}} + \inertia_{\text{A}}}^{\inertia}] \dot{\nuVector} + [\overbrace{\coriolis_{\text{Rb}}(\nuVector) +\coriolis_{\text{A}}(\nuVector)}^{\coriolis(\nuVector)}]\nuVector + \damping(\nuVector)\nuVector + \gravity(\etaVector) = \overbrace{\tauVector_{\text{Rb}} +\tauVector_\text{{Dyn}} +\tauVector_{\text{Stat}}+\tauVector_{\text{Act}} + \tauVector_{\text{Dist}}}^{\tauVector}
-\end{equation} where $\tauVector_{\text{Dist}}$ is a vector containing unmodelled disturbances.
-The expression can then be solved for $\nuVectordot$, yielding the following equations  
+\inertia \dot{\nuVector} + \coriolis\nuVector + \damping(\nuVector)\nuVector + \gravity(\etaVector) = \tauVector
+\end{equation}
+where $\tauVector=\tauVector_{\text{Dyn}} + \tauVector_{\text{Stat}} + \tauVector_{\text{Act}} + \tauVector_{\text{Dist}}$, $\inertia = \inertia_{\text{RB}} + \inertia_{\text{A}}$ and $\coriolis(\nuVector)=\coriolis_{\text{RB}}(\nuVector)+\coriolis_{\text{A}}(\nuVector)$.
+The expression can then be solved for $\nuVectordot$ and split into components  
 \begin{subequations}\label{eq:linVelDynamics}
 \begin{multline} \label{eq:u_dot}
-\dot{u} = \frac{\thrusterfun{3} + \thrusterfun{4}}{m -\Xudot} + \frac{u (\Xu + \Xuabsu \abs{u})}{m -\Xudot} + \frac{\sin(\theta)(B - W)}{m -\Xudot} +\\
+\dot{u} = \frac{\thrusterfun{3} + \thrusterfun{4}}{m -\Xudot} + \frac{(\Xu + \Xuabsu \abs{u})u}{m -\Xudot} + \frac{(B - W)\sin(\theta)}{m -\Xudot} +\\
 \frac{m(r v - q w )}{m -\Xudot} + \frac{-\Yvdot r v}{m -\Xudot} + \frac{\Zwdot q w}{m -\Xudot},
 \end{multline}
 \begin{multline} \label{eq:v_dot}
-\dot{v} = \frac{-\thrusterfun{6}}{m - \Yvdot} + \frac{v (\Yv + \Yvabsv \abs{v})}{m - \Yvdot} + \frac{-\cos{\theta} \sin{\phi}(B - W)}{m - \Yvdot} +\\ \frac{m(p w - r u)}{m - \Yvdot} + \frac{\Xudot r u}{m - \Yvdot} + \frac{-\Zwdot p w}{m - \Yvdot},
+\dot{v} = \frac{-\thrusterfun{6}}{m - \Yvdot} + \frac{(\Yv + \Yvabsv \abs{v})v}{m - \Yvdot} + \frac{-(B - W)\cos{\theta} \sin{\phi}}{m - \Yvdot} +\\ \frac{m(p w - r u)}{m - \Yvdot} + \frac{\Xudot r u}{m - \Yvdot} + \frac{-\Zwdot p w}{m - \Yvdot},
 \end{multline}
 \begin{multline} \label{eq:w_dot}
-\dot{w} = \frac{-\thrusterfun{1} - \thrusterfun{2} - \thrusterfun{5}}{m - \Zwdot} + \frac{w (\Zw + \Zwabsw \abs{w})}{m - \Zwdot} + \frac{-\cos{\phi}\cos{\theta}(B - W)}{m - \Zwdot} +\\
+\dot{w} = \frac{-\thrusterfun{1} - \thrusterfun{2} - \thrusterfun{5}}{m - \Zwdot} + \frac{(\Zw + \Zwabsw \abs{w})w}{m - \Zwdot} + \frac{-(B - W)\cos{\phi}\cos{\theta}}{m - \Zwdot} +\\
 \frac{m (q u - p v)}{m - \Zwdot} + \frac{-\Xudot q u}{m - \Zwdot} + \frac{\Yvdot p v}{m - \Zwdot},
 \end{multline}
 \end{subequations}
 \begin{subequations}\label{eq:angVelDynamics}
 \begin{multline} \label{eq:p_dot}
-\dot{p} = \frac{\thrusterfun{1} \distance{y}{1} - \thrusterfun{2} \distance{y}{2} + \thrusterfun{6} \distance{z}{6}}{\Ix - \Kpdot} + \frac{p (\Kp + \Kpabsp \abs{p})}{\Ix - \Kpdot} + \frac{-\Mqdot q r}{\Ix - \Kpdot} + \frac{\Nrdot q r}{\Ix - \Kpdot} +\\
-\frac{q r (\Iy - \Iz)}{\Ix - \Kpdot} + \frac{- \Yvdot v w}{\Ix - \Kpdot} + \frac{\Zwdot v w}{\Ix - \Kpdot} + \frac{B \cos{\theta} \sin{\phi} z_B}{\Ix - \Kpdot},
+\dot{p} = \frac{\thrusterfun{1} \distance{y}{1} - \thrusterfun{2} \distance{y}{2} + \thrusterfun{6} \distance{z}{6}}{\Ix - \Kpdot} + \frac{ (\Kp + \Kpabsp \abs{p})p}{\Ix - \Kpdot} + \frac{-\Mqdot q r}{\Ix - \Kpdot} + \frac{\Nrdot q r}{\Ix - \Kpdot} +\\
+\frac{q r (\Iy - \Iz)}{\Ix - \Kpdot} + \frac{- \Yvdot v w}{\Ix - \Kpdot} + \frac{\Zwdot v w}{\Ix - \Kpdot} + \frac{B z_B \cos{\theta} \sin{\phi}}{\Ix - \Kpdot},
 \end{multline}
 \begin{multline} \label{eq:q_dot}
-\dot{q} =\frac{\thrusterfun{1} \distance{x}{1} + \thrusterfun{2} \distance{x}{2} - \thrusterfun{5} \distance{x}{5}}{\Iy - \Mqdot} + \frac{q (\Mq + \Mqabsq \abs{q})}{\Iy - \Mqdot} + \frac{\Kpdot p r}{\Iy - \Mqdot} + \frac{-\Nrdot p r}{\Iy - \Mqdot} +\\
-\frac{p r (\Iz - \Ix)}{\Iy - \Mqdot} + \frac{-\Zwdot u w}{\Iy - \Mqdot} + \frac{\Xudot u w}{\Iy - \Mqdot} + \frac{B \sin{\theta} z_B}{\Iy - \Mqdot} 
+\dot{q} =\frac{\thrusterfun{1} \distance{x}{1} + \thrusterfun{2} \distance{x}{2} - \thrusterfun{5} \distance{x}{5}}{\Iy - \Mqdot} + \frac{(\Mq + \Mqabsq \abs{q})q}{\Iy - \Mqdot} + \frac{\Kpdot p r}{\Iy - \Mqdot} + \frac{-\Nrdot p r}{\Iy - \Mqdot} +\\
+\frac{p r (\Iz - \Ix)}{\Iy - \Mqdot} + \frac{-\Zwdot u w}{\Iy - \Mqdot} + \frac{\Xudot u w}{\Iy - \Mqdot} + \frac{B z_B \sin{\theta} }{\Iy - \Mqdot} 
 \end{multline} and 
 \begin{multline} \label{eq:r_dot}
-\dot{r} = \frac{\thrusterfun{3} \distance{y}{3} - \thrusterfun{4} \distance{y}{4}}{\Iz - \Nrdot} + \frac{r (\Nr + \Nrabsr \abs{r})}{\Iz - \Nrdot} + \frac{-\Kpdot p q}{\Iz - \Nrdot} + \frac{\Mqdot p q}{\Iz - \Nrdot} +\\
+\dot{r} = \frac{\thrusterfun{3} \distance{y}{3} - \thrusterfun{4} \distance{y}{4}}{\Iz - \Nrdot} + \frac{(\Nr + \Nrabsr \abs{r})r}{\Iz - \Nrdot} + \frac{-\Kpdot p q}{\Iz - \Nrdot} + \frac{\Mqdot p q}{\Iz - \Nrdot} +\\
 \frac{p q (\Ix - \Iy)}{\Iz - \Nrdot} + \frac{- \Xudot u v}{\Iz - \Nrdot} + \frac{\Yvdot u v}{\Iz - \Nrdot}
 \end{multline}
 \end{subequations}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Simplified Model Structures}
-To make estimation more convenient, data-collection experiments can be designed such that linear velocities will be small. The effects of the linear velocities in \eqref{eq:angVelDynamics} can then be neglected, resulting in the reduced model structure
+Since the \abbrROV can not measure its position in $N$ and $E$ nor its velocity in $u$, $v$ and $w$ estimation of parameters linked to these terms are hard to identify. To make estimation more convenient, data-collection experiments can be designed such that linear velocities will be small. The effects of the linear velocities in \eqref{eq:angVelDynamics} can then be neglected, resulting in the reduced model
 \begin{subequations}\label{eq:WithoutTranslation}
 \begin{multline} \label{eq:p_dotWithoutTranslation}
-\pdot = \frac{\thrusterfun{1} \distance{y}{1} - \thrusterfun{2} \distance{y}{2} + \thrusterfun{6} \distance{z}{6}}{\Ix - \Kpdot} + \frac{p (\Kp + \Kpabsp \abs{p})}{\Ix - \Kpdot} + \frac{-\Mqdot q r}{\Ix - \Kpdot} + \frac{\Nrdot q r}{\Ix - \Kpdot} +\\
-\frac{q r (\Iy - \Iz)}{\Ix - \Kpdot} + \frac{B \cos{\theta} \sin{\phi} z_B}{\Ix - \Kpdot},
+\pdot = \frac{\thrusterfun{1} \distance{y}{1} - \thrusterfun{2} \distance{y}{2} + \thrusterfun{6} \distance{z}{6}}{\Ix - \Kpdot} + \frac{(\Kp + \Kpabsp \abs{p})p}{\Ix - \Kpdot} + \frac{-\Mqdot q r}{\Ix - \Kpdot} + \frac{\Nrdot q r}{\Ix - \Kpdot} +\\
+\frac{q r (\Iy - \Iz)}{\Ix - \Kpdot} + \frac{B z_B\cos{\theta} \sin{\phi}}{\Ix - \Kpdot},
 \end{multline} 
 \begin{multline} \label{eq:q_dotWithoutTranslation}
-\qdot =\frac{\thrusterfun{1} \distance{x}{1} + \thrusterfun{2} \distance{x}{2} - \thrusterfun{5} \distance{x}{5}}{\Iy - \Mqdot} + \frac{q (\Mq + \Mqabsq \abs{q})}{\Iy - \Mqdot} + \frac{\Kpdot p r}{\Iy - \Mqdot} + \frac{-\Nrdot p r}{\Iy - \Mqdot} +\\
-\frac{p r (\Iz - \Ix)}{\Iy - \Mqdot} + \frac{B \sin{\theta} z_B}{\Iy - \Mqdot}\
+\qdot =\frac{\thrusterfun{1} \distance{x}{1} + \thrusterfun{2} \distance{x}{2} - \thrusterfun{5} \distance{x}{5}}{\Iy - \Mqdot} + \frac{(\Mq + \Mqabsq \abs{q})q}{\Iy - \Mqdot} + \frac{\Kpdot p r}{\Iy - \Mqdot} + \frac{-\Nrdot p r}{\Iy - \Mqdot} +\\
+\frac{p r (\Iz - \Ix)}{\Iy - \Mqdot} + \frac{B z_B\sin{\theta}}{\Iy - \Mqdot}\
 \end{multline} 
 \textrm{and}
 \begin{multline} \label{eq:r_dotWithoutTranslation}
-\rdot = \frac{\thrusterfun{3} \distance{y}{3} - \thrusterfun{4} \distance{y}{4}}{\Iz - \Nrdot} + \frac{r (\Nr + \Nrabsr \abs{r})}{\Iz - \Nrdot} + \frac{-\Kpdot p q}{\Iz - \Nrdot} + \frac{\Mqdot p q}{\Iz - \Nrdot} + \frac{p q (\Ix - \Iy)}{\Iz - \Nrdot}
+\rdot = \frac{\thrusterfun{3} \distance{y}{3} - \thrusterfun{4} \distance{y}{4}}{\Iz - \Nrdot} + \frac{(\Nr + \Nrabsr \abs{r})r}{\Iz - \Nrdot} + \frac{-\Kpdot p q}{\Iz - \Nrdot} +\\
+ \frac{\Mqdot p q}{\Iz - \Nrdot} + \frac{p q (\Ix - \Iy)}{\Iz - \Nrdot}
 \end{multline} 
 \end{subequations}
 
 From \eqref{eq:WithoutTranslation} it can be seen that $r$ is not affected by the same thrusters as $p$ and $q$. It can therefore be convenient to excite the \abbrROV mainly in $p$ and $q$ or in $r$. If the \abbrROV is excited in this way, while still keeping the linear velocities low, the effects of $r$ can then be assumed to be small in \eqref{eq:p_dotWithoutTranslation} and \eqref{eq:q_dotWithoutTranslation}. Similarly the effects of $p$ and $q$ can be assumed to be small in \eqref{eq:r_dotWithoutTranslation}. Under these assumptions the model structure \eqref{eq:WithoutTranslation} can be reduced to the decoupled model structure
 \begin{subequations} \label{eq:pq_dot_decouple}
 \begin{align} \label{eq:pq_dot_decouple1}
-\pdot &= \frac{\thrusterfun{1} \distance{y}{1} - \thrusterfun{2} \distance{y}{2} + \thrusterfun{6} \distance{z}{6}}{\Ix - \Kpdot} + \frac{p (Kp + \Kpabsp \abs{p})}{\Ix - \Kpdot} + \frac{B \cos{\theta} \sin{\phi} z_B}{\Ix - \Kpdot}, \\ \label{eq:pq_dot_decouple2}
-\qdot &=\frac{\thrusterfun{1} \distance{x}{1} + \thrusterfun{2} \distance{x}{2} - \thrusterfun{5} \distance{x}{5}}{\Iy - \Mqdot} + \frac{q (\Mq + \Mqabsq \abs{q})}{\Iy - \Mqdot} + \frac{B \sin{\theta} z_B}{\Iy - \Mqdot} 
+\pdot &= \frac{\thrusterfun{1} \distance{y}{1} - \thrusterfun{2} \distance{y}{2} + \thrusterfun{6} \distance{z}{6}}{\Ix - \Kpdot} + \frac{(Kp + \Kpabsp \abs{p})p}{\Ix - \Kpdot} + \frac{B z_B \cos{\theta} \sin{\phi}}{\Ix - \Kpdot}, \\ \label{eq:pq_dot_decouple2}
+\qdot &=\frac{\thrusterfun{1} \distance{x}{1} + \thrusterfun{2} \distance{x}{2} - \thrusterfun{5} \distance{x}{5}}{\Iy - \Mqdot} + \frac{(\Mq + \Mqabsq \abs{q})q}{\Iy - \Mqdot} + \frac{B z_B \sin{\theta}}{\Iy - \Mqdot} 
 \end{align}
 \end{subequations} and
 \begin{equation} \label{eq:r_dot_decouple}
-\rdot = \frac{\thrusterfun{3} \distance{y}{3} - \thrusterfun{4} \distance{y}{4}}{\Iz - \Nrdot} + \frac{r (\Nr + \Nrabsr \abs{r})}{\Iz - \Nrdot}
+\rdot = \frac{\thrusterfun{3} \distance{y}{3} - \thrusterfun{4} \distance{y}{4}}{\Iz - \Nrdot} + \frac{(\Nr + \Nrabsr \abs{r})r}{\Iz - \Nrdot}
 \end{equation}
 
-For observability reasons it may be convenient to reparametrise the model by congregating some of the original parameters before conducting parameter estimation. To help with observability the reparametrisation $A_p = \Ix - \Kpdot$, $B_q = \Iy - \Mqdot$ and $C_r = \Iz - \Nrdot$ was introduced in \eqref{eq:WithoutTranslation} and \eqref{eq:restoring_forces_quat} was used to represent the restoring forces. These changes resulted in the following model structure
+For identifiability reasons it is necessary to reparametrise the model by congregating some of the original parameters before conducting parameter estimation. To help with identifiability the reparametrisation $A_p = \Ix - \Kpdot$, $B_q = \Iy - \Mqdot$ and $C_r = \Iz - \Nrdot$ was introduced in \eqref{eq:WithoutTranslation}. These changes resulted in the following model
 \begin{subequations}\label{eq:quatModel}
 \begin{multline}
-\pdot = \frac{\thrusterfun{1} \distance{y}{1} - \thrusterfun{2} \distance{y}{2} + \thrusterfun{6} \distance{z}{6}}{A_p} + \frac{B z_B (2 \quatII \quatIII + 2 \quatI \quatO)}{A_p} + \\ \frac{p (\Kp + \Kpabsp \abs{p})}{A_p} + \frac{q r (B_q - C_r)}{A_p},
+\pdot = \frac{\thrusterfun{1} \distance{y}{1} - \thrusterfun{2} \distance{y}{2} + \thrusterfun{6} \distance{z}{6}}{A_p} + \frac{B z_B \cos{\theta} \sin{\phi}}{A_p} + \\ \frac{(\Kp + \Kpabsp \abs{p})p}{A_p} + \frac{q r (B_q - C_r)}{A_p},
 \end{multline}
 \begin{multline}
-\qdot = \frac{\thrusterfun{1} \distance{x}{1} + \thrusterfun{2} \distance{x}{2} - \thrusterfun{5} \distance{x}{5}}{B_q} - \frac{B z_B (2 \quatI \quatIII - 2 \quatII \quatO)}{B_q} + \\ \frac{q (\Mq + \Mqabsq \abs{q})}{B_q} - \frac{p r (A_p - C_r)}{B_q}
+\qdot = \frac{\thrusterfun{1} \distance{x}{1} + \thrusterfun{2} \distance{x}{2} - \thrusterfun{5} \distance{x}{5}}{B_q} - \frac{B z_B \sin{\theta}}{B_q} + \\ \frac{(\Mq + \Mqabsq \abs{q})q}{B_q} - \frac{p r (A_p - C_r)}{B_q}
 \end{multline}
 and
 \begin{multline}
-\rdot = \frac{\thrusterfun{3} \distance{y}{3} - \thrusterfun{4} \distance{y}{4}}{C_r} + \frac{r (\Nr + \Nrabsr \abs{r})}{C_r} + \frac{p q (A_p  - B_q)}{C_r}
+\rdot = \frac{\thrusterfun{3} \distance{y}{3} - \thrusterfun{4} \distance{y}{4}}{C_r} + \frac{(\Nr + \Nrabsr \abs{r})r}{C_r} + \frac{p q (A_p  - B_q)}{C_r}
 \end{multline}
 \end{subequations}
 

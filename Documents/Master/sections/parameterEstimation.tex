@@ -1,32 +1,32 @@
 \chapter{Parameter Estimation} \label{cha:parameterEstimation}\index{Parameter Estimation}
-A central part in modelling is parameter estimation and its importance is often underestimated. If the model is not well estimated several problems arise when trying to synthesise model-based controllers. If a system's dynamics are completely unknown, a black-box method is used, \emph{i.e.} general equations are fitted to test data and the parameters have no physical significance. When a system can be completely modelled using first principles, for example, Newtons laws, it is called white-box modelling. In this thesis, the model structure of the system is assumed to be known
+A central part in modelling is parameter estimation and its importance is often underestimated. If the model is not well estimated several problems arise when trying to synthesise model-based controllers. If a system's dynamics are completely unknown, a black-box method can be used, \emph{i.e.} general equations are fitted to test data and the parameters have no physical significance. When a system can be completely modelled using first principles, for example, Newtons laws, it is called white-box modelling. In this thesis, the model structure of the system is assumed to be known and given by
 \begin{align}
-x_{k+1} &=f(x_k,u_k,w_k)\\
-y_{k} &= h(x_k,u_k,v_k)
+\boldsymbol{x}_{k+1} &=f(\boldsymbol{x}_k,\boldsymbol{u}_k,\boldsymbol{w}_k|\boldsymbol{\theta})\\
+\boldsymbol{y}_{k} &= h(\boldsymbol{x}_k,\boldsymbol{u}_k,\boldsymbol{v}_k|\boldsymbol{\theta})
 \end{align}
-but several of the parameters are unknown.
+but several of the parameters $\boldsymbol{\theta}$ are unknown.
 To estimate parameters in a know model structure is called-gray box modelling. 
 
-In general, parameter estimation is to fit a model structure's parametrising vector $\boldsymbol{\theta}$ such that the model best describes the estimation data. The model is then validated with a dataset which was not used during estimation. If the model describes the validation data well the model and its parameter values are accepted. A measure of how well a model describes a dataset is the normalised root mean square error
+In general, parameter estimation is to fit a model structure's parameter vector $\boldsymbol{\theta}$ such that the model best describes the estimation data. The model is then validated with a dataset which was not used during estimation. If the model describes the validation data well the model and its parameter values are accepted. A measure of how well a model describes a dataset is the normalised root mean square error
 \begin{equation}
-\text{Fit} = 100 \Biggr(1 - \frac{\sqrt{\sum\limits_{t=1}^N \bigr(\boldsymbol{y}(t) - \hat{\boldsymbol{y}}(t)\bigl)^2}}{\sqrt{\sum\limits_{t=1}^N \bigr(\boldsymbol{y}(t)-\frac{1}{N}\sum\limits_{t=1}^N \boldsymbol{y}(t)\bigl)^2}}\Biggl)
+\text{Fit} = 100 \left(1 - \frac{\sqrt{\sum\limits_{t=1}^N \bigr(\boldsymbol{y}(t) - \hat{\boldsymbol{y}}(t)\bigl)^2}}{\sqrt{\sum\limits_{t=1}^N \bigr(\boldsymbol{y}(t)-\frac{1}{N}\sum\limits_{t=1}^N \boldsymbol{y}(t)\bigl)^2}}\right)
 \end{equation} \index{Fit}
-A high fit value often indicate that the model describes the validation data well.
+A high fit value indicate that the model describes the validation data well.
 
-Relations between states can be used to get better estimates of parameters for example, if the angles of the \abbrROV are estimated well the relations \eqref{eq:eulerAnglesdot} from \Chapterref{cha:modelling} could be used. Another aspect to consider when estimating model parameters is what to model as inputs and what to model as outputs. Inputs to a system are considered to be true signals, thus if they are noisy or inaccurate they can effect the estimation negatively \citep{modellbygge}. Outputs from a system are measurements of a state and are thus expected to be somewhat noisy. In this chapter it is assumed that the \abbrROV has neutral buoyancy which means that $B = W$. 
+Relations between states can be used to get better estimates of parameters for example, if the angles of the \abbrROV are estimated well the relations \eqref{eq:eulerAnglesdot} from \Chapterref{cha:modelling} could be used. Another aspect to consider when estimating model parameters is what to model as inputs and what to model as outputs. Inputs to a system are considered to be true signals, thus if they are noisy or inaccurate they can effect the estimation negatively \citep{modellbygge}. Outputs from a system are measurements of a state and are thus expected to be somewhat noisy. In this chapter it is assumed that the \abbrROV has neutral buoyancy \emph{i.e.} $B = W$. 
 
-To estimate the unknown parameters in the \abbrROV model described in \Chapterref{cha:modelling}, different methods can be used. Two different methods will be explained further in this chapter  
+To estimate the unknown parameters in the \abbrROV model described in \Chapterref{cha:modelling}, different methods can be used. Two different methods will be explained further in this chapter.  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 \section{Prediction-Error Method}
-The prediction-error method uses a prediction $\hat{\boldsymbol{y}}(t|\boldsymbol{\theta})$ of a systems output to compare with the present output of the system. The discrete-time predictor can be described by 
+The prediction-error method uses a predictor $\hat{\boldsymbol{y}}(\boldsymbol{\theta})$ of a systems output to compare with the present output of the system. The discrete-time predictor can be described by 
 \begin{equation}
 \boldsymbol{x}_{k+1}(\theta) = f(\boldsymbol{\hat{x}_k}(\theta), \boldsymbol{u}_k,\boldsymbol{y}_k, \boldsymbol{\theta})
 \end{equation}
 and the predictor can be described by
 \begin{equation}
-\hat{\boldsymbol{y}}_k(\boldsymbol{\theta}) = h(\boldsymbol{x}_k, \boldsymbol{u}_k, \boldsymbol{\theta})
+\hat{\boldsymbol{y}}_k(\boldsymbol{\theta}) = h(\hat{\boldsymbol{x}}_k, \boldsymbol{u}_k, \boldsymbol{\theta})
 \end{equation}
 where $\boldsymbol{x}$ are the states and $\boldsymbol{u}$ are the inputs and the vector $\hat{\boldsymbol{y}}_k(\boldsymbol{\theta})$ is the predicted output of the model given the parameter vector~$\boldsymbol{\theta}$. 
 
@@ -53,8 +53,7 @@ An \abbrEKF can also be used to estimate parameters of the \abbrROV. This can be
 \boldsymbol{\theta}_k
 \end{bmatrix}
 \end{equation}
-which yields the following.
-The added parameters are modelled as static states that don't move with time giving the following augmented state-space form 
+The added parameters are modelled as static states that do not move with time giving the following augmented state-space form 
 \begin{equation}
 \bar{\boldsymbol{x}}_{k+1}(\boldsymbol{\theta}) =\begin{bmatrix}
 \boldsymbol{f}(\boldsymbol{x}_k(\boldsymbol{\theta}),\boldsymbol{u}_k,\boldsymbol{\theta})\\
@@ -67,35 +66,34 @@ The added parameters are modelled as static states that don't move with time giv
 \end{equation}
 Since the \abbrEKF tries to minimise state variance it will also try to estimate the parameters $\boldsymbol{\theta}$ since they are included in the state vector \citep{Roger}.
 
-\subsection{Implementation}\label{sec:KalmanEstimatorImpl}
-The reparametrised model \eqref{eq:quatModel} was used to model $\etaVector$ and $\nuVector$. Measurement equations were taken from \Chapterref{cha:sensor_fusion}. Each model parameter was modelled as a state using a constant position motion model and the motion model was discretised using the Euler forward discretisation method. The complete discrete model is
-\begin{equation}
-\label{eq:motionModelKalman}
-\begin{pmatrix}
-\etaVector_{k+1}\\ 
-\nuVector_{k+1}\\
-\boldsymbol{b}_{k+1}\\
-\boldsymbol{\theta}_{k+1}
-\end{pmatrix} = 
-\begin{pmatrix}
-\etaVector_k + T_s \boldsymbol{T}(\etaVector_k)\nuVector_k\\
-\nuVector_k + T_s f(\etaVector_k,\nuVector_k,\boldsymbol{\theta}_k)\\
-\boldsymbol{b}_k\\
-\boldsymbol{\theta}_k
-\end{pmatrix}
-+ \begin{pmatrix}
-\boldsymbol{v}_{\etaVector}\\
-\boldsymbol{v}_{\nuVector}\\
-\boldsymbol{v}_{\boldsymbol{b}}\\
-\boldsymbol{v}_{\boldsymbol{\theta}}
-\end{pmatrix}
-\end{equation}
-Here, $\boldsymbol{\theta}$ is a vector containing the parameters that were estimated. The vector-valued function $\boldsymbol{f}(\etaVector,\nuVector,\boldsymbol{\theta})$ is \eqref{eq:quatModel}. The vector $\boldsymbol{b}$  contains the biases of the gyroscope. The vector $\boldsymbol{v}$ is the system noise and is assumed to enter each term directly, this resulted in a diagonal $\boldsymbol{Q}$-matrix when implementing the model in the \abbrEKF. The matrix $\boldsymbol{T}(\etaVector)$ is an angular velocity transformation matrix using the quaternion form of $\etaVector$ and is defined in \Chapterref{cha:modelling}. Measurement equations are taken from \sectionref{sec:Meas}.
+%\subsection{Implementation}\label{sec:KalmanEstimatorImpl}
+%The reparametrised model \eqref{eq:quatModel} was used to model $\etaVector$ and $\nuVector$. Measurement equations were taken from \Chapterref{cha:sensor_fusion}. Each model parameter was modelled as a state using a constant position motion model and the motion model was discretised using the Euler forward discretisation method. The complete discrete model is
+%\begin{equation}
+%\label{eq:motionModelKalman}
+%\begin{pmatrix}
+%\etaVector_{k+1}\\ 
+%\nuVector_{k+1}\\
+%\boldsymbol{b}_{k+1}\\
+%\boldsymbol{\theta}_{k+1}
+%\end{pmatrix} = 
+%\begin{pmatrix}
+%\etaVector_k + T_s \boldsymbol{T}(\etaVector_k)\nuVector_k\\
+%\nuVector_k + T_s f(\etaVector_k,\nuVector_k,\boldsymbol{\theta}_k)\\
+%\boldsymbol{b}_k\\
+%\boldsymbol{\theta}_k
+%\end{pmatrix}
+%+ \begin{pmatrix}
+%\boldsymbol{v}_{\etaVector}\\
+%\boldsymbol{v}_{\nuVector}\\
+%\boldsymbol{v}_{\boldsymbol{b}}\\
+%\boldsymbol{v}_{\boldsymbol{\theta}}
+%\end{pmatrix}
+%\end{equation}
+%Here, $\boldsymbol{\theta}$ is a vector containing the parameters that were estimated. The vector-valued function $\boldsymbol{f}(\etaVector,\nuVector,\boldsymbol{\theta})$ is \eqref{eq:quatModel}. The vector $\boldsymbol{b}$  contains the biases of the gyroscope. The vector $\boldsymbol{v}$ is the system noise and is assumed to enter each term directly, this resulted in a diagonal $\boldsymbol{Q}$-matrix when implementing the model in the \abbrEKF. The matrix $\boldsymbol{T}(\etaVector)$ is an angular velocity transformation matrix using the quaternion form of $\etaVector$ and is defined in \Chapterref{cha:modelling}. Measurement equations are taken from \sectionref{sec:Meas}.
 
-To increase the performance of the filter a method for outlier detection and rejection was implemented. Since time updates were done batch wise it was decided to use a new for of outlier rejection and not to reimplement the method used on the \abbrROV. The outlier rejection method that was decided on is based on the assumption that the normalised innovation $\boldsymbol{\epsilon}^T \boldsymbol{S}^{-1} \boldsymbol{\epsilon}$ should be $\chi_{n}^{2}$ distributed. Here $n$ is the number of measurements. To check the validity of a single measurement the previous assumption gives that $\epsilon_i^{2}/S_{i,i} \sim \chi_{1}^{2}$ \citep{sensorfusion}. This is implemented in the \abbrEKF using the following algorithm:
+To increase the performance of the filter a method for outlier detection and rejection was implemented. Since time updates were done batch wise it was decided to use a new form of outlier rejection and not to reimplement the method used on the \abbrROV. The outlier rejection method that was decided on is based on the assumption that the normalised innovation $\boldsymbol{\epsilon}^T \boldsymbol{S}^{-1} \boldsymbol{\epsilon}$ should be $\chi_{n}^{2}$ distributed. Here $n$ is the number of measurements. To check the validity of a single measurement the previous assumption gives that $\epsilon_i^{2}/S_{i,i} \sim \chi_{1}^{2}$ \citep{sensorfusion}. This is implemented in the \abbrEKF using \Algoref{alg:outlier}.
 \begin{algorithm}[h]
-\label{alg:outlier}
-\caption{The outlier rejection algorithm used during the measurement update step of the parameter estimation \abbrEKF.}
+\caption{The outlier rejection algorithm used during the measurement update step of the parameter estimation \abbrEKF.}\label{alg:outlier}
 \textbf{1.} Calculate $\boldsymbol{S}=h_{\boldsymbol{x}} \boldsymbol{P} h_{\boldsymbol{x}}^T + \boldsymbol{R}$ and the innovation $\epsilon$.
 \\
 \textbf{2.} For each row $i$ in $\boldsymbol{\epsilon}$ do the comparison
@@ -104,10 +102,11 @@ To increase the performance of the filter a method for outlier detection and rej
 \end{equation}
 If the expression holds true remove the $i$:th row from $\boldsymbol{\epsilon}$ and the $i$:th row and column from $\boldsymbol{S}$ and $h_{\boldsymbol{x}}$.\\
 \textbf{3.} Proceed with the Kalman algorithm using the cropped $h_{\boldsymbol{x}}$, $\boldsymbol{S}$ and $\boldsymbol{\epsilon}$.
-\end{algorithm}
-Here, $\boldsymbol{\sigma}$ is a $n\times1$ dimensional design variable and $n$ is the number of measurements that are used in the \abbrEKF. A higher value of $\sigma_i$ decreases the sensitivity of the outlier rejection on the $i$:th measurement.
 
-The filter was run on each collected dataset. The final values of $\hat{\boldsymbol{\theta}}$ from a dataset were used as initial values for $\hat{\boldsymbol{\theta}}$ when the filter was applied on the next dataset. The same was done for the covariance matrix $\boldsymbol{P}$. The final covariance from an earlier run was set as the initial covariance when the filter was applied on subsequent dataset. At completion the parameters were entered in a simulator which was feed with the control signals from the corresponding dataset. The simulated  output was then compared with the original data.
+Here, $\boldsymbol{\sigma}$ is a $n\times1$ dimensional design variable and $n$ is the number of measurements that are used in the \abbrEKF. A higher value of $\sigma_i$ decreases the sensitivity of the outlier rejection on the $i$:th measurement.
+\end{algorithm}
+
+%The filter was run on each collected dataset. The final values of $\hat{\boldsymbol{\theta}}$ from a dataset were used as initial values for $\hat{\boldsymbol{\theta}}$ when the filter was applied on the next dataset. The same was done for the covariance matrix $\boldsymbol{P}$. The final covariance from an earlier run was set as the initial covariance when the filter was applied on subsequent dataset. At completion the parameters were entered in a simulator which was feed with the control signals from the corresponding dataset. The simulated  output was then compared with the original data.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Data Collection and Processing} \index{Data preprocessing}
