@@ -118,82 +118,6 @@ The static thrust allocation matrix $\thrusterGeometryOnes[*]$ is the pseudo inv
 \end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Angular Velocities Controller} \index{Angular Velocities Controller} \index{PI@\abbrPI!abbreviation}
-\todo[inline]{Write some fluff about the rate controller}
-
-If the angular velocities error are defined as 
-\begin{equation}
-\nuTildeAng = \nuVectorAng - \nuVectorAng[,_{\text{ref}}]
-\end{equation}
-then are the \abbrPI angular velocities controller defined as 
-\begin{equation}
-	\accVector^b = \begin{bmatrix} 
-	\zeroCol{3} \\
-	\boldsymbol{T}^{-1}_\theta(\eulerAngles)(-K_{\text{p}}*\nuTildeAng - K_{\text{i}}\int \! \nuTildeAng \, \mathrm{d}t)
-	\end{bmatrix}
-\end{equation}
-where $K_{\text{p}}$ and $K_{\text{i}}^b$ are positive definite design matrices \citep[p. 453]{fossen2011}.
-Using the exact linearisation for the angular velocities controller and open-loop control for the linear velocities, are the control signals defined as
-\begin{equation}
-	u_{\etaVectorAng} = f^{-1}(\etaVector,\nuVector) + \thrusterGeometryOnes[*] \begin{bmatrix} \nuVectorLin \\ \zeroCol{3} \end{bmatrix}	
-\end{equation}
-or the control signals can be defined as 
-\begin{equation}
-	u_{\etaVectorAng} = \accVector^b + \thrusterGeometryOnes[*] \begin{bmatrix} \nuVectorLin \\ \zeroCol{3} \end{bmatrix}
-\end{equation}
-if the exact linearisation is not wanted. \Figureref{fig:ratecontroller} illustrates how the angular velocities controller is implemented with the open-loop control of the linear velocities.
-\begin{figure}
-	\centering
-	\begin{tikzpicture}[auto, thick, node distance=2cm, >=latex',%
-        block/.style  = {draw, thick, rectangle, minimum height = 1cm,%
-                           minimum width = 3em},%
-        PID/.style    = {draw, thick, rectangle, minimum height = 1cm,%
-                         minimum width = 0.6cm},%
-        sum/.style    = {draw, circle,inner sep=0pt, text width=4mm,align=center,node distance = 1cm},%
-        mux/.style    = {draw, thick, rectangle, minimum width=0.3cm,%
-                        minimum height = 2cm ,fill= black!100,%
-                        node distance=1cm},
-        input/.style    = {coordinate},%
-        output/.style   = {coordinate} %
-    ]
-   		\draw node at (0,0) [input] (vel_input) {};
-   		\draw node [input,below of=vel_input] (ang_input) {};
-   		\draw node[PID, right of=ang_input] (pid) {$\abbrPI$};
-   		
-   		%from input to pid
-   		\draw[->] (ang_input) -- node[align=center, below] {$\nuVectorAng - \nuVectorAng[,\text{ref}]$} ($(pid.west)$);
-   		\draw (pid.east) -- ++(0.5,0) node[](switch){};
-   		
-   		%from pid to switch and making the switch 
-   		\draw (pid.east) ++(2,0.5) node[](switchup){};
-   		\draw (pid.east) ++(2,-0.5) node[block, name=exactlin] {$f^{-1}(\etaVector,\nuVector)$};
-   		\draw (pid.east) ++(0.8,0.5) -| (switchup);
-   		\draw (pid.east) ++(0.8,-0.5) -| (exactlin.west);
-   		\draw (pid.east) ++(0.5,0) -- ++(0.3,0.5);
-   		\draw[->] (pid.east) ++(0.65,0.25) arc (30:-30:0.6);     		
-   		
-   		%Merge the switch  		
-   		\draw (pid.east) ++(3,0) node[coordinate](merge){};
-   		\draw (switchup) -| (merge);
-   		\draw (exactlin) -| (merge);
-   		
-   		%Input to thrust
-   		\draw node[block, right of=vel_input] (thrust) {$\thrusterGeometryOnes[*]$};
-   		\draw[->] (vel_input) -- node[align=center, below] {$\nuVectorLin[,\text{ref}]$} (thrust.west);
-   		
-   		%To sum
-   		\draw (thrust.east) ++(4,0) node[sum, name=sum] {$+$};
-		\draw[->] (thrust.east) -- node[align=center, below] {$u_{\nuVectorLin}$} (sum.west);
-   		\draw[->] (merge) -| node[align=center, below] {$u_{\nuVectorAng}$} (sum.south);   		   		
-   		% From sum to output
-   		\draw node [output, right of=sum, node distance=2cm] (output) {};
-    		\draw[->] (sum.east) -- node[align=center, below] {$u$} (output);
-	\end{tikzpicture}
-    \caption{The linear velocities are controlled in the same way as in \Sectionref{sec:openloop}. However, the angular velocities are controlled via an \abbrPID and exact linearisation can be enabled.} 
-    \label{fig:ratecontroller}
-\end{figure}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Attitude Controller} \index{PID@\abbrPID!abbreviation} \index{Attitude Controller}
 \todo[inline]{Write some fluff}
 Using the relations in \Chapterref{cha:modelling} the derivative of the attitude error can be defined as 
@@ -274,6 +198,82 @@ without the exact linearisation. An illustration of how the attitude controller 
 \end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Angular Velocities Controller} \index{Angular Velocities Controller} \index{PI@\abbrPI!abbreviation}
+\todo[inline]{Write some fluff about the rate controller}
+
+If the angular velocities error are defined as 
+\begin{equation}
+\nuTildeAng = \nuVectorAng - \nuVectorAng[,_{\text{ref}}]
+\end{equation}
+then are the \abbrPI angular velocities controller defined as 
+\begin{equation}
+	\accVector^b = \begin{bmatrix} 
+	\zeroCol{3} \\
+	\boldsymbol{T}^{-1}_\theta(\eulerAngles)(-K_{\text{p}}*\nuTildeAng - K_{\text{i}}\int \! \nuTildeAng \, \mathrm{d}t)
+	\end{bmatrix}
+\end{equation}
+where $K_{\text{p}}$ and $K_{\text{i}}^b$ are positive definite design matrices \citep[p. 453]{fossen2011}.
+Using the exact linearisation for the angular velocities controller and open-loop control for the linear velocities, are the control signals defined as
+\begin{equation}
+	u_{\etaVectorAng} = f^{-1}(\etaVector,\nuVector) + \thrusterGeometryOnes[*] \begin{bmatrix} \nuVectorLin \\ \zeroCol{3} \end{bmatrix}	
+\end{equation}
+or the control signals can be defined as 
+\begin{equation}
+	u_{\etaVectorAng} = \accVector^b + \thrusterGeometryOnes[*] \begin{bmatrix} \nuVectorLin \\ \zeroCol{3} \end{bmatrix}
+\end{equation}
+if the exact linearisation is not wanted. \Figureref{fig:ratecontroller} illustrates how the angular velocities controller is implemented with the open-loop control of the linear velocities.
+\begin{figure}
+	\centering
+	\begin{tikzpicture}[auto, thick, node distance=2cm, >=latex',%
+        block/.style  = {draw, thick, rectangle, minimum height = 1cm,%
+                           minimum width = 3em},%
+        PID/.style    = {draw, thick, rectangle, minimum height = 1cm,%
+                         minimum width = 0.6cm},%
+        sum/.style    = {draw, circle,inner sep=0pt, text width=4mm,align=center,node distance = 1cm},%
+        mux/.style    = {draw, thick, rectangle, minimum width=0.3cm,%
+                        minimum height = 2cm ,fill= black!100,%
+                        node distance=1cm},
+        input/.style    = {coordinate},%
+        output/.style   = {coordinate} %
+    ]
+   		\draw node at (0,0) [input] (vel_input) {};
+   		\draw node [input,below of=vel_input] (ang_input) {};
+   		\draw node[PID, right of=ang_input] (pid) {$\abbrPI$};
+   		
+   		%from input to pid
+   		\draw[->] (ang_input) -- node[align=center, below] {$\nuVectorAng - \nuVectorAng[,\text{ref}]$} ($(pid.west)$);
+   		\draw (pid.east) -- ++(0.5,0) node[](switch){};
+   		
+   		%from pid to switch and making the switch 
+   		\draw (pid.east) ++(2,0.5) node[](switchup){};
+   		\draw (pid.east) ++(2,-0.5) node[block, name=exactlin] {$f^{-1}(\etaVector,\nuVector)$};
+   		\draw (pid.east) ++(0.8,0.5) -| (switchup);
+   		\draw (pid.east) ++(0.8,-0.5) -| (exactlin.west);
+   		\draw (pid.east) ++(0.5,0) -- ++(0.3,0.5);
+   		\draw[->] (pid.east) ++(0.65,0.25) arc (30:-30:0.6);     		
+   		
+   		%Merge the switch  		
+   		\draw (pid.east) ++(3,0) node[coordinate](merge){};
+   		\draw (switchup) -| (merge);
+   		\draw (exactlin) -| (merge);
+   		
+   		%Input to thrust
+   		\draw node[block, right of=vel_input] (thrust) {$\thrusterGeometryOnes[*]$};
+   		\draw[->] (vel_input) -- node[align=center, below] {$\nuVectorLin[,\text{ref}]$} (thrust.west);
+   		
+   		%To sum
+   		\draw (thrust.east) ++(4,0) node[sum, name=sum] {$+$};
+		\draw[->] (thrust.east) -- node[align=center, below] {$u_{\nuVectorLin}$} (sum.west);
+   		\draw[->] (merge) -| node[align=center, below] {$u_{\nuVectorAng}$} (sum.south);   		   		
+   		% From sum to output
+   		\draw node [output, right of=sum, node distance=2cm] (output) {};
+    		\draw[->] (sum.east) -- node[align=center, below] {$u$} (output);
+	\end{tikzpicture}
+    \caption{The linear velocities are controlled in the same way as in \Sectionref{sec:openloop}. However, the angular velocities are controlled via an \abbrPID and exact linearisation can be enabled.} 
+    \label{fig:ratecontroller}
+\end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Depth Controller} \index{Depth Controller} \index{PI@\abbrPI!abbreviation}
 \todo[inline]{write some fluff} 
 If the error in $\zPosition$ is defined as 
@@ -342,249 +342,123 @@ where $K_{\text{p}}$ and $K_{\text{i}}$ are design parameters. The rotation matr
 \section{Benchmarking}
 To be able to draw any conclusions about the performance of the controllers the following reference signals was used
 \begin{description}
-\item[Constant] A constant reference was applied to all \abbrDOF. This reference signal was only used for trimming the controllers initially, thus will no results be presented.
+\item[Constant] A constant reference was applied to all \abbrDOF. This reference signal was only used for trimming the controllers initially, thus will no results be presented expect for the depth controller.
 
 \item[Sine] A $\sin(\cdot)$ signal was applied to one \abbrDOF at the time and then to all \abbrDOF. Two $\sin$ signals with different amplitudes were used, amplitude $1$ and $0.5$. The used frequency was $0.5 \hertz$.
 
 \item[Smooth step] A smooth step was applied to one \abbrDOF at the time and then to all \abbrDOF at the same time. The used smooth step was the same as in \citet[p. 192-195]{robotics}. The smooth step parameters were $q_{\text{0}} = 0$, $q_{\text{f}} = 1$, $t_{\text{s}} = 3$ ,$t_{\text{f}} = 15$ and $V = 1.5 (q_{\text{f}} - q_{\text{0}})/(t_{\text{f}} - t_{\text{s}}))$
 \end{description}
-for each controller separately. \Figureref{fig:StepAttitude} and \Figureref{fig:StepAllAttitude} shows the smooth step reference signal for the attitude controller, both in real test case and simulation. \Figureref{fig:Sin05Attitude} - \Figureref{fig:SinAll05Attitude} illustrates the sine reference signal for the when using the attitude controller.
+for each controller separately. For each conducted test was there a simulated test except for the depth because the depth dynamics has not been modelled. The \abbrROV model in the simulator used the parameters from \Sectionref{sec:parameterResults}. The exact linearisation, both in the simulator and the \abbrROV, used the parameters from \Sectionref{sec:parameterResults} with an scaling factor of 0.9 except for $z_B$ which had 0.5 as scaling factor. In this Section will a few representative test cases will be presented,  several other test can be seen in \Appref{app:controllerTestResults}. Tests was conducted for the \abbrPID attitude controller without exact linearisation, the \abbrPI rate controller with exact linearisation and with the \abbrPI depth controller. Different performance evaluation values will be used, these values are defined as in \citet{reglerteori}. 
+
+\todo[inline]{Exact lin for attitude}
+\todo[inline]{Parameter values for the controllers}
+\todo[inline]{Fix figures with sim results.}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%Attitude%%%%%%%%%%%%%%%% 
-\begin{figure}[tbp]
-  \centering
-  \subfloat[][\label{fig:testStepRoll} An step was applied to $\rollVelocity$ .]{\includegraphics[width=0.4\textwidth]{testStepPhis3e10a1}}
-  \qquad
-  \subfloat[][\label{fig:simStepRoll} An step was applied to the simulated \abbrROV in $\rollVelocity$.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
-  \qquad
-  \subfloat[][\label{fig:testStepPitch} An step was applied to $\pitchVelocity$ .]{\includegraphics[width=0.4\textwidth]{testStepThetas3e10a1}}
-  \qquad
-  \subfloat[][\label{fig:simStepPitch} An step was applied to the simulated \abbrROV in $\pitchVelocity$.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
-  \qquad
-  \subfloat[][\label{fig:testStepYaw} An step was applied to $\yawVelocity$ .]{\includegraphics[width=0.4\textwidth]{testStepPsis3e10a1}}
-  \qquad
-  \subfloat[][\label{fig:simStepYaw} An step was applied to the simulated \abbrROV in $\yawVelocity$.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
-   \caption{\label{fig:StepAttitude}%
-    step 3 dof A1.}
-\end{figure}
-
 \begin{figure}
 \centering
-  \subfloat[][\label{fig:testStepAllRollAttitude} An step was applied to all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{testStepAllPhis3e10a1}}
+  \subfloat[][\label{fig:testStepAllRollAttitude} A smooth step applied in $\rollAngle$.]{\includegraphics[width=0.4\textwidth]{testStepAllPhis3e10a1}}
   \qquad
-  \subfloat[][\label{fig:simStepAllRollAttitude} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
+  \subfloat[][\label{fig:simStepAllRollAttitude} A smooth step applied to the simulated \abbrROV in $\rollAngle$.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
   \qquad
-  \subfloat[][\label{fig:TestStepAllPitchAttitude} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{testStepAllThetas3e10a1}}
+  \subfloat[][\label{fig:TestStepAllPitchAttitude} A smooth step applied in $\pitchAngle$.]{\includegraphics[width=0.4\textwidth]{testStepAllThetas3e10a1}}
   \qquad
-  \subfloat[][\label{fig:simStepAllPitchAttitude} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
+  \subfloat[][\label{fig:simStepAllPitchAttitude} A smooth step applied to the simulated \abbrROV in $\pitchAngle$.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
   \qquad
-  \subfloat[][\label{fig:TestStepAllYawAttitude} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{testStepAllPsis3e10a1}}
+  \subfloat[][\label{fig:TestStepAllYawAttitude} A smooth step applied in $\yawAngle$.]{\includegraphics[width=0.4\textwidth]{testStepAllPsis3e10a1}}
   \qquad
-  \subfloat[][\label{fig:simStepAllYawAttitude} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
+  \subfloat[][\label{fig:simStepAllYawAttitude} A smooth step applied to the simulated \abbrROV in $\yawAngle$.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
   \caption{\label{fig:StepAllAttitude}% 
-  step All dof A1}
+  Smooth steps were applied in all attitude angles at the same time while using the attitude controller.}
 \end{figure}
 
-\begin{figure}[tbp]
-  \centering
-  \subfloat[][\label{fig:testSinRoll} An step was applied to $\rollVelocity$ .]{\includegraphics[width=0.4\textwidth]{testSinPhiA1}}
-  \qquad
-  \subfloat[][\label{fig:simSinRoll} An step was applied to the simulated \abbrROV in $\rollVelocity$.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
-  \qquad
-  \subfloat[][\label{fig:testSinPitch} An step was applied to $\pitchVelocity$ .]{\includegraphics[width=0.4\textwidth]{testSinThetaA1}}
-  \qquad
-  \subfloat[][\label{fig:simSinPitch} An step was applied to the simulated \abbrROV in $\pitchVelocity$.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
-  \qquad
-  \subfloat[][\label{fig:testSinYaw} An step was applied to $\yawVelocity$ .]{\includegraphics[width=0.4\textwidth]{testSinPsiA1}}
-  \qquad
-  \subfloat[][\label{fig:simSinYaw} An step was applied to the simulated \abbrROV in $\yawVelocity$.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
-    \caption{\label{fig:Sin1Attitude}% 
-    sin 3 dof A1.}
-\end{figure}
+\Figureref{fig:StepAllAttitude} shows smooth step reference signals applied in all attitude angles while using the attitude controller. Initially did $\rollAngle$ and $\pitchAngle$ follow the reference signals well. The $\rollAngle$ oscillated with a steady state error of 0.9. However, $\pitchAngle$ was kept closer to the reference signal with a steady state error of 0.4. The attitude angle $\yawAngle$ could not be stabilised and drifted throughout the test. 
 
 \begin{figure}
 \centering
-  \subfloat[][\label{fig:testSinAllRollAttitude} An step was applied to all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{testSinAllPhiA1}}
+  \subfloat[][\label{fig:testSinAllRollAttitude} A sine signal with amplitude $1$ and frequency $0.5\hertz$ applied in $\rollAngle$.]{\includegraphics[width=0.4\textwidth]{testSinAllPhiA1}}
   \qquad
-  \subfloat[][\label{fig:simSinAllRollAttitude} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
+  \subfloat[][\label{fig:simSinAllRollAttitude} A sine signal with amplitude $1$ and frequency $0.5\hertz$ applied to the simulated \abbrROV in $\rollAngle$.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
   \qquad
-  \subfloat[][\label{fig:testSinAllPitchAttitude} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{testSinAllThetaA1}}
+  \subfloat[][\label{fig:testSinAllPitchAttitude} A sine signal with amplitude $1$ and frequency $0.5\hertz$ applied in $\pitchAngle$.]{\includegraphics[width=0.4\textwidth]{testSinAllThetaA1}}
   \qquad
-  \subfloat[][\label{fig:simSinAllPitchAttitude} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
+  \subfloat[][\label{fig:simSinAllPitchAttitude} A sine signal with amplitude $1$ and frequency $0.5\hertz$ applied to the simulated \abbrROV in $\pitchAngle$.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
   \qquad
-  \subfloat[][\label{fig:testSinAllYawAttitude} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{testSinAllPsiA1}}
+  \subfloat[][\label{fig:testSinAllYawAttitude} A sine signal with amplitude $1$ and frequency $0.5\hertz$ applied in $\yawAngle$.]{\includegraphics[width=0.4\textwidth]{testSinAllPsiA1}}
   \qquad
-  \subfloat[][\label{fig:simSinAllYawAttitude} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
+  \subfloat[][\label{fig:simSinAllYawAttitude} A sine signal with amplitude $1$ and frequency $0.5\hertz$ applied to the simulated \abbrROV in $\yawAngle$.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
   \caption{\label{fig:SinAllAttitude}%
-  sin All dof A1.}
+  Sine signals were applied in all attitude angles at the same time while using the attitude controller.}
 \end{figure}
 
-
-\begin{figure}[tbp]
-  \centering
-  \subfloat[][\label{fig:testSin05Roll} An step was applied to $\rollVelocity$ .]{\includegraphics[width=0.4\textwidth]{testSinPhiA05}}
-  \qquad
-  \subfloat[][\label{fig:simSin05Roll} An step was applied to the simulated \abbrROV in $\rollVelocity$.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
-  \qquad
-  \subfloat[][\label{fig:testSin05Pitch} An step was applied to $\pitchVelocity$ .]{\includegraphics[width=0.4\textwidth]{testSinThetaA05}}
-  \qquad
-  \subfloat[][\label{fig:simSin05Pitch} An step was applied to the simulated \abbrROV in $\pitchVelocity$.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
-  \qquad
-  \subfloat[][\label{fig:testSin05Yaw} An step was applied to $\yawVelocity$ .]{\includegraphics[width=0.4\textwidth]{testSinPsiA05}}
-  \qquad
-  \subfloat[][\label{fig:simSin50Yaw} An step was applied to the simulated \abbrROV in $\yawVelocity$.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
-    \caption{\label{fig:Sin05Attitude}%
-    sin 3 dof A05.}
-\end{figure}
+Sine reference signals with amplitude 1 and frequency $0.5 \hertz$ can be seen in \Figureref{fig:SinAllAttitude}. The angles $\rollAngle$ and $\pitchAngle$ did not reached the assigned amplitude. However, did they have the general form of a sine but phase shifted relative to the reference signals. The $\yawAngle$ follows the reference signal well but with a phase shift and a bias.
 
 \begin{figure}
 \centering
-  \subfloat[][\label{fig:testSinAll05RollAttitude} An step was applied to all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{testSinAllPhiA05}}
+  \subfloat[][\label{fig:testStepPhiTheta05RollAttitude} A smooth step applied in $\rollAngle$.]{\includegraphics[width=0.4\textwidth]{testStepThetaPhiPhis3e10a1}}
   \qquad
-  \subfloat[][\label{fig:simSinAll05RollAttitude} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
+  \subfloat[][\label{fig:simStepPhiTheta05RollAttitude} A smooth step applied to the simulated \abbrROV in $\rollAngle$.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
   \qquad
-  \subfloat[][\label{fig:TestSinAll05PitchAttitude} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{testSinAllThetaA05}}
+  \subfloat[][\label{fig:testStepPhiTheta05PitchAttitude} A smooth step applied in $\pitchAngle$.]{\includegraphics[width=0.4\textwidth]{testStepThetaPhiThetas3e10a1}}
   \qquad
-  \subfloat[][\label{fig:simSinAll05PitchAttitude} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
-  \qquad
-  \subfloat[][\label{fig:TestSinAll05YawAttitude} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{testSinAllPsiA05}}
-  \qquad
-  \subfloat[][\label{fig:simSinAll05YawAttitude} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
-  \caption{\label{fig:SinAll05Attitude}%
-  sin All dof A05}
-\end{figure}
-
-\begin{figure}
-\centering
-  \subfloat[][\label{fig:testStepPhiTheta05RollAttitude} An step was applied to all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{testStepThetaPhiPhis3e10a1}}
-  \qquad
-  \subfloat[][\label{fig:simStepPhiTheta05RollAttitude} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
-  \qquad
-  \subfloat[][\label{fig:testStepPhiTheta05PitchAttitude} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{testStepThetaPhiThetas3e10a1}}
-  \qquad
-  \subfloat[][\label{fig:simStepPhiTheta05PitchAttitude} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
+  \subfloat[][\label{fig:simStepPhiTheta05PitchAttitude} A smooth step applied to the simulated \abbrROV in $\pitchAngle$.]{\includegraphics[width=0.4\textwidth]{velocityCompareq}}
   \caption{\label{fig:StepPhiThetaAttitude}%
-  Extra}
+  Smooth steps were applied in \pitchAngle and \rollAngle at the same time while using the attitude controller. The attitude angle $\yawAngle$ was kept free during the test.}
 \end{figure}
+
+A smoothed step in $\rollAngle$ and $\pitchAngle$ can be seen in \Figureref{fig:StepPhiThetaAttitude}. During the test was the attitude angle $\yawAngle$ kept free. Both $\rollAngle$ and $\pitchAngle$ followed the reference signal well did not reach the reference angle. The steady state error for $\rollAngle$ and $\pitchAngle$ was approximately $0.35$.
+\todo[inline]{Compare the test results with the simulation.}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%Rate%%%%%%%%%%%%%%%%
-\begin{figure}[tbp]
-  \centering
-  \subfloat[][\label{fig:testStepP} An step was applied to $\rollVelocity$ .]{\includegraphics[width=0.4\textwidth]{testStepPs3e10a1}}
-  \qquad
-  \subfloat[][\label{fig:simStepP} An step was applied to the simulated \abbrROV in $\rollVelocity$.]{\includegraphics[width=0.4\textwidth]{simStepPs3e10a1}}
-  \qquad
-  \subfloat[][\label{fig:testStepQ} An step was applied to $\pitchVelocity$ .]{\includegraphics[width=0.4\textwidth]{testStepQs3e10a1}}
-  \qquad
-  \subfloat[][\label{fig:simStepQ} An step was applied to the simulated \abbrROV in $\pitchVelocity$.]{\includegraphics[width=0.4\textwidth]{simStepQs3e10a1}}
-  \qquad
-  \subfloat[][\label{fig:testStepR} An step was applied to $\yawVelocity$ .]{\includegraphics[width=0.4\textwidth]{testStepRs3e10a1}}
-  \qquad
-  \subfloat[][\label{fig:simStepR} An step was applied to the simulated \abbrROV in $\yawVelocity$.]{\includegraphics[width=0.4\textwidth]{simStepRs3e10a1}}
-   \caption{\label{fig:StepRate}%
-    step 3 dof A1.}
-\end{figure}
-
 \begin{figure}
 \centering
-  \subfloat[][\label{fig:testStepAllPRate} An step was applied to all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{testStepAllPs3e10a1}}
+  \subfloat[][\label{fig:testStepAllPRate} A smooth step applied in $\rollVelocity$.]{\includegraphics[width=0.4\textwidth]{testStepAllPs3e10a1}}
   \qquad
-  \subfloat[][\label{fig:simStepAllPRate} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{simStepAllPs3e10a1}}
+  \subfloat[][\label{fig:simStepAllPRate} A step applied to the simulated \abbrROV in $\rollVelocity$.]{\includegraphics[width=0.4\textwidth]{simStepAllPs3e10a1}}
   \qquad
-  \subfloat[][\label{fig:testStepAllQRate} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{testStepAllQs3e10a1}}
+  \subfloat[][\label{fig:testStepAllQRate} A smooth step applied in $\pitchVelocity$.]{\includegraphics[width=0.4\textwidth]{testStepAllQs3e10a1}}
   \qquad
-  \subfloat[][\label{fig:simStepAllQRate} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{simStepAllQs3e10a1}}
+  \subfloat[][\label{fig:simStepAllQRate} A step applied to the simulated \abbrROV in $\pitchVelocity$.]{\includegraphics[width=0.4\textwidth]{simStepAllQs3e10a1}}
   \qquad
-  \subfloat[][\label{fig:testStepAllRRate} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{testStepAllRs3e10a1}}
+  \subfloat[][\label{fig:testStepAllRRate} A smooth step applied in $\yawVelocity$.]{\includegraphics[width=0.4\textwidth]{testStepAllRs3e10a1}}
   \qquad
-  \subfloat[][\label{fig:simStepAllRRate} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{simStepAllRs3e10a1}}
+  \subfloat[][\label{fig:simStepAllRRate} A step applied to the simulated \abbrROV in $\yawVelocity$.]{\includegraphics[width=0.4\textwidth]{simStepAllRs3e10a1}}
   \caption{\label{fig:StepAllRate}% 
-  step All dof A1}
+  Smooth steps were applied in all angular velocities at the same time while using the rate controller.}
 \end{figure}
 
-\begin{figure}[tbp]
-  \centering
-  \subfloat[][\label{fig:testSinP} An step was applied to $\rollVelocity$ .]{\includegraphics[width=0.4\textwidth]{testSinPA1}}
-  \qquad
-  \subfloat[][\label{fig:simSinP} An step was applied to the simulated \abbrROV in $\rollVelocity$.]{\includegraphics[width=0.4\textwidth]{simSinPA1}}
-  \qquad
-  \subfloat[][\label{fig:testSinQ} An step was applied to $\pitchVelocity$ .]{\includegraphics[width=0.4\textwidth]{testSinQA1}}
-  \qquad
-  \subfloat[][\label{fig:simSinQ} An step was applied to the simulated \abbrROV in $\pitchVelocity$.]{\includegraphics[width=0.4\textwidth]{simSinQA1}}
-  \qquad
-  \subfloat[][\label{fig:testSinR} An step was applied to $\yawVelocity$ .]{\includegraphics[width=0.4\textwidth]{testSinRA1}}
-  \qquad
-  \subfloat[][\label{fig:simSinR} An step was applied to the simulated \abbrROV in $\yawVelocity$.]{\includegraphics[width=0.4\textwidth]{simSinRA1}}
-    \caption{\label{fig:Sin1Rate}% 
-    sin 3 dof A1.}
-\end{figure}
+\Figureref{fig:StepAllRate} shows a smooth step applied in all angular velocities while using the rate controller. An overshoot of 0.5 is achieved in $\rollVelocity$ for the real test while in the simulation only has an overshoot of 0.2. Both the real test and the simulation in $\rollVelocity$ followed the reference signal well and had a small steady state error. The real and simulated test followed the reference value well in $\pitchVelocity$ and had negligible steady state errors. However, had the real test no overshoot while the simulation in $\pitchVelocity$ had an overshoot of 0.4. The simulated test in $\yawVelocity$ performed really well and almost followed the reference perfectly. The real test in $\yawVelocity$ performed well, but it was slow to rise to the requested reference signal and had a small steady state error of 0.1. 
 
 \begin{figure}
 \centering
-  \subfloat[][\label{fig:testSinAllPRate} An step was applied to all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{testSinAllPA1}}
+  \subfloat[][\label{fig:testSinAllPRate} A sine signal with amplitude $1$ and frequency $0.5\hertz$ applied in $\rollVelocity$.]{\includegraphics[width=0.4\textwidth]{testSinAllPA1}}
   \qquad
-  \subfloat[][\label{fig:simSinAllPRate} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{simSinAllPA1}}
+  \subfloat[][\label{fig:simSinAllPRate}A sine signal with amplitude $1$ and frequency $0.5\hertz$ applied to the simulated \abbrROV in $\rollVelocity$.]{\includegraphics[width=0.4\textwidth]{simSinAllPA1}}
   \qquad
-  \subfloat[][\label{fig:testSinAllQRate} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{testSinAllQA1}}
+  \subfloat[][\label{fig:testSinAllQRate} A sine signal with amplitude $1$ and frequency $0.5\hertz$ applied in $\pitchVelocity$.]{\includegraphics[width=0.4\textwidth]{testSinAllQA1}}
   \qquad
-  \subfloat[][\label{fig:simSinAllQRate} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{simSinAllQA1}}
+  \subfloat[][\label{fig:simSinAllQRate} A sine signal with amplitude $1$ and frequency $0.5\hertz$ applied to the simulated \abbrROV in $\pitchVelocity$.]{\includegraphics[width=0.4\textwidth]{simSinAllQA1}}
   \qquad
-  \subfloat[][\label{fig:testSinAllRRate} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{testSinAllRA1}}
+  \subfloat[][\label{fig:testSinAllRRate} A sine signal with amplitude $1$ and frequency $0.5\hertz$ applied in $\yawVelocity$.]{\includegraphics[width=0.4\textwidth]{testSinAllRA1}}
   \qquad
-  \subfloat[][\label{fig:simSinAllRRate} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{simSinAllRA1}}
+  \subfloat[][\label{fig:simSinAllRRate} A sine signal with amplitude $1$ and frequency $0.5\hertz$ applied to the simulated \abbrROV in $\yawVelocity$.]{\includegraphics[width=0.4\textwidth]{simSinAllRA1}}
   \caption{\label{fig:SinAllRate}%
-  sin All dof A1.}
+  Sine signals were applied in all angular velocities at the same time while using the rate controller.}
 \end{figure}
 
-
-\begin{figure}[tbp]
-  \centering
-  \subfloat[][\label{fig:testSin05P} An step was applied to $\rollVelocity$ .]{\includegraphics[width=0.4\textwidth]{testSinPA05}}
-  \qquad
-  \subfloat[][\label{fig:simSin05P} An step was applied to the simulated \abbrROV in $\rollVelocity$.]{\includegraphics[width=0.4\textwidth]{simSinPA05}}
-  \qquad
-  \subfloat[][\label{fig:testSin05Q} An step was applied to $\pitchVelocity$ .]{\includegraphics[width=0.4\textwidth]{testSinQA05}}
-  \qquad
-  \subfloat[][\label{fig:simSin05Q} An step was applied to the simulated \abbrROV in $\pitchVelocity$.]{\includegraphics[width=0.4\textwidth]{simSinQA05}}
-  \qquad
-  \subfloat[][\label{fig:testSin05R} An step was applied to $\yawVelocity$ .]{\includegraphics[width=0.4\textwidth]{testSinRA05}}
-  \qquad
-  \subfloat[][\label{fig:simSin50R} An step was applied to the simulated \abbrROV in $\yawVelocity$.]{\includegraphics[width=0.4\textwidth]{simSinRA05}}
-    \caption{\label{fig:Sin05Rate}%
-    sin 3 dof A05.}
-\end{figure}
-
-\begin{figure}
-\centering
-  \subfloat[][\label{fig:testSinAll05PRate} An step was applied to all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{testSinAllPA05}}
-  \qquad
-  \subfloat[][\label{fig:simSinAll05PRate} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{simSinAllPA05}}
-  \qquad
-  \subfloat[][\label{fig:TestSinAll05QRate} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{testSinAllQA05}}
-  \qquad
-  \subfloat[][\label{fig:simSinAll05QRate} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{simSinAllRA05}}
-  \qquad
-  \subfloat[][\label{fig:TestSinAll05RRate} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{testSinAllRA05}}
-  \qquad
-  \subfloat[][\label{fig:simSinAll05RRate} An step was applied to the simulated \abbrROV in all \abbrDOF.]{\includegraphics[width=0.4\textwidth]{simSinAllQA05}}
-  \caption{\label{fig:SinAll05Rate}%
-  sin All dof A05}
-\end{figure}
+Sine signals were applied to all angular velocities which can be seen in \Figureref{fig:SinAllRate} while using the rate controller. In the real test followed all the angular velocities the reference signals well, except for some overshoots and undershoots of the requested amplitude. The simulated test followed a general sine form but the reference amplitude was not reach and a phase shift could be noted.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%Depth%%%%%%%%%%%%%%%%
 \begin{figure}[tbp]
   \centering
-  \subfloat[][\label{fig:testStepD1} An step was applied to $\zPosition$.]{\includegraphics[width=0.4\textwidth]{testConstantD1}}
+  \subfloat[][\label{fig:testStepD1} A smooth step applied in $\zPosition$.]{\includegraphics[width=0.4\textwidth]{testStepDepth3e10a1}}
   \qquad
-  \subfloat[][\label{fig:testStepD2} An step was applied to $\zPosition$.]{\includegraphics[width=0.4\textwidth]{testConstantD2}}
+  \subfloat[][\label{fig:testStepD2} A step applied in $\zPosition$.]{\includegraphics[width=0.4\textwidth]{testConstantD1}}
   \caption{\label{fig:StepD}%
-    Steps applied to $\zPosition$. As can be seen there is an slight delay in the response of the controller and overshoots can be seen.}
+    Steps applied to $\zPosition$. A smooth step from $0.4 \meter$ to $1 \meter$ is shown in (a) and a step from $0.5 \meter$ to $2 \meter$ is shown in (b).}
 \end{figure}
-\todo[inline]{Fix figures with real results.}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Simulated Performance}
 
+\Figureref{fig:StepD} shows a smooth step from $0.4 \meter$ to $1 \meter$ and a step from $0.5 \meter$ to $2 \meter$. A delay in the response can be seen and overshoots of approximately 0.2.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Test Performance}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Conclusions}
+\subsection{Discussion}
+
