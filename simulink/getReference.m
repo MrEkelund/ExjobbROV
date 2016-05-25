@@ -1,5 +1,3 @@
-filepath= fullfile('Estimation','bag','sinPa05hz05_2016-05-23-15-13-18.bag');
-bag = rosbag(filepath);
 resampling_fs = 100;
 ft = 30;
 
@@ -70,6 +68,122 @@ ft = 30;
 % end_time = 7960;
 % axis([0 (end_time - start_time)/resampling_fs 0 3])
 
+
+%%
+filepath = fullfile('Estimation','bag','sinAllA1F05_2016-05-25-08-37-44.bag');
+start_time = 300; 
+end_time = 2100;
+axis([0 (end_time - start_time)/resampling_fs -1.5 1.5])
+
+filepath = fullfile('Estimation','bag','sinPa1F05_2016-05-25-08-25-16.bag');
+start_time = 300; 
+end_time = 2100;
+axis([0 (end_time - start_time)/resampling_fs -1.6 1.6])
+
+filepath = fullfile('Estimation','bag','sinQA1F05_2016-05-25-08-26-38.bag');
+start_time = 300; 
+end_time = 2100;
+axis([0 (end_time - start_time)/resampling_fs -1.5 1.5])
+
+filepath = fullfile('Estimation','bag','sinQA05F05_2016-05-25-08-28-01.bag');
+start_time = 300; 
+end_time = 2100;
+axis([0 (end_time - start_time)/resampling_fs -1 1])
+
+filepath = fullfile('Estimation','bag','sinRA1F05_2016-05-25-08-30-43.bag');
+start_time = 300; 
+end_time = 2100;
+axis([0 (end_time - start_time)/resampling_fs -1.6 1.6])
+
+filepath = fullfile('Estimation','bag','sinRA05F05_2016-05-25-08-29-57.bag');
+start_time = 300; 
+end_time = 2100;
+axis([0 (end_time - start_time)/resampling_fs -1 1])
+
+filepath = fullfile('Estimation','bag','stepRS3E10_2016-05-25-08-35-17.bag');
+start_time = 300; 
+end_time = 2300;
+axis([0 (end_time - start_time)/resampling_fs -1.6 1.6])
+%% attitude
+filepath = fullfile('Estimation','bag','sinPhiA1F05_2016-05-25-08-47-49.bag');
+start_time = 300; 
+end_time = 2100;
+axis([0 (end_time - start_time)/resampling_fs -1.6 1.6])
+
+filepath = fullfile('Estimation','bag','sinPhiA05F05_2016-05-25-08-49-50.bag');
+start_time = 300; 
+end_time = 2100;
+axis([0 (end_time - start_time)/resampling_fs -1 1])
+
+filepath = fullfile('Estimation','bag','stepPhiS3E10_2016-05-25-08-52-37.bag');
+start_time = 300; 
+end_time = 2300;
+axis([0 (end_time - start_time)/resampling_fs -0.1 1.5])
+
+filepath = fullfile('Estimation','bag','sinThetaA05F05_2016-05-25-08-55-21.bag');
+start_time = 300; 
+end_time = 2100;
+axis([0 (end_time - start_time)/resampling_fs -0.1 1.5])
+
+filepath = fullfile('Estimation','bag','sinThetaA1F05_2016-05-25-08-54-21.bag');
+start_time = 300; 
+end_time = 2100;
+axis([0 (end_time - start_time)/resampling_fs -0.1 1.5])
+
+filepath = fullfile('Estimation','bag','stepThetaS3E10_2016-05-25-08-57-15.bag');
+start_time = 400; 
+end_time = 2200;
+axis([0 (end_time - start_time)/resampling_fs -0.1 1.5])
+
+filepath = fullfile('Estimation','bag','sinPsiA1F05_2016-05-25-08-59-00.bag');
+start_time = 300; 
+end_time = 2100;
+axis([0 (end_time - start_time)/resampling_fs -0.1 1.5])
+
+filepath = fullfile('Estimation','bag','sinPsiA05F05_2016-05-25-09-00-24.bag');
+start_time = 300; 
+end_time = 2100;
+axis([0 (end_time - start_time)/resampling_fs -0.1 1.5])
+
+filepath = fullfile('Estimation','bag','stepPsiS3E10_2016-05-25-09-04-01.bag');
+start_time = 300; 
+end_time = 2400;
+axis([0 (end_time - start_time)/resampling_fs -0.1 1.5])
+
+filepath = fullfile('Estimation','bag','stepAllAttitude_2016-05-25-09-15-24.bag');
+start_time = 300; 
+end_time = 1300;
+axis([0 (end_time - start_time)/resampling_fs -0.1 1.5])
+
+filepath = fullfile('Estimation','bag','sinAllAttitudeA1_2016-05-25-09-13-13.bag');
+start_time = 300; 
+end_time = 2100;
+axis([0 (end_time - start_time)/resampling_fs -0.1 1.5])
+
+filepath = fullfile('Estimation','bag','sinAllAttitudeA05_2016-05-25-09-12-06.bag');
+start_time = 300; 
+end_time = 2100;
+axis([0 (end_time - start_time)/resampling_fs -0.1 1.5])
+
+filepath = fullfile('Estimation','bag','stepThetaPhi_2016-05-25-09-16-21.bag');
+start_time = 300; 
+end_time = 1800;
+axis([0 (end_time - start_time)/resampling_fs -0.1 1.5])
+%% depth
+filepath = fullfile('Estimation','bag','stepDepth_2016-05-25-09-35-06.bag');
+start_time = 300; 
+end_time = 2400;
+axis([0 (end_time - start_time)/resampling_fs -0.1 1.5])
+
+filepath = fullfile('Estimation','bag','sinDepthA03F01_2016-05-25-09-39-15.bag');
+start_time = 300; 
+end_time = 2100;
+axis([0 (end_time - start_time)/resampling_fs -0.1 1.5])
+
+filepath = fullfile('Estimation','bag','sinDepthA05F01_2016-05-25-09-37-41.bag');
+start_time = 400; 
+end_time = 1900;
+axis([0 (end_time - start_time)/resampling_fs -0.1 1.5])
 %%    
 bag = rosbag(filepath);
 ref_bag = select(bag,'Topic','/reference');
@@ -110,7 +224,7 @@ units = {'rad', 'rad', 'rad', 'rad/s', 'rad/s', 'rad/s', 'm'};
 ylabel_ent = {'Angle', 'Angle', 'Angle', 'Angle Velocity', 'Angle Velocity', 'Angle Velocity', 'Depth'};
 for i=1:7
     h = figure(i);
-    plot(time,[ref_data(start_time:end_time,i), state_data(start_time:end_time,i)],'LineWidth',2)
+    plot(time,[ref_data(start_time:end_time,i), state_data(start_time:end_time,i)],'LineWidth',2) % depth is 10 not 7
     h = legend({legend_ent_ref{i}, legend_ent{i}});
     set(h,'FontSize',ft);
     h = ylabel(strcat(ylabel_ent{i},'[', units{i}, ']'));
@@ -119,6 +233,10 @@ for i=1:7
     set(h,'FontSize',ft);
     title(legend_ent{i})
     set(gca,'FontSize',ft)
+    axis([0 (end_time - start_time)/resampling_fs -1 1])
 end
 %%
-% print -f6 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/testStepAllRs3e10a1.eps'
+%print -f3 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/testSinAllPsiA05.eps'
+%print -f1 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/testSinAllPhiA1.eps'
+%print -f2 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/testStepThetaPhiThetas3e10a1.eps'
+print -f7 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/testSinDepthA01F01.eps'

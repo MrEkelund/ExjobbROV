@@ -238,32 +238,32 @@ D\\
         \coordinate (O) at (0,0);
         \draw[thick,->] (O) ++(\coordinateRadius,0) -- ++(1,0) node[anchor=north east]{$\north$};
         \draw[thick,->] (O) ++(0,-\coordinateRadius)-- ++(0,-1) node[anchor=south east]{$\east$};
-        \draw (O) circle (0.05) node[anchor=south,]{$\down$,\color{red}$z''$};
+        \draw (O) circle (0.05) node[anchor=south,]{$\down$,\color{blue}$z''$};
         \draw (O) -- ++(\bx,\by) (O) -- ++(-\bx,-\by) (O) -- ++(-\bx,\by) (O)  -- ++(\bx,-\by);
         
-        \draw[thick,red,->] (O) ++(\ax,-\ay) -- ++(\coordXRot,-\coordYRot) node[anchor=north west]{$x''$ };
-        \draw[thick,red,->] (O) ++(-\ay,-\ax) -- ++(-\coordYRot,-\coordXRot) node[anchor=north east]{$y''$};
+        \draw[thick,blue,->] (O) ++(\ax,-\ay) -- ++(\coordXRot,-\coordYRot) node[anchor=north west]{$x''$ };
+        \draw[thick,blue,->] (O) ++(-\ay,-\ax) -- ++(-\coordYRot,-\coordXRot) node[anchor=north east]{$y''$};
         \draw[->] (O) ++(0.5,0) arc (0:-\coordRot:0.5) node[right]{\yawAngle};
         
         \def\coordDistance{1.5}
         
          \coordinate (O) at (\coordDistance,0);
-         \draw[thick,->] (O) ++(\coordinateRadius,0) -- ++(1,0) node[anchor=north east]{$x''$};
-         \draw[thick,->] (O) ++(0,-\coordinateRadius)-- ++(0,-1) node[anchor=south east]{$z''$};
-         \draw (O) circle (0.05) node[anchor=south,]{$y''$,\color{red}$y'$};
+         \draw[blue,thick,->] (O) ++(\coordinateRadius,0) -- ++(1,0) node[anchor=north east]{$x''$};
+         \draw[blue,thick,->] (O) ++(0,-\coordinateRadius)-- ++(0,-1) node[anchor=south east]{$z''$};
+         \draw (O) circle (0.05) node[anchor=south,]{{\color{blue}$y''$},\color{gray}$y'$};
          \draw[fill=black] (O) circle (0.0125);
         
-         \draw[thick,red,->] (O) ++(\ax,\ay) -- ++(\coordXRot,\coordYRot) node[anchor=south west]{$x'$};
-         \draw[thick,red,->] (O) ++(\ay,-\ax) -- ++(\coordYRot,-\coordXRot) node[anchor=north east]{$z'$};
+         \draw[thick,gray,->] (O) ++(\ax,\ay) -- ++(\coordXRot,\coordYRot) node[anchor=south west]{$x'$};
+         \draw[thick,gray,->] (O) ++(\ay,-\ax) -- ++(\coordYRot,-\coordXRot) node[anchor=north east]{$z'$};
          \draw[->] (O) ++(0.5,0) arc (0:\coordRot:0.5) node[right]{\pitchAngle};
          
           
         \pgfmathsetmacro\coordDistanceZ{2*\coordDistance+1}
         
          \coordinate (O) at (\coordDistanceZ,0);
-         \draw[thick,->] (O) ++(-\coordinateRadius,0) -- ++(-1,0) node[anchor=north west]{$y'$};
-         \draw[thick,->] (O) ++(0,-\coordinateRadius) -- ++(0,-1) node[anchor=south east]{$z'$};
-         \draw (O) circle (0.05) node[anchor=south,]{$x'$,\color{red}$x$};
+         \draw[thick,gray,->] (O) ++(-\coordinateRadius,0) -- ++(-1,0) node[anchor=north west]{$y'$};
+         \draw[thick,gray,->] (O) ++(0,-\coordinateRadius) -- ++(0,-1) node[anchor=south east]{$z'$};
+         \draw (O) circle (0.05) node[anchor=south,]{{\color{gray}$x'$},\color{red}$x$};
          \draw[fill=black] (O) circle (0.0125);
         
         \draw[thick,red,->] (O) ++(\ay,-\ax) -- ++(\coordYRot,-\coordXRot) node[anchor=north west]{$z$};
