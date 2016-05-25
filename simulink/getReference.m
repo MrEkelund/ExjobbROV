@@ -242,11 +242,11 @@ for i=1:7
     axis([0 (end_time - start_time)/resampling_fs -1 1.])
 end
 %%
-%print -f3 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/testSinAllPsiA05.eps'
+%print -f1 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/testSinAllPsiA05.eps'
 %print -f1 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/testSinAllPhiA1.eps'
-%print -f2 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/testStepThetaPhiThetas3e10a1.eps'
+%print -f1 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/testStepThetaPhiThetas3e10a1.eps'
 %print -f7 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/testSinDepthA01F01.eps'
 
-print -f1 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/testExactLinAttitudePhi.eps'
-print -f2 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/testExactLinAttitudeTheta.eps'
-print -f3 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/testExactLinAttitudePsi.eps'
+% print -f1 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/testExactLinAttitudePhi.eps'
+% print -f2 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/testExactLinAttitudeTheta.eps'
+% print -f3 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/testExactLinAttitudePsi.eps'

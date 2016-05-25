@@ -5,7 +5,7 @@ controller_nr = 2;
 ft = 30;
 
 % Reference signals
-phi_ref_signal = 1;
+phi_ref_signal = 2;
 phi_ref_time = 3;
 phi_final_ref_time = 10;
 phi_v_scaling = 1.5; % has to be between 1 and 2
@@ -89,9 +89,9 @@ Kd = 1*diag([0.1,0.1,0.1]);
 Kp = 1*diag([2,2.7,0.7]);
 Ki = 1*diag([0.1,0.1,0.1]);
 
-% Kd = 1*diag([2,0,0]);
-% Kp = 1*diag([0.1,0,0]);
-% Ki = 1*diag([0.1,0,0]);
+Kd = 1*diag([2,0,0]);
+Kp = 1*diag([0.1,0,0]);
+Ki = 1*diag([0.1,0,0]);
 
 % Kd = 1*diag([0,2.7,0]);
 % Kp = 1*diag([0,0.1,0]);
@@ -280,7 +280,7 @@ end
 %%
 %print -f1 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simStepPhis3e10a1.eps'
 %print -f1 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simSinPhiA05.eps'
-%print -f1 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simSinPhiA1.eps'
+print -f1 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simSinPhiA1.eps'
 
 %print -f2 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simStepThetas3e10a1.eps'
 %print -f2 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simSinThetaA05.eps'
