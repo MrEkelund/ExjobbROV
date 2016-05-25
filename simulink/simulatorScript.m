@@ -265,15 +265,15 @@ end
 % end
 %%
 
-print -f1 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simStepAllPhis3e10a1.eps'
+%print -f1 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simStepAllPhis3e10a1.eps'
 %print -f1 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simSinPhiA05.eps'
 %print -f1 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simSinAllPhiA1.eps'
 
-print -f2 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simStepAllThetas3e10a1.eps'
+%print -f2 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simStepAllThetas3e10a1.eps'
 %print -f2 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simSinThetaA05.eps'
 %print -f2 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simSinAllThetaA1.eps'
 
-print -f3 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simStepAllPsis3e10a1.eps'
+%print -f3 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simStepAllPsis3e10a1.eps'
 %print -f3 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simSinPsiA05.eps'
 %print -f3 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simSinAllPsiA1.eps'
 

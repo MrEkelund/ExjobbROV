@@ -180,9 +180,15 @@ start_time = 300;
 end_time = 2100;
 axis([0 (end_time - start_time)/resampling_fs -0.1 1.5])
 
-filepath = fullfile('Estimation','bag','sinDepthA05F01_2016-05-25-09-37-41.bag');
+filepath = fullfile('Estimation','bag','ExactLin_2016-05-25-09-17-38.bag');
 start_time = 400; 
 end_time = 1900;
+axis([0 (end_time - start_time)/resampling_fs -0.1 1.5])
+
+%% Exact
+filepath = fullfile('Estimation','bag','sinDepthA05F01_2016-05-25-09-37-41.bag');
+start_time = 1; 
+end_time = 2550;
 axis([0 (end_time - start_time)/resampling_fs -0.1 1.5])
 %%    
 bag = rosbag(filepath);
@@ -233,10 +239,14 @@ for i=1:7
     set(h,'FontSize',ft);
     title(legend_ent{i})
     set(gca,'FontSize',ft)
-    axis([0 (end_time - start_time)/resampling_fs -1 1])
+    axis([0 (end_time - start_time)/resampling_fs -1 1.])
 end
 %%
 %print -f3 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/testSinAllPsiA05.eps'
 %print -f1 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/testSinAllPhiA1.eps'
 %print -f2 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/testStepThetaPhiThetas3e10a1.eps'
-print -f7 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/testSinDepthA01F01.eps'
+%print -f7 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/testSinDepthA01F01.eps'
+
+print -f1 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/testExactLinAttitudePhi.eps'
+print -f2 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/testExactLinAttitudeTheta.eps'
+print -f3 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/testExactLinAttitudePsi.eps'
