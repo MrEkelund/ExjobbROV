@@ -443,7 +443,7 @@ Another issue that was encountered when using the prediction-error method was th
 
 Since data had been collected with Euler angles instead of quaternions and no simple way of estimating the initial state of the quaternions was thought of, a Kalman smoother as described in \citet{Wallin} was used introduced. The magnetometer was also added as a output, in the Kalman smoother, to further reduce the uncertainty of the initial quaternions. It is therefore recommended that when using quaternions during parameter estimation, that attitude data on quaternion form is logged so that the initial quaternions can easily be obtained. 
 
-A problem that was consistent in all early estimations was a low fit value in $p$. Several adjustments were attempted in order to fix this issue and it was later found that the effect in $p$ of thruster 6 was minimal. A test showed that thruster 6 effected $p$ the most when it was quickly actuated. The effect of thruster 6 in $p$ can be seen in \Figureref{fig:thruster6}. If the sixth thrusters power was incremented slowly an initial response in $p$ was noted before it settled at zero again. This might be because of unmodelled translational dynamics of the \abbrROV meaning that the dynamics in $y$ may be coupled with $r$ or that the placement of \abbrCG in the \abbrROV is faulty.
+A problem that was consistent in all early estimations was a low fit value in $p$. Several adjustments were attempted in order to fix this issue and it was later found that the effect in $p$ of thruster 6 was minimal. A test showed that thruster 6 effected $p$ the most when it was quickly actuated. The effect of thruster 6 in $p$ can be seen in \Figureref{fig:thruster6}. If the sixth thrusters power was incremented slowly an initial response in $p$ was noted before it settled at zero again. This might be because of unmodelled translational dynamics of the \abbrROV meaning that the dynamics in $y$ may be coupled with $r$ or that the placement of \abbrCG in the \abbrROV is faulty. Thruster 6 also effected $r$, this can be due to unmodelled water interaction.
 
 When deciding on which parameters to use for controller design, the choice was based solely on the fit of the simulated output had against validation data. The reasoning behind this being quite simple, the better the fit against validation data the less robust the controllers would have to be.
 
@@ -452,13 +452,11 @@ When deciding on which parameters to use for controller design, the choice was b
 \centering
   \subfloat[][\label{fig:thruster6p1} The effect in $p$ when only using thruster 6.]{\includegraphics[width=0.4\textwidth]{thruster6p}}
   \qquad
+  \subfloat[][\label{fig:thruster6u61} The effect in $r$ when only using thruster 6.]{\includegraphics[width=0.4\textwidth]{thruster6r}}
+  \qquad
   \subfloat[][\label{fig:thruster6u61} The control signal sent to thruster 6.]{\includegraphics[width=0.4\textwidth]{thruster6u6}}
-  \qquad
-  \subfloat[][\label{fig:thruster6p2} The effect in $p$ when only using thruster 6.]{\includegraphics[width=0.4\textwidth]{lowcontrolthruster6p}}
-  \qquad
-  \subfloat[][\label{fig:thruster6u62} The control signal sent to thruster 6.]{\includegraphics[width=0.4\textwidth]{lowcontrolthruster6u6}}
   \caption{\label{fig:thruster6}%
-  The effect in $p$ while only using thruster 6. As can be seen thruster 6 has a relatively small effect in $p$, thus ought the moment arm of thruster 6 be small. However, thruster 6 effected $p$ more when thruster 6 was quickly actuated.}
+  The effect in $p$ and $r$ while only using thruster 6. As can be seen thruster 6 has a relatively small effect in $p$, thus ought the moment arm of thruster 6 be small. However, thruster 6 effected $p$ more when thruster 6 was quickly actuated.}
 \end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -529,7 +527,7 @@ When deciding on which parameters to use for controller design, the choice was b
 %To handle noisy signals an error threshold was introduced. An error threshold means that after a breakpoint the cost function becomes linear instead of quadratic. This makes the parameter estimation less sensitive to outliers. To reduce the impact of the noise even further the used weight matrix in the cost function was the inverse of the estimated noise covariance. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Estimated Parameters}\todo{Update Parameters, lz6 = 0}
+\section{Estimated Parameters}\label{sec:parameterResults}\todo{Update Parameters, lz6 = 0}
 \Tableref{tab:parameterConstants} shows the know and measured parameters used in the \abbrROV. The estimated parameters used in the \abbrROV model are shown in \Tableref{tab:parameterEstimation}.
 
 \begin{table}[tbp]
