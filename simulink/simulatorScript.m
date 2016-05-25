@@ -1,10 +1,11 @@
 initialCondition = [0 0 0 1 0 0 0];
 Ts = 0.01;
 end_time = 20;
-controller_nr = 4;
+controller_nr = 2;
+ft = 30;
 
 % Reference signals
-phi_ref_signal = 3;
+phi_ref_signal = 1;
 phi_ref_time = 3;
 phi_final_ref_time = 10;
 phi_v_scaling = 1.5; % has to be between 1 and 2
@@ -15,24 +16,24 @@ phi_frequency = 0.5;
 phi_bias = 0;
 phi_constant = 0;
 
-theta_ref_signal = 3;
+theta_ref_signal = 1;
 theta_ref_time = 3;
 theta_final_ref_time = 10;
 theta_v_scaling = 1.5; % has to be between 1 and 2
 theta_initial_value = 0;
 theta_final_value = 1;
-theta_amplitude = 0.5;
+theta_amplitude = 1;
 theta_frequency = 0.5;
 theta_bias = 0;
 theta_constant = 0;
 
-psi_ref_signal = 3;
+psi_ref_signal = 1;
 psi_ref_time = 3;
 psi_final_ref_time = 10;
 psi_v_scaling = 1.5; % has to be between 1 and 2
 psi_initial_value = 0;
 psi_final_value = 1;
-psi_amplitude = 0.5;
+psi_amplitude = 1;
 psi_frequency = 0.5;
 psi_bias = 0;
 psi_constant = 0;
@@ -48,7 +49,7 @@ p_frequency = 0.5;
 p_bias = 0;
 p_constant = 0;
 
-q_ref_signal = 2;
+q_ref_signal = 3;
 q_ref_time = 3;
 q_final_ref_time = 15;
 q_v_scaling = 1.5; % has to be between 1 and 2
@@ -59,7 +60,7 @@ q_frequency = 0.5;
 q_bias = 0;
 q_constant = 0;
 
-r_ref_signal = 2;
+r_ref_signal = 3;
 r_ref_time = 3;
 r_final_ref_time = 15;
 r_v_scaling = 1.5; % has to be between 1 and 2
@@ -84,9 +85,21 @@ d_constant = 0;
 use_noise = 1;
 noise_power = 0.00001;
 % Exact Lin feedforward
-Kd = 0*eye(3);
-Kp = 0*diag([1,1,1]);
-Ki = 0*diag([1,1,1]);
+Kd = 1*diag([0.1,0.1,0.1]);
+Kp = 1*diag([2,2.7,0.7]);
+Ki = 1*diag([0.1,0.1,0.1]);
+
+% Kd = 1*diag([2,0,0]);
+% Kp = 1*diag([0.1,0,0]);
+% Ki = 1*diag([0.1,0,0]);
+
+% Kd = 1*diag([0,2.7,0]);
+% Kp = 1*diag([0,0.1,0]);
+% Ki = 1*diag([0,0.1,0]);
+% 
+% Kd = 1*diag([0,0,0.7]);
+% Kp = 1*diag([0,0,0.1]);
+% Ki = 1*diag([0,0,0.1]);
 
 
 % global_to_local_and_thrust_alloc
@@ -239,6 +252,7 @@ for i = 1:3
     set(h,'FontSize',ft);
     title(legend_ent{i})
     set(gca,'FontSize',ft)
+    axis([0 end_time -1.5 1.5])
 end
 
 %figure('units', 'normalized', 'position', [0 0 .5 .41])
@@ -250,17 +264,31 @@ end
 %     ylabel(label_name{i})
 % end
 %%
-%print -f1 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simStepRolls3e10a1.eps'
-%print -f1 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simSinRollA05.eps'
-%print -f1 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simSinRollA1.eps'
 
-%print -f2 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simStepPitchs3e10a1.eps'
-%print -f2 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simSinPitchA05.eps'
-%print -f2 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simSinPitchA1.eps'
+print -f1 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simStepThetaPhiPhis3e10a1.eps'
+%print -f1 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simSinPhiA05.eps'
+%print -f1 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simSinAllPhiA1.eps'
 
-%print -f3 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simStepYaws3e10a1.eps'
-%print -f3 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simSinYawA05.eps'
-%print -f3 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simSinYawA1.eps'
+print -f2 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simStepThetaPhiThetas3e10a1.eps'
+%print -f2 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simSinThetaA05.eps'
+%print -f2 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simSinAllThetaA1.eps'
+
+%print -f3 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simStepAllPsis3e10a1.eps'
+%print -f3 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simSinPsiA05.eps'
+%print -f3 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simSinAllPsiA1.eps'
+
+%%
+%print -f1 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simStepPhis3e10a1.eps'
+%print -f1 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simSinPhiA05.eps'
+%print -f1 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simSinPhiA1.eps'
+
+%print -f2 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simStepThetas3e10a1.eps'
+%print -f2 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simSinThetaA05.eps'
+%print -f2 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simSinThetaA1.eps'
+
+%print -f3 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simStepPsis3e10a1.eps'
+%print -f3 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simSinPsiA05.eps'
+%print -f3 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simSinPsiA1.eps'
 
 %print -f4 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simStepPs3e10a1.eps'
 %print -f4 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simSinPA05.eps'
