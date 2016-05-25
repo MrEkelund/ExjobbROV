@@ -122,7 +122,7 @@ The static thrust allocation matrix $\thrusterGeometryOnes[*]$ is the pseudo inv
 \todo[inline]{Write some fluff}
 Using the relations in \Chapterref{cha:modelling} the derivative of the attitude error can be defined as 
 \begin{equation}
-\etaTildeAngdot = \dot{\boldsymbol{T}}_\theta(\eulerAngles)\etaVectorAng
+\etaTildeAngdot = \dot{\boldsymbol{T}}_\theta(\eulerAngles)\nuVectorAng
 \end{equation}
 and the attitude error can be defined as 
 \begin{equation}
@@ -348,10 +348,52 @@ To be able to draw any conclusions about the performance of the controllers the 
 
 \item[Smooth step] A smooth step was applied to one \abbrDOF at the time and then to all \abbrDOF at the same time. The used smooth step was the same as in \citet[p. 192-195]{robotics}. The smooth step parameters were $q_{\text{0}} = 0$, $q_{\text{f}} = 1$, $t_{\text{s}} = 3$ ,$t_{\text{f}} = 15$ and $V = 1.5 (q_{\text{f}} - q_{\text{0}})/(t_{\text{f}} - t_{\text{s}}))$
 \end{description}
-for each controller separately. For each conducted test was there a simulated test except for the depth because the depth dynamics has not been modelled. The \abbrROV model in the simulator used the parameters from \Sectionref{sec:parameterResults}. The exact linearisation, both in the simulator and the \abbrROV, used the parameters from \Sectionref{sec:parameterResults} with an scaling factor of 0.9 except for $z_B$ which had 0.5 as scaling factor. In this Section will a few representative test cases will be presented,  several other test can be seen in \Appref{app:controllerTestResults}. Tests was conducted for the \abbrPID attitude controller without exact linearisation, the \abbrPI rate controller with exact linearisation and with the \abbrPI depth controller. Different performance evaluation values will be used, these values are defined as in \citet{reglerteori}. 
+for each controller separately. For each conducted test was there a simulated test except for the depth because the depth dynamics has not been modelled. The \abbrROV model in the simulator used the parameters from \Sectionref{sec:parameterResults}. The exact linearisation, both in the simulator and the \abbrROV, used the parameters from \Sectionref{sec:parameterResults} with an scaling factor of 0.9 except for $z_B$ which had 0.5 as scaling factor. In this Section will a few representative test cases will be presented,  several other test can be seen in \Appref{app:controllerTestResults}. Tests was conducted for the \abbrPID attitude controller without exact linearisation, the \abbrPI rate controller with exact linearisation and with the \abbrPI depth controller. The parameters used in the \abbrPID and the \abbrPI:s during simulation and real tests can be seen in \Tableref{tab:parametersAttitude} - \Tableref{tab:parametersDepth}. Different performance evaluation values will be used, these values are defined as in \citet{reglerteori}. 
+
+\begin{table}[tbp]
+  \centering
+  \caption{\label{tab:parametersAttitude}%
+    The parameters used in the attitude controller's \abbrPID.}
+  \begin{tabular}{l l l l}
+    \toprule%
+       & \textbf{$K_\text{p}$} & \textbf{$K_\text{i}$}& \textbf{$K_\text{d}$}\\
+    \otoprule%   
+    $\rollAngle$  & 2   & 0.1 & 0.1 \\
+    $\pitchAngle$ & 2.7 & 0.1 & 0.1 \\
+    $\yawAngle$   & 0.7 & 0.1 & 0.1 \\
+    \bottomrule%
+  \end{tabular}
+\end{table}
+
+\begin{table}[tbp]
+  \centering
+  \caption{\label{tab:parametersRate}%
+    The parameters used in the rate controller's \abbrPI.}
+  \begin{tabular}{l l l}
+    \toprule%
+       & \textbf{$K_\text{p}$} & \textbf{$K_\text{i}$}\\
+    \otoprule%   
+    $\rollVelocity$  & 3.5 & 2 \\
+    $\pitchVelocity$ & 3.5 & 2 \\
+    $\yawVelocity$   & 3.0 & 2 \\
+    \bottomrule%
+  \end{tabular}
+\end{table}
+
+\begin{table}[tbp]
+  \centering
+  \caption{\label{tab:parametersDepth}%
+    The parameters used in the depth controller's \abbrPI.}
+  \begin{tabular}{l l l}
+    \toprule%
+       & \textbf{$K_\text{p}$} & \textbf{$K_\text{i}$}\\
+    \otoprule%   
+    $\zPosition$  & 1 & 0.2 \\
+    \bottomrule%
+  \end{tabular}
+\end{table}
 
 \todo[inline]{Exact lin for attitude}
-\todo[inline]{Parameter values for the controllers}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%Attitude%%%%%%%%%%%%%%%% 
 \begin{figure}
 \centering
