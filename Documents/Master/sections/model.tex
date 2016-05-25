@@ -1,26 +1,19 @@
 \chapter{Modelling the ROV} \label{cha:modelling}
-This chapter describes how the \abbrROV is modelled using the \citet{fossen2011} 6 \abbrDOF model for \abbrROV:s. A model describes how an object is affected by forces such as gravity and friction. Models are derived by using different physical laws. Assumptions can often be made how the physical properties of the object affect the model and a simpler model can be derived. Assumptions can be symmetry of the object, no coupling inertia, low speed and several others. 
+This chapter describes how the \abbrROV is modelled using the framework of \citet{fossen2011}. A model describes how an object is affected by forces such as gravity and friction. Models can be derived by using different physical laws. Assumptions can often be made how the physical properties of the object affect the model and a simpler model can be derived. Assumptions can be symmetry of the object, no coupling inertia, low speed and several others. 
 
 An underwater vehicle with 6 \abbrDOF can be described by\index{Model of an underwater vehicle}
 \begin{equation}
-\etaVectordot = J(\eta)\nu
+\etaVectordot = \boldsymbol{J}(\etaVector)\nuVector
 \end{equation}
 \todo{How to express disturbances}
 \begin{equation} \label{eq:model}
  \inertia \nuVectordot + \coriolis(\nuVector)\nuVector + \damping(\nuVector)\nuVector + \gravity(\etaVector) = \tauVector 
 \end{equation}
   %= \tauVector_{\text{Rb}} + \tauVector_{\text{Dyn}} +\tauVector_{\text{Stat}} + \tauVector_{\text{Act}}+ \tauVector_{\text{Env}}
-where
-\begin{equation*}
-  \etaVector  
-\end{equation*} are generalised positions and
-\begin{equation*}
-  \nuVector
-\end{equation*}
-are generalised velocities that are used to describe motion in 6 \abbrDOF \citep[p. 15]{fossen2011}. The matrices $\inertia$\index{Inertia matrix}, $\coriolis(\nuVector)$\index{Coriolis matrix}, $\damping(\nuVector)$\index{Damping matrix} and the vector $\gravity(\nuVector)$\index{Restoring forces matrix} respectively describes how inertia, Coriolis forces, damping forces, gravity and buoyancy affect the \abbrROV. The vector $\tauVector$ describes the forces and torques produced by the \abbrROV's actuators as well as environmental disturbances.
+where $\etaVector$ are generalised positions and $\nuVector$ are generalised velocities that are used to describe motion in 6 \abbrDOF \citep[p. 15]{fossen2011}. The matrices $\inertia$\index{Inertia matrix}, $\coriolis(\nuVector)$\index{Coriolis matrix}, $\damping(\nuVector)$\index{Damping matrix} and the vector $\gravity(\nuVector)$\index{Restoring forces matrix} respectively describes how inertia, Coriolis forces, damping forces, gravity and buoyancy affect the \abbrROV. The vector $\tauVector$ describes the forces and torques produced by the \abbrROV's actuators as well as environmental and other disturbances.
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-In this chapter, the vector cross-product $\cross{\cdot}$ is defined as $\cross{a\boldsymbol{A}} \boldsymbol{B} = a\boldsymbol{A} \times \boldsymbol{B}$. The notation used for the parameters in this chapter and \Chapterref{cha:parameterEstimation} can be seen in \Tableref{tab:notationModelling}. The notation for forces, moments, linear and angular velocities, positions and Euler angles used in the model is summarised in \Tableref{tab:notationMarine}. 
+In this chapter, the vector cross-product $\cross{\cdot}$ is defined as $\cross{a\boldsymbol{A}} \boldsymbol{B} = a\boldsymbol{A} \times \boldsymbol{B}$. The notation used for the parameters in this thesis can be seen in \Tableref{tab:notationModelling}. The notation for forces, moments, linear and angular velocities, positions and Euler angles used in the model is summarised in \Tableref{tab:notationMarine}. 
 
  \begin{table}[tbp]
   \centering
@@ -44,7 +37,7 @@ In this chapter, the vector cross-product $\cross{\cdot}$ is defined as $\cross{
     $z_B$ & Distance between \abbrCB and \abbrCG along the $z$-axis. \\
     $V$ & Displaced volume. \\
     $\rho$ & Water density. \\
-    $g$ & Gravity. \\
+    $g$ & Gravitational constant. \\
     $r^g_b$ & The distance between \abbrCO and \abbrCG. \\
     \bottomrule%
   \end{tabular}
@@ -59,22 +52,22 @@ In this chapter, the vector cross-product $\cross{\cdot}$ is defined as $\cross{
     \toprule%
     \textbf{DOF} & \textbf{Description}  & \textbf{Forces and moments} & \textbf{Linear and angular velocities} & \textbf{Positions and Euler angles} \\
     \otoprule%
-    1 & Motions in the x direction (surge).     & \xForce       & \xVelocity        & \xPosition \\
+    1 & Motions in the $x$ direction (surge).     & \xForce       & \xVelocity        & \xPosition \\
         
-    2 & Motions in the y direction (sway).      & \yForce       & \yVelocity        & \yPosition \\
+    2 & Motions in the $y$ direction (sway).      & \yForce       & \yVelocity        & \yPosition \\
     
-    3 & Motions in the z direction (heave).     & \zForce       & \zVelocity        & \zPosition \\
+    3 & Motions in the $z$ direction (heave).     & \zForce       & \zVelocity        & \zPosition \\
     
-    4 & Rotation about the x axis (roll, heel). & \rollMoment   & \rollVelocity     & \rollAngle \\
+    4 & Rotation about the $x$ axis (roll, heel). & \rollMoment   & \rollVelocity     & \rollAngle \\
     
-    5 & Rotation about the y axis (pitch, trim).& \pitchMoment  & \pitchVelocity    & \pitchAngle \\
+    5 & Rotation about the $y$ axis (pitch, trim).& \pitchMoment  & \pitchVelocity    & \pitchAngle \\
     
-    6 & Rotation about the z axis (yaw).        & \yawMoment    & \yawVelocity      & \yawAngle \\
+    6 & Rotation about the $z$ axis (yaw).        & \yawMoment    & \yawVelocity      & \yawAngle \\
     \bottomrule%
   \end{tabular}
 \end{table}
 
-To get a more compact way of writing a vector notation has been used
+To get a more compact way of writing, the following vector notation has been used
 \begin{itemize}
 \item $\boldsymbol{p}$: Positions.
 \item $\boldsymbol{v}$: Linear velocities.
@@ -87,12 +80,81 @@ To get a more compact way of writing a vector notation has been used
 \section{Coordinate Systems and Kinematics}
 \label{sec:coordinates}\index{NED}\index{body-fixed coordinate system}\index{global coordinate system}
 During modelling it is important to choose proper coordinate systems in which to describe the systems behaviour.
-In this thesis, are two coordinate systems used in the \abbrROV model.
-The first system, the body-fixed coordinate system, is fixed to the \abbrROV and rotates with the \abbrROV. 
-The body-fix coordinate system is a right-hand system, the $\xPosition$-axis is placed along the length of the \abbrROV pointing towards its bow. The $\yPosition$-axis points starboard, and the $\zPosition$-axis points downwards towards the vehicles keel. The coordinate system is assumed to be centred in the \abbrROV's  center of gravity (\abbrCG). The body-fixed coordinate system makes it easier to describe sensor readings, since the sensors rotate with the \abbrROV. It is also easier to express the effect of each thruster with forces and moments expressed in the body-fixed coordinate system. How the body-fixed coordinate system is placed in the \abbrROV can be seen in \Figureref{fig:thrusterlocationtop} and \Figureref{fig:thrusterlocationfront}.
+In this thesis, two coordinate systems are used in the \abbrROV model. 
 
-The global coordinate system is Earth fixed, with axes $\north$, $\east$ and $\down$. The $\north$ axis points in the direction of the calibrated North, the $\east$ axis points in the direction of calibrated East and the $\down$ axis points down towards the \abbrCG of the Earth.
-This coordinate system is used to express buoyancy and gravitational forces acting on the \abbrROV, their effects are transformed to the body-fixed coordinate system by a rotation matrix. How the local and global coordinate systems relate to each other can be seen in \Figureref{fig:coordinate_frames}.
+The first system, the body-fixed coordinate system, is fixed to the \abbrROV and rotates with the \abbrROV. 
+The body-fixed coordinate system is a right-hand system, the $\xPosition$-axis is placed along the length of the \abbrROV pointing towards its bow. The $\yPosition$-axis points starboard, and the $\zPosition$-axis points downwards towards the vehicles keel. The coordinate system is assumed to be centred in the \abbrROV's  center of gravity (\abbrCG) \emph{i.e.} $r^g_b = 0$. The body-fixed coordinate system makes it easier to describe sensor readings, since the sensors rotate with the \abbrROV. It is also easier to express the effect of each thruster with forces and moments expressed in the body-fixed coordinate system. How the body-fixed coordinate system is placed in the \abbrROV can be seen in \Figureref{fig:thrusterlocationtop} and \Figureref{fig:thrusterlocationfront}.
+
+The second coordinate system, the global coordinate system is Earth fixed, with axes $\north$, $\east$ and $\down$. The $\north$ axis points in the direction of the calibrated North, the $\east$ axis points in the direction of calibrated East and the $\down$ axis points down towards the \abbrCG of the Earth.
+This coordinate system is used to express buoyancy and gravitational forces acting on the \abbrROV, their effects are transformed to the body-fixed coordinate system by a rotation matrix. The transformation for linear velocities from the body-fixed coordinate system to the global coordinate system is 
+\begin{equation}
+\linVelGlobal = \boldsymbol{R}^n_b(\eulerAngles) \linVelBody
+\end{equation}
+where the transformation matrix $\boldsymbol{R}^n_b(\eulerAngles)$ in $zyx$ convention is 
+\begin{equation}
+\boldsymbol{R}^n_b(\eulerAngles) =\begin{bmatrix}
+ c\yawAngle c\pitchAngle & -s\yawAngle c\rollAngle + c\yawAngle s\pitchAngle s\rollAngle & s\yawAngle s\rollAngle + c\yawAngle c\rollAngle s \pitchAngle \\
+ s\yawAngle c\pitchAngle & c\yawAngle c\rollAngle + s\rollAngle  s\pitchAngle s\yawAngle & -c\yawAngle s\rollAngle + s\pitchAngle s\yawAngle c\rollAngle \\
+ -s\pitchAngle & c\pitchAngle s\rollAngle & c\pitchAngle c\rollAngle
+ \end{bmatrix} 
+\end{equation}
+where $s\cdot$ stands for $\sin(\cdot)$ and $c\cdot$ stands for $\cos(\cdot)$ \citep[p. 22]{fossen2011}. The inverse of the transformation matrix $\boldsymbol{R}^n_b(\eulerAngles)$ is
+\begin{equation}
+\boldsymbol{R}^n_b(\eulerAngles)^{-1} = \boldsymbol{R}^n_b(\eulerAngles)^T
+\end{equation}
+ The super- and subscript notation is defined the following way
+\begin{equation}
+\boldsymbol{v}^{\text{to}}=\boldsymbol{R}^{\text{to}}_{\text{from}}(\eulerAngles)\boldsymbol{v}^{\text{from}}
+\end{equation}
+and $n$ denotes the global coordinate system, while $b$ denotes the body-fixed coordinate system.
+The notation $v_{b/n}$ means that $v$ is measured in $b$ relative $n$.
+
+Transformation of angular velocities from the body-fixed to the global frame is given by 
+\begin{equation}\label{eq:eulerAnglesdot}
+\eulerAnglesdot = \boldsymbol{T}_{\theta}(\eulerAngles)\angVelBody
+\end{equation}
+where
+\begin{equation}
+\boldsymbol{T}_{\theta}(\eulerAngles) = \begin{bmatrix}
+1 & s\rollAngle t\pitchAngle & c\rollAngle t\pitchAngle \\
+0 & c\rollAngle & -s\rollAngle \\
+0 & s\rollAngle/c\pitchAngle & c\rollAngle/c\pitchAngle
+\end{bmatrix}
+\end{equation}
+and $t\cdot$ stands for $\tan(\cdot)$ \citep[p. 24]{fossen2011}. Similar to the linear velocities transformation matrix, the inverse of the angular velocities transformation matrix is
+\begin{equation}
+\boldsymbol{T}_{\theta}(\eulerAngles)^{-1} = \boldsymbol{T}_{\theta}(\eulerAngles)^T
+\end{equation}
+
+The kinematic equations can then be expressed in vector form as \index{Kinematics}
+\begin{equation} \label{eq:kinematicsticsEuler}
+\etaVectordot = \boldsymbol{J}_\theta(\etaVector)\nuVector
+\quad\Longleftrightarrow\quad
+\begin{bmatrix}
+\posGlobaldot \\
+\eulerAnglesdot
+\end{bmatrix}
+=
+\begin{bmatrix}
+\boldsymbol{R}^n_b(\eulerAngles) & \zero{3} \\
+\boldsymbol{0}_{3x3} & \boldsymbol{T}_\theta(\eulerAngles)
+\end{bmatrix}
+\begin{bmatrix}
+\linVelBody \\
+\angVelBody
+\end{bmatrix}
+\end{equation}
+Where \begin{equation}
+\etaVector = \begin{bmatrix}
+N\\
+E\\
+D\\
+\phi
+\theta
+\psi
+\end{bmatrix}
+\end{equation}
+
 
 \newcommand*{\coordinateRadius}{0.05}
 \newcommand*{\coordRot}{30}
@@ -131,7 +193,7 @@ This coordinate system is used to express buoyancy and gravitational forces acti
         \draw[red, thick] (O) ++(-0.35,0) node[rotate=90]{\large Thruster 5};
     \end{scope}
 \end{tikzpicture}
-    \caption{Top view of the \abbrROV. The red coordinate system illustrates how the body-fixed coordinate system is fixed in the \abbrROV. Yellow lines shows the different moment arms to the thrusters. Each thruster is numbered in red.}
+    \caption{Top view of the \abbrROV. The body-fixed coordinate system (red) is fixed in the \abbrROV. Yellow lines show the different moment arms to the thrusters. Each thruster is numbered in red.}
     \label{fig:thrusterlocationtop}
 \end{figure}
 
@@ -159,7 +221,7 @@ This coordinate system is used to express buoyancy and gravitational forces acti
         \draw[red, thick] (O) ++(0.04,-0.37) node[right]{\large Thruster 6};
     \end{scope}
 \end{tikzpicture}
-    \caption{Front view of the \abbrROV. The red coordinate system illustrates how the body-fixed coordinate system is fixed in the \abbrROV. The yellow line show the moment arm to thruster 6 which is marked in red.}
+    \caption{Front view of the \abbrROV. The body-fixed coordinate system (red) is fixed in the \abbrROV. The yellow line show the moment arm to thruster 6 which is marked in red.}
     \label{fig:thrusterlocationfront}
 \end{figure}
 
@@ -213,60 +275,6 @@ This coordinate system is used to express buoyancy and gravitational forces acti
     \label{fig:coordinate_frames}
 \end{figure}
 
-\index{Kinematics}\index{Transformation matrices} %\label{sec:kinematics}
-The relationship between velocities in the body-fixed frame and the global frame can be described by different transformation matrices \citep{fossen2011}.
-The transformation for linear velocities from the body-fixed coordinate system to the global coordinate system is 
-\begin{equation}
-\linVelGlobal = \boldsymbol{R}^n_b(\eulerAngles) \linVelBody
-\end{equation}
-where the transformation matrix $\boldsymbol{R}^n_b(\eulerAngles)$ in $zyx$ convention is 
-\begin{equation}
-\boldsymbol{R}^n_b(\eulerAngles) =\begin{bmatrix}
- c\yawAngle c\pitchAngle & -s\yawAngle c\rollAngle + c\yawAngle s\pitchAngle s\rollAngle & s\yawAngle s\rollAngle + c\yawAngle c\rollAngle s \pitchAngle \\
- s\yawAngle c\pitchAngle & c\yawAngle c\rollAngle + s\rollAngle  s\pitchAngle s\yawAngle & -c\yawAngle s\rollAngle + s\pitchAngle s\yawAngle c\rollAngle \\
- -s\pitchAngle & c\pitchAngle s\rollAngle & c\pitchAngle c\rollAngle
- \end{bmatrix} 
-\end{equation}
-where $s\cdot$ stands for $\sin(\cdot)$ and $c\cdot$ stands for $\cos(\cdot)$ \citep[p. 22]{fossen2011}. The inverse of the transformation matrix $\boldsymbol{R}^n_b(\eulerAngles)$ is
-\begin{equation}
-\boldsymbol{R}^n_b(\eulerAngles)^{-1} = \boldsymbol{R}^n_b(\eulerAngles)^T
-\end{equation}
-
-Transformation of angular velocities from the the body-fixed frame to the global frame is given by 
-\begin{equation}\label{eq:eulerAnglesdot}
-\eulerAnglesdot = \boldsymbol{T}_{\theta}(\eulerAngles)\angVelBody
-\end{equation}
-where $\boldsymbol{T}_{\theta}(\eulerAngles)$ is 
-\begin{equation}
-\boldsymbol{T}_{\theta}(\eulerAngles) = \begin{bmatrix}
-1 & s\rollAngle t\pitchAngle & c\rollAngle t\pitchAngle \\
-0 & c\rollAngle & -s\rollAngle \\
-0 & s\rollAngle/c\pitchAngle & c\rollAngle/c\pitchAngle
-\end{bmatrix}
-\end{equation}
-where $t\cdot$ stands for $\tan(\cdot)$ \citep[p. 24-25]{fossen2011}. Similar to the linear velocities transformation matrix the inverse of the angular velocities transformation matrix is
-\begin{equation}
-\boldsymbol{T}_{\theta}(\eulerAngles)^{-1} = \boldsymbol{T}_{\theta}(\eulerAngles)^T
-\end{equation}
-
-The kinematic equations can then be expressed in vector form as \index{Kinematics}
-\begin{equation} \label{eq:kinematicsticsEuler}
-\etaVectordot = \boldsymbol{J}_\theta(\etaVector)\nuVector
-\quad\Longleftrightarrow\quad
-\begin{bmatrix}
-\posGlobaldot \\
-\eulerAnglesdot
-\end{bmatrix}
-=
-\begin{bmatrix}
-\boldsymbol{R}^n_b(\eulerAngles) & \zero{3} \\
-\boldsymbol{0}_{3x3} & \boldsymbol{T}_\theta(\eulerAngles)
-\end{bmatrix}
-\begin{bmatrix}
-\linVelBody \\
-\angVelBody
-\end{bmatrix}
-\end{equation}
 
 
 
