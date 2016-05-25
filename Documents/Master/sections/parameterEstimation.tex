@@ -443,11 +443,23 @@ Another issue that was encountered when using the prediction-error method was th
 
 Since data had been collected with Euler angles instead of quaternions and no simple way of estimating the initial state of the quaternions was thought of, a Kalman smoother as described in \citet{Wallin} was used introduced. The magnetometer was also added as a output, in the Kalman smoother, to further reduce the uncertainty of the initial quaternions. It is therefore recommended that when using quaternions during parameter estimation, that attitude data on quaternion form is logged so that the initial quaternions can easily be obtained. 
 
-A problem that was consistent in all early estimations was a low fit value in $p$. Several adjustments were attempted in order to fix this issue and it was later found that the effect in $p$ of thruster 6 was minimal. A later test showed that thruster 6 only effected $p$ when it was quickly actuated. If the sixth thrusters power was incremented slowly an initial response in $p$ was noted before it settled at zero again. \todo{Add picture of this phenomenon}. This might be because of unmodelled translational dynamics of the \abbrROV meaning that the dynamics in $y$ may be coupled with $r$.
+A problem that was consistent in all early estimations was a low fit value in $p$. Several adjustments were attempted in order to fix this issue and it was later found that the effect in $p$ of thruster 6 was minimal. A test showed that thruster 6 effected $p$ the most when it was quickly actuated. The effect of thruster 6 in $p$ can be seen in \Figureref{fig:thruster6}. If the sixth thrusters power was incremented slowly an initial response in $p$ was noted before it settled at zero again. This might be because of unmodelled translational dynamics of the \abbrROV meaning that the dynamics in $y$ may be coupled with $r$ or that the placement of \abbrCG in the \abbrROV is faulty.
 
 When deciding on which parameters to use for controller design, the choice was based solely on the fit of the simulated output had against validation data. The reasoning behind this being quite simple, the better the fit against validation data the less robust the controllers would have to be.
 
 
+\begin{figure}
+\centering
+  \subfloat[][\label{fig:thruster6p1} The effect in $p$ when only using thruster 6.]{\includegraphics[width=0.4\textwidth]{thruster6p}}
+  \qquad
+  \subfloat[][\label{fig:thruster6u61} The control signal sent to thruster 6.]{\includegraphics[width=0.4\textwidth]{thruster6u6}}
+  \qquad
+  \subfloat[][\label{fig:thruster6p2} The effect in $p$ when only using thruster 6.]{\includegraphics[width=0.4\textwidth]{lowcontrolthruster6p}}
+  \qquad
+  \subfloat[][\label{fig:thruster6u62} The control signal sent to thruster 6.]{\includegraphics[width=0.4\textwidth]{lowcontrolthruster6u6}}
+  \caption{\label{fig:thruster6}%
+  The effect in $p$ while only using thruster 6. As can be seen thruster 6 has a relatively small effect in $p$, thus ought the moment arm of thruster 6 be small. However, thruster 6 effected $p$ more when thruster 6 was quickly actuated.}
+\end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %\section{Decoupling the Model} \index{Decoupling}
