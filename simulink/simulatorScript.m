@@ -239,7 +239,7 @@ label_name = {'p','q','r'};
 %     set(gca,'FontSize',ft)
 % end
 
-figure('units', 'normalized', 'position', [0.5 0 .5 1])
+%figure('units', 'normalized', 'position', [0.5 0 .5 1])
 for i = 1:3
     figure(i)
 %     subplot(3,1,i)
@@ -252,7 +252,7 @@ for i = 1:3
     set(h,'FontSize',ft);
     title(legend_ent{i})
     set(gca,'FontSize',ft)
-    axis([0 end_time -1.5 1.5])
+    axis([0 end_time -0.1 1.5])
 end
 
 %figure('units', 'normalized', 'position', [0 0 .5 .41])
@@ -265,15 +265,15 @@ end
 % end
 %%
 
-print -f1 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simStepThetaPhiPhis3e10a1.eps'
+print -f1 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simStepAllPhis3e10a1.eps'
 %print -f1 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simSinPhiA05.eps'
 %print -f1 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simSinAllPhiA1.eps'
 
-print -f2 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simStepThetaPhiThetas3e10a1.eps'
+print -f2 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simStepAllThetas3e10a1.eps'
 %print -f2 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simSinThetaA05.eps'
 %print -f2 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simSinAllThetaA1.eps'
 
-%print -f3 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simStepAllPsis3e10a1.eps'
+print -f3 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simStepAllPsis3e10a1.eps'
 %print -f3 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simSinPsiA05.eps'
 %print -f3 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/simSinAllPsiA1.eps'
 
