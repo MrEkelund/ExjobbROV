@@ -316,7 +316,8 @@ if the exact linearisation is removed. \Figureref{fig:ratecontroller} illustrate
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Depth Controller} \index{Depth Controller} \index{PI@\abbrPI!abbreviation}
-\todo[inline]{write some fluff} 
+In the \abbrROV was a depth controller implemented. The chosen depth controller was a \abbrPI-controller. The depth controller can be used simultaneous as any other controller that is implemented in the \abbrROV. This can be seen in \Figureref{fig:depthcontroller}.
+
 If the error in $\zPosition$ is defined as 
 \begin{equation}
 \tilde{\zPosition} = \zPosition - \zPosition_{\text{ref}}
@@ -329,7 +330,7 @@ u_{\zPosition} = \thrusterGeometryOnes[*]\begin{bmatrix} \boldsymbol{R}^n_b(\eul
 - K_{\text{p}} \tilde{\zPosition} - K_{\text{i}}\int \! \tilde{\zPosition} \, \mathrm{d}t
 \end{bmatrix} \\ \zeroCol{3}\end{bmatrix}
 \end{equation}
-where $K_{\text{p}}$ and $K_{\text{i}}$ are design parameters. The rotation matrix $\boldsymbol{R}^n_b(\eulerAngles)^T$ is used to make the depth controller control the depth regardless the attitude of the \abbrROV. As can be seen in \Figureref{fig:depthcontroller} the depth controller can be used even if any of the other controllers are used. This is because the depth controller only adds or subtracts control signal to those thrusters that affect the depth.
+where $K_{\text{p}}$ and $K_{\text{i}}$ are design parameters. The rotation matrix $\boldsymbol{R}^n_b(\eulerAngles)^T$ is used to enable the depth controller to distribute control signals dependant the attitude of the \abbrROV.
 
 \begin{figure}
 	\centering
@@ -346,7 +347,7 @@ where $K_{\text{p}}$ and $K_{\text{i}}$ are design parameters. The rotation matr
         output/.style   = {coordinate} %
     ]
    		\draw node at (0,0) [input] (vel_input) {};
-		\draw node[input, below of=vel_input] (ang_input) {};
+		\draw node[input, below of=vel_input,node distance=2.5cm] (ang_input) {};
    		\draw node[PID, right of=ang_input] (pid) {$\abbrPI$};
    		
    		%from input to pid
@@ -360,8 +361,8 @@ where $K_{\text{p}}$ and $K_{\text{i}}$ are design parameters. The rotation matr
    		\draw[->] (pid.east) ++(0.65,0.25) arc (30:0:0.6);     		
    		
    		%Merge the switch  		
-   		\draw (pid.east) ++(2,0) node[coordinate](merge){};
-   		\draw (switchup) -- (merge);
+   		%\draw (pid.east) ++(2,0) node[coordinate](merge){};
+   		%\draw (switchup) -- (merge);
    		
    		%Input to thrust
    		\draw node[block, right of=vel_input] (controller) {F};
@@ -370,14 +371,14 @@ where $K_{\text{p}}$ and $K_{\text{i}}$ are design parameters. The rotation matr
    		%To sum
    		\draw (controller.east) ++(4,0) node[sum, name=sum] {$+$};
 		\draw[->] (controller.east) -- (sum.west);
-		\draw node[block, right of=merge,node distance=1cm] (rotate) {$\boldsymbol{R}^n_b(\eulerAngles)^T$};
-		\draw node[block, below of=sum,node distance=1.5cm] (thrust) {$\thrusterGeometryOnes[*]$};
-		\draw[->] (merge) -- (rotate.west); 
+		\draw node[block, right of=switchup,node distance=1cm] (rotate) {$\boldsymbol{R}^n_b(\eulerAngles)^T$};
+		\draw node[block, below of=sum,node distance=1.3cm] (thrust) {$\thrusterGeometryOnes[*]$};
+		\draw[->] (switchup) -- (rotate.west); 
 		\draw[->] (rotate.east) -| (thrust.south); 
-   		\draw[->] (thrust.north) -- node[align=center, below] {$u_{\zPosition}$}  (sum.south);   		   		
+   		\draw[->] (thrust.north) -- node[align=center, right] {$u_{\zPosition}$}  (sum.south);   		   		
    		% From sum to output
    		\draw node [output, right of=sum, node distance=2cm] (output) {};
-    		\draw[->] (sum.east) -- node[align=center, below] {$u$} (output);
+    		\draw[->] (sum.east) -- node[align=center, right] {$u$} (output);
 	\end{tikzpicture}
     \caption{The \abbrPI depth controller can be used when the open-loop control is engaged or when the other controllers are used. In this figure the F symbolises the chosen way of controlling the \abbrROV.} 
     \label{fig:depthcontroller}
@@ -387,7 +388,7 @@ where $K_{\text{p}}$ and $K_{\text{i}}$ are design parameters. The rotation matr
 \section{Benchmarking}
 To be able to draw any conclusions about the performance of the controllers the following reference signals was used
 \begin{description}
-\item[Constant] A constant reference was applied to all \abbrDOF. This reference signal was only used for trimming the controllers initially, thus will no results be presented expect for the depth controller.
+\item[Constant] A constant reference was applied to all \abbrDOF. This reference signal was only used for trimming the controllers initially, thus will no results be presented except for the depth controller.
 
 \item[Sine] A $\sin(\cdot)$ signal was applied to one \abbrDOF at the time and then to all \abbrDOF. Two $\sin$ signals with different amplitudes were used, amplitude $1$ and $0.5$. The used frequency was $0.5 \hertz$.
 
