@@ -192,23 +192,25 @@ without the exact linearisation. This was implemented to allow the user to steer
         output/.style   = {coordinate} %
     ]
    		\draw node at (0,0) [input] (vel_input) {};
-   		\draw node [input,below of=vel_input] (ang_input) {};
-   		\draw node[PID, right of=ang_input] (pid) {$\abbrPID$};
+   		\draw node [input,below of=vel_input, node distance=3cm] (ang_input) {};
+   		\draw node[PID, right of=ang_input, node distance=1cm] (pid) {$\abbrPID$};
+   		\draw node[block, right of=pid, node distance=1.3cm] (L) {$L(\cdot)$};
    		
    		%from input to pid
-   		\draw[->] (ang_input) -- node[align=center, below] {$\etaVectorAng - \etaVectorAng[,\text{ref}]$} ($(pid.west)$);
-   		\draw (pid.east) -- ++(0.5,0) node[](switch){};
+   		\draw[->] (ang_input) -- node[align=center, below] {$\etaTildeAng$} ($(pid.west)$);
+   		\draw[->] (pid.east) -- (L.west);
+   		\draw (L.east) -- ++(0.5,0) node[](switch){};
    		
    		%from pid to switch and making the switch 
-   		\draw (pid.east) ++(2,0.5) node[](switchup){};
-   		\draw (pid.east) ++(2,-0.5) node[block, name=exactlin] {$f^{-1}(\etaVector,\nuVector)$};
-   		\draw (pid.east) ++(0.8,0.5) -| (switchup);
-   		\draw (pid.east) ++(0.8,-0.5) -| (exactlin.west);
-   		\draw (pid.east) ++(0.5,0) -- ++(0.3,0.5);
-   		\draw[->] (pid.east) ++(0.65,0.25) arc (30:-30:0.6);     		
+   		\draw (L.east) ++(2,0.5) node[](switchup){};
+   		\draw (L.east) ++(2,-0.5) node[block, name=exactlin] {$G^{-1}(\cdot)$};
+   		\draw (L.east) ++(0.8,0.5) -| (switchup);
+   		\draw (L.east) ++(0.8,-0.5) -| (exactlin.west);
+   		\draw (L.east) ++(0.5,0) -- ++(0.3,0.5);
+   		\draw[->] (L.east) ++(0.65,0.25) arc (30:-30:0.6);     		
    		
    		%Merge the switch  		
-   		\draw (pid.east) ++(3,0) node[coordinate](merge){};
+   		\draw (L.east) ++(3,0) node[coordinate](merge){};
    		\draw (switchup) -| (merge);
    		\draw (exactlin) -| (merge);
    		
@@ -216,10 +218,16 @@ without the exact linearisation. This was implemented to allow the user to steer
    		\draw node[block, right of=vel_input] (thrust) {$\thrusterGeometryOnes[*]$};
    		\draw[->] (vel_input) -- node[align=center, below] {$\nuVectorLin[,\text{ref}]$} (thrust.west);
    		
+   		
    		%To sum
    		\draw (thrust.east) ++(4,0) node[sum, name=sum] {$+$};
 		\draw[->] (thrust.east) -- node[align=center, below] {$u_{\nuVectorLin}$} (sum.west);
-   		\draw[->] (merge) -| node[align=center, below] {$u_{\etaVectorAng}$} (sum.south);   		   		
+		%From exact lin to sum
+   		\draw node[block, below of=sum, node distance=1.5cm] (rotate) {$T^{-1}$};
+   		\draw node[block, right of=merge, node distance=1cm] (inter) {$f^{-1}(\cdot)$};
+   		\draw[->] (rotate.north) -- node[align=center, right] {$u_{\etaVectorAng}$} (sum.south);
+   		\draw[->] (inter.north) -| (rotate.south);
+   		\draw[->] (merge) -- (inter.west);   		   		
    		% From sum to output
    		\draw node [output, right of=sum, node distance=2cm] (output) {};
     		\draw[->] (sum.east) -- node[align=center, below] {$u$} (output);	
@@ -269,16 +277,16 @@ if the exact linearisation is not wanted. \Figureref{fig:ratecontroller} illustr
         output/.style   = {coordinate} %
     ]
    		\draw node at (0,0) [input] (vel_input) {};
-   		\draw node [input,below of=vel_input] (ang_input) {};
+   		\draw node [input,below of=vel_input, node distance=3cm] (ang_input) {};
    		\draw node[PID, right of=ang_input] (pid) {$\abbrPI$};
    		
    		%from input to pid
-   		\draw[->] (ang_input) -- node[align=center, below] {$\nuVectorAng - \nuVectorAng[,\text{ref}]$} ($(pid.west)$);
+   		\draw[->] (ang_input) -- node[align=center, below] {$\nuTildeAng$} ($(pid.west)$);
    		\draw (pid.east) -- ++(0.5,0) node[](switch){};
    		
    		%from pid to switch and making the switch 
    		\draw (pid.east) ++(2,0.5) node[](switchup){};
-   		\draw (pid.east) ++(2,-0.5) node[block, name=exactlin] {$f^{-1}(\etaVector,\nuVector)$};
+   		\draw (pid.east) ++(2,-0.5) node[block, name=exactlin] {$G^{-1}(\cdot)$};
    		\draw (pid.east) ++(0.8,0.5) -| (switchup);
    		\draw (pid.east) ++(0.8,-0.5) -| (exactlin.west);
    		\draw (pid.east) ++(0.5,0) -- ++(0.3,0.5);
@@ -296,12 +304,17 @@ if the exact linearisation is not wanted. \Figureref{fig:ratecontroller} illustr
    		%To sum
    		\draw (thrust.east) ++(4,0) node[sum, name=sum] {$+$};
 		\draw[->] (thrust.east) -- node[align=center, below] {$u_{\nuVectorLin}$} (sum.west);
-   		\draw[->] (merge) -| node[align=center, below] {$u_{\nuVectorAng}$} (sum.south);   		   		
+		%From exact lin to sum
+   		\draw node[block, below of=sum, node distance=1.5cm] (rotate) {$T^{-1}$};
+   		\draw node[block, right of=merge, node distance=1.5cm] (inter) {$f^{-1}(\cdot)$};
+   		\draw[->] (rotate.north) -- node[align=center, right] {$u_{\etaVectorAng}$} (sum.south);
+   		\draw[->] (inter.north) -| (rotate.south);
+   		\draw[->] (merge) -- (inter.west);
    		% From sum to output
    		\draw node [output, right of=sum, node distance=2cm] (output) {};
-    		\draw[->] (sum.east) -- node[align=center, below] {$u$} (output);
+    		\draw[->] (sum.east) -- node[align=center, below] {$u$} (output);	  
 	\end{tikzpicture}
-    \caption{The linear velocities are controlled in the same way as in \Sectionref{sec:openloop}. However, the angular velocities are controlled via an \abbrPID and exact linearisation can be enabled.} 
+    \caption{The linear velocities are controlled in the same way as in \Sectionref{sec:openloop}. However, the angular velocities are controlled via an \abbrPI and exact linearisation can be enabled.} 
     \label{fig:ratecontroller}
 \end{figure}
 
@@ -314,7 +327,7 @@ If the error in $\zPosition$ is defined as
 \end{equation}
 then is the \abbrPI depth controller defined as
 \begin{equation}
-u = \thrusterGeometryOnes[*]\begin{bmatrix} \boldsymbol{R}^n_b(\eulerAngles)^T \begin{bmatrix}
+u_{\zPosition} = \thrusterGeometryOnes[*]\begin{bmatrix} \boldsymbol{R}^n_b(\eulerAngles)^T \begin{bmatrix}
 0 \\
 0 \\
 - K_{\text{p}} \tilde{\zPosition} - K_{\text{i}}\int \! \tilde{\zPosition} \, \mathrm{d}t
@@ -341,7 +354,7 @@ where $K_{\text{p}}$ and $K_{\text{i}}$ are design parameters. The rotation matr
    		\draw node[PID, right of=ang_input] (pid) {$\abbrPI$};
    		
    		%from input to pid
-   		\draw[->] (ang_input) -- node[align=center, below] {$\zPosition - \zPosition_{\text{ref}}$} ($(pid.west)$);
+   		\draw[->] (ang_input) -- node[align=center, below] {$\tilde{\zPosition}$} ($(pid.west)$);
    		\draw (pid.east) -- ++(0.5,0) node[](switch){};
    		
    		%from pid to switch and making the switch 
@@ -351,7 +364,7 @@ where $K_{\text{p}}$ and $K_{\text{i}}$ are design parameters. The rotation matr
    		\draw[->] (pid.east) ++(0.65,0.25) arc (30:0:0.6);     		
    		
    		%Merge the switch  		
-   		\draw (pid.east) ++(3,0) node[coordinate](merge){};
+   		\draw (pid.east) ++(2,0) node[coordinate](merge){};
    		\draw (switchup) -- (merge);
    		
    		%Input to thrust
@@ -361,7 +374,11 @@ where $K_{\text{p}}$ and $K_{\text{i}}$ are design parameters. The rotation matr
    		%To sum
    		\draw (controller.east) ++(4,0) node[sum, name=sum] {$+$};
 		\draw[->] (controller.east) -- (sum.west);
-   		\draw[->] (merge) -| node[align=center, below] {$u_{\zPosition}$}  (sum.south);   		   		
+		\draw node[block, right of=merge,node distance=1cm] (rotate) {$\boldsymbol{R}^n_b(\eulerAngles)^T$};
+		\draw node[block, below of=sum,node distance=1.5cm] (thrust) {$\thrusterGeometryOnes[*]$};
+		\draw[->] (merge) -- (rotate.west); 
+		\draw[->] (rotate.east) -| (thrust.south); 
+   		\draw[->] (thrust.north) -- node[align=center, below] {$u_{\zPosition}$}  (sum.south);   		   		
    		% From sum to output
    		\draw node [output, right of=sum, node distance=2cm] (output) {};
     		\draw[->] (sum.east) -- node[align=center, below] {$u$} (output);
