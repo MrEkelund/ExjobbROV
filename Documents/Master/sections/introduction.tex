@@ -10,7 +10,7 @@ During the recent years there have been an explosive growth in popularity and pu
 
 Since a typical \abbrROV solution has 6 degrees of freedom (\abbrDOF) and most often isn't decoupled, it is advantageous to use a control system when executing advanced manoeuvres during exploration and missions. The controller structure originally implemented in the BlueROV platform was an open-loop controller with ad hoc decoupling. This type of control is somewhat capable during manual operation with low requirements on accuracy but might be too inexact in autonomous and more delicate operation. 
 
-Autonomous operation places special requirements on a control system. This is due to safety and precision requirements during operation \citep[p.416-417]{safety}. To meet these needs, a model-based control strategy might be used. A model-based control needs a good model of the system. A model can be created via some base knowledge of the system and the underlying physics, via system identification or a combination of both \citet{modellbygge}. 
+Autonomous operation places special requirements on a control system. This is due to safety and precision requirements during operation \citep[p. 416]{safety}. To meet these needs, a model-based control strategy might be used. A model-based control needs a good model of the system. A model can be created via some base knowledge of the system and the underlying physics, via system identification or a combination of both \citet{modellbygge}. 
 
 A typical \abbrUV uses a GPS unit to estimate its position and to improve the velocity estimates. Unfortunately GPS signals quickly lose strength in underwater environments, which in turn places extra importance in how system identification of \abbrROV platforms is performed.
 
