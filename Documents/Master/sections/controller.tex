@@ -482,13 +482,13 @@ Sine reference signals with amplitude 1 and frequency $0.5 \hertz$ can be seen i
 
 \begin{figure}
 \centering
-  \subfloat[][\label{fig:testStepPhiTheta05RollAttitude} A smooth step applied in $\rollAngle$.]{\includegraphics[width=0.4\textwidth]{testStepThetaPhiPhis3e10a1}}
+  \subfloat[][\label{fig:testStepPhiTheta05RollAttitude} Test response in $\rollAngle$.]{\includegraphics[width=0.4\textwidth]{testStepThetaPhiPhis3e10a1}}
   \qquad
-  \subfloat[][\label{fig:simStepPhiTheta05RollAttitude} A smooth step applied to the simulated \abbrROV in $\rollAngle$.]{\includegraphics[width=0.4\textwidth]{simStepThetaPhiPhis3e10a1}}
+  \subfloat[][\label{fig:simStepPhiTheta05RollAttitude} Simulated response in $\rollAngle$.]{\includegraphics[width=0.4\textwidth]{simStepThetaPhiPhis3e10a1}}
   \qquad
-  \subfloat[][\label{fig:testStepPhiTheta05PitchAttitude} A smooth step applied in $\pitchAngle$.]{\includegraphics[width=0.4\textwidth]{testStepThetaPhiThetas3e10a1}}
+  \subfloat[][\label{fig:testStepPhiTheta05PitchAttitude}Test response in $\pitchAngle$.]{\includegraphics[width=0.4\textwidth]{testStepThetaPhiThetas3e10a1}}
   \qquad
-  \subfloat[][\label{fig:simStepPhiTheta05PitchAttitude} A smooth step applied to the simulated \abbrROV in $\pitchAngle$.]{\includegraphics[width=0.4\textwidth]{simStepThetaPhiThetas3e10a1}}
+  \subfloat[][\label{fig:simStepPhiTheta05PitchAttitude} Simulated response in $\pitchAngle$.]{\includegraphics[width=0.4\textwidth]{simStepThetaPhiThetas3e10a1}}
   \caption{\label{fig:StepPhiThetaAttitude}%
   Smooth steps were applied in \pitchAngle and \rollAngle at the same time while using the attitude controller. The attitude angle $\yawAngle$ was kept free during the test.}
 \end{figure}
@@ -498,38 +498,38 @@ A smoothed step in $\rollAngle$ and $\pitchAngle$ can be seen in \Figureref{fig:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%Rate%%%%%%%%%%%%%%%%
 \begin{figure}
 \centering
-  \subfloat[][\label{fig:testStepAllPRate} A smooth step applied in $\rollVelocity$.]{\includegraphics[width=0.4\textwidth]{testStepAllPs3e10a1}}
+  \subfloat[][\label{fig:testStepAllPRate} Test response in $\rollVelocity$.]{\includegraphics[width=0.4\textwidth]{testStepAllPs3e10a1}}
+  \qquad 
+  \subfloat[][\label{fig:simStepAllPRate} Simulated response in $\rollVelocity$.]{\includegraphics[width=0.4\textwidth]{simStepAllPs3e10a1}}
   \qquad
-  \subfloat[][\label{fig:simStepAllPRate} A step applied to the simulated \abbrROV in $\rollVelocity$.]{\includegraphics[width=0.4\textwidth]{simStepAllPs3e10a1}}
+  \subfloat[][\label{fig:testStepAllQRate} Test response in $\pitchVelocity$.]{\includegraphics[width=0.4\textwidth]{testStepAllQs3e10a1}}
   \qquad
-  \subfloat[][\label{fig:testStepAllQRate} A smooth step applied in $\pitchVelocity$.]{\includegraphics[width=0.4\textwidth]{testStepAllQs3e10a1}}
+  \subfloat[][\label{fig:simStepAllQRate} Simulated response in $\pitchVelocity$.]{\includegraphics[width=0.4\textwidth]{simStepAllQs3e10a1}}
   \qquad
-  \subfloat[][\label{fig:simStepAllQRate} A step applied to the simulated \abbrROV in $\pitchVelocity$.]{\includegraphics[width=0.4\textwidth]{simStepAllQs3e10a1}}
+  \subfloat[][\label{fig:testStepAllRRate} Test response in $\yawVelocity$.]{\includegraphics[width=0.4\textwidth]{testStepAllRs3e10a1}}
   \qquad
-  \subfloat[][\label{fig:testStepAllRRate} A smooth step applied in $\yawVelocity$.]{\includegraphics[width=0.4\textwidth]{testStepAllRs3e10a1}}
-  \qquad
-  \subfloat[][\label{fig:simStepAllRRate} A step applied to the simulated \abbrROV in $\yawVelocity$.]{\includegraphics[width=0.4\textwidth]{simStepAllRs3e10a1}}
+  \subfloat[][\label{fig:simStepAllRRate} Simulated response in $\yawVelocity$.]{\includegraphics[width=0.4\textwidth]{simStepAllRs3e10a1}}
   \caption{\label{fig:StepAllRate}% 
-  Smooth steps were applied in all angular velocities at the same time while using the rate controller.}
+  Smooth steps applied in all angular velocities at the same time while using the rate controller.}
 \end{figure}
 
 \Figureref{fig:StepAllRate} shows a smooth step applied in all angular velocities while using the rate controller. An overshoot of 0.5 is achieved in $\rollVelocity$ for the real test while in the simulation only has an overshoot of 0.2. Both the real test and the simulation in $\rollVelocity$ followed the reference signal well and had a small steady state error. The real and simulated test followed the reference value well in $\pitchVelocity$ and had negligible steady state errors. However, had the real test no overshoot while the simulation in $\pitchVelocity$ had an overshoot of 0.4. The simulated test in $\yawVelocity$ performed really well and almost followed the reference perfectly. The real test in $\yawVelocity$ performed well, but it was slow to rise to the requested reference signal and had a small steady state error of 0.1. 
 
 \begin{figure}
 \centering
-  \subfloat[][\label{fig:testSinAllPRate} A sine signal with amplitude $1$ and frequency $0.5\hertz$ applied in $\rollVelocity$.]{\includegraphics[width=0.4\textwidth]{testSinAllPA1}}
+  \subfloat[][\label{fig:testSinAllPRate} Test response in $\rollVelocity$.]{\includegraphics[width=0.4\textwidth]{testSinAllPA1}}
   \qquad
-  \subfloat[][\label{fig:simSinAllPRate}A sine signal with amplitude $1$ and frequency $0.5\hertz$ applied to the simulated \abbrROV in $\rollVelocity$.]{\includegraphics[width=0.4\textwidth]{simSinAllPA1}}
+  \subfloat[][\label{fig:simSinAllPRate} Simulated response in $\rollVelocity$.]{\includegraphics[width=0.4\textwidth]{simSinAllPA1}}
   \qquad
-  \subfloat[][\label{fig:testSinAllQRate} A sine signal with amplitude $1$ and frequency $0.5\hertz$ applied in $\pitchVelocity$.]{\includegraphics[width=0.4\textwidth]{testSinAllQA1}}
+  \subfloat[][\label{fig:testSinAllQRate} Test response in $\pitchVelocity$.]{\includegraphics[width=0.4\textwidth]{testSinAllQA1}}
   \qquad
-  \subfloat[][\label{fig:simSinAllQRate} A sine signal with amplitude $1$ and frequency $0.5\hertz$ applied to the simulated \abbrROV in $\pitchVelocity$.]{\includegraphics[width=0.4\textwidth]{simSinAllQA1}}
+  \subfloat[][\label{fig:simSinAllQRate} Simulated response in $\pitchVelocity$.]{\includegraphics[width=0.4\textwidth]{simSinAllQA1}}
   \qquad
-  \subfloat[][\label{fig:testSinAllRRate} A sine signal with amplitude $1$ and frequency $0.5\hertz$ applied in $\yawVelocity$.]{\includegraphics[width=0.4\textwidth]{testSinAllRA1}}
+  \subfloat[][\label{fig:testSinAllRRate} Test response in $\yawVelocity$.]{\includegraphics[width=0.4\textwidth]{testSinAllRA1}}
   \qquad
-  \subfloat[][\label{fig:simSinAllRRate} A sine signal with amplitude $1$ and frequency $0.5\hertz$ applied to the simulated \abbrROV in $\yawVelocity$.]{\includegraphics[width=0.4\textwidth]{simSinAllRA1}}
+  \subfloat[][\label{fig:simSinAllRRate} Simulated response in $\yawVelocity$.]{\includegraphics[width=0.4\textwidth]{simSinAllRA1}}
   \caption{\label{fig:SinAllRate}%
-  Sine signals were applied in all angular velocities at the same time while using the rate controller.}
+  A sine signal with amplitude $1$ and frequency $0.5\hertz$ was applied in in all angular velocities at the same time while using the rate controller.}
 \end{figure}
 
 Sine signals were applied to all angular velocities which can be seen in \Figureref{fig:SinAllRate} while using the rate controller. In the real test followed all the angular velocities the reference signals well, except for some overshoots and undershoots of the requested amplitude. The simulated test followed a general sine form but the reference amplitude was not reach and a phase shift could be noted.
