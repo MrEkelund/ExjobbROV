@@ -62,7 +62,7 @@ Similarly to an open-loop controller, a feedback controller can use a model of t
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Open-Loop Control} \label{sec:openloop} \index{Open-Loop Control} \index{thrust allocation} \index{thruster geometry}
-The open loop control of the \abbrROV consists of an static thrust-allocation matrix which is
+The open-loop control of the \abbrROV consists of an static thrust-allocation matrix which is
 \begin{equation}
     \thrusterGeometryOnes[*] = \thrusterGeometryOnes[T](\thrusterGeometryOnes \thrusterGeometryOnes[T])^{-1}
 \end{equation}
@@ -444,41 +444,41 @@ Tests were conducted with the \abbrPID attitude controller without exact lineari
 
 \begin{figure}
 \centering
-  \subfloat[][\label{fig:testStepAllRollAttitude} A smooth step applied in $\rollAngle$.]{\includegraphics[width=0.4\textwidth]{testStepAllPhis3e10a1}}
+  \subfloat[][\label{fig:testStepAllRollAttitude} Test response in $\rollAngle$.]{\includegraphics[width=0.4\textwidth]{testStepAllPhis3e10a1}}
   \qquad
-  \subfloat[][\label{fig:simStepAllRollAttitude} A smooth step applied to the simulated \abbrROV in $\rollAngle$.]{\includegraphics[width=0.4\textwidth]{simStepAllPhis3e10a1}}
+  \subfloat[][\label{fig:simStepAllRollAttitude} Simulated response in $\rollAngle$.]{\includegraphics[width=0.4\textwidth]{simStepAllPhis3e10a1}}
   \qquad
-  \subfloat[][\label{fig:TestStepAllPitchAttitude} A smooth step applied in $\pitchAngle$.]{\includegraphics[width=0.4\textwidth]{testStepAllThetas3e10a1}}
+  \subfloat[][\label{fig:TestStepAllPitchAttitude} Test response in $\pitchAngle$.]{\includegraphics[width=0.4\textwidth]{testStepAllThetas3e10a1}}
   \qquad
-  \subfloat[][\label{fig:simStepAllPitchAttitude} A smooth step applied to the simulated \abbrROV in $\pitchAngle$.]{\includegraphics[width=0.4\textwidth]{simStepAllThetas3e10a1}}
+  \subfloat[][\label{fig:simStepAllPitchAttitude} Simulated response in $\pitchAngle$.]{\includegraphics[width=0.4\textwidth]{simStepAllThetas3e10a1}}
   \qquad
-  \subfloat[][\label{fig:TestStepAllYawAttitude} A smooth step applied in $\yawAngle$.]{\includegraphics[width=0.4\textwidth]{testStepAllPsis3e10a1}}
+  \subfloat[][\label{fig:TestStepAllYawAttitude} Test response in $\yawAngle$.]{\includegraphics[width=0.4\textwidth]{testStepAllPsis3e10a1}}
   \qquad
-  \subfloat[][\label{fig:simStepAllYawAttitude} A smooth step applied to the simulated \abbrROV in $\yawAngle$.]{\includegraphics[width=0.4\textwidth]{simStepAllPsis3e10a1}}
+  \subfloat[][\label{fig:simStepAllYawAttitude} Simulated response in $\yawAngle$.]{\includegraphics[width=0.4\textwidth]{simStepAllPsis3e10a1}}
   \caption{\label{fig:StepAllAttitude}% 
-  Smooth steps were applied in all attitude angles at the same time while using the attitude controller.}
+ A smooth steps with $q_{\text{0}} = 0$, $q_{\text{f}} = 1$, $t_{\text{s}} = 3$ ,$t_{\text{f}} = 15$ and $V = 1.5 (q_{\text{f}} - q_{\text{0}})/(t_{\text{f}} - t_{\text{s}}))$ was applied in all attitude angles at the same time while using the attitude controller.}
 \end{figure}
 
-\Figureref{fig:StepAllAttitude} shows smooth step reference signals applied in all attitude angles while using the attitude controller. Initially did $\rollAngle$ and $\pitchAngle$ follow the reference signals well in the real test. The $\rollAngle$ oscillated with a steady state error of 0.9 in the real test. However, $\pitchAngle$ was kept closer to the reference signal with a steady state error of 0.4. The attitude angle $\yawAngle$ could not be stabilised during the real test and drifted throughout the test. In the simulated test case did not the attitude angles reach the reference signal. The attitude angle $\pitchAngle$ had a steady state error of 0.3 and the other angles had a steady state error of 0.5.
+\Figureref{fig:StepAllAttitude} shows smooth step reference signals applied in all attitude angles while using the attitude controller. Initially did $\rollAngle$ and $\pitchAngle$ follow the reference signals well in the real test. The $\rollAngle$ oscillated with a steady-state error of 0.9 in the real test. However, $\pitchAngle$ was kept closer to the reference signal with a steady-state error of 0.4. The attitude angle $\yawAngle$ could not be stabilised during the real test and drifted throughout the test. In the simulated test case did not the attitude angles reach the reference signal. The attitude angle $\pitchAngle$ had a steady-state error of 0.3 and the other angles had a steady-state error of 0.5.
 
 \begin{figure}
 \centering
-  \subfloat[][\label{fig:testSinAllRollAttitude} A sine signal with amplitude $1$ and frequency $0.5\hertz$ applied in $\rollAngle$.]{\includegraphics[width=0.4\textwidth]{testSinAllPhiA1}}
+  \subfloat[][\label{fig:testSinAllRollAttitude} Test response in $\rollAngle$.]{\includegraphics[width=0.4\textwidth]{testSinAllPhiA1}}
   \qquad
-  \subfloat[][\label{fig:simSinAllRollAttitude} A sine signal with amplitude $1$ and frequency $0.5\hertz$ applied to the simulated \abbrROV in $\rollAngle$.]{\includegraphics[width=0.4\textwidth]{simSinAllPhiA1}}
+  \subfloat[][\label{fig:simSinAllRollAttitude} Simulated response in $\rollAngle$.]{\includegraphics[width=0.4\textwidth]{simSinAllPhiA1}}
   \qquad
-  \subfloat[][\label{fig:testSinAllPitchAttitude} A sine signal with amplitude $1$ and frequency $0.5\hertz$ applied in $\pitchAngle$.]{\includegraphics[width=0.4\textwidth]{testSinAllThetaA1}}
+  \subfloat[][\label{fig:testSinAllPitchAttitude} Test response in $\pitchAngle$.]{\includegraphics[width=0.4\textwidth]{testSinAllThetaA1}}
   \qquad
-  \subfloat[][\label{fig:simSinAllPitchAttitude} A sine signal with amplitude $1$ and frequency $0.5\hertz$ applied to the simulated \abbrROV in $\pitchAngle$.]{\includegraphics[width=0.4\textwidth]{simSinAllThetaA1}}
+  \subfloat[][\label{fig:simSinAllPitchAttitude} Simulated response in $\pitchAngle$.]{\includegraphics[width=0.4\textwidth]{simSinAllThetaA1}}
   \qquad
-  \subfloat[][\label{fig:testSinAllYawAttitude} A sine signal with amplitude $1$ and frequency $0.5\hertz$ applied in $\yawAngle$.]{\includegraphics[width=0.4\textwidth]{testSinAllPsiA1}}
+  \subfloat[][\label{fig:testSinAllYawAttitude} Test response in $\yawAngle$.]{\includegraphics[width=0.4\textwidth]{testSinAllPsiA1}}
   \qquad
-  \subfloat[][\label{fig:simSinAllYawAttitude} A sine signal with amplitude $1$ and frequency $0.5\hertz$ applied to the simulated \abbrROV in $\yawAngle$.]{\includegraphics[width=0.4\textwidth]{simSinAllPsiA1}}
+  \subfloat[][\label{fig:simSinAllYawAttitude} Simulated response in $\yawAngle$.]{\includegraphics[width=0.4\textwidth]{simSinAllPsiA1}}
   \caption{\label{fig:SinAllAttitude}%
-  Sine signals were applied in all attitude angles at the same time while using the attitude controller.}
+   A sine signal with amplitude $1$ and frequency $0.5\ \hertz$ was applied in in all attitude angles at the same time while using the attitude controller.}
 \end{figure}
 
-Sine reference signals with amplitude 1 and frequency $0.5 \hertz$ can be seen in \Figureref{fig:SinAllAttitude}. The angles $\rollAngle$ and $\pitchAngle$ did not reached the assigned amplitude in the real test. However, did they have the general form of a sine but phase shifted relative to the reference signals. The $\yawAngle$ follows the reference signal well but with a phase shift and a bias. In simulation tests the same phase shift and lack of amplitude happened in $\rollAngle$ and $\pitchAngle$. The simulated result in $\yawAngle$ did not follow the reference signal at all. 
+Results from an attitude test with sine reference signals of amplitude 1 and frequency $0.5\ \hertz$ can be seen in \Figureref{fig:SinAllAttitude}. The angles $\rollAngle$ and $\pitchAngle$ did not reach the desired amplitudes in the real test. However, they followed the general form of a sine with a phase shift relative to the reference signals. The same phase shift and lack of amplitude was observed in simulations. $\yawAngle$ followed the reference signal well during the live test but had a phase shift and a bias. The simulated result in $\yawAngle$ did not follow the reference signal at all. 
 
 \begin{figure}
 \centering
@@ -490,10 +490,10 @@ Sine reference signals with amplitude 1 and frequency $0.5 \hertz$ can be seen i
   \qquad
   \subfloat[][\label{fig:simStepPhiTheta05PitchAttitude} Simulated response in $\pitchAngle$.]{\includegraphics[width=0.4\textwidth]{simStepThetaPhiThetas3e10a1}}
   \caption{\label{fig:StepPhiThetaAttitude}%
-  Smooth steps were applied in \pitchAngle and \rollAngle at the same time while using the attitude controller. The attitude angle $\yawAngle$ was kept free during the test.}
+  Smooth steps with $q_{\text{0}} = 0$, $q_{\text{f}} = 1$, $t_{\text{s}} = 3$ ,$t_{\text{f}} = 15$ and $V = 1.5 (q_{\text{f}} - q_{\text{0}})/(t_{\text{f}} - t_{\text{s}}))$ were applied in \pitchAngle and \rollAngle at the same time while using the attitude controller. The attitude angle $\yawAngle$ was kept free during the test.}
 \end{figure}
 
-A smoothed step in $\rollAngle$ and $\pitchAngle$ can be seen in \Figureref{fig:StepPhiThetaAttitude}. During the test was the attitude angle $\yawAngle$ kept free. Both $\rollAngle$ and $\pitchAngle$ followed the reference signal well did not reach the reference angle. The steady state error for $\rollAngle$ and $\pitchAngle$ was approximately $0.35$. The simulated results in $\rollAngle$ and $\pitchAngle$ were worse than the real test. The attitude $\rollAngle$ had a steady state error 0.5 and the steady state error for $\pitchAngle$ was 0.4.
+The result from a smoothed step test in $\rollAngle$ and $\pitchAngle$ can be seen in \Figureref{fig:StepPhiThetaAttitude}. During the test the attitude angle $\yawAngle$ was kept free. Both $\rollAngle$ and $\pitchAngle$ followed the shape of the reference signal but did not reach the desired magnitude. The steady-state errors for $\rollAngle$ and $\pitchAngle$ were approximately $0.35$. The simulated result in $\rollAngle$ and $\pitchAngle$ performed worse than the live test. The simulated attitude $\rollAngle$ had a steady-state error $0.5$ and the steady-state error for $\pitchAngle$ was $0.4$.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%Rate%%%%%%%%%%%%%%%%
 \begin{figure}
@@ -510,10 +510,10 @@ A smoothed step in $\rollAngle$ and $\pitchAngle$ can be seen in \Figureref{fig:
   \qquad
   \subfloat[][\label{fig:simStepAllRRate} Simulated response in $\yawVelocity$.]{\includegraphics[width=0.4\textwidth]{simStepAllRs3e10a1}}
   \caption{\label{fig:StepAllRate}% 
-  Smooth steps applied in all angular velocities at the same time while using the rate controller.}
+  A smooth step with $q_{\text{0}} = 0$, $q_{\text{f}} = 1$, $t_{\text{s}} = 3$ ,$t_{\text{f}} = 15$ and $V = 1.5 (q_{\text{f}} - q_{\text{0}})/(t_{\text{f}} - t_{\text{s}}))$ was applied in all angular velocities at the same time while using the rate controller.}
 \end{figure}
 
-\Figureref{fig:StepAllRate} shows a smooth step applied in all angular velocities while using the rate controller. An overshoot of 0.5 is achieved in $\rollVelocity$ for the real test while in the simulation only has an overshoot of 0.2. Both the real test and the simulation in $\rollVelocity$ followed the reference signal well and had a small steady state error. The real and simulated test followed the reference value well in $\pitchVelocity$ and had negligible steady state errors. However, had the real test no overshoot while the simulation in $\pitchVelocity$ had an overshoot of 0.4. The simulated test in $\yawVelocity$ performed really well and almost followed the reference perfectly. The real test in $\yawVelocity$ performed well, but it was slow to rise to the requested reference signal and had a small steady state error of 0.1. 
+\Figureref{fig:StepAllRate} shows a smooth step applied in all angular velocities while using the rate controller. An overshoot of 0.5 is achieved in $\rollVelocity$ for the real test while in the simulation only has an overshoot of 0.2. Both the real test and the simulation in $\rollVelocity$ followed the reference signal well and had a small steady-state error. The real and simulated test followed the reference value well in $\pitchVelocity$ and had negligible steady-state errors. However, the real test had no overshoot while the simulation in $\pitchVelocity$ had an overshoot of 0.4. The simulated test in $\yawVelocity$ performed well and almost followed the reference perfectly. The real test in $\yawVelocity$ performed well, but it was slow to rise to the requested reference signal and had a small steady-state error of 0.1. 
 
 \begin{figure}
 \centering
@@ -529,7 +529,7 @@ A smoothed step in $\rollAngle$ and $\pitchAngle$ can be seen in \Figureref{fig:
   \qquad
   \subfloat[][\label{fig:simSinAllRRate} Simulated response in $\yawVelocity$.]{\includegraphics[width=0.4\textwidth]{simSinAllRA1}}
   \caption{\label{fig:SinAllRate}%
-  A sine signal with amplitude $1$ and frequency $0.5\hertz$ was applied in in all angular velocities at the same time while using the rate controller.}
+  A sine signal with amplitude $1$ and frequency $0.5\ \hertz$ was applied in in all angular velocities at the same time while using the rate controller.}
 \end{figure}
 
 Sine signals were applied to all angular velocities which can be seen in \Figureref{fig:SinAllRate} while using the rate controller. In the real test followed all the angular velocities the reference signals well, except for some overshoots and undershoots of the requested amplitude. The simulated test followed a general sine form but the reference amplitude was not reach and a phase shift could be noted.
@@ -541,10 +541,10 @@ Sine signals were applied to all angular velocities which can be seen in \Figure
   \qquad
   \subfloat[][\label{fig:testStepD2} A step applied in $\zPosition$.]{\includegraphics[width=0.4\textwidth]{testConstantD1}}
   \caption{\label{fig:StepD}%
-    Steps applied to $\zPosition$. A smooth step from $0.4 \meter$ to $1 \meter$ is shown in (a) and a step from $0.5 \meter$ to $2 \meter$ is shown in (b).}
+    Steps applied to $\zPosition$. A smooth step from $0.4\ \meter$ to $1\ \meter$ is shown in (a) and a step from $0.5 \meter$ to $2 \meter$ is shown in (b).}
 \end{figure}
 
-\Figureref{fig:StepD} shows a smooth step from $0.4 \meter$ to $1 \meter$ and a step from $0.5 \meter$ to $2 \meter$. A delay in the response can be seen and overshoots of approximately 0.2.
+\Figureref{fig:StepD} shows a smooth step from $0.4\ \meter$ to $1\ \meter$ and a step from $0.5\ \meter$ to $2\ \meter$. A delay in the response can be seen and overshoots of approximately 0.2.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Discussion}
