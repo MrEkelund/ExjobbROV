@@ -143,14 +143,14 @@ Choosing
 \end{equation}
 Defining the control error as
 \begin{equation}
-\etaTildeAng = \hat{\etaVector}_2 - \etaVectorAng[,_{\text{ref}}] 
+\etaTildeAng = \hat{\etaVector}_2 - \etaVectorAng[,{\text{ref}}] 
 \end{equation}
 $\accVector^n$ could be chosen using the following feedback 
 \begin{equation}\label{eq:attitudeFeedback}
 \accVector^n=-K_{\text{p}} \etaTildeAng - K_{\text{i}}\int \! \etaTildeAng \, \mathrm{d}t - K_{\text{d}} \etaTildeAngdot
 \end{equation}
 where $K_{\text{p}}$, $K_{\text{i}}$ and $K_{\text{d}}$ are positive definite design matrices \citep[p. 453]{fossen2011}. 
-Using \eqref{eq:kinematicsticsEuler} and the assumption that $\etaVectorAng[,_{\text{ref}}]$ is piece-wise constant, the derivative of the attitude error could be defined as 
+Using \eqref{eq:kinematicsticsEuler} and the assumption that $\etaVectorAng[,{\text{ref}}]$ is piece-wise constant, the derivative of the attitude error could be defined as 
 \begin{equation}\label{eq:etaTildeAngDot}
 \etaTildeAngdot = \boldsymbol{T}_\theta(\hat{\boldsymbol{\Theta}})\hat{\nuVector}_{2}
 \end{equation}
@@ -169,11 +169,11 @@ Combining \eqref{eq:etaTildeAngDot} with \eqref{eq:attitudeFeedback} gives the f
 %where $K_{\text{p}}$, $K_{\text{i}}$ and $K_{\text{d}}$ are positive definite design matrices \citep[p. 453]{fossen2011}. 
 The attitude controller was also combined with an open-loop control of the linear velocities
 \begin{equation}
-	u_{\etaVector} = \boldsymbol{T}^{-1}f^{-1}(G^{-1}(\hat{\etaVector}_2,\hat{\nuVector}_2,L(\accVector^n,\hat{\eulerAngles},\hat{\nuVector}_2))) + \thrusterGeometryOnes[*] \begin{bmatrix} \nuVector_{1,\text{ref}} \\ \zeroCol{3} \end{bmatrix}
+	u = \underbrace{\boldsymbol{T}^{-1}f^{-1}(G^{-1}(\hat{\etaVector}_2,\hat{\nuVector}_2,L(\accVector^n,\hat{\eulerAngles},\hat{\nuVector}_2)))}_{u_{\etaVectorAng}} + \underbrace{\thrusterGeometryOnes[*] \begin{bmatrix} \nuVector_{1,\text{ref}} \\ \zeroCol{3} \end{bmatrix}}_{u_{\nuVectorLin}}
 \end{equation}
 or
 \begin{equation}
-	u_{\etaVector} = \boldsymbol{T}^{-1}f^{-1}(L(\accVector^n,\hat{\eulerAngles},\hat{\nuVector}_2)) + \thrusterGeometryOnes[*] \begin{bmatrix} \nuVector_{1,\text{ref}} \\ \zeroCol{3} \end{bmatrix}
+	u = \underbrace{\boldsymbol{T}^{-1}f^{-1}(L(\accVector^n,\hat{\eulerAngles},\hat{\nuVector}_2))}_{u_{\etaVectorAng}} + \underbrace{\thrusterGeometryOnes[*] \begin{bmatrix} \nuVector_{1,\text{ref}} \\ \zeroCol{3} \end{bmatrix}}_{u_{\nuVectorLin}}
 \end{equation}
 without the exact linearisation. This was implemented to allow the user to steer the \abbrROV while the controller unsures that the \abbrROV holds a given attitude. An illustration of how the attitude controller with open-loop control is implemented can be seen in \Figureref{fig:attitudecontroller}.
 
@@ -246,16 +246,16 @@ $\accVector^b$ can be chosen using the following \abbrPI feedback
 \end{equation}
 where $K_{\text{p}}$ and $K_{\text{i}}$ are positive definite design matrices and 
 \begin{equation}
-\nuTildeAng = \hat{\nuVector}_2 - \nuVectorAng[,_{\text{ref}}]
+\nuTildeAng = \hat{\nuVector}_2 - \nuVectorAng[,{\text{ref}}]
 \end{equation} \citep[p. 453]{fossen2011}.
 
 The angular velocities \abbrPI controller was also expanded with a open-loop control solution for control of linear velocities
 \begin{equation}
-	u_{\nuVectorAng} = \boldsymbol{T}^{-1}f^{-1}(G^{-1}(\hat{\etaVector}_2,\hat{\nuVector}_2,\accVector^b)) + \thrusterGeometryOnes[*] \begin{bmatrix}\nuVector_{1,\text{ref}} \\ \zeroCol{3} \end{bmatrix}	
+	u = \underbrace{\boldsymbol{T}^{-1}f^{-1}(G^{-1}(\hat{\etaVector}_2,\hat{\nuVector}_2,\accVector^b))}_{u_{\nuVectorAng}} + \underbrace{\thrusterGeometryOnes[*] \begin{bmatrix}\nuVector_{1,\text{ref}} \\ \zeroCol{3} \end{bmatrix}}_{u_{\nuVectorLin}}	
 \end{equation}
 or alternatively 
 \begin{equation}
-	u_{\nuVectorAng} = \boldsymbol{T}^{-1}f^{-1}(\accVector^b) + \thrusterGeometryOnes[*] \begin{bmatrix} \nuVector_{1,\text{ref}} \\ \zeroCol{3} \end{bmatrix}
+	u = \underbrace{\boldsymbol{T}^{-1}f^{-1}(\accVector^b)}_{u_{\nuVectorAng}} + \underbrace{\thrusterGeometryOnes[*] \begin{bmatrix} \nuVector_{1,\text{ref}} \\ \zeroCol{3} \end{bmatrix}}_{u_{\nuVectorLin}}
 \end{equation}
 if the exact linearisation is removed. \Figureref{fig:ratecontroller} illustrates how the angular velocity controller is implemented in conjunction with the open-loop control of the linear velocities.
 \begin{figure}
@@ -302,8 +302,8 @@ if the exact linearisation is removed. \Figureref{fig:ratecontroller} illustrate
 		\draw[->] (thrust.east) -- node[align=center, below] {$u_{\nuVectorLin}$} (sum.west);
 		%From exact lin to sum
    		\draw node[block, below of=sum, node distance=1.5cm] (rotate) {$T^{-1}$};
-   		\draw node[block, right of=merge, node distance=1.5cm] (inter) {$f^{-1}(\cdot)$};
-   		\draw[->] (rotate.north) -- node[align=center, right] {$u_{\etaVectorAng}$} (sum.south);
+   		\draw node[block, right of=merge, node distance=1.55cm] (inter) {$f^{-1}(\cdot)$};
+   		\draw[->] (rotate.north) -- node[align=center, right] {$u_{\nuVectorAng}$} (sum.south);
    		\draw[->] (inter.north) -| (rotate.south);
    		\draw[->] (merge) -- (inter.west);
    		% From sum to output
@@ -372,14 +372,14 @@ where $K_{\text{p}}$ and $K_{\text{i}}$ are design parameters. The rotation matr
    		%To sum
    		\draw (controller.east) ++(4,0) node[sum, name=sum] {$+$};
 		\draw[->] (controller.east) -- (sum.west);
-		\draw node[block, right of=switchup,node distance=1cm] (rotate) {$\boldsymbol{R}^n_b(\hat{\Theta})^T$};
+		\draw node[block, right of=switchup,node distance=1cm] (rotate) {$\boldsymbol{R}^n_b(\hat{\eulerAngles})^T$};
 		\draw node[block, below of=sum,node distance=1.3cm] (thrust) {$\thrusterGeometryOnes[*]$};
 		\draw[->] (switchup) -- (rotate.west); 
 		\draw[->] (rotate.east) -| (thrust.south); 
    		\draw[->] (thrust.north) -- node[align=center, right] {$u_{d}$}  (sum.south);   		   		
    		% From sum to output
    		\draw node [output, right of=sum, node distance=2cm] (output) {};
-    		\draw[->] (sum.east) -- node[align=center, right] {$u$} (output);
+    		\draw[->] (sum.east) -- node[align=center, below] {$u$} (output);
 	\end{tikzpicture}
     \caption{The \abbrPI depth controller can be used when the open-loop control is engaged or when the other controllers are used. In this figure the F symbolises the chosen way of controlling the \abbrROV.} 
     \label{fig:depthcontroller}
@@ -440,19 +440,6 @@ Tests were conducted with the \abbrPID attitude controller without exact lineari
     \bottomrule%
   \end{tabular}
 \end{table}
-
-\begin{figure}
-\centering
-  \subfloat[][\label{fig:testExactAttitudeRoll} The exact linearisation in $\rollAngle$.]{\includegraphics[width=0.4\textwidth]{testExactLinAttitudePhi}}
-  \qquad
-  \subfloat[][\label{fig:testExactAttitudePitch} The exact linearisation in $\pitchAngle$.]{\includegraphics[width=0.4\textwidth]{testExactLinAttitudeTheta}}
-  \qquad
-  \subfloat[][\label{fig:testExactAttitudeYaw} The exact linearisation in $\yawAngle$.]{\includegraphics[width=0.4\textwidth]{testExactLinAttitudePsi}}
-  \caption{\label{fig:ExactLinAttitude}% 
-  The result of the exact linearisation attitude controller with setpoint $\phi_{ref}=0$, $\theta_{ref}=0$ and $\psi_{ref}=0$. Note the instability in $\theta$ and $\psi$.}
-\end{figure}
-Problems were encountered during trimming of the attitude \abbrPID using exact linearisation,
-\Figureref{fig:ExactLinAttitude} shows this problem. Regardless of the strength of the feedback the \abbrROV never stabilized. This problem might be caused by the magnetometer readings, which fluctuated mildly when the \abbrROV  engaged its thrusters. It is suspected that such fluctuations in magnetic field strength may cause rapid changes in the estimated quaternions and angular velocities, leading to problems when computing \eqref{eq:anLaw} in the exact-linearisation block. 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%Attitude%%%%%%%%%%%%%%%%%
 
 \begin{figure}
@@ -561,4 +548,19 @@ Sine signals were applied to all angular velocities which can be seen in \Figure
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Discussion}
+\begin{figure}
+\centering
+  \subfloat[][\label{fig:testExactAttitudeRoll} The exact linearisation in $\rollAngle$.]{\includegraphics[width=0.4\textwidth]{testExactLinAttitudePhi}}
+  \qquad
+  \subfloat[][\label{fig:testExactAttitudePitch} The exact linearisation in $\pitchAngle$.]{\includegraphics[width=0.4\textwidth]{testExactLinAttitudeTheta}}
+  \qquad
+  \subfloat[][\label{fig:testExactAttitudeYaw} The exact linearisation in $\yawAngle$.]{\includegraphics[width=0.4\textwidth]{testExactLinAttitudePsi}}
+  \caption{\label{fig:ExactLinAttitude}% 
+  The result of the exact linearisation attitude controller with setpoint $\phi_{ref}=0$, $\theta_{ref}=0$ and $\psi_{ref}=0$. Note the instability in $\theta$ and $\psi$.}
+\end{figure}
 
+Problems were encountered during trimming of the attitude \abbrPID using exact linearisation, \Figureref{fig:ExactLinAttitude} shows this problem. Regardless of the strength of the feedback the \abbROV never stabilised. This problem might be caused by the magnetometer readings, which fluctuated mildly when the \abbrROV  engaged its thrusters. It is suspected that such fluctuations in magnetic field strength may cause rapid changes in the estimated quaternions and angular velocities, leading to problems when computing \eqref{eq:anLaw} in the exact-linearisation block. The problem could also be caused by badly estimated parameters from \Chapterref{cha:modelling}. This argument is strengthen by the fact that the estimated model parameters had to be scaled down to get the exact linearisation in the rate controller to work satisfactory. 
+
+The results from the tests from the rate controller gave mixed results. In some test did the rate controller in the real test perform better than in simulation this is probably due to the grater damping parameters in the simulated \abbrROV model. 
+
+   
