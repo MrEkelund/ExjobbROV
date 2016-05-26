@@ -116,8 +116,6 @@ To conduct parameter estimation, experimental data tests had to be collected. To
 First the \abbrROV was excited in $p$ and $q$, then in $r$ and lastly the \abbrROV was excited in all rotations. \Figureref{fig:pqTest} and \Figureref{fig:rTest} illustrates the conducted tests. All experiments were conducted in such a way that linear velocities were kept at a minimum.
 The main control signals used during data collection tests were telegraph signals. Both the scaling of the output magnitude and switch factors were changed in between tests in order to find signals that excited the desired states sufficiently. An example of a such a signal can be seen in \Figureref{fig:telegraph}.
 
-Data preprocessing was done by synchronising the data streams by checking the start and end times of each experiment, here chosen as the time of arrival of the first control signal. The sensor data was aligned such that the data sample of each sensor whose arrival time was closest to the starting time of the test was chosen as the initial sample of each data stream. Data outside the test interval was discarded. After alignment the data was resampled to a chosen frequency in this case 100 Hz. The sensor data was resampled using first-order hold while the control signals were resampled using zero-order hold since the control signal data only contained points were the control signals changed.  
-
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.8\textwidth]{telegraph}
@@ -125,24 +123,26 @@ Data preprocessing was done by synchronising the data streams by checking the st
 \label{fig:telegraph}
 \end{figure}
 
+Data preprocessing was done by synchronising the data streams by checking the start and end times of each experiment, here chosen as the time of arrival of the first control signal. The sensor data was aligned such that the data sample of each sensor whose arrival time was closest to the starting time of the test was chosen as the initial sample of each data stream. Data outside the test interval was discarded. After alignment the data was resampled to 100 Hz. The sensor data was resampled using first-order hold while the control signals were resampled using zero-order hold since the control signal data only contained points were the control signals changed.  
+
 \begin{figure}[htbp]
   \centering
-  \subfloat[][\label{fig:p_pqTest}Excitation in $p$ during $p$ and $q$ test.]{\includegraphics[width=0.7\textwidth]{p_pq_test}}
+  \subfloat[][\label{fig:p_pqTest}Excitation in $p$ during $p$ and $q$ test.]{\includegraphics[width=0.4\textwidth]{p_pq_test}}
   \qquad
-  \subfloat[][\label{fig:q_pqTest}Excitation in $q$ during $p$ and $q$ test.]{\includegraphics[width=0.7\textwidth]{q_pq_test}}
+  \subfloat[][\label{fig:q_pqTest}Excitation in $q$ during $p$ and $q$ test.]{\includegraphics[width=0.4\textwidth]{q_pq_test}}
   \\
-  \subfloat[][\label{fig:r_pqTest}Excitation in $r$ during $p$ and $q$ test.]{\includegraphics[width=0.7\textwidth]{r_pq_test}}
+  \subfloat[][\label{fig:r_pqTest}Excitation in $r$ during $p$ and $q$ test.]{\includegraphics[width=0.4\textwidth]{r_pq_test}}
   \caption{\label{fig:pqTest}%
  Plots of excitation of the three angular velocities $p$, $q$ and $r$ from a test intended to mainly excite $p$ and $q$. Note that the amplitude in $r$ is four times smaller than that of $p$ and $q$.}
 \end{figure}
 
 \begin{figure}[htbp]
   \centering
-  \subfloat[][\label{fig:p_rTest}Excitation in $p$ during $r$ test.]{\includegraphics[width=0.7\textwidth]{p_r_test}}
+  \subfloat[][\label{fig:p_rTest}Excitation in $p$ during $r$ test.]{\includegraphics[width=0.4\textwidth]{p_r_test}}
   \qquad
-  \subfloat[][\label{fig:q_rTest}Excitation in $q$ during $r$ test.]{\includegraphics[width=0.7\textwidth]{q_r_test}}
+  \subfloat[][\label{fig:q_rTest}Excitation in $q$ during $r$ test.]{\includegraphics[width=0.4\textwidth]{q_r_test}}
   \\
-  \subfloat[][\label{fig:r_rTest}Excitation in $r$ during $r$ test.]{\includegraphics[width=0.7\textwidth]{r_r_test}}
+  \subfloat[][\label{fig:r_rTest}Excitation in $r$ during $r$ test.]{\includegraphics[width=0.4\textwidth]{r_r_test}}
   \caption{\label{fig:rTest}%
  Plots of excitation of the three angular velocities $p$, $q$ and $r$ from a test intended to mainly excite $r$. Note that the amplitude in $r$ is approximately two times larger than that of $p$ and $q$.}
 \end{figure}
@@ -160,38 +160,15 @@ and
 where $\hat{\etaVector}$ are the estimated Euler angles from the sensor fusion.
 The result of the estimation can be seen in \Tableref{tab:ResultEstimAngular}. The estimation used two datasets as estimation data and used one dataset for validation data. The fit of the model compared to validation data can be seen in \Figureref{fig:velocityCompareCong}.
 
-\begin{table}[hbp]
-  \centering
-  \caption{\label{tab:ResultEstimAngular}%
-    The estimated parameters from the prediction-error method using the estimated angles as inputs and angular velocities as outputs. During estimation was $\distance{z}{6} = 0.11$.}
-  \begin{tabular}{l l p{0.25\linewidth}}
-    \toprule%
-    \textbf{Notation}  & \textbf{Starting Value} & \textbf{Estimated Value} \\
-    \otoprule%   
-    % Parameters that will be estimated
-	$z_B$               & -0.01 	\meter 						& -0.017849 \meter\\
-    $\Kp$               & -1   	\kilogram\usk\meter\squared 	& -1.3275  	\kilogram\usk\meter\squared\\
-    $\Kpabsp$           & -1  	\kilogram\usk\meter\squared	& 	0  		\kilogram\usk\meter\squared\\
-    $\Mq$               & -1  	\kilogram\usk\meter\squared	& -1.1925	\kilogram\usk\meter\squared\\
-    $\Mqabsq$           & -1  	\kilogram\usk\meter\squared	& -0.10935  \kilogram\usk\meter\squared\\
-    $\Nr$               & -1  	\kilogram\usk\meter\squared	&  -2.7838 	\kilogram\usk\meter\squared\\
-    $\Nrabsr$           & -1  	\kilogram\usk\meter\squared	& -0.67509	\kilogram\usk\meter\squared\\
-    $A_p$               & 1.5 	\kilogram\usk\meter\squared	& 0.32545  	\kilogram\usk\meter\squared\\
-    $B_q$               & 1.5 	\kilogram\usk\meter\squared	& 0.37526 	\kilogram\usk\meter\squared\\
-    $C_r$               & 1.5 	\kilogram\usk\meter\squared	& 0.95462	\kilogram\usk\meter\squared\\
-    \bottomrule%
-  \end{tabular}
-\end{table}  
-
 \begin{figure}[tbp]
   \centering
-  \subfloat[][\label{fig:velocityCompareCongp}Comparison between a simulated model without reparametrisation and validation data in the $p$.]{\includegraphics[width=0.5\textwidth]{velocityCompareCongp}}
+  \subfloat[][\label{fig:velocityCompareCongp}Simulated model and validation data in $p$.]{\includegraphics[width=0.5\textwidth]{velocityCompareCongp}}
   \qquad
-  \subfloat[][\label{fig:velocityCompareCongq}Comparison between a simulated model without reparametrisation and validation data in the $q$.]{\includegraphics[width=0.5\textwidth]{velocityCompareCongq}}
+  \subfloat[][\label{fig:velocityCompareCongq}Simulated model and validation data in $q$.]{\includegraphics[width=0.5\textwidth]{velocityCompareCongq}}
   \\
-  \subfloat[][\label{fig:velocityCompareCongr}Comparison between a simulated model without reparametrisation and validation data in the $r$.]{\includegraphics[width=0.5\textwidth]{velocityCompareCongr}}
+  \subfloat[][\label{fig:velocityCompareCongr}Simulated model and validation data in $r$.]{\includegraphics[width=0.5\textwidth]{velocityCompareCongr}}
   \caption{\label{fig:velocityCompareCong}%
-    Comparison of simulation of the attitude model against validation data using the estimated angels as inputs and angular velocities as outputs.}
+    Comparison of simulation of the attitude model (blue) against validation data (gray) using the estimated angels as inputs and angular velocities as outputs.}
 \end{figure}
 
 Using the model structure defined in \eqref{eq:pq_dot_decouple} with angular velocities and linear acceleration as outputs resulted in the model structure
@@ -209,30 +186,30 @@ with
 \end{pmatrix}
 \end{equation}
 where $\boldsymbol{a}$ is the linear acceleration in the \abbrROV frame.
-The estimated parameter values obtained using this model structure can be seen in \Tableref{tab:ResultangVellz60} and \Tableref{tab:ResultangVellz}. The estimation was done with four datasets and two datasets was used for validation.
+The estimated parameter values obtained using this model structure can be seen in \Tableref{tab:ResultEstimAngular}. The estimation was done with four datasets and two datasets was used for validation.
 
-\begin{table}[hbp]
-  \centering
-  \caption{\label{tab:ResultangVellz60}%
-    The estimated parameters from the prediction-error method using angular velocities and linear acceleration as outputs with $\distance{z}{6} = 0$.}
-  \begin{tabular}{l l p{0.25\linewidth}}
-    \toprule%
-    \textbf{Notation}  & \textbf{Starting Value} & \textbf{Estimated Value} \\
-    \otoprule%   
-    % Parameters that will be estimated
-	$z_B$               & -0.01 	\meter 						& -0.010625 \meter\\
-    $\Kp$               & -1   	\kilogram\usk\meter\squared 	& -2.4079  	\kilogram\usk\meter\squared\\
-    $\Kpabsp$           & -1  	\kilogram\usk\meter\squared	& 	0  		\kilogram\usk\meter\squared\\
-    $\Mq$               & -1  	\kilogram\usk\meter\squared	& -0.14202  \kilogram\usk\meter\squared\\
-    $\Mqabsq$           & -1  	\kilogram\usk\meter\squared	& -0.80813  \kilogram\usk\meter\squared\\
-    $\Nr$               & -1  	\kilogram\usk\meter\squared	& -2.4975 	\kilogram\usk\meter\squared\\
-    $\Nrabsr$           & -1  	\kilogram\usk\meter\squared	& -1.7811	\kilogram\usk\meter\squared\\
-    $A_p$               & 1.5 	\kilogram\usk\meter\squared	& 0.55821  	\kilogram\usk\meter\squared\\
-    $B_q$               & 1.5 	\kilogram\usk\meter\squared	& 0.49512 	\kilogram\usk\meter\squared\\
-    $C_r$               & 1.5 	\kilogram\usk\meter\squared	& 1.026 		\kilogram\usk\meter\squared\\
-    \bottomrule%
-  \end{tabular}
-\end{table}
+%\begin{table}[hbp]
+%  \centering
+%  \caption{\label{tab:ResultangVellz60}%
+%    The estimated parameters from the prediction-error method using angular velocities and linear acceleration as outputs with $\distance{z}{6} = 0$.}
+%  \begin{tabular}{l l p{0.25\linewidth}}
+%    \toprule%
+%    \textbf{Notation}  & \textbf{Starting Value} & \textbf{Estimated Value} \\
+%    \otoprule%   
+%    % Parameters that will be estimated
+%	$z_B$               & -0.01 	\meter 						& -0.010625 \meter\\
+%    $\Kp$               & -1   	\kilogram\usk\meter\squared 	& -2.4079  	\kilogram\usk\meter\squared\\
+%    $\Kpabsp$           & -1  	\kilogram\usk\meter\squared	& 	0  		\kilogram\usk\meter\squared\\
+%    $\Mq$               & -1  	\kilogram\usk\meter\squared	& -0.14202  \kilogram\usk\meter\squared\\
+%    $\Mqabsq$           & -1  	\kilogram\usk\meter\squared	& -0.80813  \kilogram\usk\meter\squared\\
+%    $\Nr$               & -1  	\kilogram\usk\meter\squared	& -2.4975 	\kilogram\usk\meter\squared\\
+%    $\Nrabsr$           & -1  	\kilogram\usk\meter\squared	& -1.7811	\kilogram\usk\meter\squared\\
+%    $A_p$               & 1.5 	\kilogram\usk\meter\squared	& 0.55821  	\kilogram\usk\meter\squared\\
+%    $B_q$               & 1.5 	\kilogram\usk\meter\squared	& 0.49512 	\kilogram\usk\meter\squared\\
+%    $C_r$               & 1.5 	\kilogram\usk\meter\squared	& 1.026 		\kilogram\usk\meter\squared\\
+%    \bottomrule%
+%  \end{tabular}
+%\end{table}
 
 The fit of the model using the estimated parameters, with $\distance{z}{6} = 0$, can be viewed in \Figureref{fig:angVelCompare} and the fit of the model with $\distance{z}{6} = 0.11$ can be seen in \Figureref{fig:angVelComparelz6}. 
 
@@ -253,28 +230,28 @@ The fit of the model using the estimated parameters, with $\distance{z}{6} = 0$,
     Comparison of validation data (grey) against the simulated response from the model(blue). The fit for the model in each state is stated in each plot. During estimation was $\distance{z}{6} = 0$. The estimation used angular velocities and linear accelerations as outputs.}
 \end{figure}
 
-\begin{table}[hbp]
-  \centering
-  \caption{\label{tab:ResultangVellz}%
-    The estimated parameters from the prediction-error method using angular velocities and linear acceleration as outputs with $\distance{z}{6} = 0.11$.}
-  \begin{tabular}{l l p{0.25\linewidth}}
-    \toprule%
-    \textbf{Notation}  & \textbf{Starting Value} & \textbf{Estimated Value} \\
-    \otoprule%   
-    % Parameters that will be estimated
-	$z_B$               & -0.01 	\meter 						& -0.029425  	\meter\\
-    $\Kp$               & -1   	\kilogram\usk\meter\squared 	& -2.594 		\kilogram\usk\meter\squared\\
-    $\Kpabsp$           & -1  	\kilogram\usk\meter\squared	& -0.30922  		\kilogram\usk\meter\squared\\
-    $\Mq$               & -1  	\kilogram\usk\meter\squared	& -2.0425  		\kilogram\usk\meter\squared\\
-    $\Mqabsq$           & -1  	\kilogram\usk\meter\squared	& -0.0070722  	\kilogram\usk\meter\squared\\
-    $\Nr$               & -1  	\kilogram\usk\meter\squared	& -2.9364		\kilogram\usk\meter\squared\\
-    $\Nrabsr$           & -1  	\kilogram\usk\meter\squared	& -2.1843 		\kilogram\usk\meter\squared\\
-    $A_p$               & 1.5 	\kilogram\usk\meter\squared	&  0.7186 		\kilogram\usk\meter\squared\\
-    $B_q$               & 1.5 	\kilogram\usk\meter\squared	&  0.61119		\kilogram\usk\meter\squared\\
-    $C_r$               & 1.5 	\kilogram\usk\meter\squared	&  1.0981		\kilogram\usk\meter\squared\\
-    \bottomrule%
-  \end{tabular}
-\end{table}  
+%\begin{table}[hbp]
+%  \centering
+%  \caption{\label{tab:ResultangVellz}%
+%    The estimated parameters from the prediction-error method using angular velocities and linear acceleration as outputs with $\distance{z}{6} = 0.11$.}
+%  \begin{tabular}{l l p{0.25\linewidth}}
+%    \toprule%
+%    \textbf{Notation}  & \textbf{Starting Value} & \textbf{Estimated Value} \\
+%    \otoprule%   
+%    % Parameters that will be estimated
+%	$z_B$               & -0.01 	\meter 						& -0.029425  	\meter\\
+%    $\Kp$               & -1   	\kilogram\usk\meter\squared 	& -2.594 		\kilogram\usk\meter\squared\\
+%    $\Kpabsp$           & -1  	\kilogram\usk\meter\squared	& -0.30922  		\kilogram\usk\meter\squared\\
+%    $\Mq$               & -1  	\kilogram\usk\meter\squared	& -2.0425  		\kilogram\usk\meter\squared\\
+%    $\Mqabsq$           & -1  	\kilogram\usk\meter\squared	& -0.0070722  	\kilogram\usk\meter\squared\\
+%    $\Nr$               & -1  	\kilogram\usk\meter\squared	& -2.9364		\kilogram\usk\meter\squared\\
+%    $\Nrabsr$           & -1  	\kilogram\usk\meter\squared	& -2.1843 		\kilogram\usk\meter\squared\\
+%    $A_p$               & 1.5 	\kilogram\usk\meter\squared	&  0.7186 		\kilogram\usk\meter\squared\\
+%    $B_q$               & 1.5 	\kilogram\usk\meter\squared	&  0.61119		\kilogram\usk\meter\squared\\
+%    $C_r$               & 1.5 	\kilogram\usk\meter\squared	&  1.0981		\kilogram\usk\meter\squared\\
+%    \bottomrule%
+%  \end{tabular}
+%\end{table}  
 
 \begin{figure}[tbp]
   \centering %simulation of estimation. Estimator given wrong initial state
@@ -293,7 +270,29 @@ The fit of the model using the estimated parameters, with $\distance{z}{6} = 0$,
     Comparison of validation data (grey) against the simulated response from the model(blue). The fit for the model in each state is stated in each plot. During the estimation was $\distance{z}{6} = 0.11$. The estimation used angular velocities and linear accelerations as outputs.}
 \end{figure}
 
-\subsection{Extended Kalman Filter Estimation}
+\begin{table}[hbp]
+  \centering
+  \caption{\label{tab:ResultEstimAngular}%
+    The estimated parameters from the prediction-error method using estimated angles as inputs and angular velocities as outputs (left) and the estimated parameters from the prediction-error method using angular velocities and linear acceleration as outputs (middle and right).}
+  \begin{tabular}{l p{0.18\linewidth} p{0.18\linewidth} p{0.18\linewidth} p{0.18\linewidth}}
+    \toprule%
+    \textbf{Notation}  & \textbf{Starting Value} & \textbf{Estimated Value} ($\distance{z}{6} = 0.11$) & \textbf{Estimated Value} ($\distance{z}{6} = 0$) & \textbf{Estimated Value} ($\distance{z}{6} = 0.11$)\\
+    \otoprule%   
+    % Parameters that will be estimated
+	$z_B$               & -0.01 	\meter 						& -0.0178 \meter 						& -0.0106 \meter & -0.0294  	\meter\\\\
+    $\Kp$               & -1   	\kilogram\usk\meter\squared 	& -1.3275  	\kilogram\usk\meter\squared	& -2.4079 \kilogram\usk\meter\squared & -2.5940 		\kilogram\usk\meter\squared\\\\
+    $\Kpabsp$           & -1  	\kilogram\usk\meter\squared	& 	0  		\kilogram\usk\meter\squared	& 	0  	  \kilogram\usk\meter\squared & -0.3092  		\kilogram\usk\meter\squared\\
+    $\Mq$               & -1  	\kilogram\usk\meter\squared	& -1.1925	\kilogram\usk\meter\squared	& -0.1420  \kilogram\usk\meter\squared & -2.0425  		\kilogram\usk\meter\squared\\
+    $\Mqabsq$           & -1  	\kilogram\usk\meter\squared	& -0.1094  \kilogram\usk\meter\squared	& -0.8081  \kilogram\usk\meter\squared & -0.0071  	\kilogram\usk\meter\squared\\\\
+    $\Nr$               & -1  	\kilogram\usk\meter\squared	&  -2.7838 	\kilogram\usk\meter\squared	& -2.4975  \kilogram\usk\meter\squared & -2.9364		\kilogram\usk\meter\squared\\\\
+    $\Nrabsr$           & -1  	\kilogram\usk\meter\squared	& -0.6751	\kilogram\usk\meter\squared	& -1.7811	\kilogram\usk\meter\squared & -2.1843 		\kilogram\usk\meter\squared\\
+    $A_p$               & 1.5 	\kilogram\usk\meter\squared	& 0.3255  	\kilogram\usk\meter\squared	& 0.5582  	\kilogram\usk\meter\squared & 0.7186 		\kilogram\usk\meter\squared\\
+    $B_q$               & 1.5 	\kilogram\usk\meter\squared	& 0.3753 	\kilogram\usk\meter\squared	& 0.4951 	\kilogram\usk\meter\squared & 0.6112		\kilogram\usk\meter\squared\\\\
+    $C_r$               & 1.5 	\kilogram\usk\meter\squared	& 0.9546 	\kilogram\usk\meter\squared	& 1.0260		\kilogram\usk\meter\squared &  1.0981		\kilogram\usk\meter\squared\\\\
+    \bottomrule%
+  \end{tabular}
+\end{table}   
+\section{Results for Extended Kalman Filter Estimation}
 The \abbrEKF estimation used the method described in \sectionref{sec:KalmanEstimation} with the model \eqref{eq:quatModel} and quaternions as attitude representation. The estimation was feed with process noise covariance matrix
 \begin{equation*}
 \boldsymbol{Q}=\text{diag}[\underbrace{\overbrace{100}^{\times4}}_{\etaVector}... \underbrace{\overbrace{1000}^{\times3}}_{\nuVector}...\underbrace{\overbrace{0.01}^{\times3}}_{\boldsymbol{b}}... \underbrace{\overbrace{0.01}^{\times10}... \overbrace{0.000001}^{\times5}}_{\boldsymbol{\theta}}]\text{ ,}
@@ -302,7 +301,7 @@ measurement noise covariance matrix
 \begin{equation*}
 \boldsymbol{R} = \text{diag}[\underbrace{\overbrace{0.01}^{\times3}}_{\text{Gyro}}... \underbrace{\overbrace{0.1}^{\times3}}_{\text{Acc}}... \underbrace{\overbrace{100}^{\times3}}_{\text{mag}}]
 \end{equation*}
-The extremely low values of the last five elements in $\boldsymbol{Q}$ were chosen to fixate the measured moment arms of the thrusters. Four data sets were feed in to the estimator and a fifth was used as validation data. All data sets were of excitations in $p$, $q$ and $r$. Parameter values from the estimation can be viewed together with the starting state in \tableref{tab:ResultKalmanFixedMomentArms}.
+The extremely low values of the last five elements in $\boldsymbol{Q}$ were chosen to fixate the measured moment arms of the thrusters. Four data sets were feed in to the estimator and a fifth was used as validation data. All data sets were of excitations in $p$, $q$ and $r$ simultaneously. Parameter values from the estimation can be viewed together with the starting state in \tableref{tab:ResultKalmanFixedMomentArms}.
 \begin{table}[hbp]
   \centering
   \caption{\label{tab:ResultKalmanFixedMomentArms}%
