@@ -549,7 +549,7 @@ Using the relation
 \end{equation}
 This equation can be rearranged to
 \begin{equation}
-\inertia \dot{\nuVector} + \coriolis\nuVector + \damping(\nuVector)\nuVector + \gravity(\etaVector) = \tauVector
+\inertia \dot{\nuVector} + \coriolis(\nuVector)\nuVector + \damping(\nuVector)\nuVector + \gravity(\etaVector) = \tauVector
 \end{equation}
 where $\tauVector=\tauVector_{\text{Dyn}} + \tauVector_{\text{Stat}} + \tauVector_{\text{Act}} + \tauVector_{\text{Dist}}$, $\inertia = \inertia_{\text{RB}} + \inertia_{\text{A}}$ and $\coriolis(\nuVector)=\coriolis_{\text{RB}}(\nuVector)+\coriolis_{\text{A}}(\nuVector)$.
 The expression can then be solved for $\nuVectordot$ and split into components  

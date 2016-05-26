@@ -118,16 +118,16 @@ The static thrust allocation matrix $\thrusterGeometryOnes[*]$ is the pseudo inv
 \section{Exact Linearisation}
 To compensate for the non-linearities in a system using a non-linear control law is called exact linearisation. Doing this makes the system linear from a input-output perspective \citep{reglerteori}. Using the model structure from \Chapterref{cha:modelling} and the estimated parameters from \Chapterref{cha:parameterEstimation} a non-linear control law was created 
 \begin{equation}\label{eq:exactLin}
-\tauVector_{\text{Lin}} = G^{-1}(\etaVector,\nuVector,\accVector^{\text{b}}) = \inertia \accVector^{\text{b}} + \damping(\nuVector) + \coriolis(\nuVector) + \gravity(\etaVector)
+\tauVector_{\text{Lin}} = G^{-1}(\hat{\etaVector}_{2},\hat{\nuVector}_{2},\accVector^{\text{b}}) = \inertia \accVector^{\text{b}} + \damping(\hat{\nuVector}_{2})\hat{\nuVector}_{2} + \coriolis(\hat{\nuVector}_{2})\hat{\nuVector}_{2} + \gravity(\hat{\etaVector}_{2})
 \end{equation}
 where $\accVector^b$ is the desired angular acceleration in the body-fixed frame and $\tauVector_{\text{Lin}}$ is the estimated thrust needed to achieve the desired acceleration.
 The desired control signal $\boldsymbol{u}_{\text{Lin}}$ was then chosen using 
 \begin{equation}\label{eq:linControlSignal}
 \boldsymbol{u}_{\text{Lin}} = \boldsymbol{T}^{-1}f^{-1}(\bar{\tauVector}_{\text{Lin}})
-\end{equation} where $f$ is the look-up table from control signal to thruster defined in \appref{app:thrustmapping}, $T$ is the geometry matrix defined in \eqref{eq:actuatorGeometry} and $\bar{\tauVector}_{\text{Lin}}=[0~0~0~\tauVector_{\text{Lin}}^T]^T$.
+\end{equation} where $f$ is the look-up table from control signal to thrust defined in \appref{app:thrustmapping}, $T$ is the geometry matrix defined in \eqref{eq:actuatorGeometry} and $\bar{\tauVector}_{\text{Lin}}=[0~0~0~\tauVector_{\text{Lin}}^T]^T$.
 In an ideal case, where the model is exact, using the non-linear control law \eqref{eq:exactLin} would produce the system
 \begin{equation}\label{eq:exactLinSys}
-\dot{\nuVectorAng} = \accVector^b
+\nuVectorAngdot = \accVector^b
 \end{equation} 
 where $\accVector^b$ could be chosen using any desired control method \citep[p.451]{fossen2011}.
 
@@ -137,7 +137,7 @@ An attitude controller was also implemented on the \abbrROV. The controller was 
 Since \eqref{eq:exactLin} aimed to linearise the angular accelerations in the body-fixed frame and not the angular accelerations in the global coordinate system, an extra control law was needed.
 Choosing 
 \begin{equation}\label{eq:anLaw}
-\accVector^b = \boldsymbol{T}^{-1}_\theta(\eulerAngles)(\accVector^n - \dot{\boldsymbol{T}}_\theta(\eulerAngles)\nuVector)
+\accVector^b =L(\accVector^n,\hat{\eulerAngles},\hat{\nuVector}_2)=\boldsymbol{T}^{-1}_\theta(\hat{\eulerAngles})(\accVector^n - \dot{\boldsymbol{T}}_\theta(\hat{\eulerAngles})\hat{\nuVector}_2)\\
 \end{equation} where $\accVector^n$ is the desired angular acceleration in the global-frame. This gives the following linear system \begin{equation}
 \ddot{\boldsymbol{\eta}}_2=\accVector^n 
 \end{equation}
@@ -150,13 +150,13 @@ $\accVector^n$ could be chosen using the following feedback
 \accVector^n=-K_{\text{p}} \etaTildeAng - K_{\text{i}}\int \! \etaTildeAng \, \mathrm{d}t - K_{\text{d}} \etaTildeAngdot
 \end{equation}
 where $K_{\text{p}}$, $K_{\text{i}}$ and $K_{\text{d}}$ are positive definite design matrices \citep[p. 453]{fossen2011}. 
-Using \eqref{eq:kinematicsticsEuler}, the derivative of the attitude error could be defined as 
+Using \eqref{eq:kinematicsticsEuler} and the assumption that $\etaVectorAng[,_{\text{ref}}]$ is piece-wise constant, the derivative of the attitude error could be defined as 
 \begin{equation}\label{eq:etaTildeAngDot}
-\etaTildeAngdot = \dot{\boldsymbol{T}}_\theta(\eulerAngles)\nuVectorAng
+\etaTildeAngdot = \boldsymbol{T}_\theta(\hat{\boldsymbol{\Theta}})\hat{\nuVector}_{2}
 \end{equation}
 Combining \eqref{eq:etaTildeAngDot} with \eqref{eq:attitudeFeedback} gives the feedback
 \begin{equation}
-\accVector^n=-K_{\text{p}} \etaTildeAng - K_{\text{i}}\int \! \etaTildeAng \, \mathrm{d}t - K_{\text{d}} \dot{\boldsymbol{T}}_\theta(\eulerAngles)\nuVectorAng
+\accVector^n=-K_{\text{p}} \etaTildeAng - K_{\text{i}}\int \! \etaTildeAng \, \mathrm{d}t - K_{\text{d}} \boldsymbol{T}_\theta(\hat{\boldsymbol{\Theta}})\hat{\nuVector}_{2}
 \end{equation}
 
 %This gives the \abbrPID attitude controller
@@ -169,11 +169,11 @@ Combining \eqref{eq:etaTildeAngDot} with \eqref{eq:attitudeFeedback} gives the f
 %where $K_{\text{p}}$, $K_{\text{i}}$ and $K_{\text{d}}$ are positive definite design matrices \citep[p. 453]{fossen2011}. 
 The attitude controller was also combined with an open-loop control of the linear velocities
 \begin{equation}
-	u_{\etaVector} = \boldsymbol{T}^{-1}f^{-1}(G^{-1}(\etaVector,\nuVector,\accVector^{\text{b}})) + \thrusterGeometryOnes[*] \begin{bmatrix} \nuVector_{1,\text{ref}} \\ \zeroCol{3} \end{bmatrix}
+	u_{\etaVector} = \boldsymbol{T}^{-1}f^{-1}(G^{-1}(\hat{\etaVector}_2,\hat{\nuVector}_2,L(\accVector^n,\hat{\eulerAngles},\hat{\nuVector}_2))) + \thrusterGeometryOnes[*] \begin{bmatrix} \nuVector_{1,\text{ref}} \\ \zeroCol{3} \end{bmatrix}
 \end{equation}
 or
 \begin{equation}
-	u_{\etaVectorAng} = \boldsymbol{T}^{-1}f^{-1}(\accVector^b) + \thrusterGeometryOnes[*] \begin{bmatrix} \nuVectorLin \\ \zeroCol{3} \end{bmatrix}
+	u_{\etaVector} = \boldsymbol{T}^{-1}f^{-1}(L(\accVector^n,\hat{\eulerAngles},\hat{\nuVector}_2)) + \thrusterGeometryOnes[*] \begin{bmatrix} \nuVector_{1,\text{ref}} \\ \zeroCol{3} \end{bmatrix}
 \end{equation}
 without the exact linearisation. This was implemented to allow the user to steer the \abbrROV while the controller unsures that the \abbrROV holds a given attitude. An illustration of how the attitude controller with open-loop control is implemented can be seen in \Figureref{fig:attitudecontroller}.
 
@@ -230,7 +230,8 @@ without the exact linearisation. This was implemented to allow the user to steer
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Angular Velocities Controller} \index{Angular Velocities Controller} \index{PI@\abbrPI!abbreviation}
-\todo[inline]{Write some fluff about the rate controller}
+An angular velocity controller was also implemented using \eqref{eq:exactLin}.
+Since no transformation is needed in order to control angular velocities require no 
 
 If the angular velocities error are defined as 
 \begin{equation}
