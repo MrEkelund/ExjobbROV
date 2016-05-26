@@ -27,11 +27,11 @@ To be able to understand how a sensor fusion algorithm works, it is important to
 \end{table}
 
 \section{The Extended Kalman Filter}
-The Kalman filter (\abbrKF) is a linear state-space observer, it estimates both measurable and unmeasurable states in a linear system \citep{sensorfusion}. It utilises a linear motion model, a model of the systems dynamics, in conjunction with measurements and linear measurement equations to provide the best possible estimate of the model's states. The Kalman filter finds the best possible linear filter for the given measurement $\boldsymbol{y}_{k}$ \citep{sensorfusion}. One filter that can accomplish the task of fusing different measurements and estimating states in a non-linear dynamic system is the extended Kalman filter (\abbrEKF). The extended Kalman filter can, unlike the regular Kalman filter, handle non-linear motion models and measurement equations. It accomplishes this by using a linearised model of the non-linear system and the measurement equations. If an \abbrEKF can provide satisfactory results depends on the rest terms from the linearisation and it is therefore dependent on the degree of non-linearity of the system and the measurement equations \citep{sensorfusion}. As rule of thumb the rest term will be small enough if the system model is close to linear and if measurements are of good quality, meaning that the signal to noise ratio (\abbrSNR) is high \citep{sensorfusion}. 
+The Kalman filter (\abbrKF) is a linear state-space observer, it estimates both measurable and unmeasurable states in a linear system \citep{sensorfusion}. It utilises a linear motion model, a model of the systems dynamics, in conjunction with measurements and linear measurement equations to provide the best possible estimate of the system's states. The Kalman filter is the best possible linear filter for the given measurement $\boldsymbol{y}_{k}$ \citep{sensorfusion}. One filter that can accomplish the task of fusing different measurements and estimating states in a non-linear dynamic system is the extended Kalman filter (\abbrEKF). The extended Kalman filter can, unlike the regular Kalman filter, handle non-linear motion models and measurement equations. It accomplishes this by using a linearised model of the non-linear system and the measurement equations. If an \abbrEKF can provide satisfactory results depends on the rest terms from the linearisation and it is therefore dependent on the degree of non-linearity of the system and the measurement equations \citep{sensorfusion}. As rule of thumb the rest term will be small enough if the system model is close to linear and if measurements are of good quality, meaning that the signal to noise ratio (\abbrSNR) is high \citep{sensorfusion}. 
 
 The \abbrEKF algorithm is comprised of two key steps called updates.
-The time update uses the current state estimates and the user specified motion model to predict the values of the states at the next time instant. The second update is called the measurement update and it uses sampled sensor data in conjunction with the user specified measurement equations to fuse measurements and to correct and strengthen the state estimate \citep{sensorfusion}.
-If the measurements are independent, a measurement update can be performed at the arrival of each measurement without the need of a time update in between \citep[p. 170]{sensorfusion}.
+The time update uses the current state estimates and the user specified motion model to predict the values of the states at the next time instant. The second update is called the measurement update and it uses sampled sensor data, previous state estimates and user specified measurement equations to fuse measurements into a state estimate \citep{sensorfusion}.
+If the measurements are independent, a measurement update can be performed at the arrival of each measurement without the need of a time update in between \citep[p. 170]{sensorfusion}. This is useful in the \abbrROV since the sensors are sampled in different rates.
 The complete extended Kalman filter algorithm is summarised in \Algoref{alg:EKF}.
 \begin{algorithm}
 \caption{The extended Kalman filter algorithm \citep{sensorfusion}.}
@@ -67,7 +67,7 @@ The complete extended Kalman filter algorithm is summarised in \Algoref{alg:EKF}
 A \abbrKF uses a model of the system dynamics to improve the estimates of the model's states. It is therefore very important to choose a model that describes the system's dynamics well. In this thesis, two different motion models have been used, a model using the measured angular velocities as inputs and a more advanced model using the angular velocities as states. All models in this chapter use quaternions and thus quaternion normalisation is required as described in \Chapterref{cha:modelling}.
 
 \index{Quaternions}
-The simple model using the measured angular velocities as inputs was based on the quaternion kinematics model in \citet[p. 47]{Tornqvist}. The model was expanded with depth as an extra state which was modelled as state with constant position and was discretised using Euler forward, see \citet[p. 378]{modellbygge} for details. Using the quaternion representation of $\etaVector$, the complete simple model is 
+The simple model using the measured angular velocities as inputs was based on the quaternion kinematics model in \citet[p. 47]{Tornqvist}. The model was expanded with depth as an extra state which was modelled as state with constant position and was discretised using Euler forward, see \citet[p. 378]{modellbygge} for details regarding Euler discretisation. The complete simple model is 
 \begin{equation}
 \begin{bmatrix}
 \etaVector_{k+1}\\
@@ -94,17 +94,17 @@ d_{k+1}
 \end{equation}
 Here $\bar{\boldsymbol{T}}(\nuVector)$ is defined as
 \begin{equation}
-\bar{T}(\nuVector) = \frac{1}{2}
+\bar{\boldsymbol{T}}(\nuVector) = \frac{1}{2}
 \begin{bmatrix}
      0 &-p &-q &-r\\
      p & 0 & r &-q\\
      q &-r & 0 & p\\
      r & q &-p & 0
 \end{bmatrix}
-\end{equation} and $\boldsymbol{T}(\etaVector)$ is defined in \eqref{eq:Tquat}.
-It is important to note that this is an attitude model and thus $\etaVector$ and $\nuVector$ only contains quaternions and angular velocities respectively. Note that $\nuVector$ is not modelled as a state but is used as an input to reduce the dimension of the model as in \citet{Tornqvist}. 
+\end{equation} and $\boldsymbol{T}(\etaVector)$ is defined in \eqref{eq:Tquat}. Note that quaternion normalisation \eqref{eq:quatnorm} is done after each time- and measurement update.
+It is also important to note that this is an attitude model and thus $\etaVector$ and $\nuVector$ only contains quaternions and angular velocities respectively. Note that $\nuVector$ is not modelled as a state but is used as an input to reduce the dimension of the model as in \citet{Tornqvist}. 
 
-A second model was implemented to improve sensor fusion performance. This model was based on the continuous rigid-body kinematics model in \citet[p. 351]{sensorfusion} and incorporated gyroscope bias estimates and $\nuVector$ as a constant position states. The continuous model in \citet[p. 351]{sensorfusion} also modelled positions, linear- accelerations and velocities. Since no position measurements except for depth-measurements was available on the \abbrROV platform, linear- accelerations and velocities were ignored and the position state vector was reduced to only contain depth. The noise model was also slightly modified by giving each state its own noise source. This is not true from a physical standpoint since for example, a disturbance in angular velocity will effect the angles, but it made the filter easier to trim. The entire model was discretised using Euler forward which yielded the following discrete model
+A second model was implemented to improve sensor fusion performance. This model was based on the continuous-time rigid-body kinematics model in \citet[p. 351]{sensorfusion} and incorporated gyroscope bias estimates and $\nuVector$ as a constant position states. The continuous-time model in \citet[p. 351]{sensorfusion} also modelled positions, linear- accelerations and velocities. Since no position measurements except for depth-measurements was available on the \abbrROV platform, linear- accelerations and velocities were neglected and the position state vector was reduced to only contain depth. The noise model was also slightly modified by giving each state its own noise source. This is not true from a physical standpoint since for example, a disturbance in angular velocity will effect the angles, but it made the filter easier to trim. The entire model was discretised using Euler forward which yielded the following discrete model
 \begin{equation}\label{eq:expanded_model}
 \begin{bmatrix}
 \etaVector_{k+1}\\
@@ -129,16 +129,16 @@ d_{k}
   v_d 
 \end{bmatrix}
 \end{equation}
-
+Note that the quaternion normalisation \eqref{eq:quatnorm} is done after each update.
 \section{Measurement Equations}\label{sec:Meas}
 To fuse information from different sensors, the readings of each sensor has to be related with the states and noise sources which is done using measurement equations.
 
-The \abbrROV is equipped with an \abbrIMU which contains a gyroscope. Since readings from a gyroscope might not be zero in all axes even if the gyroscope is at a rest, it is important to incorporate biases states when modelling a gyroscope. Otherwise a constant reading offset would imply that the gyroscope is in motion even at rest. Modelling for biases in the gyroscope gives the following gyroscope measurement equation
+The \abbrROV is equipped with an \abbrIMU which contains a gyroscope. Since readings from a gyroscope might not be zero in all axes even if the gyroscope is at a rest, it is important to incorporate bias states. Modelling for biases in the gyroscope gives the measurement equation
 \begin{equation}\label{eq:gyro}
 \boldsymbol{y}_\text{Gyro}= \nuVector + \boldsymbol{b} + \boldsymbol{v}_{\text{Gyro}}
 \end{equation}
- The vector $\boldsymbol{y}_\text{Gyro}$ is the reading from the \abbrIMU's gyroscope in $rad/s$. The vector $\boldsymbol{b}$ contain the gyroscope's biases in the \xPosition-, \yPosition- and \zPosition-axes, respectively.
-Since the noise level of the gyroscope was low and no significant disturbances to the gyroscope readings were observed, no outlier rejection was performed on the gyroscope measurements. %Also note that \eqref{eq:gyro} is only used in conjunction with the expanded model \eqref{eq:expanded_model} since this models $\nuVector$ as a state. 
+ The vector $\boldsymbol{y}_\text{Gyro}$ is the reading from the \abbrIMU's gyroscope in $\rad\per\second$ and $\boldsymbol{v}_{\text{Gyro}}$ is the measurement noise. The vector $\boldsymbol{b}$ contain the gyroscope's biases in the \xPosition-, \yPosition- and \zPosition-axes, respectively.
+Since the noise level of the gyroscope was low and no significant disturbances were observed, no outlier rejection was performed on the gyroscope measurements. %Also note that \eqref{eq:gyro} is only used in conjunction with the expanded model \eqref{eq:expanded_model} since this models $\nuVector$ as a state. 
 
 The \abbrIMU measures acceleration in addition to angular velocities. The measurement equation for the accelerometer is
 \begin{equation}
@@ -159,9 +159,9 @@ The \abbrIMU measures acceleration in addition to angular velocities. The measur
     -g
      ~} < \epsilon_{\text{Acc}}
 \end{align}
-Here, $\epsilon_{\text{Acc}}$ a design parameters that tweaks how much the magnitude of the accelerometer measurement may deviate from $g$ before being considered an outlier.
+Here, $\epsilon_{\text{Acc}}$ is a design parameter that tweaks how much the magnitude of the measurement may deviate from $g$ before being considered an outlier.
 
-The \abbrIO-unit of the \abbrROV is also equipped with an internal magnetometer which enables the \abbrROV to measure the magnetic field strength in the three local axes $x$, $y$ and $z$. Assuming the magnetometer only measures the Earth's magnetic field in the body-fixed coordinate system gives the measurement equation 
+The \abbrIO-unit of the \abbrROV is also equipped with a magnetometer which enables the \abbrROV to measure the magnetic field strength in the three local axes $x$, $y$ and $z$. Assuming the magnetometer only measures the Earth's magnetic field in the body-fixed coordinate system gives the measurement equation 
 \begin{equation}
 \boldsymbol{y}_{\text{Mag}} = 
     \boldsymbol{R^n_b}(\boldsymbol{q})^T
@@ -172,11 +172,11 @@ The \abbrIO-unit of the \abbrROV is also equipped with an internal magnetometer 
     \end{bmatrix}
     + \boldsymbol{v}_{\text{Mag}}
 \end{equation}
-Here $\boldsymbol{y}_{\text{Mag}}$ is the measured magnetic field in the body-fixed coordinate system and $\boldsymbol{v}_{\text{Mag}}$ is measurements noise. The parameters $m_\text{N}$, $m_\text{E}$ and $m_\text{D}$ are the the measured magnetic field in the local coordinate system at start up of the \abbrROV. Since the strength and inclination of the Earth's magnetic field vary with location $m_\text{N}$, $m_\text{E}$ and $m_\text{D}$ are set to values that represent the magnetic field at the current location. This is done via a calibration script that sets the $m_\text{N}$, $m_\text{E}$ and $m_\text{D}$ parameters to the current reading which in turn sets the current direction as the global coordinate system's North.
+where $\boldsymbol{y}_{\text{Mag}}$ is the measured magnetic field in the body-fixed coordinate system and $\boldsymbol{v}_{\text{Mag}}$ is measurements noise. The parameters $m_\text{N}$, $m_\text{E}$ and $m_\text{D}$ are the the measured magnetic field in the local coordinate system at start up of the \abbrROV. Since the strength and inclination of the Earth's magnetic field vary with location $m_\text{N}$, $m_\text{E}$ and $m_\text{D}$ are set to values that represent the magnetic field at the current location. This is done via a calibration script that sets the $m_\text{N}$, $m_\text{E}$ and $m_\text{D}$ parameters to the current reading which in turn sets the current direction as the global coordinate system's North.
 
-The \abbrROV is not a a noise free environment from a electromagnetic standpoint, currents in the \abbrROV's electronics may induce magnetic fields which will distort the sensor readings of the magnetometer. If such noisy measurements are used the sensor fusion will not perform well when estimating the \abbrROV's attitude. To ensure that only measurements of in condition are used an outlier rejection criteria was implemented. Magnetometer measurements are only used if 
+The \abbrROV is not a noise free environment from an electromagnetic standpoint, currents in the \abbrROV's electronics may induce magnetic fields which will distort the sensor readings of the magnetometer. If such noisy measurements are used the sensor fusion will not perform well when estimating the \abbrROV's attitude. To ensure that only measurements in good condition are used, an outlier rejection criteria was implemented. Magnetometer measurements are only used if 
 \begin{equation}
-        \abs{~||
+        \left|~||
 \boldsymbol{y}_{\text{Mag}}||
     -
     \left|\left|~
@@ -185,9 +185,9 @@ The \abbrROV is not a a noise free environment from a electromagnetic standpoint
         m_\text{E}\\
         m_\text{D}
     \end{bmatrix}~\right|\right|
-     ~} < \epsilon_{\text{Mag}}
+     ~\right| < \epsilon_{\text{Mag}}
 \end{equation}
-holds. Here $\epsilon_{\text{Mag}}$ a design parameters that tweaks how much the magnitude of the magnetometer measurements may deviate from the magnitude of the Earth's magnetic field before being rejected.
+holds. Here, $\epsilon_{\text{Mag}}$ is a design parameter that tweaks how much the magnitude of the measurements may deviate from the magnitude of the Earth's magnetic field before being rejected.
 
 The \abbrROV is also equipped with a pressure sensor and a barometer. The pressure sensor is placed in the rear or stern of the \abbrROV which in turn means that the attitude of the \abbrROV needs to be taken in to account when estimating the depth.
 Taking this into consideration yields the following measurement equation for the pressure sensor
@@ -202,8 +202,7 @@ x_{\text{offset}}\\
 \end{bmatrix}\right)
     + \boldsymbol{v}_{\text{Pre}}
 \end{equation}
-Here $\boldsymbol{y}_{\text{Pre}}$ is a fictive measurement in pascal, created by subtracting the reading from the internal barometer from the reading of the external pressure sensor \emph{i.e.} $\boldsymbol{y}_{\text{Pre}} =\boldsymbol{y}_{\text{Ext}} - \boldsymbol{y}_{\text{Int}}$ where $\boldsymbol{y}_{\text{Ext}}$ is the pressure measured by the external pressure sensor and $\boldsymbol{y}_{\text{Int}}$ is the pressure measured by the barometer. $\rho$ is the density of the water, $d$ is the current depth in meters and $\boldsymbol{v}_{\text{Pre}}$ is measurement noise. The parameter $x_{\text{offset}}$ is the pressure sensor's offset from the \abbrROV's \abbrCO in the $\xPosition$-direction. In this case, $x_{\textrm{offset}}$ is a negative number. A basic form of outlier rejection is implemented in the pressure sensor measurement update. The update is performed if
-\begin{equation}
+where $\rho$ is the density of the water, $d$ is the current depth in meters and $\boldsymbol{v}_{\text{Pre}}$ is measurement noise. The parameter $x_{\text{offset}}$ is the pressure sensor's offset from the \abbrROV's \abbrCO in the $\xPosition$-direction. In this case, $x_{\textrm{offset}}$ is a negative number. Here, $\boldsymbol{y}_{\text{Pre}}$ is a fictive measurement in pascal, created by subtracting the reading from the internal barometer from the reading of the external pressure sensor, \emph{i.e.} $\boldsymbol{y}_{\text{Pre}} =\boldsymbol{y}_{\text{Ext}} - \boldsymbol{y}_{\text{Int}}$ where $\boldsymbol{y}_{\text{Ext}}$ is the pressure measured by the external pressure sensor and $\boldsymbol{y}_{\text{Int}}$ is the pressure measured by the barometer. A basic form of outlier rejection is implemented in the pressure sensor measurement update. The update is performed if \begin{equation}
     p \geq 0
 \end{equation}
 since a reading lower than zero would imply that the \abbrROV is above the water surface.

@@ -7,46 +7,42 @@ A central part in modelling is parameter estimation and its importance is often 
 but several of the parameters $\boldsymbol{\theta}$ are unknown.
 To estimate parameters in a know model structure is called-gray box modelling. 
 
-In general, parameter estimation is to fit a model structure's parameter vector $\boldsymbol{\theta}$ such that the model best describes the estimation data. The model is then validated with a dataset which was not used during estimation. If the model describes the validation data well the model and its parameter values are accepted. A measure of how well a model describes a dataset is the normalised root mean square error
+In general, parameter estimation is to fit a model structure's parameter vector $\boldsymbol{\theta}$ such that the model best describes the estimation data. The model is then validated with a dataset which was not used during estimation. If the model describes the validation data well the model and its parameter values are accepted. A measure of how well a model describes a dataset is the normalised root mean square error given by
 \begin{equation}
 \text{Fit} = 100 \left(1 - \frac{\sqrt{\sum\limits_{t=1}^N \bigr(\boldsymbol{y}(t) - \hat{\boldsymbol{y}}(t)\bigl)^2}}{\sqrt{\sum\limits_{t=1}^N \bigr(\boldsymbol{y}(t)-\frac{1}{N}\sum\limits_{t=1}^N \boldsymbol{y}(t)\bigl)^2}}\right)
-\end{equation} \index{Fit}
-A high fit value indicate that the model describes the validation data well.
+\end{equation}% 
+A high fit value indicate that the model describes the validation data well.\index{Fit}
 
-Relations between states can be used to get better estimates of parameters for example, if the angles of the \abbrROV are estimated well the relations \eqref{eq:eulerAnglesdot} from \Chapterref{cha:modelling} could be used. Another aspect to consider when estimating model parameters is what to model as inputs and what to model as outputs. Inputs to a system are considered to be true signals, thus if they are noisy or inaccurate they can effect the estimation negatively \citep{modellbygge}. Outputs from a system are measurements of a state and are thus expected to be somewhat noisy. In this chapter it is assumed that the \abbrROV has neutral buoyancy \emph{i.e.} $B = W$. 
+Relations between states can be used to get better estimates of parameters, for example, if the angles of the \abbrROV are estimated well, the relations \eqref{eq:eulerAnglesdot} from \Chapterref{cha:modelling} could be used. Another aspect to consider when estimating model parameters is what to model as inputs and what to model as outputs. Inputs to a system are considered to be true signals, thus if they are noisy or inaccurate they can effect the estimation negatively \citep{modellbygge}. Outputs from a system are measurements of a state or states and are thus expected to be somewhat noisy. 
 
 To estimate the unknown parameters in the \abbrROV model described in \Chapterref{cha:modelling}, different methods can be used. Two different methods will be explained further in this chapter.  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
 \section{Prediction-Error Method}
-The prediction-error method uses a predictor $\hat{\boldsymbol{y}}(\boldsymbol{\theta})$ of a systems output to compare with the present output of the system. The discrete-time predictor can be described by 
+The prediction-error method uses a predictor $\hat{\boldsymbol{y}}_k(\boldsymbol{\theta})$ of a systems output to compare with the present output of the system. The discrete-time predictor can be described by 
 \begin{equation}
 \hat{\boldsymbol{x}}_{k+1}(\theta) = f(\boldsymbol{\hat{x}_k}(\theta), \boldsymbol{u}_k,\boldsymbol{y}_k, \boldsymbol{\theta})
 \end{equation}
-and the predictor can be described by \todo[inline]{Detta ar inte fixat. Men just nu star det samma sak som i Roger Larssons tes}
+and
 \begin{equation}
 \hat{\boldsymbol{y}}_k(\boldsymbol{\theta}) = h(\hat{\boldsymbol{x}}_k, \boldsymbol{u}_k, \boldsymbol{\theta})
 \end{equation}
-where $\boldsymbol{x}$ are the states and $\boldsymbol{u}$ are the inputs and the vector $\hat{\boldsymbol{y}}_k(\boldsymbol{\theta})$ is the predicted output of the model given the parameter vector~$\boldsymbol{\theta}$. 
+where $\hat{\boldsymbol{x}}$ is the estimated state vector, $\boldsymbol{u}$ are the inputs and $\hat{\boldsymbol{y}}_k(\boldsymbol{\theta})$ is the predicted output of the model \citep[p. 13]{Roger}. 
 
 The fitting is done by minimising a cost function $V(\boldsymbol{\theta})$ with respect to the parameter vector $\boldsymbol{\theta}$ \emph{i.e.}
 \begin{equation}
 \hat{\boldsymbol{\theta}} = \underset{\boldsymbol{\theta}}{\argmin} V(\boldsymbol{\theta})
 \end{equation}
-The cost function in this thesis has been defined as the squared error
+The cost function in this thesis has been defined as the squared error with an error threshold to handle noisy signals. An error threshold means that after a breakpoint the cost function becomes linear instead of quadratic, which makes the parameter estimation less sensitive to outliers. To reduce the impact of the noise even further, the used weight matrix in the quadratic cost function was chosen as the inverse of the estimated noise covariance. The cost function is then
 \begin{equation}
-    V(\boldsymbol{\theta}) = \frac{1}{N} \sum_{t=1}^{N} \boldsymbol{e}^T_k(\boldsymbol{\theta}) \boldsymbol{W}(\boldsymbol{\theta})  \boldsymbol{e}_k(\boldsymbol{\theta})
+    V(\boldsymbol{\theta}) = \frac{1}{N} \left( \sum_{t \in i} \boldsymbol{e}^T_k(\boldsymbol{\theta}) \boldsymbol{W}(\boldsymbol{\theta})  \boldsymbol{e}_k(\boldsymbol{\theta}) + \sum_{t \in j} \boldsymbol{v}^T_k(\boldsymbol{\theta}) \boldsymbol{W}(\boldsymbol{\theta})  \boldsymbol{v}_k(\boldsymbol{\theta}) \right)
 \end{equation}
-where $N$ is the number of samples in the dataset, $\boldsymbol{e}_k(\boldsymbol{\theta})$ is the error vector with the parameter vector~$\boldsymbol{\theta}$ and $\boldsymbol{W}$ is a positive definite weight matrix.
-
-To handle noisy signals an error threshold was introduced. An error threshold means that after a breakpoint the cost function becomes linear instead of quadratic, which makes the parameter estimation less sensitive to outliers. To reduce the impact of the noise even further, the used weight matrix in the quadratic cost function was chosen as the inverse of the estimated noise covariance. The used linear cost function was
+where $N$ is the number of samples in the dataset, $\boldsymbol{e}_k(\boldsymbol{\theta})$ is the error vector with the parameter vector~$\boldsymbol{\theta}$ and $\boldsymbol{W}$ is a positive definite weight matrix \citep{ljungtheory}. The set $i$ is the subset of errors for which $\abs{\boldsymbol{e}_k(\boldsymbol{\theta})} < \sigma \rho$ holds. Here, $\sigma$ is the estimated standard deviation of $\boldsymbol{e}_k(\boldsymbol{\theta})$ and $\rho$ is the chosen error threshold. The set $j$ is the complement of $i$. The error $\boldsymbol{v}_k(\boldsymbol{\theta})$ is defined as 
 \begin{equation}
-   V(\boldsymbol{\theta}) = \frac{1}{N} \sum_{t=1}^{N} \abs{\boldsymbol{e}^T_k(\boldsymbol{\theta})} \boldsymbol{W}_{\text{lin}}(\boldsymbol{\theta})
+\boldsymbol{v}_k(\boldsymbol{\theta}) = \boldsymbol{e}_k(\boldsymbol{\theta}) \sigma\frac{\rho}{\sqrt{\abs{\boldsymbol{e}_k(\boldsymbol{\theta})}}}
 \end{equation}
-where $\boldsymbol{W}_{\text{lin}}$ is the weight vector with positive elements in the linear cost function. 
 
-Several tools exists	which can estimate parameters using the prediction-error method. In this thesis the System Identification Toolbox\texttrademark has been used with the reflective Newton Method as the choose method for minimisation of the cost function.
+%Several tools exists	which can estimate parameters using the prediction-error method. In this thesis the System Identification Toolbox\texttrademark has been used.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Extended Kalman Filter Estimation}\label{sec:KalmanEstimation}\index{EKF@\abbrEKF!abbreviation}
 An \abbrEKF can also be used to estimate parameters of the \abbrROV. This can be done by extending the state vector of the \abbrEKF with the parameters that need to be estimated \citep{Roger}.
@@ -94,7 +90,10 @@ Since the \abbrEKF tries to minimise state variance it will also try to estimate
 %\end{equation}
 %Here, $\boldsymbol{\theta}$ is a vector containing the parameters that were estimated. The vector-valued function $\boldsymbol{f}(\etaVector,\nuVector,\boldsymbol{\theta})$ is \eqref{eq:quatModel}. The vector $\boldsymbol{b}$  contains the biases of the gyroscope. The vector $\boldsymbol{v}$ is the system noise and is assumed to enter each term directly, this resulted in a diagonal $\boldsymbol{Q}$-matrix when implementing the model in the \abbrEKF. The matrix $\boldsymbol{T}(\etaVector)$ is an angular velocity transformation matrix using the quaternion form of $\etaVector$ and is defined in \Chapterref{cha:modelling}. Measurement equations are taken from \sectionref{sec:Meas}.
 
-To increase the performance of the filter a method for outlier detection and rejection was implemented. Since time updates were done batch wise it was decided to use a new form of outlier rejection and not to reimplement the method used on the \abbrROV. The outlier rejection method that was decided on is based on the assumption that the normalised innovation $\boldsymbol{\epsilon}^T \boldsymbol{S}^{-1} \boldsymbol{\epsilon}$ should be $\chi_{n}^{2}$ distributed. Here $n$ is the number of measurements. To check the validity of a single measurement the previous assumption gives that $\epsilon_i^{2}/S_{i,i} \sim \chi_{1}^{2}$ \citep{sensorfusion}. This is implemented in the \abbrEKF using \Algoref{alg:outlier}.
+To increase the performance of the filter a method for outlier detection and rejection was implemented. Since time updates were done batch wise it was decided to use a different form of outlier rejection and not to reimplement the method used in \sectionref{sec:Meas}. The outlier rejection method is based on the assumption that the normalised innovation \begin{equation} \label{eq:chi}
+\boldsymbol{\epsilon}^T \boldsymbol{S}^{-1} \boldsymbol{\epsilon} \sim \chi_{n}^{2}
+\end{equation}
+where $n$ is the number of measurements. To check the validity of a single measurement, \eqref{eq:chi} gives that $\epsilon_i^{2}/S_{i,i} \sim \chi_{1}^{2}$ \citep{sensorfusion}. This is implemented in the \abbrEKF using \Algoref{alg:outlier}.
 \begin{algorithm}[h]
 \caption{The outlier rejection algorithm used during the measurement update step of the parameter estimation \abbrEKF.}\label{alg:outlier}
 \textbf{1.} Calculate $\boldsymbol{S}=h_{\boldsymbol{x}} \boldsymbol{P} h_{\boldsymbol{x}}^T + \boldsymbol{R}$ and the innovation $\epsilon$.
@@ -103,18 +102,18 @@ To increase the performance of the filter a method for outlier detection and rej
 \begin{equation}
 \epsilon_{i}^{2} > \sigma_i S_{i,i}
 \end{equation}
-If the expression holds true remove the $i$:th row from $\boldsymbol{\epsilon}$ and the $i$:th row and column from $\boldsymbol{S}$ and $h_{\boldsymbol{x}}$.\\
+If the expression holds true, remove the $i$:th row from $\boldsymbol{\epsilon}$ and the $i$:th row and column from $\boldsymbol{S}$ and $h_{\boldsymbol{x}}$.\\
 \textbf{3.} Proceed with the Kalman algorithm using the cropped $h_{\boldsymbol{x}}$, $\boldsymbol{S}$ and $\boldsymbol{\epsilon}$.
 
-Here, $\boldsymbol{\sigma}$ is a $n\times1$ dimensional design variable and $n$ is the number of measurements that are used in the \abbrEKF. A higher value of $\sigma_i$ decreases the sensitivity of the outlier rejection on the $i$:th measurement.
+Here, $\boldsymbol{\sigma}$ is a $n\times1$ dimensional design variable and $n$ is the number of measurements that are used in the \abbrEKF. A higher value of $\sigma_i$ decreases the sensitivity of the outlier rejection for the $i$:th measurement.
 \end{algorithm}
 
 %The filter was run on each collected dataset. The final values of $\hat{\boldsymbol{\theta}}$ from a dataset were used as initial values for $\hat{\boldsymbol{\theta}}$ when the filter was applied on the next dataset. The same was done for the covariance matrix $\boldsymbol{P}$. The final covariance from an earlier run was set as the initial covariance when the filter was applied on subsequent dataset. At completion the parameters were entered in a simulator which was feed with the control signals from the corresponding dataset. The simulated  output was then compared with the original data.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Data Collection and Processing} \index{Data preprocessing}
-To conduct parameter estimation experiments data from live tests had to be collected. To be able to use the assumptions in \eqref{eq:pq_dot_decouple} and \eqref{eq:r_dot_decouple} data collection had to be done in three specific ways.
-First the \abbrROV was excited in $p$ and $q$, then in $r$ and lastly the \abbrROV was excited in all rotations. \Figureref{fig:pqTest} illustrates that $r$ is approximately small while exciting $p$ and $q$, the other way around in \Figureref{fig:rTest}. All experiments were conducted in such a way that linear velocities were kept at a minimum.
+To conduct parameter estimation, experimental data tests had to be collected. To be able to use the assumptions in \eqref{eq:pq_dot_decouple} and \eqref{eq:r_dot_decouple} data collection had to be done in three specific ways.
+First the \abbrROV was excited in $p$ and $q$, then in $r$ and lastly the \abbrROV was excited in all rotations. \Figureref{fig:pqTest} and \Figureref{fig:rTest} illustrates the conducted tests. All experiments were conducted in such a way that linear velocities were kept at a minimum.
 The main control signals used during data collection tests were telegraph signals. Both the scaling of the output magnitude and switch factors were changed in between tests in order to find signals that excited the desired states sufficiently. An example of a such a signal can be seen in \Figureref{fig:telegraph}.
 
 Data preprocessing was done by synchronising the data streams by checking the start and end times of each experiment, here chosen as the time of arrival of the first control signal. The sensor data was aligned such that the data sample of each sensor whose arrival time was closest to the starting time of the test was chosen as the initial sample of each data stream. Data outside the test interval was discarded. After alignment the data was resampled to a chosen frequency in this case 100 Hz. The sensor data was resampled using first-order hold while the control signals were resampled using zero-order hold since the control signal data only contained points were the control signals changed.  
@@ -149,13 +148,10 @@ Data preprocessing was done by synchronising the data streams by checking the st
 \end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Results}
-In this section will the results from the different parameter estimation methods be presented. Estimated parameter values and the fit of the models compared to validation data are presented.
-
-\subsection{Prediction-Error Method}
+\section{Results for Prediction-Error Method}
 Using the model structure \eqref{eq:pq_dot_decouple} and \eqref{eq:r_dot_decouple} with the reparametrisation done in \eqref{eq:quatModel} and using the estimated angles as inputs and angular velocities as outputs gave the following model structure to be estimated
 \begin{equation}
-\etaVectordot = f(\nuVector, \hat{\etaVector}, \tauVector),
+\dot{\hat{\boldsymbol{\eta}}} = f(\nuVector, \hat{\etaVector}, \tauVector),
 \end{equation}
 and
 \begin{equation}
