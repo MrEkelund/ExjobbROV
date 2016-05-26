@@ -156,9 +156,9 @@ Using the model structure \eqref{eq:pq_dot_decouple} and \eqref{eq:r_dot_decoupl
 and
 \begin{equation}
 \boldsymbol{y} = \nuVector
-\end{equation} 
+\end{equation} \todo[inline]{inte fixat}
 where $\hat{\etaVector}$ are the estimated Euler angles from the sensor fusion.
-The result of the estimation can be seen in \Tableref{tab:ResultEstimAngular}. The estimation used two datasets as estimation data and used one dataset for validation data. The fit of the model compared to validation data can be seen in \Figureref{fig:velocityCompareCong}.
+The result of the estimation can be seen in \Tableref{tab:ResultEstimAngular}. The estimation used two datasets as estimation data and used one dataset for validation data. The fit of the model compared to validation data can be seen in \Figureref{fig:velocityCompareCong}. The model has a high fit and thus describes the validation data well.
 
 \begin{figure}[tbp]
   \centering
@@ -168,7 +168,7 @@ The result of the estimation can be seen in \Tableref{tab:ResultEstimAngular}. T
   \\
   \subfloat[][\label{fig:velocityCompareCongr}Simulated model and validation data in $r$.]{\includegraphics[width=0.5\textwidth]{velocityCompareCongr}}
   \caption{\label{fig:velocityCompareCong}%
-    Comparison of simulation of the attitude model (blue) against validation data (gray) using the estimated angels as inputs and angular velocities as outputs.}
+    Comparison of simulation of the attitude model (blue) against validation data (gray) using the estimated angels as inputs and angular velocities as outputs. The simulated model has a high fit compared to the validation data.}
 \end{figure}
 
 Using the model structure defined in \eqref{eq:pq_dot_decouple} with angular velocities and linear acceleration as outputs resulted in the model structure
@@ -211,23 +211,23 @@ The estimated parameter values obtained using this model structure can be seen i
 %  \end{tabular}
 %\end{table}
 
-The fit of the model using the estimated parameters, with $\distance{z}{6} = 0$, can be viewed in \Figureref{fig:angVelCompare} and the fit of the model with $\distance{z}{6} = 0.11$ can be seen in \Figureref{fig:angVelComparelz6}. 
+The fit of the model using the estimated parameters, with $\distance{z}{6} = 0$, can be viewed in \Figureref{fig:angVelCompare} and the fit of the model with $\distance{z}{6} = 0.11$ can be seen in \Figureref{fig:angVelComparelz6}. The higher fit in $p$, $q$ and $r$ for model with $\distance{z}{6} = 0$ means that it describes the validation data better. Neither model describe the linear accelerations well which can be seen in the low fit.
 
 \begin{figure}[tbp]
   \centering %simulation of estimation. Estimator given wrong initial state
-  \subfloat[][\label{fig:angVelComparep}Comparison of angular velocity around the \abbrROV's x-axis between validation data and the simulated model.]{\includegraphics[width=0.4\textwidth]{angVelComparep}}
+  \subfloat[][\label{fig:angVelComparep}Angular velocity around the \abbrROV's.]{\includegraphics[width=0.4\textwidth]{angVelComparep}}
   \qquad
-  \subfloat[][\label{fig:angVelCompareq}Comparison of angular velocity around the \abbrROV's y-axis between validation data and the simulated model.]{\includegraphics[width=0.4\textwidth]{angVelCompareq}}
+  \subfloat[][\label{fig:angVelCompareq}Angular velocity around the \abbrROV's y-axis.]{\includegraphics[width=0.4\textwidth]{angVelCompareq}}
   \qquad
-  \subfloat[][\label{fig:angVelComparer}Comparison of angular velocity around the \abbrROV's z-axis between validation data and the simulated model.]{\includegraphics[width=0.4\textwidth]{angVelComparer}}
+  \subfloat[][\label{fig:angVelComparer}Angular velocity around the \abbrROV's z-axis.]{\includegraphics[width=0.4\textwidth]{angVelComparer}}
     \qquad
-  \subfloat[][\label{fig:linAccComparex}Comparison of linear acceleration in the \abbrROV's x-axis between validation data and the simulated model.]{\includegraphics[width=0.4\textwidth]{linAccComparex}}
+  \subfloat[][\label{fig:linAccComparex}Linear acceleration in the \abbrROV's x-axis.]{\includegraphics[width=0.4\textwidth]{linAccComparex}}
     \qquad
-  \subfloat[][\label{fig:linAccComparey}Comparison of linear acceleration in the \abbrROV's y-axis between validation data and the simulated model.]{\includegraphics[width=0.4\textwidth]{linAccComparey}}
+  \subfloat[][\label{fig:linAccComparey}Linear acceleration in the \abbrROV's y-axis.]{\includegraphics[width=0.4\textwidth]{linAccComparey}}
     \qquad
-  \subfloat[][\label{fig:linAccComparez}Comparison of linear acceleration in the \abbrROV's z-axis between validation data and the simulated model.]{\includegraphics[width=0.4\textwidth]{linAccComparez}}
+  \subfloat[][\label{fig:linAccComparez}Linear acceleration in the \abbrROV's z-axis.]{\includegraphics[width=0.4\textwidth]{linAccComparez}}
   \caption{\label{fig:angVelCompare}%
-    Comparison of validation data (grey) against the simulated response from the model(blue). The fit for the model in each state is stated in each plot. During estimation was $\distance{z}{6} = 0$. The estimation used angular velocities and linear accelerations as outputs.}
+    Comparison of validation data (grey) against the simulated response from the model(blue). The fit for the model in each state is stated in each plot. During estimation was $\distance{z}{6} = 0$. The estimation used angular velocities and linear accelerations as outputs. The model describes the validation data well in $p$, $q$ and $r$ which can be seen in the fit. However, the model describes the linear accelerations bad which can be seen in the negative fit.}
 \end{figure}
 
 %\begin{table}[hbp]
@@ -255,19 +255,19 @@ The fit of the model using the estimated parameters, with $\distance{z}{6} = 0$,
 
 \begin{figure}[tbp]
   \centering %simulation of estimation. Estimator given wrong initial state
-  \subfloat[][\label{fig:angVelCompareplz6}Comparison of angular velocity around the \abbrROV's x-axis between validation data and the simulated model.]{\includegraphics[width=0.4\textwidth]{angVelCompareplz6}}
+  \subfloat[][\label{fig:angVelCompareplz6}Angular velocity around the \abbrROV's x-axis.]{\includegraphics[width=0.4\textwidth]{angVelCompareplz6}}
   \qquad
-  \subfloat[][\label{fig:angVelCompareqlz6}Comparison of angular velocity around the \abbrROV's y-axis between validation data and the simulated model.]{\includegraphics[width=0.4\textwidth]{angVelCompareqlz6}}
+  \subfloat[][\label{fig:angVelCompareqlz6}Angular velocity around the \abbrROV's y-axis.]{\includegraphics[width=0.4\textwidth]{angVelCompareqlz6}}
   \qquad
-  \subfloat[][\label{fig:angVelComparerlz6}Comparison of angular velocity around the \abbrROV's z-axis between validation data and the simulated model.]{\includegraphics[width=0.4\textwidth]{angVelComparerlz6}}
+  \subfloat[][\label{fig:angVelComparerlz6}Angular velocity around the \abbrROV's z-axis.]{\includegraphics[width=0.4\textwidth]{angVelComparerlz6}}
     \qquad
-  \subfloat[][\label{fig:linAccComparexlz6}Comparison of linear acceleration in the \abbrROV's x-axis between validation data and the simulated model.]{\includegraphics[width=0.4\textwidth]{linAccComparexlz6}}
+  \subfloat[][\label{fig:linAccComparexlz6}Linear acceleration in the \abbrROV's x-axis.]{\includegraphics[width=0.4\textwidth]{linAccComparexlz6}}
     \qquad
-  \subfloat[][\label{fig:linAccCompareylz6}Comparison of linear acceleration in the \abbrROV's y-axis between validation data and the simulated model.]{\includegraphics[width=0.4\textwidth]{linAccCompareylz6}}
+  \subfloat[][\label{fig:linAccCompareylz6}Linear acceleration in the \abbrROV's y-axis.]{\includegraphics[width=0.4\textwidth]{linAccCompareylz6}}
     \qquad
-  \subfloat[][\label{fig:linAccComparezlz6}Comparison of linear acceleration in the \abbrROV's z-axis between validation data and the simulated model.]{\includegraphics[width=0.4\textwidth]{linAccComparezlz6}}
+  \subfloat[][\label{fig:linAccComparezlz6}Linear acceleration in the \abbrROV's z-axis.]{\includegraphics[width=0.4\textwidth]{linAccComparezlz6}}
   \caption{\label{fig:angVelComparelz6}%
-    Comparison of validation data (grey) against the simulated response from the model(blue). The fit for the model in each state is stated in each plot. During the estimation was $\distance{z}{6} = 0.11$. The estimation used angular velocities and linear accelerations as outputs.}
+    Comparison of validation data (grey) against the simulated response from the model(blue). The fit for the model in each state is stated in each plot. During the estimation was $\distance{z}{6} = 0.11$. The estimation used angular velocities and linear accelerations as outputs. The model describes $q$ an $r$ well which can be seen in the high fit. The model do not describe the linear accelerations and $p$ well, this can be seen in the low fit.}
 \end{figure}
 
 \begin{table}[hbp]
@@ -301,7 +301,7 @@ measurement noise covariance matrix
 \begin{equation*}
 \boldsymbol{R} = \text{diag}[\underbrace{\overbrace{0.01}^{\times3}}_{\text{Gyro}}... \underbrace{\overbrace{0.1}^{\times3}}_{\text{Acc}}... \underbrace{\overbrace{100}^{\times3}}_{\text{mag}}]
 \end{equation*}
-The extremely low values of the last five elements in $\boldsymbol{Q}$ were chosen to fixate the measured moment arms of the thrusters. Four data sets were feed in to the estimator and a fifth was used as validation data. All data sets were of excitations in $p$, $q$ and $r$ simultaneously. Parameter values from the estimation can be viewed together with the starting state in \tableref{tab:ResultKalmanFixedMomentArms}.
+The extremely low values of the last five elements in $\boldsymbol{Q}$ were chosen to fixate the measured moment arms of the thrusters. Four data sets were feed in to the estimator and a fifth was used as validation data. All data sets were of excitations in $p$, $q$ and $r$ simultaneously. Parameter values from the estimation can be viewed together with the starting state in \tableref{tab:ResultKalmanFixedMomentArms}. \todo[inline]{kolla med jonas om laga varden}
 \begin{table}[hbp]
   \centering
   \caption{\label{tab:ResultKalmanFixedMomentArms}%
@@ -335,7 +335,7 @@ The extremely low values of the last five elements in $\boldsymbol{Q}$ were chos
     \bottomrule%
   \end{tabular}
 \end{table}
-The fit of the model using the estimated parameters can be viewed in \figureref{fig:ResultKalmanFixedMomentArms}
+The fit of the model using the estimated parameters can be viewed in \figureref{fig:ResultKalmanFixedMomentArms}. The high fit in $q$ and $r$ indicate that the model describes the data well. However, the model do not describe the validation data well in $q$.
 % results kalman fixed moment arms
 \begin{figure}[tbp]
   \centering
@@ -345,7 +345,7 @@ The fit of the model using the estimated parameters can be viewed in \figureref{
   \\
   \subfloat[][Comparison between a simulated model response and validation data in $r$.]{\includegraphics[width=0.7\textwidth]{ResultKalmanFixedMomentR}}
   \caption{\label{fig:ResultKalmanFixedMomentArms}%
-    Comparison between simulation of $\nuVector$ (blue) with validation data (red). Moment-arm parameters are fixed. Goodness of fit statistic is displayed at the top of each sub-figure.}
+    Comparison between simulation of $\nuVector$ (blue) with validation data (red). Moment-arm parameters are fixed. Goodness of fit statistic is displayed at the top of each sub-figure. The model describe the validation data well in $q$ and $r$ which can be seen in the high fit. The low fit in $p$ means that the model do not describe the validation data well.}
 \end{figure}
 
 A second estimation was run using same model with the following settings
@@ -406,7 +406,7 @@ The estimation was done with three data sets, of which the first two were used f
 
 
 \section{Discussion}
-To estimate parameters in the reduced 6-\abbrDOF model was harder than it at first seemed. When using the error-prediction method problems were encountered with bad fit in $p$ and the estimate of $\etaVector$ did not follow the kinematic relations described in \sectionref{sec:coordinates}. The problem with $\etaVector$ not following the kinematic relations was further investigated by comparing integration of \eqref{eq:eulerAnglesdot} with $\hat{\etaVector}$ from the sensor fusion. As can be seen in \Figureref{fig:integratedAngleVelocities} the result was not satisfactory, with the estimated angles and the integration of \eqref{eq:eulerAnglesdot} being very dissimilar. It was therefore concluded that the estimated angles were unfit for use as outputs during parameter estimation unless a new motion model for the sensor fusion was created to solve the issue. It is therefore recommended that the validity of the observer is controlled using relations such as those in \sectionref{sec:coordinates} before collecting data. 
+To estimate parameters in the reduced 6-\abbrDOF model was harder than it at first seemed. Problems were encountered when the prediction-error method was used with bad fit in $p$. The estimate of $\etaVector$ did not follow the kinematic relations described in \sectionref{sec:coordinates}. The problem with $\etaVector$ not following the kinematic relations was further investigated by comparing integration of \eqref{eq:eulerAnglesdot} with $\hat{\etaVector}$ from the sensor fusion. As can be seen in \Figureref{fig:integratedAngleVelocities} the result was not satisfactory, with the estimated angles and the integration of \eqref{eq:eulerAnglesdot} being very dissimilar. It was therefore concluded that the estimated angles were unfit for use as outputs during parameter estimation unless a new motion model for the sensor fusion was created to solve the issue. It is therefore recommended that the validity of the observer is controlled using relations such as those in \sectionref{sec:coordinates} before collecting data. 
 
 \begin{figure}[htbp]
   \centering
@@ -419,7 +419,7 @@ To estimate parameters in the reduced 6-\abbrDOF model was harder than it at fir
   A comparison between integration of euler angles (blue) using \eqref{eq:eulerAnglesdot} and the estimated euler angles from the \abbrEKF (red). The angles are poorly estimated and thus not suitable to use as outputs in parameter estimation.}
 \end{figure}
 
-Another issue that was encountered when using the prediction-error method was that when angular velocities and linear accelerations were used as outputs, the model was extremely sensitive to the initial value of $\etaVector$. This was even more complicated since the model was modified to use quaternions to represent the \abbrROV's attitude. To examine this problem further data was generated using a simulator and the simulated data was used in the prediction-error method. The estimator was initialised with the correct initial parameter values from the simulator, but it was free to estimate the initial value of the quaternions. As expected, the estimated starting quaternion was not well estimated, which in turn led to the parameters diverging from their true values and a low fit was obtained. A result from such a test can be seen in \Figureref{fig:angVelSim}.
+Another issue that was encountered when using the prediction-error method was that when angular velocities and linear accelerations were used as outputs, the model was extremely sensitive to the initial value of the quaternions. To examine this problem further data was generated using a simulator and the simulated data was used in the prediction-error method. The estimator was initialised with the correct initial parameter values from the simulator, but it was free to estimate the initial value of the quaternions. As expected, the estimated starting quaternion was not well estimated, which in turn led to the parameters diverging from their true values and a low fit was obtained. A result from such a test can be seen in \Figureref{fig:angVelSim}.
 
 \begin{figure}[htbp]
   \centering %comparison betwwen two simulations
@@ -435,12 +435,12 @@ Another issue that was encountered when using the prediction-error method was th
     \qquad
   \subfloat[][\label{fig:linAccSimz}Comparison of simulated linear acceleration  in the \abbrROV's z-axis with simulated validation data.]{\includegraphics[width=0.4\textwidth]{linAccSimz}}
   \caption{\label{fig:angVelSim}%
-    Comparison between simulated validation data (grey) and the simulated response from the estimated model(blue). The fit for the model in each state is stated in each plot. The validation data has been generated using the initial parameters used in the parameter estimation. The poor initial state estimate results in that the estimated parameters diverge from their true values.}
+    Comparison between simulated validation data (grey) and the simulated response from the estimated model (blue). The fit for the model in each state is stated in each plot. The validation data has been generated using the initial parameters used in the parameter estimation. The poor initial state estimate results in that the estimated parameters diverge from their true values.}
 \end{figure}
 
-Since data had been collected with Euler angles instead of quaternions and no simple way of estimating the initial state of the quaternions was thought of, a Kalman smoother as described in \citet{Wallin} was used introduced. The magnetometer was also added as a output, in the Kalman smoother, to further reduce the uncertainty of the initial quaternions. It is therefore recommended that when using quaternions during parameter estimation, that attitude data on quaternion form is logged so that the initial quaternions can easily be obtained. 
+To estimate the initial state of the quaternions, a Kalman smoother as described in \citet{Wallin} was used. The magnetometer was also added as an output, in the Kalman smoother, to further reduce the uncertainty of the initial quaternions. It is therefore recommended that when using quaternions during parameter estimation, that attitude data on quaternion form is logged so that the initial quaternions can easily be obtained or that the \abbrROV is at rest initially during tests. 
 
-A problem that was consistent in all early estimations was a low fit value in $p$. Several adjustments were attempted in order to fix this issue and it was later found that the effect in $p$ of thruster 6 was minimal. A test showed that thruster 6 effected $p$ the most when it was quickly actuated. The effect of thruster 6 in $p$ can be seen in \Figureref{fig:thruster6}. If the sixth thrusters power was incremented slowly an initial response in $p$ was noted before it settled at zero again. This might be because of unmodelled translational dynamics of the \abbrROV meaning that the dynamics in $y$ may be coupled with $r$ or that the placement of \abbrCG in the \abbrROV is faulty. Thruster 6 also effected $r$, this can be due to unmodelled water interaction.
+A problem that was consistent in all early attempts was a low fit value in $p$. Several adjustments were attempted in order to fix this issue and it was later found that the effect in $p$ of thruster 6 was minimal. A test showed that thruster 6 effected $p$ the most when it was quickly actuated. The effect of thruster 6 in $p$ can be seen in \Figureref{fig:thruster6}. If the sixth thrusters power was incremented slowly an initial response in $p$ was noted before it settled at zero again. This might be because of unmodelled translational dynamics of the \abbrROV meaning that the dynamics in $y$ may be coupled with $r$ or that the placement of \abbrCG in the \abbrROV is faulty. Thruster 6 also effected $r$, this can be due to unmodelled water interaction.
 
 When deciding on which parameters to use for controller design, the choice was based solely on the fit of the simulated output had against validation data. The reasoning behind this being quite simple, the better the fit against validation data the less robust the controllers would have to be.
 
@@ -525,12 +525,12 @@ When deciding on which parameters to use for controller design, the choice was b
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Estimated Parameters}\label{sec:parameterResults}
-\Tableref{tab:parameterConstants} shows the know and measured parameters used in the \abbrROV. The estimated parameters that were chosen for use during controller development are shown in \Tableref{tab:parameterEstimation}.
+\Tableref{tab:parameterConstants} shows the know, measured and estimated parameters used in the \abbrROV and controller development.
 
 \begin{table}[tbp]
   \centering
   \caption{\label{tab:parameterConstants}%
-    The known parameters used in the \abbrROV model.}
+    The known and estimated parameters used in the \abbrROV model.}
   \begin{tabular}{l l p{0.7\linewidth}}
     \toprule%
     \textbf{Notation}   & \textbf{Value} & \textbf{Description} \\
@@ -547,20 +547,7 @@ When deciding on which parameters to use for controller design, the choice was b
     $\distance{x}{5}$   & 0.17 \meter & Distance from \abbrCG to thruster 5 in $\xPosition$-direction.\\
     $\distance{y}{4}$   & 0.11 \meter & Distance from \abbrCG to thruster 4 in $\yPosition$-direction.\\
     $\distance{z}{6}$   & 0    \meter & Distance from \abbrCG to thruster 6 in $\zPosition$-direction.\\
-    \bottomrule%
-  \end{tabular}
-\end{table}
-
-\begin{table}[tbp]
-  \centering
-  \caption{\label{tab:parameterEstimation}%
-    The estimated parameters used in the \abbrROV model.}
-  \begin{tabular}{l l p{0.7\linewidth}}
-    \toprule%
-    \textbf{Notation}   & \textbf{Value} & \textbf{Description} \\
-    \otoprule%   
-    % Parameters that will be estimated
-	$z_B$               & -0.0331 \meter                                      & Distance from \abbrCG to \abbrCB.\\
+    	$z_B$               & -0.0331 \meter                                      & Distance from \abbrCG to \abbrCB.\\
     $\Kp$               & -0.8325 \kilogram\usk\meter\squared                 & Linear damping coefficient due to rotation in water about the $\xPosition$-axis.\\
     $\Kpabsp$           & -0.4933 \kilogram\usk\meter\squared                 & Quadratic damping coefficient due to rotation in water about the $\xPosition$-axis.\\
     $\Mq$               & -0.8487 \kilogram\usk\meter\squared                 & Linear damping coefficient due to rotation in water about the $\yPosition$-axis.\\

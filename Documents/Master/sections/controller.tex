@@ -3,10 +3,6 @@ Automatic control is way of regulating a process without direct human interactio
 
 There are two main concepts of control, open-loop and feedback control. An open-loop controller is a controller that computes its output based on a model of the system and sometimes the current states. A disadvantage of open-loop controllers is that they require exact knowledge of the controlled system \citep{reglerteknik}. \Figureref{fig:control_system_open} illustrates the open-loop control scheme used in the \abbrROV. 
 
-A feedback controller is a controller that uses measurements of the states in a system to correct its actions. One such method is error-controlled regulation, where the difference between the desired value, setpoint, of a state and its actual value is used for control. The feedback control scheme used in the \abbrROV can be seen in \Figureref{fig:control_system}. 
-
-Similarly to an open-loop controller, a feedback controller can use a model of the system. Using a model of the controlled system in the control structure can produce better performance and compensate for unwanted effects such as non-linearities. Compensating for non-linearities is desired due to the fact that a lot of control principles are based on linear systems \citep{reglerteori}. 
-
 \begin{figure}
 	\centering
 		\begin{tikzpicture}[auto, thick, node distance=2cm,>=latex',
@@ -23,12 +19,16 @@ Similarly to an open-loop controller, a feedback controller can use a model of t
 		    \draw [->] (controller) -- node[name=u] {$u$} (system);
 		    \node [output, right of=system] (output) {};
 		
-		    \draw [draw,->] (input) -- node {$u_{\text{control}}$} (controller);
+		    \draw [draw,->] (input) -- node {$\nuVector_{\text{ref}}$} (controller);
 		    \draw [->] (system) -- node [name=y] {$y$}(output);
 		\end{tikzpicture}
 	\caption{The open-loop control scheme used in the \abbrROV. The control block F can be any type of open-loop control. Notice that this is an ideal case were no disturbances affect the system.}
 	\label{fig:control_system_open}
 \end{figure}
+
+A feedback controller is a controller that uses measurements of the states in a system to correct its actions. One such method is error-controlled regulation, where the difference between the desired value, setpoint, of a state and its actual value is used for control. The feedback control scheme used in the \abbrROV can be seen in \Figureref{fig:control_system}. 
+
+Similarly to an open-loop controller, a feedback controller can use a model of the system. Using a model of the controlled system in the control structure can produce better performance and compensate for unwanted effects such as non-linearities. Compensating for non-linearities is desired due to the fact that a lot of control principles are based on linear systems \citep{reglerteori}. 
 
 \begin{figure}
 	\centering
@@ -107,7 +107,7 @@ The static thrust allocation matrix $\thrusterGeometryOnes[*]$ is the pseudo inv
     	node [output, right of=inte1] (output1) {};
         % Joining blocks. 
         % Commands \draw with options like [->] must be written individually
-    	\draw[->](input1) -- node {$u_{\text{control}}$}(inte1);
+    	\draw[->](input1) -- node {$\nuVector_{\text{ref}}$}(inte1);
      	\draw[->](inte1) -- node {$u$} (output1);
     \end{tikzpicture}
     \caption{The open-loop control allocate control signals using the thrust-allocation matrix $\thrusterGeometryOnes[*]$. The static thrust-allocation matrix approximately decouples the system.}
@@ -116,14 +116,14 @@ The static thrust allocation matrix $\thrusterGeometryOnes[*]$ is the pseudo inv
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Exact Linearisation}
-To compensate for the non-linearities in a system using a non-linear control law is called exact linearisation. Doing this makes the system linear from a input-output perspective \citep{reglerteori}. Using the model structure from \Chapterref{cha:modelling} and the estimated parameters from \Chapterref{cha:parameterEstimation} a non-linear control law was created 
+To compensate for the non-linearities in a system by using a non-linear control law is called exact linearisation. Doing this makes the system linear from an input-output perspective \citep{reglerteori}. Using the model structure from \Chapterref{cha:modelling} and the estimated parameters from \Chapterref{cha:parameterEstimation}, a non-linear control law was created 
 \begin{equation}\label{eq:exactLin}
 \tauVector_{\text{Lin}} = G^{-1}(\hat{\etaVector}_{2},\hat{\nuVector}_{2},\accVector^{\text{b}}) = \inertia \accVector^{\text{b}} + \damping(\hat{\nuVector}_{2})\hat{\nuVector}_{2} + \coriolis(\hat{\nuVector}_{2})\hat{\nuVector}_{2} + \gravity(\hat{\etaVector}_{2})
 \end{equation}
 where $\accVector^b$ is the desired angular acceleration in the body-fixed frame and $\tauVector_{\text{Lin}}$ is the estimated thrust needed to achieve the desired acceleration.
 The desired control signal $\boldsymbol{u}_{\text{Lin}}$ was then chosen using 
 \begin{equation}\label{eq:linControlSignal}
-\boldsymbol{u}_{\text{Lin}} = \boldsymbol{T}^{-1}f^{-1}(\bar{\tauVector}_{\text{Lin}})
+\boldsymbol{u}_{\text{Lin}} = f^{-1}(\boldsymbol{T}^{-1} \bar{\tauVector}_{\text{Lin}})
 \end{equation} where $f$ is the look-up table from control signal to thrust defined in \appref{app:thrustmapping}, $T$ is the geometry matrix defined in \eqref{eq:actuatorGeometry} and $\bar{\tauVector}_{\text{Lin}}=[0~0~0~\tauVector_{\text{Lin}}^T]^T$.
 In an ideal case, where the model is exact, using the non-linear control law \eqref{eq:exactLin} would produce the system
 \begin{equation}\label{eq:exactLinSys}
@@ -169,11 +169,11 @@ Combining \eqref{eq:etaTildeAngDot} with \eqref{eq:attitudeFeedback} gives the f
 %where $K_{\text{p}}$, $K_{\text{i}}$ and $K_{\text{d}}$ are positive definite design matrices \citep[p. 453]{fossen2011}. 
 The attitude controller was also combined with an open-loop control of the linear velocities
 \begin{equation}
-	u = \underbrace{\boldsymbol{T}^{-1}f^{-1}(G^{-1}(\hat{\etaVector}_2,\hat{\nuVector}_2,L(\accVector^n,\hat{\eulerAngles},\hat{\nuVector}_2)))}_{u_{\etaVectorAng}} + \underbrace{\thrusterGeometryOnes[*] \begin{bmatrix} \nuVector_{1,\text{ref}} \\ \zeroCol{3} \end{bmatrix}}_{u_{\nuVectorLin}}
+	u = \underbrace{f^{-1}(\boldsymbol{T}^{-1} G^{-1}(\hat{\etaVector}_2,\hat{\nuVector}_2,L(\accVector^n,\hat{\eulerAngles},\hat{\nuVector}_2)))}_{u_{\etaVectorAng}} + \underbrace{\thrusterGeometryOnes[*] \begin{bmatrix} \nuVector_{1,\text{ref}} \\ \zeroCol{3} \end{bmatrix}}_{u_{\nuVectorLin}}
 \end{equation}
 or
 \begin{equation}
-	u = \underbrace{\boldsymbol{T}^{-1}f^{-1}(L(\accVector^n,\hat{\eulerAngles},\hat{\nuVector}_2))}_{u_{\etaVectorAng}} + \underbrace{\thrusterGeometryOnes[*] \begin{bmatrix} \nuVector_{1,\text{ref}} \\ \zeroCol{3} \end{bmatrix}}_{u_{\nuVectorLin}}
+	u = \underbrace{f^{-1}(\boldsymbol{T}^{-1} L(\accVector^n,\hat{\eulerAngles},\hat{\nuVector}_2))}_{u_{\etaVectorAng}} + \underbrace{\thrusterGeometryOnes[*] \begin{bmatrix} \nuVector_{1,\text{ref}} \\ \zeroCol{3} \end{bmatrix}}_{u_{\nuVectorLin}}
 \end{equation}
 without the exact linearisation. This was implemented to allow the user to steer the \abbrROV while the controller unsures that the \abbrROV holds a given attitude. An illustration of how the attitude controller with open-loop control is implemented can be seen in \Figureref{fig:attitudecontroller}.
 
@@ -220,11 +220,11 @@ without the exact linearisation. This was implemented to allow the user to steer
    		
    		
    		%To sum
-   		\draw (thrust.east) ++(4,0) node[sum, name=sum] {$+$};
+   		\draw (thrust.east) ++(4.25,0) node[sum, name=sum] {$+$};
 		\draw[->] (thrust.east) -- node[align=center, below] {$u_{\nuVectorLin}$} (sum.west);
 		%From exact lin to sum
-   		\draw node[block, below of=sum, node distance=1.5cm] (rotate) {$T^{-1}$};
-   		\draw node[block, right of=merge, node distance=1cm] (inter) {$f^{-1}(\cdot)$};
+   		\draw node[block, below of=sum, node distance=1.5cm] (rotate) {$f^{-1}(\cdot)$};
+   		\draw node[block, right of=merge, node distance=1cm] (inter) {$T^{-1}$};
    		\draw[->] (rotate.north) -- node[align=center, right] {$u_{\etaVectorAng}$} (sum.south);
    		\draw[->] (inter.north) -| (rotate.south);
    		\draw[->] (merge) -- (inter.west);   		   		
@@ -251,11 +251,11 @@ where $K_{\text{p}}$ and $K_{\text{i}}$ are positive definite design matrices an
 
 The angular velocities \abbrPI controller was also expanded with a open-loop control solution for control of linear velocities
 \begin{equation}
-	u = \underbrace{\boldsymbol{T}^{-1}f^{-1}(G^{-1}(\hat{\etaVector}_2,\hat{\nuVector}_2,\accVector^b))}_{u_{\nuVectorAng}} + \underbrace{\thrusterGeometryOnes[*] \begin{bmatrix}\nuVector_{1,\text{ref}} \\ \zeroCol{3} \end{bmatrix}}_{u_{\nuVectorLin}}	
+	u = \underbrace{f^{-1}(\boldsymbol{T}^{-1} G^{-1}(\hat{\etaVector}_2,\hat{\nuVector}_2,\accVector^b))}_{u_{\nuVectorAng}} + \underbrace{\thrusterGeometryOnes[*] \begin{bmatrix}\nuVector_{1,\text{ref}} \\ \zeroCol{3} \end{bmatrix}}_{u_{\nuVectorLin}}	
 \end{equation}
 or alternatively 
 \begin{equation}
-	u = \underbrace{\boldsymbol{T}^{-1}f^{-1}(\accVector^b)}_{u_{\nuVectorAng}} + \underbrace{\thrusterGeometryOnes[*] \begin{bmatrix} \nuVector_{1,\text{ref}} \\ \zeroCol{3} \end{bmatrix}}_{u_{\nuVectorLin}}
+	u = \underbrace{f^{-1}(\boldsymbol{T}^{-1} \accVector^b)}_{u_{\nuVectorAng}} + \underbrace{\thrusterGeometryOnes[*] \begin{bmatrix} \nuVector_{1,\text{ref}} \\ \zeroCol{3} \end{bmatrix}}_{u_{\nuVectorLin}}
 \end{equation}
 if the exact linearisation is removed. \Figureref{fig:ratecontroller} illustrates how the angular velocity controller is implemented in conjunction with the open-loop control of the linear velocities.
 \begin{figure}
@@ -301,8 +301,8 @@ if the exact linearisation is removed. \Figureref{fig:ratecontroller} illustrate
    		\draw (thrust.east) ++(4,0) node[sum, name=sum] {$+$};
 		\draw[->] (thrust.east) -- node[align=center, below] {$u_{\nuVectorLin}$} (sum.west);
 		%From exact lin to sum
-   		\draw node[block, below of=sum, node distance=1.5cm] (rotate) {$T^{-1}$};
-   		\draw node[block, right of=merge, node distance=1.55cm] (inter) {$f^{-1}(\cdot)$};
+   		\draw node[block, below of=sum, node distance=1.5cm] (rotate) {$f^{-1}(\cdot)$};
+   		\draw node[block, right of=merge, node distance=1.25cm] (inter) {$T^{-1}$};
    		\draw[->] (rotate.north) -- node[align=center, right] {$u_{\nuVectorAng}$} (sum.south);
    		\draw[->] (inter.north) -| (rotate.south);
    		\draw[->] (merge) -- (inter.west);

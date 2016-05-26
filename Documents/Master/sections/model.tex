@@ -86,7 +86,7 @@ The first system, the body-fixed coordinate system, is fixed to the \abbrROV and
 The body-fixed coordinate system is a right-hand system, the $\xPosition$-axis is placed along the length of the \abbrROV pointing towards its bow. The $\yPosition$-axis points starboard, and the $\zPosition$-axis points downwards towards the vehicles keel. The coordinate system is assumed to be centred in the \abbrROV's  center of gravity (\abbrCG), \emph{i.e.} $r^g_b = 0$. The body-fixed coordinate system makes it easier to describe sensor readings, since the sensors rotate with the \abbrROV. It is also easier to express the effect of each thruster with forces and moments expressed in the body-fixed coordinate system. How the body-fixed coordinate system is placed in the \abbrROV can be seen in \Figureref{fig:thrusterlocationtop} and \Figureref{fig:thrusterlocationfront}.
 
 The second global coordinate system is Earth fixed, with axes $\north$, $\east$ and $\down$. The $\north$ axis points in the direction of the calibrated North, the $\east$ axis points in the direction of calibrated East and the $\down$ axis points down towards the \abbrCG of the Earth.
-This coordinate system is used to express buoyancy and gravitational forces acting on the \abbrROV, their effects are transformed to the body-fixed coordinate system by a rotation matrix. The transformation for linear velocities from the body-fixed coordinate system to the global coordinate system is 
+This coordinate system is used to express buoyancy and gravitational forces acting on the \abbrROV, their effects are transformed to the body-fixed coordinate system by a rotation matrix. The transformation for linear velocities from the body-fixed to the global coordinate system is 
 \begin{equation}
 \linVelGlobal = \boldsymbol{R}^n_b(\eulerAngles) \linVelBody
 \end{equation}
@@ -109,7 +109,7 @@ The super- and subscript notation is defined as
 where $n$ denotes the global coordinate system, while $b$ denotes the body-fixed coordinate system.
 The notation $v_{b/n}$ means that $v$ is measured in $b$ relative $n$.
 
-Transformation of angular velocities is given by 
+Transformation of angular velocities is similarly given by 
 \begin{equation}\label{eq:eulerAnglesdot}
 \eulerAnglesdot = \boldsymbol{T}_{\theta}(\eulerAngles)\angVelBody
 \end{equation}
@@ -121,7 +121,7 @@ where
 0 & s\rollAngle/c\pitchAngle & c\rollAngle/c\pitchAngle
 \end{bmatrix}
 \end{equation}
-and $t\cdot$ stands for $\tan(\cdot)$ \citep[p. 24]{fossen2011}. Similar to the linear velocities transformation matrix, the inverse of the angular velocities transformation matrix is
+and $t\cdot$ stands for $\tan(\cdot)$ \citep[p. 24]{fossen2011}. Similar to the linear velocities transformation matrix, the inverse of the transformation matrix is
 \begin{equation}
 \boldsymbol{T}_{\theta}(\eulerAngles)^{-1} = \boldsymbol{T}_{\theta}(\eulerAngles)^T
 \end{equation}
@@ -385,7 +385,7 @@ Since the \abbrROV travels in a rotating reference frame, the Earth, the \abbrRO
     \end{bmatrix}
 \end{split}
 \end{equation}
-Where it is assumed that the \abbrROV is symmetric about the $xyz$-plane to eliminate cross-terms \citep[p. 55]{fossen2011}.
+where it is assumed that the \abbrROV is symmetric about the $xyz$-plane to eliminate cross-terms \citep[p. 55]{fossen2011}.
 
 \section{Hydrodynamics}
 The \abbrROV experiences forces and effects caused by interaction with water. These hydrodynamic effects can be modelled as
