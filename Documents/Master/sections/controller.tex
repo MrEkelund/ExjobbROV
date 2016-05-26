@@ -349,7 +349,7 @@ where $K_{\text{p}}$ and $K_{\text{i}}$ are design parameters. The rotation matr
         output/.style   = {coordinate} %
     ]
    		\draw node at (0,0) [input] (vel_input) {};
-		\draw node[input, below of=vel_input] (ang_input) {};
+		\draw node[input, below of=vel_input,node distance=2.5cm] (ang_input) {};
    		\draw node[PID, right of=ang_input] (pid) {$\abbrPI$};
    		
    		%from input to pid
@@ -363,8 +363,8 @@ where $K_{\text{p}}$ and $K_{\text{i}}$ are design parameters. The rotation matr
    		\draw[->] (pid.east) ++(0.65,0.25) arc (30:0:0.6);     		
    		
    		%Merge the switch  		
-   		\draw (pid.east) ++(2,0) node[coordinate](merge){};
-   		\draw (switchup) -- (merge);
+   		%\draw (pid.east) ++(2,0) node[coordinate](merge){};
+   		%\draw (switchup) -- (merge);
    		
    		%Input to thrust
    		\draw node[block, right of=vel_input] (controller) {F};
@@ -373,14 +373,14 @@ where $K_{\text{p}}$ and $K_{\text{i}}$ are design parameters. The rotation matr
    		%To sum
    		\draw (controller.east) ++(4,0) node[sum, name=sum] {$+$};
 		\draw[->] (controller.east) -- (sum.west);
-		\draw node[block, right of=merge,node distance=1cm] (rotate) {$\boldsymbol{R}^n_b(\eulerAngles)^T$};
-		\draw node[block, below of=sum,node distance=1.5cm] (thrust) {$\thrusterGeometryOnes[*]$};
-		\draw[->] (merge) -- (rotate.west); 
+		\draw node[block, right of=switchup,node distance=1cm] (rotate) {$\boldsymbol{R}^n_b(\eulerAngles)^T$};
+		\draw node[block, below of=sum,node distance=1.3cm] (thrust) {$\thrusterGeometryOnes[*]$};
+		\draw[->] (switchup) -- (rotate.west); 
 		\draw[->] (rotate.east) -| (thrust.south); 
-   		\draw[->] (thrust.north) -- node[align=center, below] {$u_{\zPosition}$}  (sum.south);   		   		
+   		\draw[->] (thrust.north) -- node[align=center, right] {$u_{\zPosition}$}  (sum.south);   		   		
    		% From sum to output
    		\draw node [output, right of=sum, node distance=2cm] (output) {};
-    		\draw[->] (sum.east) -- node[align=center, below] {$u$} (output);
+    		\draw[->] (sum.east) -- node[align=center, right] {$u$} (output);
 	\end{tikzpicture}
     \caption{The \abbrPI depth controller can be used when the open-loop control is engaged or when the other controllers are used. In this figure the F symbolises the chosen way of controlling the \abbrROV.} 
     \label{fig:depthcontroller}
