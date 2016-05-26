@@ -395,9 +395,9 @@ To be able to draw any conclusions about the performance of the controllers the 
 
 \item[Sine] A $\sin(\cdot)$ signal was applied to one \abbrDOF at the time and then to all \abbrDOF. Two $\sin$ signals with different amplitudes were used, amplitude $1$ and $0.5$. The used frequency was $0.5 \hertz$.
 
-\item[Smooth step] A smooth step was applied to one \abbrDOF at the time and then to all \abbrDOF at the same time. The used smooth step was the same as in \citet[p. 192-195]{robotics}. The smooth step parameters were $q_{\text{0}} = 0$, $q_{\text{f}} = 1$, $t_{\text{s}} = 3$ ,$t_{\text{f}} = 15$ and $V = 1.5 (q_{\text{f}} - q_{\text{0}})/(t_{\text{f}} - t_{\text{s}}))$
+\item[Smooth step] A smooth step was applied to one \abbrDOF at the time and then to all \abbrDOF at the same time. The used smooth step was the same as in \citet[p. 192-195]{robotics}. The smooth step parameters were $q_{\text{0}} = 0$, $q_{\text{f}} = 1$, $t_{\text{s}} = 3$, $t_{\text{f}} = 15$ and $V = 1.5 (q_{\text{f}} - q_{\text{0}})/(t_{\text{f}} - t_{\text{s}}))$
 \end{description}
-for each controller separately. For each conducted test was there a simulated test except for the depth because the depth dynamics has not been modelled. The \abbrROV model in the simulator used the parameters from \Sectionref{sec:parameterResults}. The exact linearisation, both in the simulator and the \abbrROV, used the parameters from \Sectionref{sec:parameterResults} with an scaling factor of 0.9 except for $z_B$ which had 0.5 as scaling factor. In this Section will a few representative test cases will be presented,  several other test can be seen in \Appref{app:controllerTestResults}. Tests was conducted for the \abbrPID attitude controller without exact linearisation, the \abbrPI rate controller with exact linearisation and with the \abbrPI depth controller. The parameters used in the \abbrPID and the \abbrPI:s during simulation and real tests can be seen in \Tableref{tab:parametersAttitude} - \Tableref{tab:parametersDepth}. Different performance evaluation values will be used, these values are defined as in \citet{reglerteori}. 
+for each controller separately. For each conducted test was there a simulated test except for the depth because the depth dynamics has not been modelled. The \abbrROV model in the simulator used the parameters from \Sectionref{sec:parameterResults}. The exact linearisation, both in the simulator and the \abbrROV, used the parameters from \Sectionref{sec:parameterResults} with an scaling factor of 0.9 except for $z_B$ which had 0.5 as scaling factor. In this Section will a few representative test cases be presented, all tests can be seen in \Appref{app:controllerTestResults}. Tests was conducted for the \abbrPID attitude controller without exact linearisation, the \abbrPI rate controller with exact linearisation and with the \abbrPI depth controller. The parameters used in the \abbrPID and the \abbrPI:s during simulation and real tests can be seen in \Tableref{tab:parametersAttitude} - \Tableref{tab:parametersDepth}. Different performance evaluation values will be used, these values are defined as in \citet{reglerteori}. 
 
 \begin{table}[tbp]
   \centering
@@ -453,7 +453,7 @@ for each controller separately. For each conducted test was there a simulated te
   The exact linearisation in the attitude controller. No reference signal was sent during this test thus is it only the effect of the exact linearisation showing.}
 \end{figure}
 
-\Figureref{fig:ExactLinAttitude} shows the exact linearisation in the attitude controller. Even that no reference signals are given begins the \abbrROV to change attitude.  
+\Figureref{fig:ExactLinAttitude} shows the exact linearisation in the attitude controller. Even that no reference signals were given began the \abbrROV to change attitude.  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%Attitude%%%%%%%%%%%%%%%%%
 
 \begin{figure}
