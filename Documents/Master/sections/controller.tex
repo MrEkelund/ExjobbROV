@@ -238,30 +238,26 @@ without the exact linearisation. This was implemented to allow the user to steer
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Angular Velocities Controller} \index{Angular Velocities Controller} \index{PI@\abbrPI!abbreviation}
-An angular velocity controller was also implemented using \eqref{eq:exactLin}.
-Since no transformation is needed in order to control angular velocities require no 
+An angular velocity controller was also implemented using the exact linearisation \eqref{eq:exactLin}.
+Since no transformation is needed in order to control angular velocities in the body-fixed frame
+$\accVector^b$ can be chosen using the following \abbrPI feedback 
+\begin{equation}
+	\accVector^b =-K_{\text{p}} \nuTildeAng - K_{\text{i}}\int \! \nuTildeAng \, \mathrm{d}t
+\end{equation}
+where $K_{\text{p}}$ and $K_{\text{i}}^b$ are positive definite design matrices and 
+\begin{equation}
+\nuTildeAng = \hat{\nuVector}_2 - \nuVectorAng[,_{\text{ref}}]
+\end{equation} \citep[p. 453]{fossen2011}.
 
-If the angular velocities error are defined as 
+The \abbrPI controller for the angular velocities controller was also expanded with a open-loop control solution for the linear velocities
 \begin{equation}
-\nuTildeAng = \nuVectorAng - \nuVectorAng[,_{\text{ref}}]
+	u_{\nuVectorAng} = \boldsymbol{T}^{-1}f^{-1}(G^{-1}(\hat{\etaVector}_2,\hat{\nuVector}_2,\accVector^b)) + \thrusterGeometryOnes[*] \begin{bmatrix}\nuVector_{1,\text{ref}} \\ \zeroCol{3} \end{bmatrix}	
 \end{equation}
-then are the \abbrPI angular velocities controller defined as 
+or alternatively 
 \begin{equation}
-	\accVector^b = \begin{bmatrix} 
-	\zeroCol{3} \\
-	\boldsymbol{T}^{-1}_\theta(\eulerAngles)(-K_{\text{p}}*\nuTildeAng - K_{\text{i}}\int \! \nuTildeAng \, \mathrm{d}t)
-	\end{bmatrix}
+	u_{\nuVectorAng} = \boldsymbol{T}^{-1}f^{-1}(\accVector^b) + \thrusterGeometryOnes[*] \begin{bmatrix} \nuVector_{1,\text{ref}} \\ \zeroCol{3} \end{bmatrix}
 \end{equation}
-where $K_{\text{p}}$ and $K_{\text{i}}^b$ are positive definite design matrices \citep[p. 453]{fossen2011}.
-Using the exact linearisation for the angular velocities controller and open-loop control for the linear velocities, are the control signals defined as
-\begin{equation}
-	u_{\etaVectorAng} = f^{-1}(\etaVector,\nuVector) + \thrusterGeometryOnes[*] \begin{bmatrix} \nuVectorLin \\ \zeroCol{3} \end{bmatrix}	
-\end{equation}
-or the control signals can be defined as 
-\begin{equation}
-	u_{\etaVectorAng} = \accVector^b + \thrusterGeometryOnes[*] \begin{bmatrix} \nuVectorLin \\ \zeroCol{3} \end{bmatrix}
-\end{equation}
-if the exact linearisation is not wanted. \Figureref{fig:ratecontroller} illustrates how the angular velocities controller is implemented with the open-loop control of the linear velocities.
+if the exact linearisation is removed. \Figureref{fig:ratecontroller} illustrates how the angular velocity controller is implemented in conjunction with the open-loop control of the linear velocities.
 \begin{figure}
 	\centering
 	\begin{tikzpicture}[auto, thick, node distance=2cm, >=latex',%
