@@ -326,7 +326,7 @@ If the error in $\zPosition$ is defined as
 \end{equation}
 then is the \abbrPI depth controller defined as
 \begin{equation}
-u = \thrusterGeometryOnes[*]\begin{bmatrix} \boldsymbol{R}^n_b(\eulerAngles)^T \begin{bmatrix}
+u_{\zPosition} = \thrusterGeometryOnes[*]\begin{bmatrix} \boldsymbol{R}^n_b(\eulerAngles)^T \begin{bmatrix}
 0 \\
 0 \\
 - K_{\text{p}} \tilde{\zPosition} - K_{\text{i}}\int \! \tilde{\zPosition} \, \mathrm{d}t
@@ -353,7 +353,7 @@ where $K_{\text{p}}$ and $K_{\text{i}}$ are design parameters. The rotation matr
    		\draw node[PID, right of=ang_input] (pid) {$\abbrPI$};
    		
    		%from input to pid
-   		\draw[->] (ang_input) -- node[align=center, below] {$\zPosition - \zPosition_{\text{ref}}$} ($(pid.west)$);
+   		\draw[->] (ang_input) -- node[align=center, below] {$\tilde{\zPosition}$} ($(pid.west)$);
    		\draw (pid.east) -- ++(0.5,0) node[](switch){};
    		
    		%from pid to switch and making the switch 
@@ -363,7 +363,7 @@ where $K_{\text{p}}$ and $K_{\text{i}}$ are design parameters. The rotation matr
    		\draw[->] (pid.east) ++(0.65,0.25) arc (30:0:0.6);     		
    		
    		%Merge the switch  		
-   		\draw (pid.east) ++(3,0) node[coordinate](merge){};
+   		\draw (pid.east) ++(2,0) node[coordinate](merge){};
    		\draw (switchup) -- (merge);
    		
    		%Input to thrust
@@ -373,7 +373,11 @@ where $K_{\text{p}}$ and $K_{\text{i}}$ are design parameters. The rotation matr
    		%To sum
    		\draw (controller.east) ++(4,0) node[sum, name=sum] {$+$};
 		\draw[->] (controller.east) -- (sum.west);
-   		\draw[->] (merge) -| node[align=center, below] {$u_{\zPosition}$}  (sum.south);   		   		
+		\draw node[block, right of=merge,node distance=1cm] (rotate) {$\boldsymbol{R}^n_b(\eulerAngles)^T$};
+		\draw node[block, below of=sum,node distance=1.5cm] (thrust) {$\thrusterGeometryOnes[*]$};
+		\draw[->] (merge) -- (rotate.west); 
+		\draw[->] (rotate.east) -| (thrust.south); 
+   		\draw[->] (thrust.north) -- node[align=center, below] {$u_{\zPosition}$}  (sum.south);   		   		
    		% From sum to output
    		\draw node [output, right of=sum, node distance=2cm] (output) {};
     		\draw[->] (sum.east) -- node[align=center, below] {$u$} (output);
