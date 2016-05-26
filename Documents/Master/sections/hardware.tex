@@ -1,7 +1,7 @@
 \chapter{Hardware and Software}\label{cha:hardware}
 The goal of this chapter is present the capabilities and limitations of the hardware used in this thesis. The hardware is divided into different sections and are described in moderate detail, for example, how things are connected and how things are controlled.\\
 The \abbrROV frame and thrusters were included in a package from BlueRobotics. In addition to the \abbrROV frame, a Raspberry Pi was used as an onboard computer and a HKPilot Mega 2.7  was used as a input/output (\abbrIO) unit, see \Figureref{fig:apm}. The software in the \abbrROV was built on top of \abbrROS.  Instructions for installation of software and operation of the \abbrROV can be found in Appendices~\ref{app:dependencies} and \ref{app:operation}. \abbrROS is an open source operating system for robot applications and is used in the \abbrROV. The operating system provides message passing, hardware abstraction and thus simplifies communication between different computers \citep{ROS}. The message passing in \abbrROS consists of two parties, subscribers and publishers. When a publisher sends a message on a specific topic any subscribers that listens to that topic receives receives the message.  
-
+\todo[inline]{Bilden av hur saker ar kopplade ar inte fixad. Utan den gors senare.}
 \section{BlueROV Package}
 \Figureref{fig:rov} shows the BlueRov from BlueRobotics used in this thesis. The BlueROV package includes an acrylic chassi, an acrylic tube, six electronic speed controllers, six BlueRobotics T200 thrusters, cable penetrators and a cradle for mounting of electronics.
 \begin{figure}

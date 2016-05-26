@@ -24,7 +24,7 @@ The prediction-error method uses a predictor $\hat{\boldsymbol{y}}(\boldsymbol{\
 \begin{equation}
 \boldsymbol{x}_{k+1}(\theta) = f(\boldsymbol{\hat{x}_k}(\theta), \boldsymbol{u}_k,\boldsymbol{y}_k, \boldsymbol{\theta})
 \end{equation}
-and the predictor can be described by
+and the predictor can be described by \todo[inline]{Detta ar inte fixat. Men just nu star det samma sak som i Roger Larssons tes}
 \begin{equation}
 \hat{\boldsymbol{y}}_k(\boldsymbol{\theta}) = h(\hat{\boldsymbol{x}}_k, \boldsymbol{u}_k, \boldsymbol{\theta})
 \end{equation}
@@ -40,12 +40,15 @@ The cost function in this thesis has been defined as the squared error
 \end{equation}
 where $N$ is the number of samples in the dataset, $\boldsymbol{e}_k(\boldsymbol{\theta})$ is the error vector with the parameter vector~$\boldsymbol{\theta}$ and $\boldsymbol{W}$ is a positive definite weight matrix.
 
+To handle noisy signals an error threshold was introduced. An error threshold means that after a breakpoint the cost function becomes linear instead of quadratic, which makes the parameter estimation less sensitive to outliers. To reduce the impact of the noise even further, the used weight matrix in the quadratic cost function was chosen as the inverse of the estimated noise covariance. The used linear cost function was
+\begin{equation}
+   V(\boldsymbol{\theta}) = \frac{1}{N} \sum_{t=1}^{N} \abs{\boldsymbol{e}^T_k(\boldsymbol{\theta})} \boldsymbol{W}_{\text{lin}}(\boldsymbol{\theta})
+\end{equation}
+where $\boldsymbol{W}_{\text{lin}}$ is the weight vector with positive elements in the linear cost function. 
+
 Several tools exists	which can estimate parameters using the prediction-error method. In this thesis the System Identification Toolbox\texttrademark has been used with the reflective Newton Method as the choose method for minimisation of the cost function.
-
-To handle noisy signals an error threshold was introduced. An error threshold means that after a breakpoint the cost function becomes linear instead of quadratic. This makes the parameter estimation less sensitive to outliers. To reduce the impact of the noise even further the used weight matrix in the cost function was the inverse of the estimated noise covariance. 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Extended Kalman Filter Estimation}\index{EKF@\abbrEKF!abbreviation}
+\section{Extended Kalman Filter Estimation}\label{sec:KalmanEstimation}\index{EKF@\abbrEKF!abbreviation}
 An \abbrEKF can also be used to estimate parameters of the \abbrROV. This can be done by extending the state vector of the \abbrEKF with the parameters that need to be estimated \citep{Roger}.
 \begin{equation}
 \bar{\boldsymbol{x}} = \begin{bmatrix}
@@ -157,7 +160,7 @@ Using the model structure \eqref{eq:pq_dot_decouple} and \eqref{eq:r_dot_decoupl
 and
 \begin{equation}
 \boldsymbol{y} = \nuVector
-\end{equation}
+\end{equation} 
 where $\hat{\etaVector}$ are the estimated Euler angles from the sensor fusion.
 The result of the estimation can be seen in \Tableref{tab:ResultEstimAngular}. The estimation used two datasets as estimation data and used one dataset for validation data. The fit of the model compared to validation data can be seen in \Figureref{fig:velocityCompareCong}.
 
@@ -295,11 +298,11 @@ The fit of the model using the estimated parameters, with $\distance{z}{6} = 0$,
 \end{figure}
 
 \subsection{Extended Kalman Filter Estimation}
-Using the model defined in \sectionref{sec:KalmanEstimatorImpl} with process noise matrix
+The \abbrEKF estimation used the method described in \sectionref{sec:KalmanEstimation} with the model \eqref{eq:quatModel} and quaternions as attitude representation. The estimation was feed with process noise covariance matrix
 \begin{equation*}
 \boldsymbol{Q}=\text{diag}[\underbrace{\overbrace{100}^{\times4}}_{\etaVector}... \underbrace{\overbrace{1000}^{\times3}}_{\nuVector}...\underbrace{\overbrace{0.01}^{\times3}}_{\boldsymbol{b}}... \underbrace{\overbrace{0.01}^{\times10}... \overbrace{0.000001}^{\times5}}_{\boldsymbol{\theta}}]\text{ ,}
 \end{equation*}
-measurement noise matrix
+measurement noise covariance matrix
 \begin{equation*}
 \boldsymbol{R} = \text{diag}[\underbrace{\overbrace{0.01}^{\times3}}_{\text{Gyro}}... \underbrace{\overbrace{0.1}^{\times3}}_{\text{Acc}}... \underbrace{\overbrace{100}^{\times3}}_{\text{mag}}]
 \end{equation*}
@@ -526,7 +529,7 @@ When deciding on which parameters to use for controller design, the choice was b
 %To handle noisy signals an error threshold was introduced. An error threshold means that after a breakpoint the cost function becomes linear instead of quadratic. This makes the parameter estimation less sensitive to outliers. To reduce the impact of the noise even further the used weight matrix in the cost function was the inverse of the estimated noise covariance. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Estimated Parameters}\label{sec:parameterResults}\todo{Update Parameters, lz6 = 0}
+\section{Estimated Parameters}\label{sec:parameterResults}
 \Tableref{tab:parameterConstants} shows the know and measured parameters used in the \abbrROV. The estimated parameters that were chosen for use during controller development are shown in \Tableref{tab:parameterEstimation}.
 
 \begin{table}[tbp]
@@ -541,14 +544,14 @@ When deciding on which parameters to use for controller design, the choice was b
     $g$                 & 9.82  \meter\per\second\squared    & Gravity acceleration.\\   
     $\rho$              & 1000  \kilogram\per\meter\cubed    & Density of water.\\       
     
-    $\distance{x}{1}$   & 0.16 \meter & Distance from \abbrCG to thruster 1 in $\xPosition$-direction.\\
+    $\distance{x}{1}$   & 0.19 \meter & Distance from \abbrCG to thruster 1 in $\xPosition$-direction.\\
     $\distance{y}{1}$   & 0.11 \meter & Distance from \abbrCG to thruster 1 in $\yPosition$-direction.\\
     $\distance{y}{2}$   & 0.11 \meter & Distance from \abbrCG to thruster 2 in $\yPosition$-direction.\\
-    $\distance{x}{2}$   & 0.16 \meter & Distance from \abbrCG to thruster 2 in $\xPosition$-direction.\\
+    $\distance{x}{2}$   & 0.19 \meter & Distance from \abbrCG to thruster 2 in $\xPosition$-direction.\\
     $\distance{y}{3}$   & 0.11 \meter & Distance from \abbrCG to thruster 3 in $\yPosition$-direction.\\
-    $\distance{x}{5}$   & 0.20 \meter & Distance from \abbrCG to thruster 5 in $\xPosition$-direction.\\
+    $\distance{x}{5}$   & 0.17 \meter & Distance from \abbrCG to thruster 5 in $\xPosition$-direction.\\
     $\distance{y}{4}$   & 0.11 \meter & Distance from \abbrCG to thruster 4 in $\yPosition$-direction.\\
-    $\distance{z}{6}$   & 0.11 \meter & Distance from \abbrCG to thruster 6 in $\zPosition$-direction.\\
+    $\distance{z}{6}$   & 0    \meter & Distance from \abbrCG to thruster 6 in $\zPosition$-direction.\\
     \bottomrule%
   \end{tabular}
 \end{table}
@@ -562,16 +565,16 @@ When deciding on which parameters to use for controller design, the choice was b
     \textbf{Notation}   & \textbf{Value} & \textbf{Description} \\
     \otoprule%   
     % Parameters that will be estimated
-	$z_B$               & -0.0308 \meter                                      & Distance from \abbrCG to \abbrCB.\\
-    $\Kp$               & -1.1082 \kilogram\usk\meter\squared                 & Linear damping coefficient due to rotation in water about the $\xPosition$-axis.\\
-    $\Kpabsp$           & -0.3450 \kilogram\usk\meter\squared                 & Quadratic damping coefficient due to rotation in water about the $\xPosition$-axis.\\
-    $\Mq$               & -1.2385 \kilogram\usk\meter\squared                 & Linear damping coefficient due to rotation in water about the $\yPosition$-axis.\\
-    $\Mqabsq$           & -0.1111 \kilogram\usk\meter\squared                 & Quadratic damping coefficient due to rotation in water about the $\yPosition$-axis.\\
-    $\Nr$               & -1.5325 \kilogram\usk\meter\squared                 & Linear damping coefficient due to rotation in water about the $\zPosition$-axis.\\
-    $\Nrabsr$           & -1.3977 \kilogram\usk\meter\squared                 & Quadratic damping coefficient due to rotation in water about the $\zPosition$-axis.\\
-    $A_p$               & 0.9625  \kilogram\usk\meter\squared                 & Inertia around the $\xPosition$-axis and increased inertia around the $\xPosition$-axis.\\
-    $B_q$               & 0.7108  \kilogram\usk\meter\squared                 & Inertia around the $\yPosition$-axis and increased inertia around the $\yPosition$-axis.\\
-    $C_r$               & 1.2649  \kilogram\usk\meter\squared                 & Inertia around the $\zPosition$-axis and increased inertia around the $\zPosition$-axis.\\
+	$z_B$               & -0.0331 \meter                                      & Distance from \abbrCG to \abbrCB.\\
+    $\Kp$               & -0.8325 \kilogram\usk\meter\squared                 & Linear damping coefficient due to rotation in water about the $\xPosition$-axis.\\
+    $\Kpabsp$           & -0.4933 \kilogram\usk\meter\squared                 & Quadratic damping coefficient due to rotation in water about the $\xPosition$-axis.\\
+    $\Mq$               & -0.8487 \kilogram\usk\meter\squared                 & Linear damping coefficient due to rotation in water about the $\yPosition$-axis.\\
+    $\Mqabsq$           & -0.2507 \kilogram\usk\meter\squared                 & Quadratic damping coefficient due to rotation in water about the $\yPosition$-axis.\\
+    $\Nr$               & -1.7580 \kilogram\usk\meter\squared                 & Linear damping coefficient due to rotation in water about the $\zPosition$-axis.\\
+    $\Nrabsr$           & -1.4595 \kilogram\usk\meter\squared                 & Quadratic damping coefficient due to rotation in water about the $\zPosition$-axis.\\
+    $A_p$               & 0.6024  \kilogram\usk\meter\squared                 & Inertia around the $\xPosition$-axis and increased inertia around the $\xPosition$-axis.\\
+    $B_q$               & 0.7834  \kilogram\usk\meter\squared                 & Inertia around the $\yPosition$-axis and increased inertia around the $\yPosition$-axis.\\
+    $C_r$               & 1.3993  \kilogram\usk\meter\squared                 & Inertia around the $\zPosition$-axis and increased inertia around the $\zPosition$-axis.\\
     \bottomrule%
   \end{tabular}
 \end{table}

@@ -1,11 +1,19 @@
-yaw_filepath = fullfile('bag','all_1_low_sensor_cov_7_2016-04-20-10-50-53.bag');
+yaw_filepath = fullfile('bag','act_1_2_5_6_test_6_2016-03-21-15-33-14.bag');
 [lin_vel_data ,lin_acc_data, ang_vel_data, thrusters_data, states, time, Ts]= ...
 getTestData(yaw_filepath, 0, 0);
 
+end_samp = 5500;
+states(:,1:3) = states(:,1:3)*pi/180;
+ang_vel_data = ang_vel_data*pi/180; 
 states(:,1:3) = antiModAngles(states(:,1:3));
+ang_vel_data = ang_vel_data(1:end_samp,:);
+states = states(1:end_samp,1:3);
+time = time(1:end_samp);
 roll = states(:,1);
 pitch = states(:,2);
 yaw = states(:,3);
+
+
 %%
 sfi = sin(roll);
 cfi = cos(roll);
@@ -26,41 +34,44 @@ for i=1:size(states,1)
     g_ang_vel(i,:) = (rotmatrix*(ang_vel_data(i,:)'))';
 end
 %%
-plot([cumsum(g_ang_vel(:,1))*Ts, antiModAngles(states(:,1))])
+figure(1)
+time = time - time(1);
+plot(time,[cumsum(g_ang_vel(:,1))*Ts, antiModAngles(states(:,1))], 'LineWidth', 2)
 
-ft = 20;
-h = legend('\int R(\nu_2)','\phi');
+ft = 30;
+h = title('\phi');
 set(h,'FontSize',ft);
 h = ylabel('Angle [rad]');
 set(h,'FontSize',ft);
-h = xlabel('Sample');
+h = xlabel('Time [s]');
 set(h,'FontSize',ft);
 set(gca,'FontSize',ft)
 
-% print -f1 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/velocityAnglePhi.eps' 
+print -f1 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/velocityAnglePhi.eps' 
  %%
- close all
- plot([cumsum(g_ang_vel(:,2))*Ts, antiModAngles(states(:,2))])
+ figure(2)
+ plot(time,[cumsum(g_ang_vel(:,2))*Ts, antiModAngles(states(:,2))], 'LineWidth', 2)
 
-h = legend('\int R(\nu_2)','\theta');
+ ft = 30;
+h = title('\theta');
 set(h,'FontSize',ft);
 h = ylabel('Angle [rad]');
 set(h,'FontSize',ft);
-h = xlabel('Sample');
+h = xlabel('Time [s]');
 set(h,'FontSize',ft);
 set(gca,'FontSize',ft)
 
-% print -f1 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/velocityAngleTheta.eps'
+print -f2 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/velocityAngleTheta.eps'
 %%
-close all
-plot([cumsum(g_ang_vel(:,3))*Ts, antiModAngles(states(:,3))])
+figure(3)
+plot(time,[cumsum(g_ang_vel(:,3))*Ts, antiModAngles(states(:,3))], 'LineWidth', 2)
 
-h = legend('\int R(\nu_2)','\psi');
+h = title('\psi');
 set(h,'FontSize',ft);
 h = ylabel('Angle [rad]');
 set(h,'FontSize',ft);
-h = xlabel('Sample');
+h = xlabel('Time [s]');
 set(h,'FontSize',ft);
 set(gca,'FontSize',ft)
 
-% print -f1 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/velocityAnglePsi.eps'
+print -f3 -depsc2 '~/bin/ExjobbROV/Documents/Master/fig/velocityAnglePsi.eps'
