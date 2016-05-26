@@ -439,19 +439,6 @@ Tests were conducted with the \abbrPID attitude controller without exact lineari
     \bottomrule%
   \end{tabular}
 \end{table}
-
-\begin{figure}
-\centering
-  \subfloat[][\label{fig:testExactAttitudeRoll} The exact linearisation in $\rollAngle$.]{\includegraphics[width=0.4\textwidth]{testExactLinAttitudePhi}}
-  \qquad
-  \subfloat[][\label{fig:testExactAttitudePitch} The exact linearisation in $\pitchAngle$.]{\includegraphics[width=0.4\textwidth]{testExactLinAttitudeTheta}}
-  \qquad
-  \subfloat[][\label{fig:testExactAttitudeYaw} The exact linearisation in $\yawAngle$.]{\includegraphics[width=0.4\textwidth]{testExactLinAttitudePsi}}
-  \caption{\label{fig:ExactLinAttitude}% 
-  The result of the exact linearisation attitude controller with setpoint $\phi_{ref}=0$, $\theta_{ref}=0$ and $\psi_{ref}=0$. Note the instability in $\theta$ and $\psi$.}
-\end{figure}
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%Attitude%%%%%%%%%%%%%%%%%
 
 \begin{figure}
@@ -560,10 +547,18 @@ Sine signals were applied to all angular velocities which can be seen in \Figure
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Discussion}
-Problems were encountered during trimming of the attitude \abbrPID using exact linearisation, \Figureref{fig:ExactLinAttitude} shows this problem. Regardless of the strength of the feedback the \abbROV never stabilized. This problem might be caused by the magnetometer readings, which fluctuated mildly when the \abbrROV  engaged its thrusters. It is suspected that such fluctuations in magnetic field strength may cause rapid changes in the estimated quaternions and angular velocities, leading to problems when computing \eqref{eq:anLaw} in the exact-linearisation block. 
+\begin{figure}
+\centering
+  \subfloat[][\label{fig:testExactAttitudeRoll} The exact linearisation in $\rollAngle$.]{\includegraphics[width=0.4\textwidth]{testExactLinAttitudePhi}}
+  \qquad
+  \subfloat[][\label{fig:testExactAttitudePitch} The exact linearisation in $\pitchAngle$.]{\includegraphics[width=0.4\textwidth]{testExactLinAttitudeTheta}}
+  \qquad
+  \subfloat[][\label{fig:testExactAttitudeYaw} The exact linearisation in $\yawAngle$.]{\includegraphics[width=0.4\textwidth]{testExactLinAttitudePsi}}
+  \caption{\label{fig:ExactLinAttitude}% 
+  The result of the exact linearisation attitude controller with setpoint $\phi_{ref}=0$, $\theta_{ref}=0$ and $\psi_{ref}=0$. Note the instability in $\theta$ and $\psi$.}
+\end{figure}
 
-\todo[inline]{skriv nagot om parametrarna}
-The first argument is strengthen by the fact that the estimated model parameters had to be scaled down to get the exact linearisation in the rate controller to work satisfactory. 
+Problems were encountered during trimming of the attitude \abbrPID using exact linearisation, \Figureref{fig:ExactLinAttitude} shows this problem. Regardless of the strength of the feedback the \abbROV never stabilised. This problem might be caused by the magnetometer readings, which fluctuated mildly when the \abbrROV  engaged its thrusters. It is suspected that such fluctuations in magnetic field strength may cause rapid changes in the estimated quaternions and angular velocities, leading to problems when computing \eqref{eq:anLaw} in the exact-linearisation block. The problem could also be caused by badly estimated parameters from \Chapterref{cha:modelling}. This argument is strengthen by the fact that the estimated model parameters had to be scaled down to get the exact linearisation in the rate controller to work satisfactory. 
 
 The results from the tests from the rate controller gave mixed results. In some test did the rate controller in the real test perform better than in simulation this is probably due to the grater damping parameters in the simulated \abbrROV model. 
 
