@@ -127,7 +127,7 @@ The desired control signal $\boldsymbol{u}_{\text{Lin}}$ was then chosen using
 \end{equation} where $f$ is the look-up table from control signal to thruster defined in \appref{app:thrustmapping}, $T$ is the geometry matrix defined in \eqref{eq:actuatorGeometry} and $\bar{\tauVector}_{\text{Lin}}=[0~0~0~\tauVector_{\text{Lin}}^T]^T$.
 In an ideal case, where the model is exact, using the non-linear control law \eqref{eq:exactLin} would produce the system
 \begin{equation}\label{eq:exactLinSys}
-\dot{\nuVectorAng} = \accVector^b
+\nuVectorAngdot = \accVector^b
 \end{equation} 
 where $\accVector^b$ could be chosen using any desired control method \citep[p.451]{fossen2011}.
 
@@ -169,7 +169,7 @@ Combining \eqref{eq:etaTildeAngDot} with \eqref{eq:attitudeFeedback} gives the f
 %where $K_{\text{p}}$, $K_{\text{i}}$ and $K_{\text{d}}$ are positive definite design matrices \citep[p. 453]{fossen2011}. 
 The attitude controller was also combined with an open-loop control of the linear velocities
 \begin{equation}
-	u_{\etaVector} = \boldsymbol{T}^{-1}f^{-1}(G^{-1}(\etaVector,\nuVector,\accVector^{\text{b}})) + \thrusterGeometryOnes[*] \begin{bmatrix} \nuVector_{1,\text{ref}} \\ \zeroCol{3} \end{bmatrix}
+	u_{\etaVectorAng} = \boldsymbol{T}^{-1}f^{-1}(G^{-1}(\etaVector,\nuVector,\accVector^{\text{b}})) + \thrusterGeometryOnes[*] \begin{bmatrix} \nuVector_{1,\text{ref}} \\ \zeroCol{3} \end{bmatrix}
 \end{equation}
 or
 \begin{equation}
@@ -192,23 +192,25 @@ without the exact linearisation. This was implemented to allow the user to steer
         output/.style   = {coordinate} %
     ]
    		\draw node at (0,0) [input] (vel_input) {};
-   		\draw node [input,below of=vel_input] (ang_input) {};
-   		\draw node[PID, right of=ang_input] (pid) {$\abbrPID$};
+   		\draw node [input,below of=vel_input, node distance=3cm] (ang_input) {};
+   		\draw node[PID, right of=ang_input, node distance=1cm] (pid) {$\abbrPID$};
+   		\draw node[block, right of=pid, node distance=1.3cm] (L) {$L(\cdot)$};
    		
    		%from input to pid
-   		\draw[->] (ang_input) -- node[align=center, below] {$\etaVectorAng - \etaVectorAng[,\text{ref}]$} ($(pid.west)$);
-   		\draw (pid.east) -- ++(0.5,0) node[](switch){};
+   		\draw[->] (ang_input) -- node[align=center, below] {$\etaTildeAng$} ($(pid.west)$);
+   		\draw[->] (pid.east) -- (L.west);
+   		\draw (L.east) -- ++(0.5,0) node[](switch){};
    		
    		%from pid to switch and making the switch 
-   		\draw (pid.east) ++(2,0.5) node[](switchup){};
-   		\draw (pid.east) ++(2,-0.5) node[block, name=exactlin] {$f^{-1}(\etaVector,\nuVector)$};
-   		\draw (pid.east) ++(0.8,0.5) -| (switchup);
-   		\draw (pid.east) ++(0.8,-0.5) -| (exactlin.west);
-   		\draw (pid.east) ++(0.5,0) -- ++(0.3,0.5);
-   		\draw[->] (pid.east) ++(0.65,0.25) arc (30:-30:0.6);     		
+   		\draw (L.east) ++(2,0.5) node[](switchup){};
+   		\draw (L.east) ++(2,-0.5) node[block, name=exactlin] {$G^{-1}(\cdot)$};
+   		\draw (L.east) ++(0.8,0.5) -| (switchup);
+   		\draw (L.east) ++(0.8,-0.5) -| (exactlin.west);
+   		\draw (L.east) ++(0.5,0) -- ++(0.3,0.5);
+   		\draw[->] (L.east) ++(0.65,0.25) arc (30:-30:0.6);     		
    		
    		%Merge the switch  		
-   		\draw (pid.east) ++(3,0) node[coordinate](merge){};
+   		\draw (L.east) ++(3,0) node[coordinate](merge){};
    		\draw (switchup) -| (merge);
    		\draw (exactlin) -| (merge);
    		
@@ -216,10 +218,16 @@ without the exact linearisation. This was implemented to allow the user to steer
    		\draw node[block, right of=vel_input] (thrust) {$\thrusterGeometryOnes[*]$};
    		\draw[->] (vel_input) -- node[align=center, below] {$\nuVectorLin[,\text{ref}]$} (thrust.west);
    		
+   		
    		%To sum
    		\draw (thrust.east) ++(4,0) node[sum, name=sum] {$+$};
 		\draw[->] (thrust.east) -- node[align=center, below] {$u_{\nuVectorLin}$} (sum.west);
-   		\draw[->] (merge) -| node[align=center, below] {$u_{\etaVectorAng}$} (sum.south);   		   		
+		%From exact lin to sum
+   		\draw node[block, below of=sum, node distance=1.5cm] (rotate) {$T^{-1}$};
+   		\draw node[block, right of=merge, node distance=1cm] (inter) {$f^{-1}(\cdot)$};
+   		\draw[->] (rotate.north) -- node[align=center, right] {$u_{\etaVectorAng}$} (sum.south);
+   		\draw[->] (inter.north) -| (rotate.south);
+   		\draw[->] (merge) -- (inter.west);   		   		
    		% From sum to output
    		\draw node [output, right of=sum, node distance=2cm] (output) {};
     		\draw[->] (sum.east) -- node[align=center, below] {$u$} (output);	
@@ -268,16 +276,16 @@ if the exact linearisation is not wanted. \Figureref{fig:ratecontroller} illustr
         output/.style   = {coordinate} %
     ]
    		\draw node at (0,0) [input] (vel_input) {};
-   		\draw node [input,below of=vel_input] (ang_input) {};
+   		\draw node [input,below of=vel_input, node distance=3cm] (ang_input) {};
    		\draw node[PID, right of=ang_input] (pid) {$\abbrPI$};
    		
    		%from input to pid
-   		\draw[->] (ang_input) -- node[align=center, below] {$\nuVectorAng - \nuVectorAng[,\text{ref}]$} ($(pid.west)$);
+   		\draw[->] (ang_input) -- node[align=center, below] {$\nuTildeAng$} ($(pid.west)$);
    		\draw (pid.east) -- ++(0.5,0) node[](switch){};
    		
    		%from pid to switch and making the switch 
    		\draw (pid.east) ++(2,0.5) node[](switchup){};
-   		\draw (pid.east) ++(2,-0.5) node[block, name=exactlin] {$f^{-1}(\etaVector,\nuVector)$};
+   		\draw (pid.east) ++(2,-0.5) node[block, name=exactlin] {$G^{-1}(\cdot)$};
    		\draw (pid.east) ++(0.8,0.5) -| (switchup);
    		\draw (pid.east) ++(0.8,-0.5) -| (exactlin.west);
    		\draw (pid.east) ++(0.5,0) -- ++(0.3,0.5);
@@ -295,12 +303,17 @@ if the exact linearisation is not wanted. \Figureref{fig:ratecontroller} illustr
    		%To sum
    		\draw (thrust.east) ++(4,0) node[sum, name=sum] {$+$};
 		\draw[->] (thrust.east) -- node[align=center, below] {$u_{\nuVectorLin}$} (sum.west);
-   		\draw[->] (merge) -| node[align=center, below] {$u_{\nuVectorAng}$} (sum.south);   		   		
+		%From exact lin to sum
+   		\draw node[block, below of=sum, node distance=1.5cm] (rotate) {$T^{-1}$};
+   		\draw node[block, right of=merge, node distance=1.5cm] (inter) {$f^{-1}(\cdot)$};
+   		\draw[->] (rotate.north) -- node[align=center, right] {$u_{\etaVectorAng}$} (sum.south);
+   		\draw[->] (inter.north) -| (rotate.south);
+   		\draw[->] (merge) -- (inter.west);
    		% From sum to output
    		\draw node [output, right of=sum, node distance=2cm] (output) {};
-    		\draw[->] (sum.east) -- node[align=center, below] {$u$} (output);
+    		\draw[->] (sum.east) -- node[align=center, below] {$u$} (output);	  
 	\end{tikzpicture}
-    \caption{The linear velocities are controlled in the same way as in \Sectionref{sec:openloop}. However, the angular velocities are controlled via an \abbrPID and exact linearisation can be enabled.} 
+    \caption{The linear velocities are controlled in the same way as in \Sectionref{sec:openloop}. However, the angular velocities are controlled via an \abbrPI and exact linearisation can be enabled.} 
     \label{fig:ratecontroller}
 \end{figure}
 
