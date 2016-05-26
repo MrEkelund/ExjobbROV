@@ -556,11 +556,13 @@ Sine signals were applied to all angular velocities which can be seen in \Figure
   \qquad
   \subfloat[][\label{fig:testExactAttitudeYaw} The exact linearisation in $\yawAngle$.]{\includegraphics[width=0.4\textwidth]{testExactLinAttitudePsi}}
   \caption{\label{fig:ExactLinAttitude}% 
-  The result of the exact linearisation attitude controller with setpoint $\phi_{ref}=0$, $\theta_{ref}=0$ and $\psi_{ref}=0$. Note the instability in $\theta$ and $\psi$.}
+  The result of the exact linearisation attitude controller with setpoints $\phi_{ref}=0$, $\theta_{ref}=0$ and $\psi_{ref}=0$. Note the instability in $\theta$ and $\psi$.}
 \end{figure}
 
 Problems were encountered during trimming of the attitude \abbrPID using exact linearisation, \Figureref{fig:ExactLinAttitude} shows this problem. Regardless of the strength of the feedback the \abbrROV never stabilised. This problem might be caused by the magnetometer readings, which fluctuated mildly when the \abbrROV  engaged its thrusters. It is suspected that such fluctuations in magnetic field strength may cause rapid changes in the estimated quaternions and angular velocities, leading to problems when computing \eqref{eq:anLaw} in the exact-linearisation block. The problem could also be caused by badly estimated parameters from \Chapterref{cha:modelling}. This argument is strengthen by the fact that the estimated model parameters had to be scaled down to get the exact linearisation in the rate controller to work satisfactory. 
 
-The results from the tests from the rate controller gave mixed results. In some test did the rate controller in the real test perform better than in simulation this is probably due to the grater damping parameters in the simulated \abbrROV model. 
+\todo[inline]{write about the error model (exact linearisation)}
 
-   
+In general, comparisons of simulated tests and real tests gave mixed results. In some test did the real tests performed better than in their simulated counterparts. This is probably due to the fact that damping parameters in the simulator are larger than the actual damping values. The larger damping parameters in the simulation caused the simulated \abbrROV to be more damped. Thus did the simulated test, in general, have smaller overshoots and did not reach the requested amplitudes. The larger phase shift in the simulations can also be caused by the larger damping parameters.  
+
+Due to problems during implementation of the controllers, were they not as well trimmed as they should had been. This can be seen in the results as large steady state errors were acquired during the tests. 
