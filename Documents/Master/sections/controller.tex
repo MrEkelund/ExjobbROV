@@ -1,12 +1,11 @@
 \chapter{Controlling the ROV} \label{cha:controller} \index{Open-Loop Control} \index{Controller} \index{Exact Linearisation}
-Automatic control is way of regulating a process without direct human interaction. The complexity can vary from decentralised proportional–integral–derivative controllers (\abbrPID:s) to more advanced model-based control methods, such as model predictive control (\abbrMPC). 
+Automatic control is way of regulating a process without direct human interaction. The complexity can vary from decentralised proportional, integral and derivative controllers (\abbrPID:s) to more advanced model-based control methods, such as model predictive control (\abbrMPC). 
 
-There are two main concepts of control, open-loop and feedback control. An open-loop controller is a controller that computes its output based on a model of the system and sometimes the current states. A disadvantage of open-loop controllers is that they require exact knowledge of the controlled system \citep{reglerteknik}. \Figureref{fig:control_system_open} illustrates the open-loop control scheme used in the \abbrROV. A feedback controller is a controller that uses measurements of the states in a system to correct its actions. One such method is error-controlled regulation, where the difference between the desired value, setpoint, of a state and its actual value \textit{i.e.} 
-\begin{equation}
-e = \hat{x} - x_{\text{ref}}
-\end{equation}
-is used for control. The feedback control scheme used in the \abbrROV can be seen in \Figureref{fig:control_system}. 
-A feedback controller can, similarly to open-loop control, use a model of the system. Using a model of the controlled system in the control structure can produce better performance and compensate for unwanted effects such as non-linearities. Compensating for non-linearities is desired due to the fact that a lot of control principles are based on linear systems \citep{reglerteori}. 
+There are two main concepts of control, open-loop and feedback control. An open-loop controller is a controller that computes its output based on a model of the system and sometimes the current states. A disadvantage of open-loop controllers is that they require exact knowledge of the controlled system \citep{reglerteknik}. \Figureref{fig:control_system_open} illustrates the open-loop control scheme used in the \abbrROV. 
+
+A feedback controller is a controller that uses measurements of the states in a system to correct its actions. One such method is error-controlled regulation, where the difference between the desired value, setpoint, of a state and its actual value is used for control. The feedback control scheme used in the \abbrROV can be seen in \Figureref{fig:control_system}. 
+
+Similarly to an open-loop controller, a feedback controller can use a model of the system. Using a model of the controlled system in the control structure can produce better performance and compensate for unwanted effects such as non-linearities. Compensating for non-linearities is desired due to the fact that a lot of control principles are based on linear systems \citep{reglerteori}. 
 
 \begin{figure}
 	\centering
@@ -116,12 +115,17 @@ The static thrust allocation matrix $\thrusterGeometryOnes[*]$ is the pseudo inv
 \end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Exact Linearisation}
-To completely compensate for the non-linearities in a system using a non-linear control law is called exact linearisation. Doing this enables linear control principles to be used \citep{reglerteori}. Using the model structure from \Chapterref{cha:modelling} and the estimated parameters from \Chapterref{cha:parameterEstimation} a non-linear control law was created according to 
+\section{Exact Linearisation}\todo[inline]{Completely?}
+To completely compensate for the non-linearities in a system using a non-linear control law is called exact linearisation. Doing this makes the system linear from a input-output perspective \citep{reglerteori}. Using the model structure from \Chapterref{cha:modelling} and the estimated parameters from \Chapterref{cha:parameterEstimation} a non-linear control law was created 
 \begin{equation}\label{eq:exactLin}
-\tauVector = f^{-1}(\etaVector,\nuVector) = \inertia \accVector^{\text{b}} + \damping(\nuVector) + \coriolis(\nuVector) + \gravity(\etaVector)
+\tauVector_{\text{Lin}} = G^{-1}(\etaVector,\nuVector,\accVector^{\text{b}}) = \inertia \accVector^{\text{b}} + \damping(\nuVector) + \coriolis(\nuVector) + \gravity(\etaVector)
 \end{equation}
-where $\accVector^b$ is the desired angular acceleration in the body-fixed frame and $\tauVector$ is the estimated thrust needed to achieve the desired acceleration. In an ideal case, where the model is exact, using the non-linear control law \eqref{eq:exactLin} would produce the system
+where $\accVector^b$ is the desired angular acceleration in the body-fixed frame and $\tauVector_{\text{Lin}}$ is the estimated thrust needed to achieve the desired acceleration.
+The desired control signal $\boldsymbol{u}_{\text{Lin}}$ was then chosen using 
+\begin{equation}\label{eq:linControlSignal}
+\boldsymbol{u}_{\text{Lin}} = \boldsymbol{T}^{-1}f^{-1}(\bar{\tauVector}_{\text{Lin}})
+\end{equation} where $f$ is the look-up table from control signal to thruster defined in \appref{app:thrustmapping}, $T$ is the geometry matrix defined in \eqref{eq:actuatorGeometry} and $\bar{\tauVector}_{\text{Lin}}=[0~0~0~\tauVector_{\text{Lin}}^T]^T$.
+In an ideal case, where the model is exact, using the non-linear control law \eqref{eq:exactLin} would produce the system
 \begin{equation}\label{eq:exactLinSys}
 \dot{\nuVectorAng} = \accVector^b
 \end{equation} 
@@ -129,40 +133,49 @@ where $\accVector^b$ could be chosen using any desired control method \citep[p.4
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Attitude Controller} \index{PID@\abbrPID!abbreviation} \index{Attitude Controller}
-An attitude controller was also implemented on the \abbrROV. The controller was chosen as \abbrPID-controller utilising exact linearisation \eqref{eq:exactLinSys}.
-Since \eqref{eq:exactLin} aimed to linearise the angular accelerations in the body-fixed frame and not the angular accelerations in the NED-frame, an extra control law was needed.
+An attitude controller was also implemented on the \abbrROV. The controller was chosen as \abbrPID-controller utilising exact linearisation \eqref{eq:exactLin}.
+Since \eqref{eq:exactLin} aimed to linearise the angular accelerations in the body-fixed frame and not the angular accelerations in the global coordinate system, an extra control law was needed.
 Choosing 
 \begin{equation}\label{eq:anLaw}
 \accVector^b = \boldsymbol{T}^{-1}_\theta(\eulerAngles)(\accVector^n - \dot{\boldsymbol{T}}_\theta(\eulerAngles)\nuVector)
-\end{equation} where $\accVector^n$ is the desired angular acceleration in the NED-frame. Using \eqref{eq:anLaw} with \eqref{eq:exactLin} gives the following linear system \begin{equation}
-\ddot{\etaVector}=\accVector^n 
+\end{equation} where $\accVector^n$ is the desired angular acceleration in the global-frame. This gives the following linear system \begin{equation}
+\ddot{\boldsymbol{\eta}}_2=\accVector^n 
 \end{equation}
-$\accVector^n$ was then chosen using the following feedback \todo[inline]{Fortsätt härifrån på torsdag}
-Using the relations in \Chapterref{cha:modelling} the derivative of the attitude error can be defined as 
+Defining the control error as
 \begin{equation}
-\etaTildeAngdot = \dot{\boldsymbol{T}}_\theta(\eulerAngles)\nuVectorAng
+\etaTildeAng = \hat{\etaVector}_2 - \etaVectorAng[,_{\text{ref}}] 
 \end{equation}
-and the attitude error can be defined as 
-\begin{equation}
-\etaTildeAng = \etaVectorAng - \etaVectorAng[,_{\text{ref}}] 
-\end{equation}
-This gives the \abbrPID attitude controller
-\begin{equation}
-	\accVector^b = \begin{bmatrix} 
-	\zeroCol{3} \\
-	\boldsymbol{T}^{-1}_\theta(\eulerAngles)(-K_{\text{p}} \etaTildeAng - K_{\text{i}}\int \! \etaTildeAng \, \mathrm{d}t - K_{\text{d}} \etaTildeAngdot - \dot{\boldsymbol{T}}_\theta(\eulerAngles) \nuVectorAng)
-	\end{bmatrix}
+$\accVector^n$ could be chosen using the following feedback 
+\begin{equation}\label{eq:attitudeFeedback}
+\accVector^n=-K_{\text{p}} \etaTildeAng - K_{\text{i}}\int \! \etaTildeAng \, \mathrm{d}t - K_{\text{d}} \etaTildeAngdot
 \end{equation}
 where $K_{\text{p}}$, $K_{\text{i}}$ and $K_{\text{d}}$ are positive definite design matrices \citep[p. 453]{fossen2011}. 
-Using the open-loop control of the linear velocities with exact linearisation of the attitude controller gives
+Using \eqref{eq:kinematicsticsEuler}, the derivative of the attitude error could be defined as 
+\begin{equation}\label{eq:etaTildeAngDot}
+\etaTildeAngdot = \dot{\boldsymbol{T}}_\theta(\eulerAngles)\nuVectorAng
+\end{equation}
+Combining \eqref{eq:etaTildeAngDot} with \eqref{eq:attitudeFeedback} gives the feedback
 \begin{equation}
-	u_{\etaVectorAng} = f^{-1}(\etaVector,\nuVector) + \thrusterGeometryOnes[*] \begin{bmatrix} \nuVectorLin \\ \zeroCol{3} \end{bmatrix}
+\accVector^n=-K_{\text{p}} \etaTildeAng - K_{\text{i}}\int \! \etaTildeAng \, \mathrm{d}t - K_{\text{d}} \dot{\boldsymbol{T}}_\theta(\eulerAngles)\nuVectorAng
+\end{equation}
+
+%This gives the \abbrPID attitude controller
+%\begin{equation}
+%	\accVector^b = \begin{bmatrix} 
+%	\zeroCol{3} \\
+%	\boldsymbol{T}^{-1}_\theta(\eulerAngles)(-K_{\text{p}} \etaTildeAng - K_{\text{i}}\int \! \etaTildeAng \, \mathrm{d}t - K_{\text{d}} \etaTildeAngdot - \dot{\boldsymbol{T}}_\theta(\eulerAngles) \nuVectorAng)
+%	\end{bmatrix}
+%\end{equation}
+%where $K_{\text{p}}$, $K_{\text{i}}$ and $K_{\text{d}}$ are positive definite design matrices \citep[p. 453]{fossen2011}. 
+The attitude controller was also combined with an open-loop control of the linear velocities
+\begin{equation}
+	u_{\etaVector} = \boldsymbol{T}^{-1}f^{-1}(G^{-1}(\etaVector,\nuVector,\accVector^{\text{b}})) + \thrusterGeometryOnes[*] \begin{bmatrix} \nuVector_{1,\text{ref}} \\ \zeroCol{3} \end{bmatrix}
 \end{equation}
 or
 \begin{equation}
-	u_{\etaVectorAng} = \accVector^b + \thrusterGeometryOnes[*] \begin{bmatrix} \nuVectorLin \\ \zeroCol{3} \end{bmatrix}
+	u_{\etaVectorAng} = \boldsymbol{T}^{-1}f^{-1}(\accVector^b) + \thrusterGeometryOnes[*] \begin{bmatrix} \nuVectorLin \\ \zeroCol{3} \end{bmatrix}
 \end{equation}
-without the exact linearisation. An illustration of how the attitude controller with open-loop control is implemented can be seen in \Figureref{fig:attitudecontroller}.
+without the exact linearisation. This was implemented to allow the user to steer the \abbrROV while the controller unsures that the \abbrROV holds a given attitude. An illustration of how the attitude controller with open-loop control is implemented can be seen in \Figureref{fig:attitudecontroller}.
 
 \begin{figure}
 	\centering

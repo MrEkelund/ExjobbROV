@@ -32,7 +32,6 @@ The Kalman filter (\abbrKF) is a linear state-space observer, it estimates both 
 The \abbrEKF algorithm is comprised of two key steps called updates.
 The time update uses the current state estimates and the user specified motion model to predict the values of the states at the next time instant. The second update is called the measurement update and it uses sampled sensor data in conjunction with the user specified measurement equations to fuse measurements and to correct and strengthen the state estimate \citep{sensorfusion}.
 If the measurements are independent, a measurement update can be performed at the arrival of each measurement without the need of a time update in between \citep[p. 170]{sensorfusion}.
-
 The complete extended Kalman filter algorithm is summarised in \Algoref{alg:EKF}.
 \begin{algorithm}
 \caption{The extended Kalman filter algorithm \citep{sensorfusion}.}
