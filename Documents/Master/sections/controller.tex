@@ -23,7 +23,7 @@ Similarly to an open-loop controller, a feedback controller can use a model of t
 		    \draw [->] (controller) -- node[name=u] {$u$} (system);
 		    \node [output, right of=system] (output) {};
 		
-		    \draw [draw,->] (input) -- node {$u_{\text{control}}$} (controller);
+		    \draw [draw,->] (input) -- node {$u_{\nuVector}$} (controller);
 		    \draw [->] (system) -- node [name=y] {$y$}(output);
 		\end{tikzpicture}
 	\caption{The open-loop control scheme used in the \abbrROV. The control block F can be any type of open-loop control. Notice that this is an ideal case were no disturbances affect the system.}
@@ -107,7 +107,7 @@ The static thrust allocation matrix $\thrusterGeometryOnes[*]$ is the pseudo inv
     	node [output, right of=inte1] (output1) {};
         % Joining blocks. 
         % Commands \draw with options like [->] must be written individually
-    	\draw[->](input1) -- node {$u_{\text{control}}$}(inte1);
+    	\draw[->](input1) -- node {$u_{\nuVectorLin}$}(inte1);
      	\draw[->](inte1) -- node {$u$} (output1);
     \end{tikzpicture}
     \caption{The open-loop control allocate control signals using the thrust-allocation matrix $\thrusterGeometryOnes[*]$. The static thrust-allocation matrix approximately decouples the system.}
@@ -116,7 +116,7 @@ The static thrust allocation matrix $\thrusterGeometryOnes[*]$ is the pseudo inv
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Exact Linearisation}
-To compensate for the non-linearities in a system using a non-linear control law is called exact linearisation. Doing this makes the system linear from a input-output perspective \citep{reglerteori}. Using the model structure from \Chapterref{cha:modelling} and the estimated parameters from \Chapterref{cha:parameterEstimation} a non-linear control law was created 
+To compensate for the non-linearities in a system using a non-linear control law, based on the system's non-linearities, is called exact linearisation. Doing this makes the system linear from an input-output perspective \citep{reglerteori}. Using the model structure from \Chapterref{cha:modelling} and the estimated parameters from \Chapterref{cha:parameterEstimation}, a non-linear control law was created 
 \begin{equation}\label{eq:exactLin}
 \tauVector_{\text{Lin}} = G^{-1}(\hat{\etaVector}_{2},\hat{\nuVector}_{2},\accVector^{\text{b}}) = \inertia \accVector^{\text{b}} + \damping(\hat{\nuVector}_{2})\hat{\nuVector}_{2} + \coriolis(\hat{\nuVector}_{2})\hat{\nuVector}_{2} + \gravity(\hat{\etaVector}_{2})
 \end{equation}
@@ -169,11 +169,11 @@ Combining \eqref{eq:etaTildeAngDot} with \eqref{eq:attitudeFeedback} gives the f
 %where $K_{\text{p}}$, $K_{\text{i}}$ and $K_{\text{d}}$ are positive definite design matrices \citep[p. 453]{fossen2011}. 
 The attitude controller was also combined with an open-loop control of the linear velocities
 \begin{equation}
-	u = \underbrace{\boldsymbol{T}^{-1}f^{-1}(G^{-1}(\hat{\etaVector}_2,\hat{\nuVector}_2,L(\accVector^n,\hat{\eulerAngles},\hat{\nuVector}_2)))}_{u_{\etaVectorAng}} + \underbrace{\thrusterGeometryOnes[*] \begin{bmatrix} \nuVector_{1,\text{ref}} \\ \zeroCol{3} \end{bmatrix}}_{u_{\nuVectorLin}}
+	u = \underbrace{f^{-1}(\boldsymbol{T}^{-1} G^{-1}(\hat{\etaVector}_2,\hat{\nuVector}_2,L(\accVector^n,\hat{\eulerAngles},\hat{\nuVector}_2)))}_{u_{\etaVectorAng}} + \underbrace{\thrusterGeometryOnes[*] \begin{bmatrix} \nuVector_{1,\text{ref}} \\ \zeroCol{3} \end{bmatrix}}_{u_{\nuVectorLin}}
 \end{equation}
 or
 \begin{equation}
-	u = \underbrace{\boldsymbol{T}^{-1}f^{-1}(L(\accVector^n,\hat{\eulerAngles},\hat{\nuVector}_2))}_{u_{\etaVectorAng}} + \underbrace{\thrusterGeometryOnes[*] \begin{bmatrix} \nuVector_{1,\text{ref}} \\ \zeroCol{3} \end{bmatrix}}_{u_{\nuVectorLin}}
+	u = \underbrace{f^{-1}(\boldsymbol{T}^{-1} L(\accVector^n,\hat{\eulerAngles},\hat{\nuVector}_2))}_{u_{\etaVectorAng}} + \underbrace{\thrusterGeometryOnes[*] \begin{bmatrix} \nuVector_{1,\text{ref}} \\ \zeroCol{3} \end{bmatrix}}_{u_{\nuVectorLin}}
 \end{equation}
 without the exact linearisation. This was implemented to allow the user to steer the \abbrROV while the controller unsures that the \abbrROV holds a given attitude. An illustration of how the attitude controller with open-loop control is implemented can be seen in \Figureref{fig:attitudecontroller}.
 
@@ -220,11 +220,11 @@ without the exact linearisation. This was implemented to allow the user to steer
    		
    		
    		%To sum
-   		\draw (thrust.east) ++(4,0) node[sum, name=sum] {$+$};
+   		\draw (thrust.east) ++(4.25,0) node[sum, name=sum] {$+$};
 		\draw[->] (thrust.east) -- node[align=center, below] {$u_{\nuVectorLin}$} (sum.west);
 		%From exact lin to sum
-   		\draw node[block, below of=sum, node distance=1.5cm] (rotate) {$T^{-1}$};
-   		\draw node[block, right of=merge, node distance=1cm] (inter) {$f^{-1}(\cdot)$};
+   		\draw node[block, below of=sum, node distance=1.5cm] (rotate) {$f^{-1}(\cdot)$};
+   		\draw node[block, right of=merge, node distance=1cm] (inter) {$T^{-1}$};
    		\draw[->] (rotate.north) -- node[align=center, right] {$u_{\etaVectorAng}$} (sum.south);
    		\draw[->] (inter.north) -| (rotate.south);
    		\draw[->] (merge) -- (inter.west);   		   		
@@ -251,11 +251,11 @@ where $K_{\text{p}}$ and $K_{\text{i}}$ are positive definite design matrices an
 
 The angular velocities \abbrPI controller was also expanded with a open-loop control solution for control of linear velocities
 \begin{equation}
-	u = \underbrace{\boldsymbol{T}^{-1}f^{-1}(G^{-1}(\hat{\etaVector}_2,\hat{\nuVector}_2,\accVector^b))}_{u_{\nuVectorAng}} + \underbrace{\thrusterGeometryOnes[*] \begin{bmatrix}\nuVector_{1,\text{ref}} \\ \zeroCol{3} \end{bmatrix}}_{u_{\nuVectorLin}}	
+	u = \underbrace{f^{-1}(\boldsymbol{T}^{-1} G^{-1}(\hat{\etaVector}_2,\hat{\nuVector}_2,\accVector^b))}_{u_{\nuVectorAng}} + \underbrace{\thrusterGeometryOnes[*] \begin{bmatrix}\nuVector_{1,\text{ref}} \\ \zeroCol{3} \end{bmatrix}}_{u_{\nuVectorLin}}	
 \end{equation}
 or alternatively 
 \begin{equation}
-	u = \underbrace{\boldsymbol{T}^{-1}f^{-1}(\accVector^b)}_{u_{\nuVectorAng}} + \underbrace{\thrusterGeometryOnes[*] \begin{bmatrix} \nuVector_{1,\text{ref}} \\ \zeroCol{3} \end{bmatrix}}_{u_{\nuVectorLin}}
+	u = \underbrace{f^{-1}(\boldsymbol{T}^{-1} \accVector^b)}_{u_{\nuVectorAng}} + \underbrace{\thrusterGeometryOnes[*] \begin{bmatrix} \nuVector_{1,\text{ref}} \\ \zeroCol{3} \end{bmatrix}}_{u_{\nuVectorLin}}
 \end{equation}
 if the exact linearisation is removed. \Figureref{fig:ratecontroller} illustrates how the angular velocity controller is implemented in conjunction with the open-loop control of the linear velocities.
 \begin{figure}
@@ -301,8 +301,8 @@ if the exact linearisation is removed. \Figureref{fig:ratecontroller} illustrate
    		\draw (thrust.east) ++(4,0) node[sum, name=sum] {$+$};
 		\draw[->] (thrust.east) -- node[align=center, below] {$u_{\nuVectorLin}$} (sum.west);
 		%From exact lin to sum
-   		\draw node[block, below of=sum, node distance=1.5cm] (rotate) {$T^{-1}$};
-   		\draw node[block, right of=merge, node distance=1.55cm] (inter) {$f^{-1}(\cdot)$};
+   		\draw node[block, below of=sum, node distance=1.5cm] (rotate) {$f^{-1}(\cdot)$};
+   		\draw node[block, right of=merge, node distance=1.25cm] (inter) {$T^{-1}$};
    		\draw[->] (rotate.north) -- node[align=center, right] {$u_{\nuVectorAng}$} (sum.south);
    		\draw[->] (inter.north) -| (rotate.south);
    		\draw[->] (merge) -- (inter.west);
