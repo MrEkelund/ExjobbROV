@@ -2,10 +2,8 @@
 %%%  Strings   %%%
 %%%%%%%%%%%%%%%%%%
 
-\newcommand{\LiTH@longname@swe}{Tekniska högskolan vid Link�öings universitet}
-
-\newcommand{\university@engname}{Linköping University}
-\newcommand{\university@swename}{Linköpings universitet}
+\newcommand{\university@engname}{Link\"{o}ping University}
+\newcommand{\university@swename}{Link\"{o}pings universitet}
 \newcommand{\university@engcountry}{Sweden}
 \newcommand{\university@swecountry}{Sverige}
 \newcommand{\department@engname}{\emph{No department selected!}}
@@ -23,9 +21,9 @@
 \newcommand{\department@sweaddr@threelines@depfirst}{\department@swename\\\university@swename\\\department@sweaddr}
 
 \newcommand{\department@splitaddr}{%
-  \department@engname \hfill Link�pings tekniska h�gskola\\%
-  Link�pings universitet \hfill
-  Link�pings universitet%
+  \department@engname \hfill Link\"{o}pings tekniska h\"{o}gskola\\%
+  Link\"{o}pings universitet \hfill
+  Link\"{o}pings universitet%
   \ifx\department@campus\@empty%
   \else%
   , \department@campus%
@@ -44,7 +42,7 @@
   januari\or februari\or mars\or
   april\or maj\or juni\or
   juli\or augusti\or september\or
-  oktober\or november\or december\else m�nad\fi}
+  oktober\or november\or december\else m{\aa}nad\fi}
 
 \newcommand{\longdate@eng}{\monthName@eng{\thesis@month} \thesis@day, \thesis@year}
 \newcommand{\longdate@swe}{\thesis@day\ \monthName@swe{\thesis@month} \thesis@year}
@@ -53,11 +51,14 @@
 %%%  Captions   %%%
 %%%%%%%%%%%%%%%%%%%
 
-\providecommand*\thesistype@name{Master's Thesis}
-\providecommand*\thesislevel@name{Thesis Level}
+\providecommand*\in@name{in}
+\ifx\thesis@type\thesistypebsc
+  \providecommand*\thesis@typename{Bachelor of Science Thesis}
+\else
+  \providecommand*\thesis@typename{Master of Science Thesis}
+\fi
 \providecommand*\examiner@name{Examiner}
 \providecommand*\supervisor@name{Supervisor}
-\def\LiTHstaende@filename{LiTH_sv_vert_blk}
 \let\monthName\monthName@eng
 \let\@longdate\longdate@eng
 \let\university@name\university@engname
@@ -68,12 +69,16 @@
 \let\department@addr@threelines\department@engaddr@threelines
 \let\department@addr@threelines@depfirst\department@engaddr@threelines@depfirst
 
+
 \addto{\captionsenglish}{%
-  \renewcommand*\thesistype@name{Master's Thesis}%
-  \renewcommand*\thesislevel@name{Thesis Level}%
+  \renewcommand*\in@name{in}
+  \ifx\thesis@type\thesistypebsc
+    \renewcommand*\thesis@typename{Bachelor of Science Thesis}
+  \else
+    \renewcommand*\thesis@typename{Master of Science Thesis}
+  \fi
   \renewcommand*\examiner@name{Examiner}%
   \renewcommand*\supervisor@name{Supervisor}%
-  \def\LiTHstaende@filename{LiTH_sv_vert_blk}%
   \let\monthName\monthName@eng
   \let\@longdate\longdate@eng
   \let\university@name\university@engname
@@ -85,11 +90,14 @@
   \let\department@addr@maybecountry\department@engaddr@maybecountry
 }
 \addto{\captionsswedish}{%
-  \renewcommand*\thesistype@name{Examensarbete}%
-  \renewcommand*\thesislevel@name{Niv�}%
+  \renewcommand*\in@name{i}
+  \ifx\thesis@type\thesistypebsc
+    \renewcommand*\thesis@typename{Kandidatuppsats}
+  \else
+    \renewcommand*\thesis@typename{Masteruppsats}
+  \fi
   \renewcommand*\examiner@name{Examinator}%
   \renewcommand*\supervisor@name{Handledare}%
-  \def\LiTHstaende@filename{LiTH_sv_vert_blk}%
   \let\monthName\monthName@swe
   \let\@longdate\longdate@swe
   \let\university@name\university@swename
@@ -109,320 +117,81 @@
 \newcommand*{\AND}{\\\>\bfseries\ignorespaces}%
 \newcommand*{\AT}{\\\>\>\small\ignorespaces}%
 
-%%%%%%%%%%%%%%%%%%%%%%
-%%%  Library page  %%%
-%%%%%%%%%%%%%%%%%%%%%%
-
-\newcommand{\makeLibraryPage}[1]{%
-  \setlength{\parskip}{\z@}%
-  \setlength{\parindent}{\z@}%
-  \cleardoublepage \thispagestyle{empty}%
-  \ifrt@UseHyperref%
-  \pdfbookmarkTopLevel{Library Page}{LibraryPage}%
-  \fi%
-  \enlargethispage*{27mm} {\centering%
-  \vspace*{-11mm}
-  \hspace*{3mm}%
-  \makebox[\z@][l]{%
-    \begin{minipage}[t][212mm]{126mm}%
-      \scriptsize \setlength{\unitlength}{1mm}%
-      \fontsize{7}{8\p@} \selectfont%
-      \begin{picture}(126,212)(0,0)%
-        %% Department and division
-        \put(0,190){\makebox[\z@][l]{\framebox(92,22){}}}%
-        \put(1,191){\includegraphics[width=20mm]{LiTH_sigill_blk}}%
-        \put(25,209){\parbox[t]{5cm}{\textbf{Avdelning, Institution}\\%
-            Division, Department}}%
-        \put(28,197){\parbox[c]{64mm}{\thesis@division\\\department@engname\\\department@engaddr}}%
-        %% Date
-        \put(93,190){\makebox[\z@][l]{\framebox(33,22){}}}%
-        \put(94,209){\parbox[t]{5cm}{\textbf{Datum}\\%
-            Date}}%      % Must be ISO style
-        \put(95,197){\thesis@year-%
-          \ifnum\thesis@month<10 0\fi\thesis@month-%
-          \ifnum\thesis@day<10 0\fi\thesis@day}%
-        %% Language
-        \put(0,157){\makebox[\z@][t]{\framebox(30,32){}}}%
-        \put(1,186){\parbox[t]{3cm}{\textbf{Spr�k}\\Language}}%
-        \put(1,178){$\Box$ Svenska/Swedish}%
-        \put(1,174){$\Box$ Engelska/English}%
-        \put(1,162){$\Box$} \put(5,162){\line(1,0){20}}%
-        \put(1,174){$\boxtimes$}%
-        %% Report category
-        \put(31,157){\makebox[\z@][t]{\framebox(30,32){}}}%
-        \put(32,186){\parbox[t]{5cm}{\textbf{Rapporttyp}\\Report category}}%
-        \put(32,178){$\Box$ Licentiatavhandling}%
-        \put(32,174){$\Box$ Examensarbete}%
-        \put(32,170){$\Box$ C-uppsats}%
-        \put(32,166){$\Box$ D-uppsats}%
-        \put(32,162){$\Box$ �vrig rapport}%
-        \put(32,158){$\Box$} \put(35,158){\line(1,0){20}}%
-        \put(32,174){$\boxtimes$}  % set kind of report
-        %% URL
-        \put(0,143){\makebox[\z@][t]{\framebox(61,13){}}}%
-        \put(1,153){\textbf{URL f�r elektronisk version}}%
-        \put(3,148){\begingroup%
-          \fontsize{5}{8\p@}\selectfont%
-          \parbox[c]{58mm}{\href{\thesis@url}{\texttt{\thesis@url}}}%
-          \endgroup}%
-        %% ISBN etc
-        \put(62,143){\makebox[\z@][t]{\framebox(64,46){}}}%
-        \put(63,186){\textbf{ISBN}}%
-        \put(63,181){\line(1,0){62}}\put(69,182){---}%
-        \put(63,178){\textbf{ISRN}}%
-        \put(63,171){\line(1,0){62}} \put(70,174){\@isrn}%
-        \put(63,168){\parbox[t]{5cm}{\textbf{Serietitel och serienummer}\\%
-            Title of series, numbering}}%
-        \put(102,168){\textbf{ISSN}}%
-        \put(102,163){\line(1,0){23}} \put(102,164){---}%
-        %% Title
-        \put(0,108){\makebox[\z@][t]{\framebox(126,34){}}}%
-        \put(1,138){\parbox[t]{5cm}{\textbf{Titel}\\Title}}%
-        \put(17,138){\parbox[t]{100mm}{\swe@title\par\smallskip\eng@title}}%
-        \put(1,117){\parbox[t]{5cm}{\textbf{F�rfattare}\\Author}}%
-        \put(17,117){\@author}%
-        %% Abstract
-        \put(0,12){\makebox[\z@][t]{\framebox(126,95){}}}%
-        \put(1,104){\parbox[t]{5cm}{\textbf{Sammanfattning}\\Abstract}}%
-        \put(17,96){\parbox[t]{100mm}{%
-            \setlength{\parskip}{\rt@parskip}%
-            \setlength{\parindent}{\rt@parindent}%
-            \ignorespacesafterend\noindent #1\unskip}}%
-        %% Keywords
-        \put(0,0){\makebox[\z@][t]{\framebox(126,11){}}}%
-        \put(1,8){\parbox[t]{5cm}{\textbf{Nyckelord}\\Keywords}}%
-        \put(17,5){\parbox[t]{100mm}{\thesis@keywords}}%
-      \end{picture}%
-    \end{minipage}%
-  }}%
-  \thispagestyle{empty}\clearemptydoublepage%
-  \addtocounter{page}{-2}%
-  \setlength{\parskip}{\rt@parskip}%
-  \setlength{\parindent}{\rt@parindent}%
-}
-
-
-%%%%%%%%%%%%%%%%%%%%
-%%%  Front page  %%%
-%%%%%%%%%%%%%%%%%%%%
-
-\newcommand{\@makeFrontPage}{\emph{No department selected!}}
-
-\newcommand*\makeFrontPage{%
-  \setlength{\parskip}{\z@}%
-  \setlength{\parindent}{\z@}%
-  \begingroup\normalfont%
-  \cleardoublepage\thispagestyle{empty}%
-  \ifrt@UseHyperref%
-  \pdfbookmarkTopLevel{Front Page}{FrontPage}%
-  \fi%
-  \vspace*{-18mm}\hspace*{-13mm}%
-  \raisebox{\z@}[\z@][\z@]{%
-    \begin{minipage}[t][230mm]{145mm}%
-      \@makeFrontPage%
-    \end{minipage}}%
-  \endgroup%
-  \thispagestyle{empty}\clearemptydoublepage%
-  \setlength{\parskip}{\rt@parskip}%
-  \setlength{\parindent}{\rt@parindent}%
-}
-
 
 %%%%%%%%%%%%%%%%%%%%
 %%%  Title page  %%%
 %%%%%%%%%%%%%%%%%%%%
 
-\newcommand*{\@makeTitlePage}{\emph{No department selected!}}
-
 \renewcommand*\maketitle{%
-  \setlength{\parskip}{\z@}%
-  \setlength{\parindent}{\z@}%
-  \begingroup\normalfont%
-  \cleardoublepage\thispagestyle{empty}%
-  \setcounter{page}{1}%
-  \ifrt@UseHyperref%
-  \pdfbookmarkTopLevel{Title Page}{TitlePage}%
-  \fi%
-  \vspace*{-17mm}\hspace*{-7.5mm}%
-  \raisebox{\z@}[\z@][\z@]{%
-    \begin{minipage}[t][220mm]{145mm}%
-      \@makeTitlePage%
-    \end{minipage}}%
-  \endgroup%
-  \thispagestyle{empty}\clearemptydoublepage%
-  \setlength{\parskip}{\rt@parskip}%
-  \setlength{\parindent}{\rt@parindent}%
-}
-
-
-%%%%%%%%%%%%%%%
-%%%  Cover  %%%
-%%%%%%%%%%%%%%%
-
-\newcommand*\makecover{%
-  \pagestyle{empty}
-  \begin{document}
-  \begin{center}
-    \begin{huge}
-      \textbf{\textsf{\department@swename}}
-      \par
-    \end{huge}
-    \begin{large}
-      \textbf{\textsf{\department@engname}}
-      \par
-    \end{large}
-    \bigskip\bigskip
-    \begin{huge}
-      \textbf{\textsf{\@title}}
-      \par
-    \end{huge}
-    \ifrt@subtitle%
-    \medskip%
-    \begin{LARGE}
-      \textbf{\textsf{\@subtitle}}%
-      \par
-    \end{LARGE}
-    \fi%
-    \bigskip\bigskip\bigskip
-    \begin{Large}
-      \textbf{\textsf{Examensarbete utf�rt i \thesis@subject\\
-          av\\
-          \@author}}
-      \par
-    \end{Large}
-    \begin{large}
-      \textbf{\textsf{Rapport nummer~\thesisn@\\
-      \thesis@city\ \thesis@year}}
-      \par
-    \end{large}
-    \vspace{\stretch{2}}
-    \includegraphics[height=30mm]{LinkUniv_sigill_blk}
-    \par
-    \vspace{\stretch{4}}
-    \begin{minipage}{0.35\linewidth}
-      \begin{large}
-        \department@engname\\
-        \university@engname, \department@engaddr, \university@engcountry
-      \end{large}
-    \end{minipage}%
-    \begin{minipage}{0.35\linewidth}
-      \begin{large}
-        \university@swename\\
-        \department@swename\\
-        \ifx\department@campus\@empty%
-        \else%
-        \department@campus\\
-        \fi%
-        \department@sweaddr
-      \end{large}
-    \end{minipage}%
-    \par
-  \end{center}
-  \newpage
-
-  \centering
-  \vspace*{\fill}
-  \includegraphics[height=35mm]{LiTH_en_vert_black}
-  \bigskip
-  \newpage
-
-  \raggedright
-  \rotatebox[origin=lb]{270}{%
-    \makebox[\textheight][l]{%
-      \def\\{ }
-      \def\linebreak{ }
-      \@author\hspace*{12mm}%
-      \textbf{\@title\@subtitlesep\@subtitle}%
-      \hfill
-      \thesis@city~\thesis@year%
-    }
-  }
-  \let\phdlist\relax
-\end{document}
-}
-
-%%%%%%%%%%%%%%%%%%%%%%%%
-%%%  Copyright page  %%%
-%%%%%%%%%%%%%%%%%%%%%%%%
-
-\newcommand*{\makeCopyright}{%
-  \cleardoublepage \thispagestyle{empty}%
-  \ifrt@UseHyperref%
-  \pdfbookmarkTopLevel{Copyright}{Copyright}%
-  \fi%
-  \begingroup%
+  \frontmatter
+  \cleardoublepage%
+  \thispagestyle{empty}%
   \vspace*{-22mm}%
-  \setlength{\parskip}{0\p@ \@plus \p@}%
-  \setlength{\parindent}{15\p@}%
-  \hfill%
-  \includegraphics[height=18mm]{LinkUniv_sv_vert_col}%
-  %
-  \vspace{3\baselineskip}%
-  \begin{otherlanguage}{swedish}%
-    \par\noindent{\fontsize{12pt}{14pt}\selectfont%
-      \normalfont\large\bfseries Upphovsr�tt}\\[1.5ex]
-    \fontsize{10pt}{12pt}\selectfont
-    Detta dokument h�lls tillg�ngligt p� Internet --- eller dess
-    framtida ers�ttare --- under 25 �r fr�n publiceringsdatum under
-    f�ruts�ttning att inga extraordin�ra omst�ndigheter uppst�r.
-    \par
-    Tillg�ng till dokumentet inneb�r tillst�nd f�r var och en att l�sa,
-    ladda ner, skriva ut enstaka kopior f�r enskilt bruk och att anv�nda
-    det of�r�ndrat f�r icke\-kommersiell forskning och f�r undervisning.
-    �verf�ring av upphovsr�tten vid en senare tidpunkt kan inte
-    upph�va detta tillst�nd. All annan anv�ndning av dokumentet kr�ver
-    upphovsmannens medgivande. F�r att garantera �ktheten, s�kerheten
-    och tillg�ngligheten finns det l�sningar av teknisk och
-    administrativ art.
-    \par
-    Upphovsmannens ideella r�tt innefattar r�tt att bli n�mnd som
-    upphovsman i den omfattning som god sed kr�ver vid anv�ndning av
-    dokumentet p� ovan be\-skrivna s�tt samt skydd mot att dokumentet
-    �ndras eller presenteras i s�dan form eller i s�dant sammanhang som
-    �r kr�nkande f�r upphovsmannens litter�ra eller konstn�rliga
-    anseende eller egenart.
-    \par
-    F�r ytterligare information om Link�ping University Electronic Press
-    se f�rlagets hemsida
-    \href{http://www.ep.liu.se/}{\texttt{http://www.ep.liu.se/}}
-  \end{otherlanguage}%
-  %
-  \vspace*{4\baselineskip}%
-  \begin{otherlanguage}{english}%
-    \par\noindent{\fontsize{12pt}{14pt}\selectfont%
-      \normalfont\large\bfseries Copyright}\\[1.5ex]
-    \fontsize{10pt}{12pt}\selectfont
-    The publishers will keep this document online on the Internet --- or
-    its possible replacement --- for a period of 25 years from the date
-    of publication barring exceptional circumstances.
-    \par
-    The online availability of the document implies a permanent permission
-    for anyone to read, to download, to print out single copies for his/her
-    own use and to use it unchanged for any non-commercial research and
-    educational purpose. Subsequent transfers of copyright cannot revoke
-    this permission. All other uses of the document are conditional on the
-    consent of the copyright owner. The publisher has taken technical and
-    administrative measures to assure authenticity, security and
-    accessibility.
-    \par
-    According to intellectual property law the author has the right to
-    be mentioned when his/her work is accessed as described above and to
-    be protected against infringement.
-    \par
-    For additional information about the Link�ping University Electronic
-    Press and its procedures for publication and for assurance of
-    document integrity, please refer to its www home page:
-    \href{http://www.ep.liu.se/}{\texttt{http://www.ep.liu.se/}}
-  \end{otherlanguage}%
-  \vspace*{\baselineskip} \flushright \textcopyright\ \@author\par%
-  \clearpage%
-  \setlength{\parskip}{\rt@parskip}%
-  \setlength{\parindent}{\rt@parindent}%
-  \endgroup%
-}
+  \hspace*{-10mm}%
+  \noindent\parbox[l][0pt][t]{0pt}{%
+    \begin{minipage}[t][\paperheight-15mm][t]{\paperwidth-35mm}%
+      \raggedright%
+      \sffamily%
+      \begin{large}%
+        \thesis@typename\ \in@name\ \thesis@subject\par%
+        \department@name, \university@name, \thesis@year\par%
+      \end{large}%
+      \vspace*{50mm}%
+      {\fontsize{11mm}{13mm}\selectfont\@title\par}%
+      \ifrt@subtitle%
+      \bigskip%
+      \begin{huge}\@subtitle\par\end{huge}%
+      \fi%
+      \vspace*{10mm}%
+      \begin{LARGE}\textbf{\@author}\par\end{LARGE}%
+      \vspace*{\stretch{6}}%
+      \hspace*{-5mm}\includegraphics[width=85mm]{LiU_primary_black}%
+    \end{minipage}}
+  \clearpage
+  \thispagestyle{empty}
 
-% add the copyright notice at the end of the document
-\AtEndDocument{\makeCopyright}
+  \vspace*{\stretch{1}}
+  \noindent\rtcoverinfo
+  \vspace*{\stretch{4}}
+  \begin{center}
+    \thesis@typename\ \in@name\ \thesis@subject\par%
+    \smallskip%
+    \textbf{\textsf{\@title\ifrt@subtitle\@subtitlesep\@subtitle\fi}}\par%
+    \smallskip%
+    \@author\par%
+    \smallskip%
+    \@isrn\par%
+    \smallskip%
+    \parbox{10cm}{\raggedright%
+      \rule{10cm}{\z@}%
+      \begin{tabbing}%
+        \hspace*{25mm}\=\quad\=\kill%
+        \supervisor@name:\>\bfseries\thesis@supervisor\\[.5\baselineskip]%
+        \examiner@name:\>\bfseries\thesis@examiner%
+      \end{tabbing}%
+    }
+    \par\bigskip\smallskip%
+    {\slshape
+      \thesis@division\\
+      \department@name \\
+      Link\"{o}ping University \\
+      \department@addr@maybecountry}
+    \par\bigskip%
+    Copyright \copyright~\thesis@year~\@author\par%
+    \normalsize
+  \end{center}
+  \clearemptydoublepage
+
+  \ifx\dedic@tion\@empty%
+  \else
+    \thispagestyle{empty}
+    \vspace*{70mm}
+    \begin{flushright}
+      \textsl{\dedic@tion}
+    \end{flushright}
+    \clearemptydoublepage
+  \fi
+}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -430,429 +199,54 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%  Department: IDA
-
 \newcommand{\department@engname@IDA}{Department of Computer and Information Science}
-\newcommand{\department@swename@IDA}{Institutionen f�r datavetenskap}
-\newcommand{\department@engaddr@IDA}{SE-581~83 Link�ping}
-\newcommand{\department@sweaddr@IDA}{581~83 Link�ping}
-\newcommand{\department@city@IDA}{Link�ping}
+\newcommand{\department@swename@IDA}{Institutionen f\"{o}r datavetenskap}
+\newcommand{\department@engaddr@IDA}{SE-581~83 Link\"{o}ping}
+\newcommand{\department@sweaddr@IDA}{581~83 Link\"{o}ping}
+\newcommand{\department@city@IDA}{Link\"{o}ping}
 \let\department@campus@IDA\@empty
 
-\newcommand{\makeFrontPage@IDA}{%
-  \centering%
-  {\Huge \department@swename}\\[1ex]%
-  {\LARGE \department@engname}\\[\stretch{2 }]%
-  {\Large\bfseries\thesistype@name}\\[\stretch{3 }]%
-  {\parbox{13cm}{%
-      \centering\noindent\LARGE\bfseries%
-      \@title%
-      \ifrt@subtitle%
-      \\%
-      \medskip%
-      \noindent\Large\bfseries%
-      \@subtitle%
-      \fi%
-  }}\\[\stretch{3 }]%
-  {\large\bfseries\@author}\\[\baselineskip]%
-  \@isrn\\
-  \thesis@city\ \thesis@year\\[\stretch{2 }]%
-  \parbox[b][115mm]{145mm}{\centering%
-    \parbox{138mm}{\centering%
-      \vspace*{15mm}\strut\\%
-      \includegraphics[height=60mm]{\LiTHstaende@filename}\\%
-      \vspace*{15mm}%
-    }\\[.5\baselineskip]%
-    \department@name\\%
-    \university@swename\\%
-    \department@addr@maybecountry%
-  }%
-}
-
-\newcommand*{\makeTitlePage@IDA}{%
-  \centering
-  {\Huge \department@swename}\\[1ex]%
-  {\LARGE \department@engname}\\[\stretch{2 }]%
-  {\Large\bfseries\thesistype@name}\\[\stretch{.5 }]%
-  {\parbox{13cm}{%
-      \centering\noindent\LARGE\bfseries%
-      \@title%
-      \ifrt@subtitle%
-      \\%
-      \medskip%
-      \noindent\Large\bfseries%
-      \@subtitle%
-      \fi%
-  }}\\[\stretch{.5 }]%
-  {\large\bfseries\@author}\\[\baselineskip]%
-  \@isrn\\
-  \thesis@city\ \thesis@year\\[\stretch{2 }]%
-  \parbox{10cm}{\raggedright%
-    \rule{10cm}{\z@}%
-    \begin{tabbing}%
-      \hspace*{25mm}\=\quad\=\kill%
-      \supervisor@name:\>\bfseries\thesis@supervisor\\[.5\baselineskip]%
-      \examiner@name:\>\bfseries\thesis@examiner%
-    \end{tabbing}%
-  }\\[\stretch{2 }]%
-  \par%
-  \department@name\\%
-  \university@swename\\%
-  \department@addr@maybecountry%
-}
-
 %%%  Department: IFM
-
 \newcommand{\department@engname@IFM}{Department of Physics, Chemistry and Biology}
-\newcommand{\department@swename@IFM}{Institutionen f�r Fysik, Kemi och Biologi}
-\newcommand{\department@engaddr@IFM}{SE-581~83 Link�ping}
-\newcommand{\department@sweaddr@IFM}{581~83 Link�ping}
-\newcommand{\department@city@IFM}{Link�ping}
+\newcommand{\department@swename@IFM}{Institutionen f\"{o}r Fysik, Kemi och Biologi}
+\newcommand{\department@engaddr@IFM}{SE-581~83 Link\"{o}ping}
+\newcommand{\department@sweaddr@IFM}{581~83 Link\"{o}ping}
+\newcommand{\department@city@IFM}{Link\"{o}ping}
 \let\department@campus@IFM\@empty
 
-\newcommand{\makeFrontPage@IFM}{%
-  \begin{otherlanguage}{swedish}%
-    \centering%
-    {\large \department@name}\\[\stretch{2 }]%
-    {\Large \thesistype@name}\\[\stretch{3 }]%
-    {\parbox{13cm}{%
-        \centering\noindent\LARGE\bfseries%
-        \@title%
-        \ifrt@subtitle%
-        \\%
-        \medskip%
-        \noindent\Large\bfseries%
-        \@subtitle%
-        \fi%
-    }}\\[\stretch{3 }]%
-    {\Large\bfseries\@author}\\[\baselineskip]%
-    {\large Examensarbetet utf�rt vid \thesis@site\\[\baselineskip]%
-    \thesis@city, \@longdate\\[\baselineskip]%
-    \@isrn\\[\stretch{2 }]}%
-    \parbox[b][115mm]{145mm}{\centering%
-      \parbox{138mm}{\centering%
-        \vspace*{15mm}\strut\\%
-        \includegraphics[height=60mm]{\LiTHstaende@filename}\\%
-        \vspace*{15mm}%
-      }\\[.5\baselineskip]%
-      \department@addr@threelines\\%
-    }%
-  \end{otherlanguage}%
-}
-
-\newcommand*{\makeTitlePage@IFM}{%
-  \begin{otherlanguage}{swedish}%
-    \centering%
-    {\large \department@name}\\[\stretch{2 }]%
-    {\parbox{13cm}{%
-        \centering\noindent\LARGE\bfseries%
-        \@title%
-        \ifrt@subtitle%
-        \\%
-        \medskip%
-        \noindent\Large\bfseries%
-        \@subtitle%
-        \fi%
-    }}\\[\stretch{1 }]%
-    {\Large\bfseries\@author}\\[\baselineskip]%
-    {\large Examensarbetet utf�rt vid \thesis@site\\[\baselineskip]%
-    \thesis@city, \@longdate\\[\stretch{4 }]}%
-    \parbox{10cm}{\raggedright%
-      \rule{10cm}{\z@}%
-      \begin{tabbing}%
-        \hspace*{25mm}\=\quad\=\kill%
-        \supervisor@name:\>\bfseries\thesis@supervisor\\[.5\baselineskip]%
-        \examiner@name:\>\bfseries\thesis@examiner%
-      \end{tabbing}%
-    }\par%
-  \end{otherlanguage}%
-}
 
 %%%  Department: IEI
-
 \newcommand{\department@engname@IEI}{Department of Management and Engineering}
-\newcommand{\department@swename@IEI}{Institutionen f�r ekonomisk och industriell utveckling}
-\newcommand{\department@engaddr@IEI}{SE-581~83 Link�ping}
-\newcommand{\department@sweaddr@IEI}{581~83 Link�ping}
-\newcommand{\department@city@IEI}{Link�ping}
+\newcommand{\department@swename@IEI}{Institutionen f\"{o}r ekonomisk och industriell utveckling}
+\newcommand{\department@engaddr@IEI}{SE-581~83 Link\"{o}ping}
+\newcommand{\department@sweaddr@IEI}{581~83 Link\"{o}ping}
+\newcommand{\department@city@IEI}{Link\"{o}ping}
 \let\department@campus@IEI\@empty
 
-\newcommand{\makeFrontPage@IEI}{%
-  \centering%
-  {\Huge \department@swename}\\[1ex]%
-  {\LARGE \department@engname}\\[\stretch{2 }]%
-  {\Large\bfseries\thesistype@name}\\[\stretch{3 }]%
-  {\parbox{13cm}{%
-      \centering\noindent\LARGE\bfseries%
-      \@title%
-      \ifrt@subtitle%
-      \\%
-      \medskip%
-      \noindent\Large\bfseries%
-      \@subtitle%
-      \fi%
-  }}\\[\stretch{3 }]%
-  {\large\bfseries\@author}\\[\baselineskip]%
-  \@isrn\\
-  \thesis@city\ \thesis@year\\[\stretch{2 }]%
-  \parbox[b][115mm]{145mm}{\centering%
-    \parbox{138mm}{\centering%
-      \vspace*{15mm}\strut\\%
-      \includegraphics[height=60mm]{\LiTHstaende@filename}\\%
-      \vspace*{15mm}%
-    }\\[.5\baselineskip]%
-    \department@name\\%
-    \university@swename\\%
-    \department@addr@maybecountry%
-  }%
-}
-
-\newcommand*{\makeTitlePage@IEI}{%
-  \centering%
-  {\Huge \department@swename}\\[1ex]%
-  {\LARGE \department@engname}\\[\stretch{1 }]%
-  {\Large\bfseries\thesistype@name}\\[\stretch{2 }]%
-  {\parbox{13cm}{%
-      \centering\noindent\LARGE\bfseries%
-      \@title%
-      \ifrt@subtitle%
-      \\%
-      \medskip%
-      \noindent\Large\bfseries%
-      \@subtitle%
-      \fi%
-  }}\\[\stretch{2 }]%
-  {\large\bfseries\@author}\\[\baselineskip]%
-  \@isrn\\
-  \thesis@city\ \thesis@year\\[\stretch{4 }]%
-  \parbox{10cm}{\raggedright%
-    \rule{10cm}{\z@}%
-    \begin{tabbing}%
-      \hspace*{25mm}\=\quad\=\kill%
-      \supervisor@name:\>\bfseries\thesis@supervisor\\[.5\baselineskip]%
-      \examiner@name:\>\bfseries\thesis@examiner%
-    \end{tabbing}%
-  }\\[\stretch{1 }]%
-  \par%
-  \department@name\\%
-  \university@swename\\%
-  \department@addr@maybecountry%
-  \par%
-}
 
 %%%  Department: ISY
-
 \newcommand{\department@engname@ISY}{Department of Electrical Engineering}
-\newcommand{\department@swename@ISY}{Institutionen f�r systemteknik}
-\newcommand{\department@engaddr@ISY}{SE-581~83 Link�ping}
-\newcommand{\department@sweaddr@ISY}{581~83 Link�ping}
-\newcommand{\department@city@ISY}{Link�ping}
+\newcommand{\department@swename@ISY}{Institutionen f\"{o}r systemteknik}
+\newcommand{\department@engaddr@ISY}{SE-581~83 Link\"{o}ping}
+\newcommand{\department@sweaddr@ISY}{581~83 Link\"{o}ping}
+\newcommand{\department@city@ISY}{Link\"{o}ping}
 \let\department@campus@ISY\@empty
 
-\newcommand{\makeFrontPage@ISY}{%
-  \centering%
-  {\Huge \department@swename}\\%
-  {\LARGE \department@engname}\\[\stretch{2 }]%
-  {\large\bfseries Examensarbete}\\[\stretch{3 }]%
-  {\parbox{13cm}{%
-      \centering\noindent\Large\bfseries%
-      \@title%
-      \ifrt@subtitle%
-      \\%
-      \medskip%
-      \noindent\large\bfseries%
-      \@subtitle%
-      \fi%
-  }}\\[\stretch{3 }]%
-  Examensarbete utf�rt i \thesis@subject\\%
-  vid \LiTH@longname@swe\\%
-  av\\[\baselineskip]%
-  {\bfseries \@author}\\[\baselineskip]%
-  \@isrn\\[.5\baselineskip]%
-  {\small \thesis@city\ \thesis@year}\\[\stretch{2 }]%
-  \parbox[b][115mm]{145mm}{\centering%
-    \setlength{\fboxrule}{2mm}%
-    \fbox{\parbox{138mm}{\centering%
-        \vspace*{15mm}\strut\\%
-        \includegraphics[height=60mm]{LiTH_sv_vert_blk}\\%
-        \vspace*{15mm}%
-    }}\\[.5\baselineskip]%
-    \department@splitaddr%
-  }%
-}
-
-\newcommand*{\makeTitlePage@ISY}{%
-  \centering%
-  \strut\\[\stretch{2 }]%
-  {\parbox{13cm}{%
-      \centering\noindent\Large\bfseries%
-      \@title%
-      \ifrt@subtitle%
-      \\%
-      \medskip%
-      \noindent\large\bfseries%
-      \@subtitle%
-      \fi%
-  }}\\[\stretch{2 }]%
-  \begin{otherlanguage}{swedish}%
-    {\large Examensarbete utf�rt i \thesis@subject\\%
-      vid \LiTH@longname@swe\\%
-      av}\\[\baselineskip]%
-    {\bfseries \@author}\\[\baselineskip]%
-    \@isrn\\[\stretch{4 }]%
-    \parbox{10cm}{\raggedright%
-      \rule{10cm}{\z@}%
-      \begin{tabbing}%
-        \hspace*{25mm}\=\quad\=\kill%
-        \supervisor@name:\>\bfseries\thesis@supervisor\\[.5\baselineskip]%
-        \examiner@name:\>\bfseries\thesis@examiner%
-      \end{tabbing}%
-    }\\[1.5\baselineskip]%
-    \thesis@city, \@longdate%
-  \end{otherlanguage}%
-}
-
 %%%  Department: ITN
-
 \newcommand{\department@engname@ITN}{Department of Science and Technology}
-\newcommand{\department@swename@ITN}{Institutionen f�r teknik och naturvetenskap}
-\newcommand{\department@engaddr@ITN}{SE-601~74 Norrk�ping}
-\newcommand{\department@sweaddr@ITN}{601~74 Norrk�ping}
-\newcommand{\department@city@ITN}{Norrk�ping}
-\newcommand{\department@campus@ITN}{Campus Norrk�ping}
-
-\newcommand{\makeFrontPage@ITN}{%
-  \centering%
-  {\Huge \department@swename}\\%
-  {\LARGE \department@engname}\\[\stretch{2 }]%
-  {\large\bfseries Examensarbete}\\[\stretch{3 }]%
-  {\parbox{13cm}{%
-      \centering\noindent\Large\bfseries%
-      \@title%
-      \ifrt@subtitle%
-      \\%
-      \medskip%
-      \noindent\large\bfseries%
-      \@subtitle%
-      \fi%
-  }}\\[\stretch{3 }]%
-  Examensarbete utf�rt i \thesis@subject\\%
-  vid \LiTH@longname@swe\\%
-  av\\[\baselineskip]%
-  {\bfseries \@author}\\[\baselineskip]%
-  \@isrn\\[.5\baselineskip]%
-  {\small \thesis@city\ \thesis@year}\\[\stretch{2 }]%
-  \parbox[b][115mm]{145mm}{\centering%
-    \setlength{\fboxrule}{2mm}%
-    \fbox{\parbox{138mm}{\centering%
-        \vspace*{15mm}\strut\\%
-        \includegraphics[height=60mm]{LiTH_sv_vert_blk}\\%
-        \vspace*{15mm}%
-      }}\\[.5\baselineskip]%
-    \department@splitaddr%
-  }\medskip%
-}
-
-\newcommand*{\makeTitlePage@ITN}{%
-  \centering%
-  \strut\\[\stretch{2 }]%
-  {\parbox{13cm}{%
-      \centering\noindent\Large\bfseries%
-      \@title%
-      \ifrt@subtitle%
-      \\%
-      \medskip%
-      \noindent\large\bfseries%
-      \@subtitle%
-      \fi%
-  }}\\[\stretch{2 }]%
-  \begin{otherlanguage}{swedish}%
-    {\large Examensarbete utf�rt i \thesis@subject\\%
-      vid \LiTH@longname@swe\\%
-      av}\\[\baselineskip]%
-    {\bfseries \@author}\\[\baselineskip]%
-    \@isrn\\[\stretch{4 }]%
-    \parbox{10cm}{\raggedright%
-      \rule{10cm}{\z@}%
-      \begin{tabbing}%
-        \hspace*{25mm}\=\quad\=\kill%
-        \supervisor@name:\>\bfseries\thesis@supervisor\\[.5\baselineskip]%
-        \examiner@name:\>\bfseries\thesis@examiner%
-      \end{tabbing}%
-    }\\[.5\baselineskip]%
-    \thesis@city, \@longdate%
-  \end{otherlanguage}%
-}
+\newcommand{\department@swename@ITN}{Institutionen f\"{o}r teknik och naturvetenskap}
+\newcommand{\department@engaddr@ITN}{SE-601~74 Norrk\"{o}ping}
+\newcommand{\department@sweaddr@ITN}{601~74 Norrk\"{o}ping}
+\newcommand{\department@city@ITN}{Norrk\"{o}ping}
+\newcommand{\department@campus@ITN}{Campus Norrk\"{o}ping}
 
 %%%  Department: MAI
-
 \newcommand{\department@engname@MAI}{Department of Mathematics}
 \newcommand{\department@swename@MAI}{Matematiska institutionen}
-\newcommand{\department@engaddr@MAI}{SE-581~83 Link�ping}
-\newcommand{\department@sweaddr@MAI}{581~83 Link�ping}
-\newcommand{\department@city@MAI}{Link�ping}
+\newcommand{\department@engaddr@MAI}{SE-581~83 Link\"{o}ping}
+\newcommand{\department@sweaddr@MAI}{581~83 Link\"{o}ping}
+\newcommand{\department@city@MAI}{Link\"{o}ping}
 \let\department@campus@MAI\@empty
-
-\newcommand{\makeFrontPage@MAI}{%
-  \centering%
-  {\Huge \department@swename}\\[1ex]%
-  {\LARGE \department@engname}\\[\stretch{2 }]%
-  {\Large\bfseries\thesistype@name}\\[\stretch{3 }]%
-  {\parbox{13cm}{%
-      \centering\noindent\LARGE\bfseries%
-      \@title%
-      \ifrt@subtitle%
-      \\%
-      \medskip%
-      \noindent\Large\bfseries%
-      \@subtitle%
-      \fi%
-  }}\\[\stretch{3 }]%
-  {\large\bfseries\@author}\\[\baselineskip]%
-  \@isrn\\
-  \thesis@city\ \thesis@year\\[\stretch{2 }]%
-  \parbox[b][115mm]{145mm}{\centering%
-    \parbox{138mm}{\centering%
-      \vspace*{15mm}\strut\\%
-      \includegraphics[height=60mm]{\LiTHstaende@filename}\\%
-      \vspace*{15mm}%
-    }\\[.5\baselineskip]%
-    \department@name\\%
-    \university@swename\\%
-    \department@addr@maybecountry%
-  }\medskip%
-}
-
-\newcommand*{\makeTitlePage@MAI}{%
-  \centering%
-  \strut\\[\stretch{2 }]%
-  {\parbox{13cm}{%
-      \centering\noindent\Large\bfseries%
-      \@title%
-      \ifrt@subtitle%
-      \\%
-      \medskip%
-      \noindent\large\bfseries%
-      \@subtitle%
-      \fi%
-  }}\\[\stretch{2 }]%
-  \begin{otherlanguage}{swedish}%
-    {\large Examensarbete inom \thesis@subject\ utf�rt p�\\%
-      \thesis@site}\\[\baselineskip]%
-    {\bfseries \@author}\\[\baselineskip]%
-    \@isrn\\[\stretch{4 }]%
-    \parbox{10cm}{\raggedright%
-      \rule{10cm}{\z@}%
-      \begin{tabbing}%
-        \hspace*{28mm}\=\quad\=\kill%
-        \thesistype@name:\> 30~hp\\[.5\baselineskip]%
-        \thesislevel@name:\> A\\[.5\baselineskip]%
-        \supervisor@name:\>\bfseries\thesis@supervisor\\[.5\baselineskip]%
-        \examiner@name:\>\bfseries\thesis@examiner%
-      \end{tabbing}%
-    }\\[1.5\baselineskip]%
-    \thesis@city, \monthName{\thesis@month} \thesis@year%
-  \end{otherlanguage}%
-}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -881,8 +275,6 @@
   \let\department@sweaddr\department@sweaddr@IDA
   \let\department@city\department@city@IDA
   \let\department@campus\department@campus@IDA
-  \let\@makeFrontPage\makeFrontPage@IDA
-  \let\@makeTitlePage\makeTitlePage@IDA
   \else\ifx\thesis@department\departmentkey@ifm
   \let\department@engname\department@engname@IFM
   \let\department@swename\department@swename@IFM
@@ -890,8 +282,6 @@
   \let\department@sweaddr\department@sweaddr@IFM
   \let\department@city\department@city@IFM
   \let\department@campus\department@campus@IFM
-  \let\@makeFrontPage\makeFrontPage@IFM
-  \let\@makeTitlePage\makeTitlePage@IFM
   \else\ifx\thesis@department\departmentkey@iei
   \let\department@engname\department@engname@IEI
   \let\department@swename\department@swename@IEI
@@ -899,8 +289,6 @@
   \let\department@sweaddr\department@sweaddr@IEI
   \let\department@city\department@city@IEI
   \let\department@campus\department@campus@IEI
-  \let\@makeFrontPage\makeFrontPage@IEI
-  \let\@makeTitlePage\makeTitlePage@IEI
   \else\ifx\thesis@department\departmentkey@isy
   \let\department@engname\department@engname@ISY
   \let\department@swename\department@swename@ISY
@@ -908,8 +296,6 @@
   \let\department@sweaddr\department@sweaddr@ISY
   \let\department@city\department@city@ISY
   \let\department@campus\department@campus@ISY
-  \let\@makeFrontPage\makeFrontPage@ISY
-  \let\@makeTitlePage\makeTitlePage@ISY
   \else\ifx\thesis@department\departmentkey@itn
   \let\department@engname\department@engname@ITN
   \let\department@swename\department@swename@ITN
@@ -917,8 +303,6 @@
   \let\department@sweaddr\department@sweaddr@ITN
   \let\department@city\department@city@ITN
   \let\department@campus\department@campus@ITN
-  \let\@makeFrontPage\makeFrontPage@ITN
-  \let\@makeTitlePage\makeTitlePage@ITN
   \else\ifx\thesis@department\departmentkey@mai
   \let\department@engname\department@engname@MAI
   \let\department@swename\department@swename@MAI
@@ -926,8 +310,6 @@
   \let\department@sweaddr\department@sweaddr@MAI
   \let\department@city\department@city@MAI
   \let\department@campus\department@campus@MAI
-  \let\@makeFrontPage\makeFrontPage@MAI
-  \let\@makeTitlePage\makeTitlePage@MAI
   \else
   \ClassError{rtthesis}{%
     setupThesis was called with an invalid value for\MessageBreak
@@ -944,4 +326,4 @@
   \fi
 }
 
-\AtBeginDocument{\selectDepartment}
+\AtBeginDocument{\selectDepartment\captionsenglish}

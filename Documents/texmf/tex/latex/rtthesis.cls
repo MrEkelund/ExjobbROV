@@ -84,10 +84,10 @@
 \def\thesis@url{}
 %%% Master's thesis subject.
 \define@key{rtthesis}{subject}{\def\thesis@subject{#1}}
-\def\thesis@subject{\emph{Ã„nesomrÃ¥de}}
+\def\thesis@subject{\emph{Ämnesområde}}
 %%% Site where master's thesis work was carried out.
 \define@key{rtthesis}{site}{\def\thesis@site{#1}}
-\def\thesis@site{\emph{FÃ¶retag}}
+\def\thesis@site{\emph{Företag}}
 %%% City to appear on title page etc
 \define@key{rtthesis}{city}{\def\thesis@city{#1}}
 \def\thesis@city{}
@@ -125,7 +125,7 @@
 \define@key{rtthesis}{localID}{\def\local@ID{#1}}
 %%%Publisher.
 \define@key{rtthesis}{publisher}{\def\publishername{#1}}
-\def\publishername{LiU-Tryck, Linkï¿½ping, Sweden}
+\def\publishername{LiU-Tryck, Linköping, Sweden}
 %%% Mail
 \define@key{rtthesis}{username}{\gdef\u@name{#1}}
 %%% Dedication
@@ -150,6 +150,7 @@
   \def\thesistypephd{phd}
   \def\thesistypelic{lic}
   \def\thesistypemsc{msc}
+  \def\thesistypebsc{bsc}
   \ifx\thesis@type\@empty
     \ClassError{rtthesis}{%
       The thesis type must be set via setupThesis, by\MessageBreak
@@ -166,6 +167,8 @@
   \RequirePackage{rtlic}%
   \else\ifx\thesis@type\thesistypemsc
   \RequirePackage{rtmsc}%
+  \else\ifx\thesis@type\thesistypebsc
+  \RequirePackage{rtmsc}%
   \else
     \ClassError{rtthesis}{%
       setupThesis was called with an invalid value for\MessageBreak
@@ -179,7 +182,7 @@
   \fi\fi\fi\fi
   \AtBeginDocument{%
     \ifx\thesis@city\@empty
-    \def\thesis@city{Linkï¿½ping}%
+    \def\thesis@city{Linköping}%
     \fi}
 }
 
@@ -948,7 +951,6 @@
   \clearemptydoublepage}
 
 %%% Make good-looking tables.
-\RequirePackage{tikz}
 \RequirePackage{array}
 \RequirePackage{ctable}
 \let\otoprule\toprule
