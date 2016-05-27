@@ -548,6 +548,55 @@ A sine signal was applied to all angular velocities while using the rate control
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Discussion}\label{sec:controlDiscussion}
+Due to problems during implementation of the controllers, they were not as well trimmed as they could had been. This can be seen in the results since large steady-state errors were acquired during the tests. \abbrPID -parameters were trimmed in simulation before live test but the feedback used in simulations was to strong for live tests. The parameters in the feedback and the linearising control law both had to be scaled down to achieve a stable system. Since the \abbrROV is a non-linear and stable system, compensating for non-linearities run the risk of producing a non-linear and unstable system, this is further illustrated in \Exampleref{ex:exact}.
+\begin{example}\label{ex:exact}
+Consider the non-linear system
+\begin{equation}\label{eq:exampleSys}
+\begin{bmatrix}
+\dot{x}_1\\
+\dot{x}_2
+\end{bmatrix}=
+\begin{bmatrix}
+x_2\\
+-a x_1 - b x_2\abs{x_2} + u
+\end{bmatrix}
+\end{equation}
+Using exact linearisation, the ideal case would be to use the control law 
+\begin{equation}\label{eq:exampleLaw}
+u = a x_1 +b x_2\abs{x_2} + \bar{u}
+\end{equation} which would yield the linear system
+\begin{equation}
+\begin{bmatrix}
+\dot{x}_1\\
+\dot{x}_2
+\end{bmatrix}=
+\begin{bmatrix}
+x_2\\
+\bar{u}
+\end{bmatrix}
+\end{equation}
+Here, $\bar{u}$ can be used to achieve the desired dynamics, for example, using a \abbrPID-controller. 
+
+In practice however,both $a$ and $b$ have to be estimated with $\hat{a}$ and $\hat{b}$. Using the estimated values $\hat{a}$ and $\hat{b}$ in \eqref{eq:exampleLaw} gives 
+\begin{equation}
+\begin{bmatrix}
+\dot{x}_1\\
+\dot{x}_2
+\end{bmatrix}=
+\begin{bmatrix}
+x_2\\
+\tilde{a} x_1 + \tilde{b} x_2\abs{x_2} +\bar{u}
+\end{bmatrix}
+\end{equation}
+with $\tilde{a}=\hat{a}-a$ and $\tilde{b}=\hat{b}-b$.
+
+If $\hat{a}$ and $\hat{b}$ are estimated such that $\tilde{a} > 0$ and $\tilde{b} > 0$,
+the control law has created unstable non-linear system. The instability can nevertheless be compensated for by 
+applying a strong enough feedback using $\bar{u}$. But a strong feedback is often undesirable and is not always possible since $u$ might be saturated.  
+\end{example}
+
+Additional problems were encountered during trimming of the attitude \abbrPID using exact linearisation. The core of the problem was that regardless of the strength of the feedback the \abbrROV never stabilised around the desired references. The result from an attempt the stabilize the \abbrROV using the attitude controller can be seen in \Figureref{fig:ExactLinAttitude}. This problem might originate from bad magnetometer readings, which fluctuated when the \abbrROV engaged its thrusters. It is suspected that such fluctuations in magnetic field strength may cause rapid changes in the estimated quaternions and angular velocities. This would in turn lead to problems when computing \eqref{eq:anLaw} in the exact-linearisation block. %The problem could also be caused by badly estimated parameters from \Chapterref{cha:modelling}. The likelihood of the problem lying with the parameters is strengthened by the fact that the estimated model parameters had to be scaled down in the exact linearisation to get the rate controller to be stable. 
+
 \begin{figure}
 \centering
   \subfloat[][\label{fig:testExactAttitudeRoll} The exact linearisation in $\rollAngle$.]{\includegraphics[width=0.4\textwidth]{testExactLinAttitudePhi}}
@@ -559,14 +608,12 @@ A sine signal was applied to all angular velocities while using the rate control
   The result of the exact linearisation attitude controller with setpoints $\phi_{ref}=0$, $\theta_{ref}=0$ and $\psi_{ref}=0$. Note the instability in $\theta$ and $\psi$.}
 \end{figure}
 
-Problems were encountered during trimming of the attitude \abbrPID using exact linearisation, \Figureref{fig:ExactLinAttitude} shows this problem. The problem was that regardless of the strength of the feedback the \abbrROV never stabilised around the desired references. This problem might be caused by the magnetometer readings, which fluctuated mildly when the \abbrROV engaged its thrusters. It is suspected that such fluctuations in magnetic field strength may cause rapid changes in the estimated quaternions and angular velocities, leading to problems when computing \eqref{eq:anLaw} in the exact-linearisation block. The problem could also be caused by badly estimated parameters from \Chapterref{cha:modelling}. The likelihood of the problem lying with the parameters is strengthened by the fact that the estimated model parameters had to be scaled down in the exact linearisation to get the rate controller to be stable. 
-
-It is suspected that the estimated parameter values were estimated with a too large magnitude. Since the \abbrROV is a non-linear stable system, compensating for these non-linearities using parameters with to large magnitude would produce a non-linear and unstable system. This is of course not wanted, but is a risk with exact linearisation. A possible cause of the large parameter values might be the look-up table $\tau = f(u)$. If the look-up table returns a higher thrust than actually delivered, estimates of damping, inertia terms and the moment arm $z_b$ may be estimated with higher magnitudes. A possible way to bypass this is to model the thrusters using \begin{equation}
-\tau=C_{tau}u_{\text{Control}}\abs{u_{\text{Control}}}
-\end{equation} where $\tau$ is the thrust and $u_{\text{Control}}$ is the control signal sent to the thruster. 
-Another solution would be to upgrade the \abbrESC:s to Blue\abbrESC:s from Blue Robotics, since these can measure the rotations per minute (\abbrRPM) of the thruster \citep{bluerobotics}. This would enable the relation between \abbrRPM and thrust to be modelled and the \abbrRPM to be controlled for more predictable thruster performance.\todo[inline]{Hur ska detta tas upp? Blandar regulator- och estimeringsdiskussion.}
-
 In general, comparisons of simulated tests and real tests gave mixed results.
-In some test the real tests outperformed their simulated counterparts. This is probably due to the fact that damping parameters in the simulator are larger than the actual damping values. The larger damping parameters in the simulation caused the simulated \abbrROV to be more heavily damped, which decreased the magnitude of overshoots and but increased the steady-state errors. The larger damping parameters may also explain the larger phase shift in the simulations of sine-signal tests.  
+In some test the real tests outperformed their simulated counterparts. This is probably due to the fact that damping parameters in the simulator were larger than the actual damping values of the system. The larger damping parameters in the simulation caused the simulated \abbrROV to be more heavily damped, which decreased the magnitude of overshoots and but increased the steady-state errors. The larger damping parameters may also explain the larger phase shift in the simulations of sine-signal tests.  
 
-Due to problems during implementation of the controllers, they were not as well trimmed as they could had been. This can be seen in the results since large steady-state errors were acquired during the tests. \abbrPID -parameters were trimmed in simulation before live test, but since the model parameters were estimated to large, the feedback used in simulations was to strong for live tests. The feedback and the linearising control law both had to be scaled down to achieve a stable system.  
+%A possible cause of the large parameter values might be the look-up table $\tau = f(u)$. If the look-up table returns a higher thrust than actually delivered, estimates of damping, inertia terms and the moment arm $z_b$ may be estimated with higher magnitudes. A possible way to bypass this is to model the thrusters using \begin{equation}
+%\tau=C_{tau}u_{\text{Control}}\abs{u_{\text{Control}}}
+%\end{equation} where $\tau$ is the thrust and $u_{\text{Control}}$ is the control signal sent to the thruster. 
+%Another solution would be to upgrade the \abbrESC:s to Blue\abbrESC:s from Blue Robotics, since these can measure the rotations per minute (\abbrRPM) of the thruster \citep{bluerobotics}. This would enable the relation between \abbrRPM and thrust to be modelled and the \abbrRPM to be controlled for more predictable thruster performance.\todo[inline]{Hur ska detta tas upp? Blandar regulator- och estimeringsdiskussion.}
+
+

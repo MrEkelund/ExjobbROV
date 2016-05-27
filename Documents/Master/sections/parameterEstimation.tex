@@ -195,14 +195,14 @@ The estimated parameter values obtained when using \eqref{eq:quatModel} with ang
 \end{table}   
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Extended Kalman Filter Estimation}\label{sec:KalmanEstimation}\index{EKF@\abbrEKF!abbreviation}
-An \abbrEKF can also be used to estimate parameters of the \abbrROV. This can be done by extending the state vector of the \abbrEKF with the parameters that need to be estimated \citep{Roger}.
+To circumvent the issues with estimating the initial state during the prediction-error method, a \abbrEKF was used to estimated the parameters. An \abbrEKF can  be used to estimate parameters by extending the state vector of the \abbrEKF with the parameters that need to be estimated \citep{Roger}.
 \begin{equation}
 \bar{\boldsymbol{x}} = \begin{bmatrix}
 \boldsymbol{x}_k\\
 \boldsymbol{\theta}_k
 \end{bmatrix}
 \end{equation}
-The added parameters are modelled as static states that do not move with time giving the following augmented state-space form 
+The added parameters were modelled using constant position, which gave the following augmented state-space form 
 \begin{equation}
 \bar{\boldsymbol{x}}_{k+1}(\boldsymbol{\theta}) =\begin{bmatrix}
 \boldsymbol{f}(\boldsymbol{x}_k(\boldsymbol{\theta}),\boldsymbol{u}_k,\boldsymbol{\theta})\\
@@ -213,7 +213,7 @@ The added parameters are modelled as static states that do not move with time gi
 \begin{equation}
 \boldsymbol{y}_k=\boldsymbol{h}(\bar{\boldsymbol{x}}_k(\boldsymbol{\theta}),\boldsymbol{u}_k)
 \end{equation}
-Since the \abbrEKF tries to minimise state variance it will also try to estimate the parameters $\boldsymbol{\theta}$ since they are included in the state vector \citep{Roger}.
+Since the \abbrEKF tries to minimise state variance it will also try to estimate the parameters $\boldsymbol{\theta}$ if they are included in the state vector \citep{Roger}.
 
 %\subsection{Implementation}\label{sec:KalmanEstimatorImpl}
 %The reparametrised model \eqref{eq:quatModel} was used to model $\etaVector$ and $\nuVector$. Measurement equations were taken from \Chapterref{cha:sensor_fusion}. Each model parameter was modelled as a state using a constant position motion model and the motion model was discretised using the Euler forward discretisation method. The complete discrete model is
