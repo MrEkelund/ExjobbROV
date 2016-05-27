@@ -1,7 +1,45 @@
 \chapter{Hardware and Software}\label{cha:hardware}
 The goal of this chapter is present the capabilities and limitations of the hardware used in this thesis. The hardware is divided into different sections and are described in moderate detail, for example, how things are connected and how things are controlled.\\
-The \abbrROV frame and thrusters were included in a package from Blue Robotics. In addition to the \abbrROV frame, a Raspberry Pi was used as an onboard computer and a HKPilot Mega 2.7  was used as a input/output (\abbrIO) unit, see \Figureref{fig:apm}. The software in the \abbrROV was built on top of \abbrROS.  Instructions for installation of software and operation of the \abbrROV can be found in Appendices~\ref{app:dependencies} and \ref{app:operation}. \abbrROS is an open source operating system for robot applications and is used in the \abbrROV. The operating system provides message passing, hardware abstraction and thus simplifies communication between different computers \citep{ROS}. The message passing in \abbrROS consists of two parties, subscribers and publishers. When a publisher sends a message on a specific topic any subscribers that listens to that topic receives receives the message.  
-\todo[inline]{Bilden av hur saker ar kopplade ar inte fixad. Utan den gors senare.}
+The \abbrROV frame and thrusters were included in a package from Blue Robotics. In addition to the \abbrROV frame, a Raspberry Pi was used as an onboard computer and a HKPilot Mega 2.7  was used as a input/output (\abbrIO) unit, see \Figureref{fig:apm}. The software in the \abbrROV was built on top of \abbrROS.  Instructions for installation of software and operation of the \abbrROV can be found in Appendices~\ref{app:dependencies} and \ref{app:operation}. \abbrROS is an open source operating system for robot applications and is used in the \abbrROV. The operating system provides message passing, hardware abstraction and thus simplifies communication between different computers \citep{ROS}. The message passing in \abbrROS consists of two parties, subscribers and publishers. When a publisher sends a message on a specific topic any subscribers that listens to that topic receives receives the message. \Figureref{fig:rov_scheme} shows a schematic over the \abbrROV components and their connections.
+
+\begin{figure}
+	\centering
+		\begin{tikzpicture}[auto, thick, node distance=2cm,>=latex',
+			 block/.style  = {draw, rectangle,minimum height=3em, minimum width=6em},
+			 sum/.style    = {draw, circle, inner sep=0pt, text width=4mm,align=center, node distance=1cm},
+			 input/.style  = {coordinate},
+			 output/.style = {coordinate},
+			 pinstyle/.style = {pin edge={to-,thin,black}}, scale=0.6, every node/.style={transform shape}]
+			 
+			 \node [block, node distance=5cm] (ws) {Workstation};
+			 \node [block, right of=ws, node distance=4cm] (rasp) {Raspberry pi};
+			 \node [block, right of=rasp, node distance=4cm] (HkPilot) {HkPilot};
+			 \node [block, right of=HkPilot, node distance=4cm] (esc) {ESC};
+			 \node [block, below of=esc, node distance=2cm] (thrust) {Thrusters};
+			 \node [block, below of=HkPilot] (pressure) {Pressure sensor};
+			 \node [block, below of=rasp] (diag) {JST-XH to USB};
+			 \node [block, below of=pressure] (bat) {Battery};
+			 
+			 
+			 \draw[<->, thick] (ws) -- node[above]{Cat 6} (rasp);
+			 \draw[thick,red] (rasp) -- node[right]{\color{black} \abbrUSB} (diag);
+			 \draw[thick,red] (diag.south) -- ++(0,-1.45)-- node[below]{\color{black} JST-XH} (bat.west);
+			 \draw[<->, thick,red] (rasp) -- node[above]{\color{black} \abbrUSB} (HkPilot);
+			 \draw[<->, thick,red] (HkPilot) -- node[right]{\color{black} $\text{I}^2\text{C}$} (pressure);
+			 \draw[->, thick,red] (HkPilot) -- node[above]{\color{black} \abbrPWM} (esc);
+			 \draw[thick,red] (esc) -- node[right,align=left]{\color{black} 3.5 mm \\ \color{black} Connector} (thrust);
+			 \draw[thick,red] (bat) -| node[right]{\color{black} HXT 4 mm} ++(2,3.8) -|  ($ (esc.west)+(0,-0.2)$);
+			 
+			 \node[coordinate, above left = 1cm and 0.4cm of rasp](tl){};
+			 \node[coordinate, below left = 4.5cm and 0.4cm of rasp](bl){};
+			 \node[coordinate, below right = 2.5cm and 1cm of thrust](br){};
+			 \node[coordinate, above right = 1cm and 1cm of esc](tr){};
+			 
+			 \draw[dotted] (tl) -- (bl) -- (br) -- (tr) -- node[below]{ROV} (tl);
+		\end{tikzpicture}
+	\caption{Schematic of how \abbrROV components communicate (arrows) and how they are powered (red).}
+	\label{fig:rov_scheme}
+\end{figure} 
 \section{BlueROV Package}
 \Figureref{fig:rov} shows the BlueRov from Blue Robotics used in this thesis. The BlueROV package includes an acrylic chassi, an acrylic tube, six electronic speed controllers, six Blue Robotics T200 thrusters, cable penetrators and a cradle for mounting of electronics.
 \begin{figure}
