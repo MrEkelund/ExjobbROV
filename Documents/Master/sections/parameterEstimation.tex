@@ -269,7 +269,7 @@ measurement noise covariance matrix
 \begin{equation*}
 \boldsymbol{R} = \text{diag}[\underbrace{\overbrace{0.01}^{\times3}}_{\text{Gyro}}... \underbrace{\overbrace{0.1}^{\times3}}_{\text{Acc}}... \underbrace{\overbrace{100}^{\times3}}_{\text{mag}}]
 \end{equation*}
-The extremely low values of the last five elements in $\boldsymbol{Q}$ were chosen to fixate the measured moment arms of the thrusters. Four data sets were feed in to the estimator and a fifth was used as validation data. All data sets were of excitations in $p$, $q$ and $r$ simultaneously. Parameter values from the estimation can be viewed together with the starting state in \tableref{tab:ResultKalmanFixedMomentArms}. \todo[inline]{kolla med jonas om laga varden}
+The extremely low values of the last five elements in $\boldsymbol{Q}$ were chosen to fixate the measured moment arms of the thrusters. Four data sets were feed in to the estimator and a fifth was used as validation data. All data sets were of excitations in $p$, $q$ and $r$ simultaneously. Parameter values from the estimation can be viewed together with the starting state in \tableref{tab:ResultKalmanFixedMomentArms}. \todo[inline]{fortsätt här!!!!!!!!!!}
 \begin{table}[hbp]
   \centering
   \caption{\label{tab:ResultKalmanFixedMomentArms}%
@@ -318,12 +318,13 @@ The fit of the model using the estimated parameters can be viewed in \figureref{
 
 A second estimation was run using same model with the following settings
 \begin{equation*}
-\boldsymbol{Q}=\text{diag}[\underbrace{\overbrace{100}^{\times4}}_{\etaVector}... \underbrace{\overbrace{1000}^{\times3}}_{\nuVector}...\underbrace{\overbrace{0.01}^{\times3}}_{\boldsymbol{b}}... \underbrace{\overbrace{0.01}^{\times10}... \overbrace{0.000001}^{\times5}}_{\boldsymbol{\theta}}]\text{ ,}
+\boldsymbol{Q}=\text{diag}[\underbrace{\overbrace{1000}^{\times4}}_{\etaVector}... \underbrace{\overbrace{1000}^{\times3}}_{\nuVector}...\underbrace{\overbrace{0.01}^{\times3}}_{\boldsymbol{b}}... \underbrace{\overbrace{0.001}^{\times10}}_{\boldsymbol{\theta}}]\text{ ,}
 \end{equation*}
+
 \begin{equation*}
-\boldsymbol{R} = \text{diag}[\underbrace{\overbrace{0.001}^{\times3}}_{\text{Gyro}}... \underbrace{\overbrace{0.1}^{\times3}}_{\text{Acc}}... \underbrace{\overbrace{100}^{\times3}}_{\text{mag}}]
+\boldsymbol{R} = \text{diag}[\underbrace{\overbrace{0.001}^{\times3}}_{\text{Gyro}}... \underbrace{\overbrace{0.1}^{\times3}}_{\text{Acc}}... \underbrace{\overbrace{1000}^{\times3}}_{\text{mag}}]
 \end{equation*}
-The estimation was done with three data sets, of which the first two were used for estimation and the third for validation. Since these datasets were shorter the estimator was iterated five times, using the parameter values from the previous iteration as the new initial states. The resulting parameter values and their initial values can be viewed in \tableref{tab:ResultKalmanFixedMomentArmsLz6} and a comparison of a simulated run against validation data is shown in \figureref{fig:ResultKalmanFixedMomentArmsLz6}
+The estimation was done with three data sets, of which the first two were used for estimation and the third for validation. The estimator used three data sets and was iterated 2 times, using the parameter values from the previous iteration as the new initial states. The resulting parameter values and their initial values can be viewed in \tableref{tab:ResultKalmanFixedMomentArmsLz6} and a comparison of a simulated run against validation data is shown in \figureref{fig:ResultKalmanFixedMomentArmsLz6}
 
 % results kalman lz6=0 fixed moment arms
 \begin{table}[hbp]
@@ -338,24 +339,16 @@ The estimation was done with three data sets, of which the first two were used f
     $\etaVector$			&$[1\ 0\ 0\ 0]^T$					&\\
     $\nuVector$			&$[0\ 0\ 0]^T$						&\\
     $\boldsymbol{b}$					&$[0\ 0\ 0]^T$			&\\
-	$z_B$               & -0.05	\meter 						& -0.0606  	\meter\\
-    $\Kp$               & -1   	\kilogram\usk\meter\squared 	& -0.8745 		\kilogram\usk\meter\squared\\
-    $\Kpabsp$           & -1  	\kilogram\usk\meter\squared	& -0.6279  		\kilogram\usk\meter\squared\\
-    $\Mq$               & -1  	\kilogram\usk\meter\squared	& -0.8529  		\kilogram\usk\meter\squared\\
-    $\Mqabsq$           & -1  	\kilogram\usk\meter\squared	& -0.2505  	\kilogram\usk\meter\squared\\
-    $\Nr$               & -1  	\kilogram\usk\meter\squared	& -1.0469		\kilogram\usk\meter\squared\\
-    $\Nrabsr$           & -1  	\kilogram\usk\meter\squared	& -1.0405 		\kilogram\usk\meter\squared\\
-    $A_p$               & 1 	\kilogram\usk\meter\squared	&  0.9728 		\kilogram\usk\meter\squared\\
-    $B_q$               & 1 	\kilogram\usk\meter\squared	&  0.7266		\kilogram\usk\meter\squared\\
-    $C_r$               & 1 	\kilogram\usk\meter\squared	&  1.2013		\kilogram\usk\meter\squared\\
-    $\distance{x}{1}$  &0.19 \meter & 0.19 \meter\\
-    $\distance{y}{1}$  &0.11 \meter & 0.1102 \meter\\
-    $\distance{x}{2}$  &0.19 \meter & 0.19 \meter\\
-    $\distance{y}{2}$  &0.11 \meter & 0.1102 \meter\\
-    $\distance{y}{3}$  &0.11 \meter & 0.11 \meter\\
-    $\distance{x}{5}$  &0.17 \meter & 0.1701 \meter\\
-    $\distance{y}{4}$  &0.11 \meter & 0.11 \meter\\
-    $\distance{z}{6}$  &0.0 \meter & 0.0 \meter\\ 
+	$z_B$               & -0.05	\meter 						& -0.0420 	\meter\\
+    $\Kp$               & -1   	\kilogram\usk\meter\squared 	& -0.8842 		\kilogram\usk\meter\squared\\
+    $\Kpabsp$           & -1  	\kilogram\usk\meter\squared	& -0.6682  		\kilogram\usk\meter\squared\\
+    $\Mq$               & -1  	\kilogram\usk\meter\squared	& -0.8547  		\kilogram\usk\meter\squared\\
+    $\Mqabsq$           & -1  	\kilogram\usk\meter\squared	& -0.3354  	\kilogram\usk\meter\squared\\
+    $\Nr$               & -1  	\kilogram\usk\meter\squared	& -1.0280		\kilogram\usk\meter\squared\\
+    $\Nrabsr$           & -1  	\kilogram\usk\meter\squared	& -1.0249 		\kilogram\usk\meter\squared\\
+    $A_p$               & 1 	\kilogram\usk\meter\squared	&  0.8337 		\kilogram\usk\meter\squared\\
+    $B_q$               & 1 	\kilogram\usk\meter\squared	&  0.7987		\kilogram\usk\meter\squared\\
+    $C_r$               & 1 	\kilogram\usk\meter\squared	&  1.1250		\kilogram\usk\meter\squared\\
     \bottomrule%
   \end{tabular}
 \end{table}
