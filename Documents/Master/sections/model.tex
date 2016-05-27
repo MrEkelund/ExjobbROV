@@ -293,7 +293,7 @@ Euler angles are singular for $\pm \frac{\pi}{2}$ in $\pitchAngle$ which might o
 \end{equation} where $\boldsymbol{q} =[\quatO\quad \quatI\quad \quatII\quad \quatIII]^T$
 
 The quaternions need to satisfy $\quaternion^T\quaternion = 1$ in order to represent angles and thus needs to be normalised.
-Approximate quaternion normalisation in a continuous time can be achieved by adding a normalising term
+Approximate quaternion normalisation in continuous time can be achieved by adding a normalising term
 %\boldsymbol{T}_q(\quaternion) \angVelBody +
 \begin{equation}
 \frac{\gamma}{2} ( 1 - \quaternion^T\quaternion)\quaternion
@@ -584,47 +584,44 @@ The expression can then be solved for $\nuVectordot$ and split into components
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Simplified Model Structures}
-Since the \abbrROV can not measure its position in $N$ and $E$ nor its velocity in $u$, $v$ and $w$ estimation of parameters linked to these terms are difficult to identify. To make estimation more convenient, data-collection experiments can be designed such that linear velocities will be small. The effects of the linear velocities in \eqref{eq:angVelDynamics} can then be neglected, resulting in the reduced model
-\begin{subequations}\label{eq:WithoutTranslation}
-\begin{multline} \label{eq:p_dotWithoutTranslation}
-\pdot = \frac{\thrusterfun{1} \distance{y}{1} - \thrusterfun{2} \distance{y}{2} + \thrusterfun{6} \distance{z}{6}}{\Ix - \Kpdot} + \frac{(\Kp + \Kpabsp \abs{p})p}{\Ix - \Kpdot} + \frac{-\Mqdot q r}{\Ix - \Kpdot} + \frac{\Nrdot q r}{\Ix - \Kpdot} +\\
-\frac{q r (\Iy - \Iz)}{\Ix - \Kpdot} + \frac{B z_B\cos{\theta} \sin{\phi}}{\Ix - \Kpdot},
-\end{multline} 
-\begin{multline} \label{eq:q_dotWithoutTranslation}
-\qdot =\frac{\thrusterfun{1} \distance{x}{1} + \thrusterfun{2} \distance{x}{2} - \thrusterfun{5} \distance{x}{5}}{\Iy - \Mqdot} + \frac{(\Mq + \Mqabsq \abs{q})q}{\Iy - \Mqdot} + \frac{\Kpdot p r}{\Iy - \Mqdot} + \frac{-\Nrdot p r}{\Iy - \Mqdot} +\\
-\frac{p r (\Iz - \Ix)}{\Iy - \Mqdot} + \frac{B z_B\sin{\theta}}{\Iy - \Mqdot}\
-\end{multline} 
-\textrm{and}
-\begin{multline} \label{eq:r_dotWithoutTranslation}
-\rdot = \frac{\thrusterfun{3} \distance{y}{3} - \thrusterfun{4} \distance{y}{4}}{\Iz - \Nrdot} + \frac{(\Nr + \Nrabsr \abs{r})r}{\Iz - \Nrdot} + \frac{-\Kpdot p q}{\Iz - \Nrdot} +\\
- \frac{\Mqdot p q}{\Iz - \Nrdot} + \frac{p q (\Ix - \Iy)}{\Iz - \Nrdot}
-\end{multline} 
-\end{subequations}
-
-From \eqref{eq:WithoutTranslation} it can be seen that $r$ is not affected by the same thrusters as $p$ and $q$. It can therefore be convenient to excite the \abbrROV mainly in $p$ and $q$ or in $r$. If the \abbrROV is excited in this way, while still keeping the linear velocities low, the effects of $r$ can then be assumed to be small in \eqref{eq:p_dotWithoutTranslation} and \eqref{eq:q_dotWithoutTranslation}. Similarly the effects of $p$ and $q$ can be assumed to be small in \eqref{eq:r_dotWithoutTranslation}. Under these assumptions, the model structure \eqref{eq:WithoutTranslation} can be reduced to
-\begin{subequations} \label{eq:pq_dot_decouple}
-\begin{align} \label{eq:pq_dot_decouple1}
-\pdot &= \frac{\thrusterfun{1} \distance{y}{1} - \thrusterfun{2} \distance{y}{2} + \thrusterfun{6} \distance{z}{6}}{\Ix - \Kpdot} + \frac{(Kp + \Kpabsp \abs{p})p}{\Ix - \Kpdot} + \frac{B z_B \cos{\theta} \sin{\phi}}{\Ix - \Kpdot}, \\ \label{eq:pq_dot_decouple2}
-\qdot &=\frac{\thrusterfun{1} \distance{x}{1} + \thrusterfun{2} \distance{x}{2} - \thrusterfun{5} \distance{x}{5}}{\Iy - \Mqdot} + \frac{(\Mq + \Mqabsq \abs{q})q}{\Iy - \Mqdot} + \frac{B z_B \sin{\theta}}{\Iy - \Mqdot} 
-\end{align}
-\end{subequations} and
-\begin{equation} \label{eq:r_dot_decouple}
-\rdot = \frac{\thrusterfun{3} \distance{y}{3} - \thrusterfun{4} \distance{y}{4}}{\Iz - \Nrdot} + \frac{(\Nr + \Nrabsr \abs{r})r}{\Iz - \Nrdot}
-\end{equation}
-
-\todo[inline]{Disskutera med jonas}
-For identifiability reasons it is necessary to reparametrise the model by congregating some of the original parameters before conducting parameter estimation. To gain identifiability, the reparametrisation $A_p = \Ix - \Kpdot$, $B_q = \Iy - \Mqdot$ and $C_r = \Iz - \Nrdot$ was introduced in \eqref{eq:WithoutTranslation}. These changes resulted in
+Since the \abbrROV can not measure its position in $N$ and $E$ nor its velocity in $u$, $v$ and $w$ estimation of parameters linked to these terms are difficult to identify. To make estimation more convenient, data-collection experiments can be designed such that linear velocities will be small. The effects of the linear velocities in \eqref{eq:angVelDynamics} can then be neglected. For identifiability reasons it is necessary to reparametrise the model by congregating some of the original parameters before conducting parameter estimation. To gain identifiability, the reparametrisation $A_p = \Ix - \Kpdot$, $B_q = \Iy - \Mqdot$ and $C_r = \Iz - \Nrdot$ was introduced. These changes resulted in
 \begin{subequations}\label{eq:quatModel}
-\begin{multline}
+\begin{multline} \label{eq:p_dotWithoutTranslation}
 \pdot = \frac{\thrusterfun{1} \distance{y}{1} - \thrusterfun{2} \distance{y}{2} + \thrusterfun{6} \distance{z}{6}}{A_p} + \frac{B z_B \cos{\theta} \sin{\phi}}{A_p} + \\ \frac{(\Kp + \Kpabsp \abs{p})p}{A_p} + \frac{q r (B_q - C_r)}{A_p},
 \end{multline}
-\begin{multline}
+\begin{multline} \label{eq:q_dotWithoutTranslation}
 \qdot = \frac{\thrusterfun{1} \distance{x}{1} + \thrusterfun{2} \distance{x}{2} - \thrusterfun{5} \distance{x}{5}}{B_q} - \frac{B z_B \sin{\theta}}{B_q} + \\ \frac{(\Mq + \Mqabsq \abs{q})q}{B_q} - \frac{p r (A_p - C_r)}{B_q}
 \end{multline}
 and
-\begin{multline}
+\begin{multline} \label{eq:r_dotWithoutTranslation}
 \rdot = \frac{\thrusterfun{3} \distance{y}{3} - \thrusterfun{4} \distance{y}{4}}{C_r} + \frac{(\Nr + \Nrabsr \abs{r})r}{C_r} + \frac{p q (A_p  - B_q)}{C_r}
 \end{multline}
 \end{subequations}
+
+From \eqref{eq:quatModel} it can be seen that $r$ is not affected by the same thrusters as $p$ and $q$. It can therefore be convenient to excite the \abbrROV mainly in $p$ and $q$ or in $r$. If the \abbrROV is excited in this way, while still keeping the linear velocities low, the effects of $r$ can then be assumed to be small in \eqref{eq:p_dotWithoutTranslation} and \eqref{eq:q_dotWithoutTranslation}. Similarly the effects of $p$ and $q$ can be assumed to be small in \eqref{eq:r_dotWithoutTranslation}. Under these assumptions, the model structure \eqref{eq:quatModel} can be reduced to
+\begin{subequations} \label{eq:pq_dot_decouple}
+\begin{align} \label{eq:pq_dot_decouple1}
+\pdot &= \frac{\thrusterfun{1} \distance{y}{1} - \thrusterfun{2} \distance{y}{2} + \thrusterfun{6} \distance{z}{6}}{A_p} + \frac{(Kp + \Kpabsp \abs{p})p}{A_p} + \frac{B z_B \cos{\theta} \sin{\phi}}{A_p}, \\ \label{eq:pq_dot_decouple2}
+\qdot &=\frac{\thrusterfun{1} \distance{x}{1} + \thrusterfun{2} \distance{x}{2} - \thrusterfun{5} \distance{x}{5}}{B_q} + \frac{(\Mq + \Mqabsq \abs{q})q}{B_q} + \frac{B z_B \sin{\theta}}{B_q} 
+\end{align}
+\end{subequations} and
+\begin{equation} \label{eq:r_dot_decouple}
+\rdot = \frac{\thrusterfun{3} \distance{y}{3} - \thrusterfun{4} \distance{y}{4}}{B_q} + \frac{(\Nr + \Nrabsr \abs{r})r}{B_q}
+\end{equation}
+
+%\todo[inline]{Disskutera med jonas}
+%For identifiability reasons it is necessary to reparametrise the model by congregating some of the original parameters before conducting parameter estimation. To gain identifiability, the reparametrisation $A_p = \Ix - \Kpdot$, $B_q = \Iy - \Mqdot$ and $C_r = \Iz - \Nrdot$ was introduced in \eqref{eq:WithoutTranslation}. These changes resulted in
+%\begin{subequations}\label{eq:quatModel}
+%\begin{multline}
+%\pdot = \frac{\thrusterfun{1} \distance{y}{1} - \thrusterfun{2} \distance{y}{2} + \thrusterfun{6} \distance{z}{6}}{A_p} + \frac{B z_B \cos{\theta} \sin{\phi}}{A_p} + \\ \frac{(\Kp + \Kpabsp \abs{p})p}{A_p} + \frac{q r (B_q - C_r)}{A_p},
+%\end{multline}
+%\begin{multline}
+%\qdot = \frac{\thrusterfun{1} \distance{x}{1} + \thrusterfun{2} \distance{x}{2} - \thrusterfun{5} \distance{x}{5}}{B_q} - \frac{B z_B \sin{\theta}}{B_q} + \\ \frac{(\Mq + \Mqabsq \abs{q})q}{B_q} - \frac{p r (A_p - C_r)}{B_q}
+%\end{multline}
+%and
+%\begin{multline}
+%\rdot = \frac{\thrusterfun{3} \distance{y}{3} - \thrusterfun{4} \distance{y}{4}}{C_r} + \frac{(\Nr + \Nrabsr \abs{r})r}{C_r} + \frac{p q (A_p  - B_q)}{C_r}
+%\end{multline}
+%\end{subequations}
 
 
