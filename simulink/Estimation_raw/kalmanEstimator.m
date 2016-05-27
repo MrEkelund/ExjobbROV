@@ -3,8 +3,8 @@
  Ts = 1/fs;
  data = loadAll0418(0,fs);
 %%
-nr_sets=4;
-nr_iter=1;
+nr_sets=3;
+nr_iter=2;
 clear params
 for iter=1:nr_iter
     display(sprintf('Iteration number %i',iter))
@@ -21,21 +21,19 @@ for iter=1:nr_iter
         mag_d = measurements(9,1);
         
         % Set initial variables
-        %Model noise covariance
+        % Model noise covariance
         Q = blkdiag(...
-            100*eye(4),... %Quat
-            1000,... %pqr
-            1000,....
-            1000,...
+            1000*eye(4),... %Quat
+            1000*eye(3),...        %pqr
             0.01*eye(3),...%Bias
-            0.01*eye(10),...%Params
-            0.000001*eye(4),0.000001);  %Moment arms
+            0.001*eye(10));   %Params
+
         %measurement covariance
         R = blkdiag(...
-            0.01*eye(3),...    %Gyro
-            0.1*eye(3),...    %Acc
-            100*eye(3));   %Mag
-        state = zeros(25,2*length(measurements));
+            0.001*eye(3),...     %Gyro
+            0.1*eye(3),...      %Acc
+            1000*eye(3));        %Mag
+        state = zeros(20,2*length(measurements));
         
         % First run variables
         eta = [1;0;0;0];
@@ -54,24 +52,18 @@ for iter=1:nr_iter
             Ix_Kp_dot = 1;
             Iy_Mq_dot = 1;
             Iz_Nr_dot = 1;
-            lx1=0.19;%0.16;
-            ly1=0.11;
-            ly3=0.11;
-            lx5=0.17;%0.2;
-            lz6=0.11;
             
             state(11:end,1) =...
                 [zb; Kp; Kp_abs_p; Mq;...
                 Mq_abs_q; Nr; Nr_abs_r;...
-                Ix_Kp_dot; Iy_Mq_dot; Iz_Nr_dot;lx1;ly1;ly3;lx5;lz6];
+                Ix_Kp_dot; Iy_Mq_dot; Iz_Nr_dot];
             
             % Initial P matrix                        
             P = blkdiag(...
-                10000*eye(4),...     %Quat
-                10000*eye(3),...     %pqr
-                0.001*eye(3),...    %Bias
-                1*eye(10),...%Params
-                0.0000000001*eye(5));      %Moment arms
+                10000*eye(4),...            %Quat
+                10000*eye(3),...            %pqr
+                0.0001*eye(3),...     %Bias
+                1*eye(10));       %Params  
         else
             % if not first run use last runs results as initial state
             state(11:end,1) = params(:,(iter-1)*nr_sets+k-1);
@@ -110,7 +102,7 @@ end
 
 % Check if new parameter values are valid
 temp = mean(params,2);
-if(any(0<temp(1:7))|any(0>temp(8:14)))
+if(any(0<temp(1:7))|any(0>temp(8:10)))
     display('Wrong sign on one or more parameters.');
     display('Not saving.');
     paramsOK = false;
@@ -127,7 +119,7 @@ end
 % compare against validation data
 if(paramsOK)
     close all;
-    for k=1:length(data.exp);
+    for k=4:4;%length(data.exp);
         valid = getexp(data,k);
         tau_valid = valid.InputData;
         y_valid = valid.outputdata;
@@ -143,7 +135,7 @@ if(paramsOK)
         set_param( 'quatSim1/p', 'InitialCondition', sprintf('%f',initialCondition(5)) )
         set_param( 'quatSim1/q', 'InitialCondition', sprintf('%f',initialCondition(6)) )
         set_param( 'quatSim1/r', 'InitialCondition', sprintf('%f',initialCondition(7)) )
-        for l=1:15
+        for l=1:10
             set_param( sprintf('quatSim1/GetParameters/Params%i',l), 'Value', sprintf('%f',EstimatedParams(l)));
         end
         
@@ -163,6 +155,7 @@ if(paramsOK)
         %subplot(length(data.exp),3,3*k-2)
         figure(3*k-2)
         plot(t,[sim_data(:,1),y_valid(:,1)],'LineWidth',2)
+        axis([0 7 -5 5]);
         xlabel('Time [s]','FontSize',30);
         ylabel('Angular velocity [rad/s]','FontSize',30);
         legend({'Simulated data','Validation data'},'FontSize',30)
@@ -172,6 +165,7 @@ if(paramsOK)
         %subplot(length(data.exp),3,3*k-1)
         figure(3*k-1)
         plot(t,[sim_data(:,2),y_valid(:,2)],'LineWidth',2)
+        axis([0 7 -5 5]);
         xlabel('Time [s]','FontSize',30);
         ylabel('Angular velocity [rad/s]','FontSize',30);
         legend({'Simulated data','Validation data'},'FontSize',30)
@@ -181,6 +175,7 @@ if(paramsOK)
         %subplot(length(data.exp),3,3*k)
         figure(3*k)
         plot(t,[sim_data(:,3),y_valid(:,3)],'LineWidth',2)
+        axis([0 7 -5 5]);
         xlabel('Time [s]','FontSize',30);
         ylabel('Angular velocity [rad/s]','FontSize',30);
         legend({'Simulated data','Validation data'},'FontSize',30)

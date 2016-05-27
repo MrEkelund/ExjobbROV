@@ -101,7 +101,7 @@ coloured_noise = [coloured_noise_eta;coloured_noise_nu];
 
  state = [eta; nu; bias_p; bias_q; bias_r; zb; Kp; Kp_abs_p; Mq;...
      Mq_abs_q; Nr; Nr_abs_r;...
-     Ix_Kp_dot; Iy_Mq_dot; Iz_Nr_dot; lx1; ly1; ly3; lx5; lz6];
+     Ix_Kp_dot; Iy_Mq_dot; Iz_Nr_dot];
  f = [eta_k_1;nu_k_1;state(8:end)];
  
  %%
