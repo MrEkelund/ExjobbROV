@@ -456,7 +456,7 @@ Tests were conducted with the \abbrPID attitude controller without exact lineari
   \qquad
   \subfloat[][\label{fig:simStepAllYawAttitude} Simulated response in $\yawAngle$.]{\includegraphics[width=0.4\textwidth]{simStepAllPsis3e10a1}}
   \caption{\label{fig:StepAllAttitude}% 
- A smooth steps with $q_{\text{0}} = 0$, $q_{\text{f}} = 1$, $t_{\text{s}} = 3$, $t_{\text{f}} = 15$ and $V = 1.5 (q_{\text{f}} - q_{\text{0}})/(t_{\text{f}} - t_{\text{s}}))$ was applied in all attitude angles at the same time while using the attitude controller.}
+ A smooth step with $q_{\text{0}} = 0$, $q_{\text{f}} = 1$, $t_{\text{s}} = 3$, $t_{\text{f}} = 15$ and $V = 1.5 (q_{\text{f}} - q_{\text{0}})/(t_{\text{f}} - t_{\text{s}}))$ was applied in all attitude angles at the same time while using the attitude controller.}
 \end{figure}
 
 \Figureref{fig:StepAllAttitude} shows smooth step reference signals applied in all attitude angles while using the attitude controller. Initially did $\rollAngle$ and $\pitchAngle$ follow the reference signals well in the real test. The $\rollAngle$ oscillated with a steady-state error of $0.9$ in the real test. However, $\pitchAngle$ was kept closer to the reference signal with a steady-state error of $0.4$. The attitude angle $\yawAngle$ could not be stabilised during the real test and drifted throughout the test. In the simulated test case did not the attitude angles reach the reference signal. The attitude angle $\pitchAngle$ had a steady-state error of $0.3$ and the other angles had a steady-state error of $0.5$.
