@@ -63,11 +63,11 @@ Similarly to an open-loop controller, a feedback controller can use a model of t
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Open-Loop Control} \label{sec:openloop} \index{Open-Loop Control} \index{thrust allocation} \index{thruster geometry}
 The open-loop control of the \abbrROV consists of an static thrust-allocation matrix which is
-\begin{equation}
+\begin{equation} \label{eq:pinv}
     \thrusterGeometryOnes[*] = \thrusterGeometryOnes[T](\thrusterGeometryOnes \thrusterGeometryOnes[T])^{-1}
 \end{equation}
-where $\thrusterGeometryOnes$ describes how the actuators effect the \abbrROV \citep{thrustallocation}. The thrust-geometry matrix $\thrusterGeometryOnes$ has been derived from the thrust matrix $\thrusterGeometry$ and became 
-\begin{equation*}
+where $\thrusterGeometryOnes$ describes how the actuators effect the \abbrROV \citep{thrustallocation}. The thrust-geometry matrix could be $\thrusterGeometryOnes = T$ but then maximum thrust can not be achieved. If the thrust-geometry matrix is instead chosen as
+\begin{equation} \label{eq:Tones}
     \thrusterGeometryOnes = 
     \begin{bmatrix}
     0  & 0  & 1 & 1  &  0 &  0 \\
@@ -77,8 +77,8 @@ where $\thrusterGeometryOnes$ describes how the actuators effect the \abbrROV \c
     1  & 1  & 0 & 0  & -1 &  0 \\
     0  & 0  & 1 & -1 &  0 &  0 \\
     \end{bmatrix}
-\end{equation*}
-and thus $\thrusterGeometryOnes[*]$ is given by
+\end{equation}
+can maximum thrust be achieved but translational dynamics can occur. Combining \eqref{eq:pinv} and \eqref{eq:Tones} gives
 \begin{equation}
 \thrusterGeometryOnes= \begin{bmatrix}
 0 & 0 & -0.25 & 0.5 & 0.25 & 0 \\
@@ -89,7 +89,7 @@ and thus $\thrusterGeometryOnes[*]$ is given by
 0 & -1 & 0 & 0 & 0 & 0 \\
 \end{bmatrix}
 \end{equation}
-The static thrust allocation matrix $\thrusterGeometryOnes[*]$ is the pseudo inverse of the thrust geometry matrix $\thrusterGeometryOnes$. An approximately decoupled control is achieved when the static thrust allocation matrix is used and thus can the \abbrROV be controlled better without using any controllers. \Figureref{fig:open_control} illustrates how the control signals are allocated to the different thrusters when given an control input.
+The static thrust allocation matrix $\thrusterGeometryOnes[*]$ is the pseudo inverse of the thrust geometry matrix $\thrusterGeometryOnes$. An approximately decoupled control is achieved when the static thrust allocation matrix is used and thus can the \abbrROV be controlled better. \Figureref{fig:open_control} illustrates how the control signals are allocated to the different thrusters when given an control input.
 
 \begin{figure}
     \centering
