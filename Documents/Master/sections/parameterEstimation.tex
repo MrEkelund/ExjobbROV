@@ -91,7 +91,7 @@ Since the \abbrEKF tries to minimise state variance it will also try to estimate
 %Here, $\boldsymbol{\theta}$ is a vector containing the parameters that were estimated. The vector-valued function $\boldsymbol{f}(\etaVector,\nuVector,\boldsymbol{\theta})$ is \eqref{eq:quatModel}. The vector $\boldsymbol{b}$  contains the biases of the gyroscope. The vector $\boldsymbol{v}$ is the system noise and is assumed to enter each term directly, this resulted in a diagonal $\boldsymbol{Q}$-matrix when implementing the model in the \abbrEKF. The matrix $\boldsymbol{T}(\etaVector)$ is an angular velocity transformation matrix using the quaternion form of $\etaVector$ and is defined in \Chapterref{cha:modelling}. Measurement equations are taken from \sectionref{sec:Meas}.
 
 To increase the performance of the filter a method for outlier detection and rejection was implemented. Since time updates were done batch wise it was decided to use a different form of outlier rejection and not to reimplement the method used in \sectionref{sec:Meas}. The outlier rejection method is based on the assumption that the normalised innovation \begin{equation} \label{eq:chi}
-\boldsymbol{\epsilon}^T \boldsymbol{S}^{-1} \boldsymbol{\epsilon} \sim \chi_{n}^{2}
+\boldsymbol{\epsilon}^T \boldsymbol{S}^attitude{-1} \boldsymbol{\epsilon} \sim \chi_{n}^{2}
 \end{equation}
 where $n$ is the number of measurements. To check the validity of a single measurement, \eqref{eq:chi} gives that $\epsilon_i^{2}/S_{i,i} \sim \chi_{1}^{2}$ \citep{sensorfusion}. This is implemented in the \abbrEKF using \Algoref{alg:outlier}.
 \begin{algorithm}[h]
@@ -155,9 +155,9 @@ Using the model structure \eqref{eq:pq_dot_decouple} and \eqref{eq:r_dot_decoupl
 \end{equation}
 and
 \begin{equation}
-\boldsymbol{y} = \nuVector
-\end{equation} \todo[inline]{inte fixat}
-where $\hat{\etaVector}$ are the estimated Euler angles from the sensor fusion.
+\boldsymbol{y} = \nuVector + \boldsymbol{v}_{\text{Meas}}
+\end{equation}
+where $\hat{\etaVector}$ are the estimated Euler angles from the sensor fusion and $\boldsymbol{v}_{\text{Meas}}$ are measurement noise.
 The result of the estimation can be seen in \Tableref{tab:ResultEstimAngular}. The estimation used two datasets as estimation data and used one dataset for validation data. The fit of the model compared to validation data can be seen in \Figureref{fig:velocityCompareCong}. The model has a high fit and thus describes the validation data well.
 
 \begin{figure}[tbp]

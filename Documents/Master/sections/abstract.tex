@@ -1,2 +1,4 @@
-English abstract
-\todo[inline]{Begin writing the abstract}
+In this thesis, an attitude model for a \abbrROV has been estimated. The attitude model has been estimated using prediction-error method and extended Kalman filter estimation. The resulting model has been compared to validation data and describes the angular velocities well. The attitude model was used to implement an attitude controller and an angular velocity controller. 
+
+Performance of the controllers has been tested both in real tests and simulations. The angular velocity controller using exact linearisation has good reference tracking. However, the attitude controller could not be stabilised using exact linearisation. Both controllers performance could be improved by trimming the controller parameters. 
+The tests of the controllers also indicates that the attitude model's parameters are erroneously estimated due to the fact that the unscaled exact linearisation made the \abbrROV unstable.
