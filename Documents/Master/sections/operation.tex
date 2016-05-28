@@ -9,18 +9,19 @@ First connect the cat 6 Ethernet cable to the Raspberry Pi. Then connect the pre
     \node[anchor=south west,inner sep=0] (image) at (0,0) {\includegraphics[trim={0cm 0cm 0cm 0cm},clip,width=0.9\textwidth]{i2c}};
     \begin{scope}[x={(image.south east)},y={(image.north west)}]
         \draw[red,ultra thick,rounded corners] (0.48,0.71) rectangle (0.55,0.83);
+        \draw[blue,ultra thick,rounded corners] (0.65,0.41) rectangle (0.55,0.69);
     \end{scope}
 \end{tikzpicture}
-\caption{The \abbrIC port where the pressure sensor ought to be connected is circled in red. Note that the HkPilot has to be soldered for enabling the red circled \abbrIC port.}
+\caption{The \abbrIC port where the pressure sensor ought to be connected is circled in red. Note that the HkPilot has to be soldered for enabling the red circled \abbrIC port. The HkPilot's output ports, were the \abbrESC ought to be connected, are circled in blue.}
 \label{fig:i2c}
 \end{figure}
+Make sure that \abbrESC $i$ is connected to the HkPilot's output port $i$, see \Figureref{fig:i2c}. Connect the Raspberry Pi to the HkPilot by a \abbrUSB cable. By following the color coded cords, connect the thrusters and the \abbrESC:s. Connect the Raspberry Pi with the JST-XH to \abbrUSB converter. Finally, connect the battery with the JST-XH to \abbrUSB converter and to the \abbrESC:s.
 
-\todo[inline]{Write about how wire the \abbrROV}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Start up of the \abbrROV}
 For starting the \abbrROV connect all cables according to \Sectionref{sec:wiring}.
 \begin{itemize}
-	\item Make sure that the battery is tightly fastened and is fully charged. 
+	\item Make sure that the battery is tightly fastened and fully charged. 
 	\item Slide the cradle gently into the \abbrROV tube. 
 	\item If needed apply some silicone grease to the O-rings of the end cap. Then slide the end cap into the \abbrROV tube.
 	\item Insert the vent bolt in to the vent nut on the end cap.
@@ -34,18 +35,44 @@ Then in a new terminal navigate to the catkin\_ws folder and run the workstation
 \begin{lstlisting}
  ./startworkstation.sh
 \end{lstlisting} 
-\section{Shutdown of the \abbrROV}\todo{Finnish this section}
+
+\section{Shutdown of the \abbrROV}
 To shut down the \abbrROV run the following command
 \begin{lstlisting}
  ./shutdownrasp.sh
 \end{lstlisting}
 otherwise can the micro SD card in the Raspberry Pi take damage.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Operating the ROV}
+\section{Operating the \abbrROV}
+The \abbrROV can be controlled via the \abbrGUI and by an xbox controller. Three different controllers are implemented in the \abbrROV.
+Choose which controller that is enabled by Dynamic Reconfigure $\rightarrow$ controller $\rightarrow$ controllers and choose wanted controller. To chose if xbox or \abbrGUI is enabled do  Dynamic Reconfigure $\rightarrow$ controller $\rightarrow$ xbox and chose either \abbrGUI or xbox. The exact linearisation can be enabled and disabled by Dynamic Reconfigure $\rightarrow$ controller $\rightarrow$ lin\_active. 
 
-\subsection{Modes and Controllers}
+\subsection{Xbox Mode}
+In manual mode is the \abbrROV controlled via the xbox controller. Three different controllers can be used, the angular velocity controller depth controller and the open-loop controller. \Tableref{tab:xbox} summarises the xbox controllers default configuration.
+\begin{table}[htbp]
+  \centering
+  \caption{\label{tab:xbox}%
+    The xbox controllers default configuration. Note that X and Y button only has any effect when the depth controller is enabled.}
+  \begin{tabular}{l  p{0.58\linewidth}}
+    \toprule%
+    \textbf{Button/Stick}  & \textbf{Description} \\
+    \otoprule%
+    Left trigger & Increase depth. \\
+    Right trigger & Decrease depth.\\
+    Left bumper & Roll negative.\\
+    Right bumper & Roll positive.\\
+    Left stick & Translational velocities.\\
+    Right stick & Angular velocities.\\
+    A button & Arm the \abbrROV.\\
+    B button & Disarm the \abbrROV.\\
+    X button & Decrease depth reference (depth controller).\\
+    Y button & Increase depth reference (depth controller).\\
+    \bottomrule%
+  \end{tabular}
+\end{table}
 
-\subsubsection{Manual Mode}
+\subsection{\abbrGUI Mode}
+In \abbrGUI mode is the \abbrROV's attitude, angular velocities and depth controlled by the \abbrGUI. However, the translational velocities are controlled from the xbox controller. To send reference signals, enable the wanted attitude or angular velocities. Then choose the wanted reference signals, check and uncheck start\_reference\_signals. 
 
 \subsection{Logging Data}\label{sec:logging}
 For logging data rqt-bag or the supplied script can be used. In rqt on the workstation start rqt-bag by Plugins $\rightarrow$ Logging $\rightarrow$ Bag. Start the recording of data by pressing the red circle. A menu of available topics is showed, select the topics that you want to record. Then give the logfile a name in the pop-up.
@@ -55,8 +82,8 @@ To stop recording data press the red circle and close Bag by Running $\rightarro
 \end{lstlisting}
 in a terminal window and follow the instructions.
 
-\subsection{Sending Test Signals}
-To send telegraph signals to the \abbrROV the logging script in \Sectionref{sec:logging} or dynamic reconfigure can be used. Dynamic reconfigure can be used from the command line or rqt. In rqt start dynamic reconfigure by Plugins $\rightarrow$ Configuration $\rightarrow$ Dynamic Reconfigure. When the dynamic reconfigure box is shown choose matlab\_controller then check telegraph\_signals. In the submenu choose the scaling and switch factor for each thruster. Then the wanted thrusters has to be enabled/disabled by checking/unchecking the option \textit{enable\_thrusteri}. To enable tests change the test signal from off $\rightarrow$ on.    
+%\subsection{Sending Test Signals}
+%To send telegraph signals to the \abbrROV the logging script in \Sectionref{sec:logging} or dynamic reconfigure can be used. Dynamic reconfigure can be used from the command line or rqt. In rqt start dynamic reconfigure by Plugins $\rightarrow$ Configuration $\rightarrow$ Dynamic Reconfigure. When the dynamic reconfigure box is shown choose matlab\_controller then check telegraph\_signals. In the submenu choose the scaling and switch factor for each thruster. Then the wanted thrusters has to be enabled/disabled by checking/unchecking the option \textit{enable\_thrusteri}. To enable tests change the test signal from off $\rightarrow$ on.    
 
 \subsection{Displaying the Continuous Plots}
 Displaying plots in rqt is enabled by Plugins $\rightarrow$ Visualization $\rightarrow$ Plot. In the plot plugin, data can be plotted by choosing topics in the topic field this is shown in \Figureref{fig:contplot}. The active topics can be seen in the command line by running 
@@ -103,12 +130,12 @@ There are several different \abbrLED lights on the HKPilot Mega 2.7, \Tableref{t
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{New Parameter Estimation and New Controllers}
+If a new parameter estimation is done or if a new controller is synthesised follow this section.
 
 \subsection{New Parameter Estimation}
 When a new parameter estimation is done the exact linearisation has to be updated. The model parameters that ought to be updated is in controller.h. If the simulator shall be used, ought the EstimatedParams.mat file be updated.
 
 \subsection{New Controllers}
-\todo{This i no longer up-to date}
 To implement a new controller edit the controller source files controller.cpp and controller.h. 
 For easy online trimming use dynamic reconfigure parameters in the controller. Modify the controller.config file so that all wanted parameters can be modified. The controller.config file that ought to be modified is located in ExjobbROV/catkin\_ws/src/controller/config/controller.config. To implement the new controller in the simulator modify the simulator.slx file located in ExjobbROV/simulink.
 

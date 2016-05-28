@@ -41,7 +41,7 @@ The \abbrROV frame and thrusters were included in a package from Blue Robotics. 
 	\label{fig:rov_scheme}
 \end{figure} 
 \section{BlueROV Package}
-\Figureref{fig:rov} shows the BlueRov from Blue Robotics used in this thesis. The BlueROV package includes an acrylic chassi, an acrylic tube, six electronic speed controllers, six Blue Robotics T200 thrusters, cable penetrators and a cradle for mounting of electronics.
+\Figureref{fig:rov} shows the BlueRov from Blue Robotics used in this thesis. The BlueROV package includes an acrylic chassi, an acrylic tube, six electronic speed controllers (\abbrECS), six Blue Robotics T200 thrusters, cable penetrators and a cradle for mounting of electronics.
 \begin{figure}
 \centering
 \includegraphics[trim={40cm 0cm 45cm 0cm},clip,angle=270,width=0.9\textwidth]{bluerov}
@@ -58,7 +58,7 @@ The \abbrROV's \abbrIO consists of an HKPilot Mega 2.7 which is based on Ardupil
     \item Inertial measurement unit (\abbrIMU) - MPU6000.
 \end{itemize}
 An external pressure sensor MS5837-30BA which was encased in a watertight case by Blue Robotics was connected to the HKPilot Mega 2.7 by \abbrIC.
-The HKPilot Mega 2.7 also controls the six \abbrESC:s. The \abbrESC:s are 30A AfroESCs flashed with Blue Robotics linearising firmware. The HKPilot Mega 2.7 is connected to the onboard computer by \abbrUSB cable. The HKPilot Mega 2.7 runs a rosserial-arduino node which is a simpler \abbrROS node that communicates with a master node by serial communication. Scaling and calibration of the sensors are done automatically. However, the offset calibration of the magnetometer has to be performed manually by following the instructions that are produced in the workstation terminal window when the calibration script is run. The external pressure sensor uses the internal barometer to remove the atmospheric pressure offset. The atmospheric pressure offset is measured once, at the start up of the \abbrROV.
+The HKPilot Mega 2.7 also controls the six \abbrESC:s. The \abbrESC:s are 30A AfroESCs flashed with Blue Robotics linearising firmware. The HKPilot Mega 2.7 is connected to the onboard computer by \abbrUSB cable. The HKPilot Mega 2.7 runs a rosserial-arduino node which is a simpler \abbrROS node that communicates with a master node by serial communication. Scaling and calibration of the sensors are done automatically. However, the offset calibration of the magnetometer and accelerometer has to be performed manually by following the instructions that are produced in the workstation terminal window when the calibration script is run. The external pressure sensor uses the internal barometer to remove the atmospheric pressure offset. The atmospheric pressure offset is measured once, at the start up of the \abbrROV.
 
 \section{Power}
 To power the \abbrROV a Turnigy 5000mAh 4S 25C Lipo Pack was used. This is a high discharge battery which ensures that all thrusters can be run at the same time without disruptive voltage drops.
@@ -81,11 +81,9 @@ The \abbrROS nodes running on the onboard computer can be seen in \Tableref{tab:
 
     raspicam\_node      &  Camera node for streaming video from the \abbrROV.\\
     
-    controller          &  Simulink generated node that can run different controllers.\\
+    controller          &  Node that can run different controllers.\\
     
     rosserial           &  Serial node for communication with the HKPilot Mega 2.7.\\
-    
-    matlab\_controller  &  Dynamic reconfigure node for the controller node.\\
     \bottomrule%
   \end{tabular}
 \end{table}
