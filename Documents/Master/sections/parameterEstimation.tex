@@ -262,13 +262,13 @@ Here, $\boldsymbol{\sigma}$ is a $n\times1$ dimensional design variable and $n$ 
 \section{Estimation Using an Extended Kalman Filter}
 The \abbrEKF estimation used the method described in \sectionref{sec:KalmanEstimation} with the model \eqref{eq:quatModel} and quaternions as attitude representation. The estimation was feed with process noise covariance matrix
 \begin{equation*}
-\boldsymbol{Q}=\text{diag}[\underbrace{\overbrace{100}^{\times4}}_{\etaVector}... \underbrace{\overbrace{1000}^{\times3}}_{\nuVector}...\underbrace{\overbrace{0.01}^{\times3}}_{\boldsymbol{b}}... \underbrace{\overbrace{0.01}^{\times10}... \overbrace{0.000001}^{\times5}}_{\boldsymbol{\theta}}]\text{ ,}
+\boldsymbol{Q}=\text{diag}[\underbrace{\overbrace{1000}^{\times4}}_{\etaVector}... \underbrace{\overbrace{1000}^{\times3}}_{\nuVector}...\underbrace{\overbrace{0.01}^{\times3}}_{\boldsymbol{b}}... \underbrace{\overbrace{0.001}^{\times10}}_{\boldsymbol{\theta}}]\text{ ,}
 \end{equation*}
 measurement noise covariance matrix
 \begin{equation*}
-\boldsymbol{R} = \text{diag}[\underbrace{\overbrace{0.01}^{\times3}}_{\text{Gyro}}... \underbrace{\overbrace{0.1}^{\times3}}_{\text{Acc}}... \underbrace{\overbrace{100}^{\times3}}_{\text{mag}}]
+\boldsymbol{R} = \text{diag}[\underbrace{\overbrace{0.001}^{\times3}}_{\text{Gyro}}... \underbrace{\overbrace{0.1}^{\times3}}_{\text{Acc}}... \underbrace{\overbrace{1000}^{\times3}}_{\text{mag}}]
 \end{equation*}
-The extremely low values of the last five elements in $\boldsymbol{Q}$ were chosen to fixate the measured moment arms of the thrusters. Four data sets were feed in to the estimator and a fifth was used as validation data. All data sets were of excitations in $p$, $q$ and $r$ simultaneously. Parameter values from the estimation can be viewed together with the starting state in \tableref{tab:ResultKalmanFixedMomentArms}. \todo[inline]{fortsätt här!!!!!!!!!!}
+Five data sets were feed in to the estimator, while the fourth and fifth were used as validation data. All data sets were of excitations in $p$, $q$ and $r$ simultaneously. Parameter values from the estimation can be viewed together with the initial states in \tableref{tab:ResultKalmanFixedMomentArms}. \todo[inline]{fortsätt här!!!!!!!!!!}
 \begin{table}[hbp]
   \centering
   \caption{\label{tab:ResultKalmanFixedMomentArms}%
@@ -281,28 +281,20 @@ The extremely low values of the last five elements in $\boldsymbol{Q}$ were chos
     $\etaVector$			&$[1\ 0\ 0\ 0]^T$					&\\
     $\nuVector$			&$[0\ 0\ 0]^T$						&\\
     $\boldsymbol{b}$		&$[0\ 0\ 0]^T$						&\\
-	$z_B$               & -0.05 	\meter 						& -0.0606  	\meter\\
-    $\Kp$               & -1   	\kilogram\usk\meter\squared 	& -0.8745 		\kilogram\usk\meter\squared\\
-    $\Kpabsp$           & -1  	\kilogram\usk\meter\squared	& -0.6279  		\kilogram\usk\meter\squared\\
-    $\Mq$               & -1  	\kilogram\usk\meter\squared	& -0.8529  		\kilogram\usk\meter\squared\\
-    $\Mqabsq$           & -1  	\kilogram\usk\meter\squared	& -0.2505  	\kilogram\usk\meter\squared\\
-    $\Nr$               & -1  	\kilogram\usk\meter\squared	& -1.0469		\kilogram\usk\meter\squared\\
-    $\Nrabsr$           & -1  	\kilogram\usk\meter\squared	& -1.0405 		\kilogram\usk\meter\squared\\
-    $A_p$               & 1 	\kilogram\usk\meter\squared	&  0.9728 		\kilogram\usk\meter\squared\\
-    $B_q$               & 1 	\kilogram\usk\meter\squared	&  0.7266		\kilogram\usk\meter\squared\\
-    $C_r$               & 1 	\kilogram\usk\meter\squared	&  1.2013		\kilogram\usk\meter\squared\\
-    $\distance{x}{1}$  &0.19 \meter & 0.1900 \meter\\
-    $\distance{y}{1}$  &0.11 \meter & 0.1106 \meter\\
-    $\distance{x}{2}$  &0.19 \meter & 0.1900 \meter\\
-    $\distance{y}{2}$  &0.11 \meter & 0.1106 \meter\\
-    $\distance{y}{3}$  &0.11 \meter & 0.1099 \meter\\
-    $\distance{x}{5}$  &0.17 \meter & 0.1704 \meter\\
-    $\distance{y}{4}$  &0.11 \meter & 0.1099 \meter\\
-    $\distance{z}{6}$  &0.11 \meter & 0.1091 \meter\\ 
+	$z_B$               & -0.05 	\meter 						& -0.0463  	\meter\\
+    $\Kp$               & -1   	\kilogram\usk\meter\squared 	& -0.9163		\kilogram\usk\meter\squared\\
+    $\Kpabsp$           & -1  	\kilogram\usk\meter\squared	& -0.7591  		\kilogram\usk\meter\squared\\
+    $\Mq$               & -1  	\kilogram\usk\meter\squared	& -0.8557  		\kilogram\usk\meter\squared\\
+    $\Mqabsq$           & -1  	\kilogram\usk\meter\squared	& -0.3396  	\kilogram\usk\meter\squared\\
+    $\Nr$               & -1  	\kilogram\usk\meter\squared	& -1.0266		\kilogram\usk\meter\squared\\
+    $\Nrabsr$           & -1  	\kilogram\usk\meter\squared	& -1.0236 		\kilogram\usk\meter\squared\\
+    $A_p$               & 1 	\kilogram\usk\meter\squared	&  1.0924 		\kilogram\usk\meter\squared\\
+    $B_q$               & 1 	\kilogram\usk\meter\squared	&  0.8162		\kilogram\usk\meter\squared\\
+    $C_r$               & 1 	\kilogram\usk\meter\squared	&  1.1519		\kilogram\usk\meter\squared\\
     \bottomrule%
   \end{tabular}
 \end{table}
-The fit of the model using the estimated parameters can be viewed in \figureref{fig:ResultKalmanFixedMomentArms}. The high fit in $q$ and $r$ indicate that the model describes the data well. However, the model do not describe the validation data well in $q$.\index{Fit}
+The fit of the model using the estimated parameters can be viewed in \figureref{fig:ResultKalmanFixedMomentArms}. The high fit in $q$ and $r$ indicate that the model describes the data well. However, the model does not describe the validation data well in $q$.\index{Fit}
 % results kalman fixed moment arms
 \begin{figure}[tbp]
   \centering
@@ -312,18 +304,33 @@ The fit of the model using the estimated parameters can be viewed in \figureref{
   \\
   \subfloat[][Comparison between a simulated model response and validation data in $r$.]{\includegraphics[width=0.7\textwidth]{ResultKalmanFixedMomentR}}
   \caption{\label{fig:ResultKalmanFixedMomentArms}%
-    Comparison between simulation of $\nuVector$ (blue) with validation data (red). Moment-arm parameters are fixed. Goodness of fit statistic is displayed at the top of each sub-figure. The model describe the validation data well in $q$ and $r$ which can be seen in the high fit. The low fit in $p$ means that the model do not describe the validation data well.}
+    Comparison between simulation of $\nuVector$ (blue) with validation data (red). Moment-arm parameters are fixed. Goodness of fit statistic is displayed at the top of each sub-figure. The model describe the validation data well in $q$ and $r$ which can be seen in the high fit. The low fit in $p$ indicates that the model does not describe the validation data well.}
 \end{figure}
 
-A second estimation was run using same model with the following settings
+
+\section{Investigating Low Fit in p Dynamics}
+An issue that was present during both estimations methods was a low fit in $p$ during validations. This was further investigated by manually testing the each thruster and visual inspecting the response of the \abbrROV. During tests it was discovered that thruster 6, see \Figureref{fig:thrusterlocationfront}, had minimal effect on the $p$-dynamics. A test showed that thruster 6 effected only had significant effect in $p$ when it was actuated quickly. If the sixth thrusters power was incremented slowly an initial response in $p$ was noted before it settled at zero again. The effect of thruster 6 in $p$ can be seen in \Figureref{fig:thruster6}. Thruster 6 also effected $r$, this can be due to unmodelled water interaction.
+
+\begin{figure}
+\centering
+  \subfloat[][\label{fig:thruster6p1} The effect in $p$ when only using thruster 6.]{\includegraphics[width=0.4\textwidth]{thruster6p}}
+  \qquad
+  \subfloat[][\label{fig:thruster6u61} The effect in $r$ when only using thruster 6.]{\includegraphics[width=0.4\textwidth]{thruster6r}}
+  \qquad
+  \subfloat[][\label{fig:thruster6r1} The control signal sent to thruster 6.]{\includegraphics[width=0.4\textwidth]{thruster6u6}}
+  \caption{\label{fig:thruster6}%
+  The effect in $p$ and $r$ while only using thruster 6. As can be seen thruster 6 has a relatively small effect in $p$, thus ought the moment arm of thruster 6 be small. However, thruster 6 effected $p$ more when thruster 6 was quickly actuated.}
+\end{figure}
+
+It was decided that thruster 6 was to be eliminated from the estimation, and a second estimation was run with the moment arm for thruster 6, $\distance{z}{6}$ , fixed to zero. The filter was once again initialised with the following settings
 \begin{equation*}
 \boldsymbol{Q}=\text{diag}[\underbrace{\overbrace{1000}^{\times4}}_{\etaVector}... \underbrace{\overbrace{1000}^{\times3}}_{\nuVector}...\underbrace{\overbrace{0.01}^{\times3}}_{\boldsymbol{b}}... \underbrace{\overbrace{0.001}^{\times10}}_{\boldsymbol{\theta}}]\text{ ,}
 \end{equation*}
-
+and
 \begin{equation*}
 \boldsymbol{R} = \text{diag}[\underbrace{\overbrace{0.001}^{\times3}}_{\text{Gyro}}... \underbrace{\overbrace{0.1}^{\times3}}_{\text{Acc}}... \underbrace{\overbrace{1000}^{\times3}}_{\text{mag}}]
-\end{equation*}
-The estimation was done with three data sets, of which the first two were used for estimation and the third for validation. The estimator used three data sets and was iterated 2 times, using the parameter values from the previous iteration as the new initial states. The resulting parameter values and their initial values can be viewed in \tableref{tab:ResultKalmanFixedMomentArmsLz6} and a comparison of a simulated run against validation data is shown in \figureref{fig:ResultKalmanFixedMomentArmsLz6}
+\end{equation*} 
+The estimation was done with five data sets, of which the first three were used for estimation while the fourth and fifth were used for validation. The estimator was iterated 2 times, using the parameter values from the previous iteration as the new initial states. The resulting parameter values and their initial values can be viewed in \tableref{tab:ResultKalmanFixedMomentArmsLz6} and a comparison of a simulated run against validation data is shown in \figureref{fig:ResultKalmanFixedMomentArmsLz6}. As can clearly be seen in \Figureref{fig:ResultKalmanFixedMomentArmsLz6}, a drastic improvement in fit for $r$ is noted. It is unclear what is causing thruster 6 to diminish the fit of the model, but there are some possible explanations. The assumption in \sectionref{cha:modelling}, that \abbrCG and the \abbrCO are placed at the same place in the \abbrROV may be invalid. If the \abbrCG is placed lower than the \abbrCO the measured moment arm of thruster 6, $\distance{z}{6}$, will be to long. This will result in the effect in $p$ of thruster 6 to be less than expected. A similar performance increase was achieved when using the prediction-error method with $\distance{z}{6}=0$.
 
 % results kalman lz6=0 fixed moment arms
 \begin{table}[hbp]
@@ -365,30 +372,10 @@ The estimation was done with three data sets, of which the first two were used f
 \end{figure}
 
 
-\section{Discussion}
-To estimate parameters in the reduced 6-\abbrDOF model was harder than it at first seemed. Problems were encountered when the prediction-error method was used with bad fit in $p$. 
-
-
-
-
-
-A problem that was consistent in all early attempts was a low fit value in $p$. Several adjustments were attempted in order to fix this issue and it was later found that the effect in $p$ of thruster 6 was minimal. A test showed that thruster 6 effected $p$ the most when it was quickly actuated. The effect of thruster 6 in $p$ can be seen in \Figureref{fig:thruster6}. If the sixth thrusters power was incremented slowly an initial response in $p$ was noted before it settled at zero again. This might be because of unmodelled translational dynamics of the \abbrROV meaning that the dynamics in $y$ may be coupled with $r$ or that the placement of \abbrCG in the \abbrROV is faulty. Thruster 6 also effected $r$, this can be due to unmodelled water interaction.
-
-When deciding on which parameters to use for controller design, the choice was based solely on the fit of the simulated output had against validation data. The reasoning behind this being quite simple, the better the fit against validation data the less robust the controllers would have to be.
-
-
-\begin{figure}
-\centering
-  \subfloat[][\label{fig:thruster6p1} The effect in $p$ when only using thruster 6.]{\includegraphics[width=0.4\textwidth]{thruster6p}}
-  \qquad
-  \subfloat[][\label{fig:thruster6u61} The effect in $r$ when only using thruster 6.]{\includegraphics[width=0.4\textwidth]{thruster6r}}
-  \qquad
-  \subfloat[][\label{fig:thruster6r1} The control signal sent to thruster 6.]{\includegraphics[width=0.4\textwidth]{thruster6u6}}
-  \caption{\label{fig:thruster6}%
-  The effect in $p$ and $r$ while only using thruster 6. As can be seen thruster 6 has a relatively small effect in $p$, thus ought the moment arm of thruster 6 be small. However, thruster 6 effected $p$ more when thruster 6 was quickly actuated.}
-\end{figure}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\section{Discussion}
+%To estimate parameters in the reduced 6-\abbrDOF model was harder than it at first seemed. Problems were encountered when the prediction-error method was used with bad fit in $p$. 
+%When deciding on which parameters to use for controller design, the choice was based solely on the fit of the simulated output had against validation data. The reasoning behind this being quite simple, the better the fit against validation data the less robust the controllers would have to be.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %\section{Decoupling the Model} \index{Decoupling}
 % From \eqref{eq:WithoutTranslation} it can be seen that $r$ is not affected by the same thrusters as $p$ and $q$. Thus the $r$ model's parameters were initially estimated by themselves while the parameters in the $p$ and $q$ models were estimated together. 
 %
@@ -457,7 +444,7 @@ When deciding on which parameters to use for controller design, the choice was b
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Estimated Parameters}\label{sec:parameterResults}
-\Tableref{tab:parameterConstants} shows the know, measured and estimated parameters used in the \abbrROV and controller development.
+\Tableref{tab:parameterConstants} shows the know, measured and estimated parameters used in the \abbrROV and controller development. These were chosen solely based on fit to validation data during simulation.
 
 \begin{table}[tbp]
   \centering
