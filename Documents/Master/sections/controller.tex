@@ -123,8 +123,8 @@ To compensate for the non-linearities in a system using a non-linear control law
 where $\accVector^b$ is the desired angular acceleration in the body-fixed frame and $\tauVector_{\text{Lin}}$ is the estimated thrust needed to achieve the desired acceleration.
 The desired control signal $\boldsymbol{u}_{\text{Lin}}$ was then chosen using 
 \begin{equation}\label{eq:linControlSignal}
-\boldsymbol{u}_{\text{Lin}} = \boldsymbol{T}^{-1}f^{-1}(\bar{\tauVector}_{\text{Lin}})
-\end{equation} where $T$ is the geometry matrix defined in \eqref{eq:actuatorGeometry}, $\bar{\tauVector}_{\text{Lin}}=[0~0~0~\tauVector_{\text{Lin}}^T]^T$ and $I$ is \todo[inline]{Vart anropas I?}
+\boldsymbol{u}_{\text{Lin}} = \boldsymbol{T}^{-1}I^{-1}(\bar{\tauVector}_{\text{Lin}})
+\end{equation} where $T$ is the geometry matrix defined in \eqref{eq:actuatorGeometry}, $\bar{\tauVector}_{\text{Lin}}=[0~0~0~\tauVector_{\text{Lin}}^T]^T$ and $I$ is 
 \begin{equation}
 I^{-1}(\cdot) = 400 f^{-1}(\cdot) + 1500 
 \end{equation}
@@ -172,11 +172,11 @@ Combining \eqref{eq:etaTildeAngDot} with \eqref{eq:attitudeFeedback} gives the f
 %where $K_{\text{p}}$, $K_{\text{i}}$ and $K_{\text{d}}$ are positive definite design matrices \citep[p. 453]{fossen2011}. 
 The attitude controller was also combined with an open-loop control of the linear velocities
 \begin{equation}
-	u = \underbrace{f^{-1}(\boldsymbol{T}^{-1} G^{-1}(\hat{\etaVector}_2,\hat{\nuVector}_2,L(\accVector^n,\hat{\eulerAngles},\hat{\nuVector}_2)))}_{u_{\etaVectorAng}} + \underbrace{\thrusterGeometryOnes[*] \begin{bmatrix} \nuVector_{1,\text{ref}} \\ \zeroCol{3} \end{bmatrix}}_{u_{\nuVectorLin}}
+	u = \underbrace{I^{-1}(\boldsymbol{T}^{-1} G^{-1}(\hat{\etaVector}_2,\hat{\nuVector}_2,L(\accVector^n,\hat{\eulerAngles},\hat{\nuVector}_2)))}_{u_{\etaVectorAng}} + \underbrace{\thrusterGeometryOnes[*] \begin{bmatrix} \nuVector_{1,\text{ref}} \\ \zeroCol{3} \end{bmatrix}}_{u_{\nuVectorLin}}
 \end{equation}
 or
 \begin{equation}
-	u = \underbrace{f^{-1}(\boldsymbol{T}^{-1} L(\accVector^n,\hat{\eulerAngles},\hat{\nuVector}_2))}_{u_{\etaVectorAng}} + \underbrace{\thrusterGeometryOnes[*] \begin{bmatrix} \nuVector_{1,\text{ref}} \\ \zeroCol{3} \end{bmatrix}}_{u_{\nuVectorLin}}
+	u = \underbrace{I^{-1}(\boldsymbol{T}^{-1} L(\accVector^n,\hat{\eulerAngles},\hat{\nuVector}_2))}_{u_{\etaVectorAng}} + \underbrace{\thrusterGeometryOnes[*] \begin{bmatrix} \nuVector_{1,\text{ref}} \\ \zeroCol{3} \end{bmatrix}}_{u_{\nuVectorLin}}
 \end{equation}
 without the exact linearisation. This was implemented to allow the user to steer the \abbrROV while the controller unsures that the \abbrROV holds a given attitude. An illustration of how the attitude controller with open-loop control is implemented can be seen in \Figureref{fig:attitudecontroller}.
 
@@ -254,11 +254,11 @@ where $K_{\text{p}}$ and $K_{\text{i}}$ are positive definite design matrices an
 
 The angular velocities \abbrPI controller was also expanded with a open-loop control solution for control of linear velocities
 \begin{equation}
-	u = \underbrace{f^{-1}(\boldsymbol{T}^{-1} G^{-1}(\hat{\etaVector}_2,\hat{\nuVector}_2,\accVector^b))}_{u_{\nuVectorAng}} + \underbrace{\thrusterGeometryOnes[*] \begin{bmatrix}\nuVector_{1,\text{ref}} \\ \zeroCol{3} \end{bmatrix}}_{u_{\nuVectorLin}}	
+	u = \underbrace{I^{-1}(\boldsymbol{T}^{-1} G^{-1}(\hat{\etaVector}_2,\hat{\nuVector}_2,\accVector^b))}_{u_{\nuVectorAng}} + \underbrace{\thrusterGeometryOnes[*] \begin{bmatrix}\nuVector_{1,\text{ref}} \\ \zeroCol{3} \end{bmatrix}}_{u_{\nuVectorLin}}	
 \end{equation}
 or alternatively 
 \begin{equation}
-	u = \underbrace{f^{-1}(\boldsymbol{T}^{-1} \accVector^b)}_{u_{\nuVectorAng}} + \underbrace{\thrusterGeometryOnes[*] \begin{bmatrix} \nuVector_{1,\text{ref}} \\ \zeroCol{3} \end{bmatrix}}_{u_{\nuVectorLin}}
+	u = \underbrace{I^{-1}(\boldsymbol{T}^{-1} \accVector^b)}_{u_{\nuVectorAng}} + \underbrace{\thrusterGeometryOnes[*] \begin{bmatrix} \nuVector_{1,\text{ref}} \\ \zeroCol{3} \end{bmatrix}}_{u_{\nuVectorLin}}
 \end{equation}
 if the exact linearisation is removed. \Figureref{fig:ratecontroller} illustrates how the angular velocity controller is implemented in conjunction with the open-loop control of the linear velocities.
 \begin{figure}
