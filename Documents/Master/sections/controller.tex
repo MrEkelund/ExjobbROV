@@ -1,4 +1,4 @@
-\chapter{Controlling the ROV} \label{cha:controller} \index{Open-Loop Control} \index{Controller} \index{Exact Linearisation}
+\chapter{Controlling the ROV} \label{cha:controller} \index{Open-Loop Control} \index{Controller} \index{Exact Linearisation} \index{Feedback Control}
 Automatic control is way of regulating a process without direct human interaction. The complexity can vary from decentralised proportional, integral and derivative controllers (\abbrPID:s) to more advanced model-based control methods, such as model predictive control (\abbrMPC). 
 
 There are two main concepts of control, open-loop and feedback control. An open-loop controller is a controller that computes its output based on a model of the system and sometimes the current states. A disadvantage of open-loop controllers is that they require exact knowledge of the controlled system \citep{reglerteknik}. \Figureref{fig:control_system_open} illustrates the open-loop control scheme used in the \abbrROV. 
@@ -78,7 +78,7 @@ where $\thrusterGeometryOnes$ describes how the actuators effect the \abbrROV \c
     0  & 0  & 1 & -1 &  0 &  0 \\
     \end{bmatrix}
 \end{equation}
-can maximum thrust be achieved but translational dynamics can occur. Combining \eqref{eq:pinv} and \eqref{eq:Tones} gives
+can maximum thrust be achieved but coupling effects can occur. Combining \eqref{eq:pinv} and \eqref{eq:Tones} gives
 \begin{equation}
 \thrusterGeometryOnes= \begin{bmatrix}
 0 & 0 & -0.25 & 0.5 & 0.25 & 0 \\
@@ -115,7 +115,7 @@ The static thrust allocation matrix $\thrusterGeometryOnes[*]$ is the pseudo inv
 \end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Exact Linearisation}
+\section{Exact Linearisation} \index{Exact Linearisation} \index{Look-up table}
 To compensate for the non-linearities in a system using a non-linear control law, based on the system's non-linearities, is called exact linearisation. Doing this makes the system linear from an input-output perspective \citep{reglerteori}. Using the model structure from \Chapterref{cha:modelling} and the estimated parameters from \Chapterref{cha:parameterEstimation}, a non-linear control law was created 
 \begin{equation}\label{eq:exactLin}
 \tauVector_{\text{Lin}} = G^{-1}(\hat{\etaVector}_{2},\hat{\nuVector}_{2},\accVector^{\text{b}}) = \inertia \accVector^{\text{b}} + \damping(\hat{\nuVector}_{2})\hat{\nuVector}_{2} + \coriolis(\hat{\nuVector}_{2})\hat{\nuVector}_{2} + \gravity(\hat{\etaVector}_{2})
@@ -124,15 +124,18 @@ where $\accVector^b$ is the desired angular acceleration in the body-fixed frame
 The desired control signal $\boldsymbol{u}_{\text{Lin}}$ was then chosen using 
 \begin{equation}\label{eq:linControlSignal}
 \boldsymbol{u}_{\text{Lin}} = \boldsymbol{T}^{-1}f^{-1}(\bar{\tauVector}_{\text{Lin}})
-\end{equation} where $f$ is the look-up table from control signal to thrust defined in \appref{app:thrustmapping}, $T$ is the geometry matrix defined in \eqref{eq:actuatorGeometry} and $\bar{\tauVector}_{\text{Lin}}=[0~0~0~\tauVector_{\text{Lin}}^T]^T$.
+\end{equation} where $T$ is the geometry matrix defined in \eqref{eq:actuatorGeometry}, $\bar{\tauVector}_{\text{Lin}}=[0~0~0~\tauVector_{\text{Lin}}^T]^T$ and $I$ is
+\begin{equation}
+I^{-1}(\cdot) = 400 f^{-1}(\cdot) + 1500 
+\end{equation}
+where $f$ is the look-up table from control signal to thrust defined in \appref{app:thrustmapping}. The function $I$ converts from control signal to \abbrPWM signal.
 In an ideal case, where the model is exact, using the non-linear control law \eqref{eq:exactLin} would produce the system
 \begin{equation}\label{eq:exactLinSys}
 \nuVectorAngdot = \accVector^b
 \end{equation} 
 where $\accVector^b$ could be chosen using any desired control method \citep[p.451]{fossen2011}.
-\todo[inline]{fix $f$. \appref{app:thrustmapping} shows control signal [-1 1] to thrust.}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Attitude Controller} \index{PID@\abbrPID!abbreviation} \index{Attitude Controller}
+\section{Attitude Controller} \index{PID@\abbrPID!abbreviation} \index{Attitude Controller} \index{Exact Linearisation}
 An attitude controller was also implemented on the \abbrROV. The controller was chosen as \abbrPID-controller utilising exact linearisation \eqref{eq:exactLin}.
 Since \eqref{eq:exactLin} aimed to linearise the angular accelerations in the body-fixed frame and not the angular accelerations in the global coordinate system, an extra control law was needed.
 Choosing 
@@ -223,7 +226,7 @@ without the exact linearisation. This was implemented to allow the user to steer
    		\draw (thrust.east) ++(4.25,0) node[sum, name=sum] {$+$};
 		\draw[->] (thrust.east) -- node[align=center, below] {$u_{\nuVectorLin}$} (sum.west);
 		%From exact lin to sum
-   		\draw node[block, below of=sum, node distance=1.5cm] (rotate) {$f^{-1}(\cdot)$};
+   		\draw node[block, below of=sum, node distance=1.5cm] (rotate) {$I^{-1}(\cdot)$};
    		\draw node[block, right of=merge, node distance=1cm] (inter) {$T^{-1}$};
    		\draw[->] (rotate.north) -- node[align=center, right] {$u_{\etaVectorAng}$} (sum.south);
    		\draw[->] (inter.north) -| (rotate.south);
@@ -237,7 +240,7 @@ without the exact linearisation. This was implemented to allow the user to steer
 \end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Angular Velocity Controller} \index{Angular Velocities Controller} \index{PI@\abbrPI!abbreviation}
+\section{Angular Velocity Controller} \index{Angular Velocities Controller} \index{PI@\abbrPI!abbreviation} \index{Exact Linearisation}
 An angular velocity controller was also implemented using the exact linearisation \eqref{eq:exactLin}.
 Since no transformation is needed in order to control angular velocities in the body-fixed frame
 $\accVector^b$ can be chosen using the following \abbrPI feedback 
@@ -301,7 +304,7 @@ if the exact linearisation is removed. \Figureref{fig:ratecontroller} illustrate
    		\draw (thrust.east) ++(4,0) node[sum, name=sum] {$+$};
 		\draw[->] (thrust.east) -- node[align=center, below] {$u_{\nuVectorLin}$} (sum.west);
 		%From exact lin to sum
-   		\draw node[block, below of=sum, node distance=1.5cm] (rotate) {$f^{-1}(\cdot)$};
+   		\draw node[block, below of=sum, node distance=1.5cm] (rotate) {$I^{-1}(\cdot)$};
    		\draw node[block, right of=merge, node distance=1.25cm] (inter) {$T^{-1}$};
    		\draw[->] (rotate.north) -- node[align=center, right] {$u_{\nuVectorAng}$} (sum.south);
    		\draw[->] (inter.north) -| (rotate.south);

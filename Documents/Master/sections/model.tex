@@ -77,8 +77,8 @@ To get a more compact way of writing, the following vector notation has been use
 \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Coordinate Systems and Kinematics}
-\label{sec:coordinates}\index{NED}\index{body-fixed coordinate system}\index{global coordinate system}
+\section{Coordinate Systems and Kinematics} 
+\label{sec:coordinates}\index{NED}\index{body-fixed coordinate system}\index{global coordinate system} \index{Kinematics}
 During modelling it is important to choose proper coordinate systems in which to describe the systems behaviour.
 In this thesis, two coordinate systems are used in the \abbrROV model. 
 
@@ -342,7 +342,7 @@ and the kinematic equation \eqref{eq:kinematicsticsEuler} is changed to \index{K
 \end{equation}
 see \citet[Ch. 2]{fossen2011} for more information. 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Rigid-Body Kinetics}
+\section{Rigid-Body Kinetics} \index{Rigid-Body Kinetics}
 The rigid-body kinetic relations of the \abbrROV can derived using the Newton-Euler formulation and can be expressed as
 \begin{equation}\label{eq:rb}
 \inertia_{\text{RB}}\dot{\nuVector} + \coriolis_{\text{RB}}(\nuVector)\nuVector = \tauVector_{\text{RB}}
@@ -385,9 +385,9 @@ Since the \abbrROV travels in a rotating reference frame, the Earth, the \abbrRO
     \end{bmatrix}
 \end{split}
 \end{equation}
-where it is assumed that the \abbrROV is symmetric about the $xyz$-plane to eliminate cross-terms \citep[p. 55]{fossen2011}.
+where it is assumed that the \abbrROV is symmetric about the $xyz$-plane to eliminate cross-terms \citep[p. 55]{fossen2011}. \index{Coriolis}
 
-\section{Hydrodynamics}
+\section{Hydrodynamics} \index{Hydrodynamics} 
 The \abbrROV experiences forces and effects caused by interaction with water. These hydrodynamic effects can be modelled as
 \begin{equation}\label{eq:dyn}
  \tauVector_\text{{Dyn}}=-\inertia_{\text{A}} \dot{\nuVector} -\coriolis_{\text{A}}(\nuVector)\nuVector - \damping(\nuVector)\nuVector  
@@ -428,7 +428,7 @@ The Coriolis-centripetal effects from the added mass and added moment of inertia
         (\Xudot - \Yvdot) u v + (\Kpdot - \Mqdot) p q \\
     \end{bmatrix},
 \end{split}
-\end{equation} under the assumption that the \abbrROV is moving slowly and has three planes of symmetry \citep[p. 121]{fossen2011}. 
+\end{equation} under the assumption that the \abbrROV is moving slowly and has three planes of symmetry \citep[p. 121]{fossen2011}. \index{Coriolis} \index{Damping}
 
 There are three main sources of hydrodynamic damping acting upon a submersed vehicle \citep[p. 122]{fossen2011}.
 Potential damping, skin friction and damping from vortex shedding. The effects are split in to two parts, linear damping and quadratic damping.\index{Viscous damping}
@@ -459,7 +459,7 @@ where it is assumed that the \abbrROV is symmetric about the $xz$-plane and that
     \end{bmatrix}    
 \end{equation}
 
-\section{Hydrostatics}\index{Restoring forces}\index{buoyancy}
+\section{Hydrostatics}\index{Restoring forces}\index{buoyancy} \index{Hydrostatics} \index{Quaternions}
 The \abbrROV will experience forces and moments caused by the Earths gravitational pull and the buoyancy force, these are called restoring forces \citep{fossen2011}. These forces and moments can be modelled on the form 
 \begin{equation}\label{eq:stat}
 \tauVector_{\text{Stat}}=-\gravity(\etaVector) 
@@ -500,7 +500,7 @@ where $\boldsymbol{r}_b = [0, 0, z_B]^T$ and $\boldsymbol{r}_g = [0, 0, 0]^T$ ar
 Here, $B = \rho g V$ and $W = m g$. In other words, the magnitude of the buoyancy forces is equal to the weight of the displaced water. For a fully submerged vehicle, $V$ will naturally be equal to the volume of the vehicle. It is henceforth assumed that the \abbrROV has neutral buoyancy \emph{i.e.} $B = W$. Note that the positions of the three centers are described using the coordinate system described in \Sectionref{sec:coordinates}, a roll and pitch stable \abbrROV should thus have a $z_B < 0$.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Actuators}
+\section{Actuators}  \index{Look-up table} \index{Actuators}
 The \abbrROV is equipped with six identical, three-bladed thrusters. These can be modelled as
 \begin{equation}\label{eq:act}
     \tauVector_{\text{Act}} = \thrusterGeometry \boldsymbol{\thrusterfun{}} 
@@ -537,7 +537,7 @@ where $\thrusterGeometry$\index{thruster geometry} is a matrix describing the ge
     \end{bmatrix}
 \end{split}
 \end{equation}
-where \distance{x}{i}, \distance{y}{i} and \distance{z}{i} are the offsets in the $x$, $y$ or $z$ directions of the $i^\text{th}$ thruster, respectively, and $\thrusterfun{i}$ is a lookup table from control signal $u_i$ to thrust in Newton. See \Appref{app:thrustmapping} for details regarding the lookup table.
+where \distance{x}{i}, \distance{y}{i} and \distance{z}{i} are the offsets in the $x$, $y$ or $z$ directions of the $i^\text{th}$ thruster, respectively, and $\thrusterfun{i}$ is a lookup table from control signal $u_i$ to thrust in Newton. See \Appref{app:thrustmapping} for details regarding the look-up table.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Model in Component Form}
@@ -583,7 +583,7 @@ The expression can then be solved for $\nuVectordot$ and split into components
 \end{subequations}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Simplified Model Structures}
+\section{Simplified Model Structures} \index{Model structure}
 Since the \abbrROV can not measure its position in $N$ and $E$ nor its velocity in $u$, $v$ and $w$ estimation of parameters linked to these terms are difficult to identify. To make estimation more convenient, data-collection experiments can be designed such that linear velocities will be small. The effects of the linear velocities in \eqref{eq:angVelDynamics} can then be neglected. For identifiability reasons it is necessary to reparametrise the model by congregating some of the original parameters before conducting parameter estimation. To gain identifiability, the reparametrisation $A_p = \Ix - \Kpdot$, $B_q = \Iy - \Mqdot$ and $C_r = \Iz - \Nrdot$ was introduced. These changes resulted in
 \begin{subequations}\label{eq:quatModel}
 \begin{multline} \label{eq:p_dotWithoutTranslation}

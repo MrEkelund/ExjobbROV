@@ -17,7 +17,7 @@ Relations between states can be used to get better estimates of parameters, for 
 
 To estimate the unknown parameters in the \abbrROV model described in \Chapterref{cha:modelling}, different methods can be used. Two different methods will be explained further in this chapter.  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Data Collection and Processing} \index{Data preprocessing}
+\section{Data Collection and Processing} \index{Data preprocessing} 
 To conduct parameter estimation, experimental data tests had to be collected. To be able to use the assumptions in \eqref{eq:pq_dot_decouple} and \eqref{eq:r_dot_decouple} data collection had to be done in three specific ways.
 First the \abbrROV was excited in $p$ and $q$, then in $r$ and lastly the \abbrROV was excited in all rotations. \Figureref{fig:pqTest} and \Figureref{fig:rTest} illustrates the conducted tests. All experiments were conducted in such a way that linear velocities were kept at a minimum.
 The main control signals used during data collection tests were telegraph signals. Both the scaling of the output magnitude and switch factors were changed in between tests in order to find signals that excited the desired states sufficiently. An example of a such a signal can be seen in \Figureref{fig:telegraph}.
@@ -53,8 +53,7 @@ Data preprocessing was done by synchronising the data streams by checking the st
  Plots of excitation of the three angular velocities $p$, $q$ and $r$ from a test intended to mainly excite $r$. Note that the amplitude in $r$ is approximately two times larger than that of $p$ and $q$.}
 \end{figure}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\section{Prediction-Error Method}
+\section{Prediction-Error Method} \index{Cost function} \index{Prediction-Error Method}
 The prediction-error method uses a predictor $\hat{\boldsymbol{y}}_k(\boldsymbol{\theta})$ of a systems output to compare with the present output of the system. The discrete-time predictor can be described by 
 \begin{equation}
 \hat{\boldsymbol{x}}_{k+1}(\theta) = f(\boldsymbol{\hat{x}_k}(\theta), \boldsymbol{u}_k,\boldsymbol{y}_k, \boldsymbol{\theta})
@@ -80,7 +79,7 @@ where $N$ is the number of samples in the dataset, $\boldsymbol{e}_k(\boldsymbol
 
 %Several tools exists	which can estimate parameters using the prediction-error method. In this thesis the System Identification Toolbox\texttrademark has been used.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Estimation Using Prediction-Error Method}
+\section{Estimation Using Prediction-Error Method} \index{Fit} \index{Model structure}
 A initial set of model parameters were estimated using \eqref{eq:pq_dot_decouple} and \eqref{eq:r_dot_decouple}, while using appropriate data sets. These initial parameters were then used in model \eqref{eq:quatModel}. Estimated angles were used as inputs and angular velocities as outputs. This gave the following model structure to be estimated
 \begin{equation}
 \dot{\hat{\boldsymbol{\eta}}} = f(\nuVector, \hat{\etaVector}, \tauVector)
@@ -115,7 +114,7 @@ The estimate of $\etaVector$ did not follow the kinematic relations described in
   \caption{\label{fig:integratedAngleVelocities}%
   A comparison between integration of euler angles (blue) using \eqref{eq:eulerAnglesdot} and the estimated euler angles from the \abbrEKF (red). The angles are poorly estimated and thus not suitable to use as outputs in parameter estimation.}
 \end{figure}
-
+\index{Model structure}
 Due to the aforementioned problems, the model \eqref{eq:quatModel} was used with angular velocities and linear acceleration as outputs. Thus the estimation structure became
 \begin{equation}
 \dot{\hat{\etaVector}} = J(\hat{\etaVector}) \hat{\nuVector},
@@ -148,7 +147,7 @@ An issue that was encountered when estimating the parameters was that when angul
   \subfloat[][\label{fig:linAccSimz}Linear acceleration  in the \abbrROV's z-axis.]{\includegraphics[width=0.4\textwidth]{linAccSimz}}
   \caption{\label{fig:angVelSim}%
     Comparison between simulated validation data (grey) and the simulated response from the estimated model (blue). The fit for the model in each state is stated in each plot. The validation data has been generated using the initial parameters used in the parameter estimation. The poor initial state estimate results in that the estimated parameters diverge from their true values.}
-\end{figure}
+\end{figure}\index{Fit} \index{Model structure} \index{Quaternions}
 
 To estimate the initial state of the quaternions, a Kalman smoother as described in \citet{Wallin} was used. The magnetometer was also added as an output, in the Kalman smoother, to further reduce the uncertainty of the initial quaternions. It is therefore recommended that attitude data is logged on quaternion form so that the initial quaternions can easily be obtained during parameter estimation. An alternative is that the \abbrROV's initial attitude is known. 
 
@@ -194,8 +193,8 @@ The estimated parameter values obtained when using \eqref{eq:quatModel} with ang
   \end{tabular}
 \end{table}   
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Extended Kalman Filter Estimation}\label{sec:KalmanEstimation}\index{EKF@\abbrEKF!abbreviation}
-To circumvent the issues with estimating the initial state during the prediction-error method, a \abbrEKF was used to estimated the parameters. An \abbrEKF can  be used to estimate parameters by extending the state vector of the \abbrEKF with the parameters that need to be estimated \citep{Roger}.
+\section{Extended Kalman Filter Estimation}\label{sec:KalmanEstimation}\index{EKF@\abbrEKF!abbreviation} 
+To circumvent the issues with estimating the initial state during the prediction-error method, a \abbrEKF was used to estimated the parameters. An \abbrEKF can  be used to estimate parameters by extending the state vector of the \abbrEKF with the parameters that need to be estimated \citep{Roger}.  \index{Model structure}
 \begin{equation}
 \bar{\boldsymbol{x}} = \begin{bmatrix}
 \boldsymbol{x}_k\\
@@ -303,7 +302,7 @@ The extremely low values of the last five elements in $\boldsymbol{Q}$ were chos
     \bottomrule%
   \end{tabular}
 \end{table}
-The fit of the model using the estimated parameters can be viewed in \figureref{fig:ResultKalmanFixedMomentArms}. The high fit in $q$ and $r$ indicate that the model describes the data well. However, the model do not describe the validation data well in $q$.
+The fit of the model using the estimated parameters can be viewed in \figureref{fig:ResultKalmanFixedMomentArms}. The high fit in $q$ and $r$ indicate that the model describes the data well. However, the model do not describe the validation data well in $q$.\index{Fit}
 % results kalman fixed moment arms
 \begin{figure}[tbp]
   \centering
