@@ -1,5 +1,5 @@
 \chapter{Parameter Estimation} \label{cha:parameterEstimation}\index{Parameter Estimation}
-A central part in modelling is parameter estimation and its importance is often underestimated. If the model is not well estimated several problems arise when trying to synthesise model-based controllers. If a system's dynamics are completely unknown, a black-box method can be used, \emph{i.e.} general equations are fitted to test data and the parameters have no physical significance. When a system can be completely modelled using first principles, for example, Newtons laws, it is called white-box modelling. In this thesis, the model structure of the system is assumed to be known and given by
+A central part of modelling is parameter estimation and its importance is often underestimated. If the model is not well estimated several problems could arise when trying to synthesise model-based controllers. If a system's dynamics are completely unknown, a black-box method can be used, \emph{i.e.} general equations are fitted to test data and the parameters have no physical significance. When a system can be completely modelled using first principles, for example, Newtons laws, it is called white-box modelling. In this thesis, the model structure of the system is assumed to be known and given by
 \begin{align}
 \boldsymbol{x}_{k+1} &=f(\boldsymbol{x}_k,\boldsymbol{u}_k,\boldsymbol{w}_k|\boldsymbol{\theta})\\
 \boldsymbol{y}_{k} &= h(\boldsymbol{x}_k,\boldsymbol{u}_k,\boldsymbol{v}_k|\boldsymbol{\theta})
@@ -7,15 +7,15 @@ A central part in modelling is parameter estimation and its importance is often 
 but several of the parameters $\boldsymbol{\theta}$ are unknown.
 To estimate parameters in a know model structure is called-gray box modelling. 
 
-In general, parameter estimation is to fit a model structure's parameter vector $\boldsymbol{\theta}$ such that the model best describes the estimation data. The model is then validated with a dataset which was not used during estimation. If the model describes the validation data well the model and its parameter values are accepted. A measure of how well a model describes a dataset is the normalised root mean square error given by
+In general, parameter estimation is to fit a model structure's parameter vector $\boldsymbol{\theta}$ such that the model best describes the estimation data. The model is then validated with a dataset which was not used during estimation. If the model describes the validation data well, the model and its parameter values are accepted. A measure of how well a model describes a dataset is the normalised root mean square error given by
 \begin{equation}
 \text{Fit} = 100 \left(1 - \frac{\sqrt{\sum\limits_{t=1}^N \bigr(\boldsymbol{y}(t) - \hat{\boldsymbol{y}}(t)\bigl)^2}}{\sqrt{\sum\limits_{t=1}^N \bigr(\boldsymbol{y}(t)-\frac{1}{N}\sum\limits_{t=1}^N \boldsymbol{y}(t)\bigl)^2}}\right)
 \end{equation}% 
 A high fit value indicate that the model describes the validation data well.\index{Fit}
 
-Relations between states can be used to get better estimates of parameters, for example, if the angles of the \abbrROV are estimated well, the relations \eqref{eq:eulerAnglesdot} from \Chapterref{cha:modelling} could be used. Another aspect to consider when estimating model parameters is what to model as inputs and what to model as outputs. Inputs to a system are considered to be true signals, thus if they are noisy or inaccurate they can effect the estimation negatively \citep{modellbygge}. Outputs from a system are measurements of a state or states and are thus expected to be somewhat noisy. 
+An aspect to consider when estimating model parameters is what to model as inputs and what to model as outputs. Inputs to a system are considered to be true signals, thus if they are noisy or inaccurate they can effect the estimation negatively \citep{modellbygge}. Outputs from a system are measurements of a state or states and are thus expected to be somewhat noisy and can not be used as ground truth. 
 
-To estimate the unknown parameters in the \abbrROV model described in \Chapterref{cha:modelling}, different methods can be used. Two different methods will be explained further in this chapter.  
+To estimate the unknown parameters in the \abbrROV model described in \Chapterref{cha:modelling}, different methods can be used. Two different methods will be explained further in \sectionref{sec:pem} and \sectionref{sec:KalmanEstimation}.  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Data Collection and Processing} \index{Data preprocessing} 
 To conduct parameter estimation, experimental data tests had to be collected. To be able to use the assumptions in \eqref{eq:pq_dot_decouple} and \eqref{eq:r_dot_decouple} data collection had to be done in three specific ways.
@@ -54,7 +54,7 @@ Data preprocessing was done by synchronising the data streams by checking the st
 \end{figure}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Prediction-Error Method} \index{Cost function} \index{Prediction-Error Method}
-The prediction-error method uses a predictor $\hat{\boldsymbol{y}}_k(\boldsymbol{\theta})$ of a systems output to compare with the present output of the system. The discrete-time predictor can be described by 
+The prediction-error method uses a predictor $\hat{\boldsymbol{y}}_k(\boldsymbol{\theta})$ of a model's output to compare with the present output of the system. The discrete-time predictor can be described by 
 \begin{equation}
 \hat{\boldsymbol{x}}_{k+1}(\theta) = f(\boldsymbol{\hat{x}_k}(\theta), \boldsymbol{u}_k,\boldsymbol{y}_k, \boldsymbol{\theta})
 \end{equation}
@@ -68,7 +68,7 @@ The fitting is done by minimising a cost function $V(\boldsymbol{\theta})$ with 
 \begin{equation}
 \hat{\boldsymbol{\theta}} = \underset{\boldsymbol{\theta}}{\argmin} V(\boldsymbol{\theta})
 \end{equation}
-The cost function in this thesis has been defined as the squared error with an error threshold to handle noisy signals. An error threshold means that after a breakpoint the cost function becomes linear instead of quadratic, which makes the parameter estimation less sensitive to outliers. To reduce the impact of the noise even further, the used weight matrix in the quadratic cost function was chosen as the inverse of the estimated noise covariance. The cost function is then
+The cost function in this thesis has been defined as the squared error with an error threshold to handle noisy signals. An error threshold means that after a breakpoint the cost function becomes linear instead of quadratic, which makes the parameter estimation less sensitive to outliers. To reduce the impact of the noise even further, the weight matrix was chosen as the inverse of the estimated noise covariance \citep{ljungtheory}. The cost function is then
 \begin{equation}
     V(\boldsymbol{\theta}) = \frac{1}{N} \left( \sum_{t \in i} \boldsymbol{e}^T_k(\boldsymbol{\theta}) \boldsymbol{W}(\boldsymbol{\theta})  \boldsymbol{e}_k(\boldsymbol{\theta}) + \sum_{t \in j} \boldsymbol{v}^T_k(\boldsymbol{\theta}) \boldsymbol{W}(\boldsymbol{\theta})  \boldsymbol{v}_k(\boldsymbol{\theta}) \right)
 \end{equation}
