@@ -19,6 +19,8 @@ for iter=1:nr_iter
         mag_n = measurements(7,1);
         mag_e = measurements(8,1);
         mag_d = measurements(9,1);
+
+        
         
         % Set initial variables
         % Model noise covariance

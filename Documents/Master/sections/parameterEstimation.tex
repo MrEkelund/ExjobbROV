@@ -46,7 +46,8 @@ Data preprocessing was done by synchronising the data streams by checking the st
   \centering
   \subfloat[][\label{fig:p_rTest}Excitation in $p$ during $r$ test.]{\includegraphics[width=0.4\textwidth]{p_r_test}}
   \qquad
-  \subfloat[][\label{fig:q_rTest}Excitation in $q$ during $r$ test.]{\includegraphics[width=0.4\textwidth]{q_r_test}}
+  \subfloat[][\label{fig:q_rTest}Excitation in $q$ during $r$ test.]{\includegraphics[width=0.4\textwidth]{q_r_test}}  | 848 ++++++++++++++-----------------------------------------------------------------------------------------
+ Documents/texmf/tex/latex/rtphd-defs.sty                  
   \\
   \subfloat[][\label{fig:r_rTest}Excitation in $r$ during $r$ test.]{\includegraphics[width=0.4\textwidth]{r_r_test}}
   \caption{\label{fig:rTest}%
@@ -79,7 +80,7 @@ where $N$ is the number of samples in the dataset, $\boldsymbol{e}_k(\boldsymbol
 
 %Several tools exists	which can estimate parameters using the prediction-error method. In this thesis the System Identification Toolbox\texttrademark has been used.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Estimation Using Prediction-Error Method} \index{Fit} \index{Model structure}
+\section{Estimation Using Prediction-Error Method}\label{sec:estimPEM} \index{Fit} \index{Model structure}
 A initial set of model parameters were estimated using \eqref{eq:pq_dot_decouple} and \eqref{eq:r_dot_decouple}, while using appropriate data sets. These initial parameters were then used in model \eqref{eq:quatModel}. Estimated angles were used as inputs and angular velocities as outputs. This gave the following model structure to be estimated
 \begin{equation}
 \dot{\hat{\boldsymbol{\eta}}} = f(\nuVector, \hat{\etaVector}, \tauVector)
@@ -259,7 +260,7 @@ Here, $\boldsymbol{\sigma}$ is a $n\times1$ dimensional design variable and $n$ 
 
 %The filter was run on each collected dataset. The final values of $\hat{\boldsymbol{\theta}}$ from a dataset were used as initial values for $\hat{\boldsymbol{\theta}}$ when the filter was applied on the next dataset. The same was done for the covariance matrix $\boldsymbol{P}$. The final covariance from an earlier run was set as the initial covariance when the filter was applied on subsequent dataset. At completion the parameters were entered in a simulator which was feed with the control signals from the corresponding dataset. The simulated  output was then compared with the original data.
 
-\section{Estimation Using an Extended Kalman Filter}
+\section{Estimation Using an Extended Kalman Filter}\label{sec:estimKalman}
 The \abbrEKF estimation used the method described in \sectionref{sec:KalmanEstimation} with the model \eqref{eq:quatModel} and quaternions as attitude representation. The estimation was feed with process noise covariance matrix
 \begin{equation*}
 \boldsymbol{Q}=\text{diag}[\underbrace{\overbrace{1000}^{\times4}}_{\etaVector}... \underbrace{\overbrace{1000}^{\times3}}_{\nuVector}...\underbrace{\overbrace{0.01}^{\times3}}_{\boldsymbol{b}}... \underbrace{\overbrace{0.001}^{\times10}}_{\boldsymbol{\theta}}]\text{ ,}
@@ -309,7 +310,7 @@ The fit of the model using the estimated parameters can be viewed in \figureref{
 
 
 \section{Investigating Low Fit in p Dynamics}
-An issue that was present during both estimations methods was a low fit in $p$ during validations. This was further investigated by manually testing the each thruster and visual inspecting the response of the \abbrROV. During tests it was discovered that thruster 6, see \Figureref{fig:thrusterlocationfront}, had minimal effect on the $p$-dynamics. A test showed that thruster 6 effected only had significant effect in $p$ when it was actuated quickly. If the sixth thrusters power was incremented slowly an initial response in $p$ was noted before it settled at zero again. The effect of thruster 6 in $p$ can be seen in \Figureref{fig:thruster6}. Thruster 6 also effected $r$, this can be due to unmodelled water interaction.
+An issue that was present in \sectionref{sec:estimPEM} and \sectionref{sec:estimKalman} was a low fit in $p$ during validations. This was further investigated by manually testing the each thruster and visual inspecting the response of the \abbrROV. During tests it was discovered that thruster 6, see \Figureref{fig:thrusterlocationfront}, had minimal effect on the $p$-dynamics. A test showed that thruster 6 effected only had significant effect in $p$ when it was actuated quickly. If the sixth thrusters power was incremented slowly an initial response in $p$ was noted before it settled at zero again. The effect of thruster 6 in $p$ can be seen in \Figureref{fig:thruster6}. Thruster 6 also effected $r$, this can be due to unmodelled water interaction or that the thruster is in front or behind the center of rotation.
 
 \begin{figure}
 \centering
@@ -330,7 +331,7 @@ and
 \begin{equation*}
 \boldsymbol{R} = \text{diag}[\underbrace{\overbrace{0.001}^{\times3}}_{\text{Gyro}}... \underbrace{\overbrace{0.1}^{\times3}}_{\text{Acc}}... \underbrace{\overbrace{1000}^{\times3}}_{\text{mag}}]
 \end{equation*} 
-The estimation was done with five data sets, of which the first three were used for estimation while the fourth and fifth were used for validation. The estimator was iterated 2 times, using the parameter values from the previous iteration as the new initial states. The resulting parameter values and their initial values can be viewed in \tableref{tab:ResultKalmanFixedMomentArmsLz6} and a comparison of a simulated run against validation data is shown in \figureref{fig:ResultKalmanFixedMomentArmsLz6}. As can clearly be seen in \Figureref{fig:ResultKalmanFixedMomentArmsLz6}, a drastic improvement in fit for $r$ is noted. It is unclear what is causing thruster 6 to diminish the fit of the model, but there are some possible explanations. The assumption in \sectionref{cha:modelling}, that \abbrCG and the \abbrCO are placed at the same place in the \abbrROV may be invalid. If the \abbrCG is placed lower than the \abbrCO the measured moment arm of thruster 6 $\distance{z}{6}$
+The estimation was done with five data sets, of which the first three were used for estimation while the fourth and fifth were used for validation. The estimator was iterated 2 times, using the parameter values from the previous iteration as the new initial states. The resulting parameter values and their initial values can be viewed in \tableref{tab:ResultKalmanFixedMomentArmsLz6} and a comparison of a simulated run against validation data is shown in \figureref{fig:ResultKalmanFixedMomentArmsLz6}. As can clearly be seen in \Figureref{fig:ResultKalmanFixedMomentArmsLz6}, a drastic improvement in fit for $p$ is noted. It is unclear what is causing thruster 6 to diminish the fit of the model, but there are some possible explanations. The assumption in \sectionref{cha:modelling}, that \abbrCG and the \abbrCO are placed at the same place in the \abbrROV may be invalid. If the \abbrCG is placed lower than the \abbrCO the measured moment arm of thruster 6 $\distance{z}{6}$
  will be to long. This will result in the effect in $p$ of thruster 6 to be less than expected. A similar performance increase was achieved when using the prediction-error method with $\distance{z}{6}=0$.
 
 % results kalman lz6=0 fixed moment arms
