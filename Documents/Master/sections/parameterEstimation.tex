@@ -116,12 +116,10 @@ The estimate of $\etaVector$ did not follow the kinematic relations described in
 \end{figure}
 \index{Model structure}
 Due to the aforementioned problems, the model \eqref{eq:quatModel} was used with angular velocities and linear acceleration as outputs. Thus the estimation structure became
-\begin{equation}
-\dot{\hat{\etaVector}} = J(\hat{\etaVector}) \hat{\nuVector},
-\end{equation}
-\begin{equation}
+\begin{align}
+\dot{\hat{\etaVector}} = J(\hat{\etaVector}) \hat{\nuVector},\\
 \dot{\hat{\nuVector}} =  f(\hat{\etaVector}, \hat{\nuVector}, \tauVector)
-\end{equation}
+\end{align}
 with 
 \begin{equation}
 \hat{\boldsymbol{y}} = \begin{bmatrix}
@@ -129,7 +127,7 @@ with
 \hat{\boldsymbol{a}}
 \end{bmatrix}
 \end{equation}
-where $\hat{\boldsymbol{a}}$ is the estimated linear acceleration in the \abbrROV frame. The measurement equation for $\boldsymbol{a}$ is
+where $\hat{\boldsymbol{a}}$ is the estimated linear acceleration in the \abbrROV frame and $\nuVector$ is a state. The measurement equation for $\boldsymbol{a}$ is
 \begin{equation}
 \boldsymbol{a} = \begin{bmatrix}
     2 g \quatO \quatII -2 g \quatI \quatIII \\
@@ -138,7 +136,7 @@ where $\hat{\boldsymbol{a}}$ is the estimated linear acceleration in the \abbrRO
     \end{bmatrix}
 \end{equation} 
 
-An issue that was encountered when estimating the parameters was that when angular velocities and linear accelerations were used as outputs, the model was extremely sensitive to the initial value of the quaternions. To examine this problem further, data was generated using a simulator and the simulated data was used in the estimation. The estimator was initialised with the correct initial parameter values from the simulator, but it was free to estimate the initial value of the quaternions. As expected, the estimated starting quaternion was not well estimated, which in turn led to the parameters diverging from their true values and a low fit was obtained. A result from such a test can be seen in \Figureref{fig:angVelSim}.
+An issue that was encountered when estimating the parameters was that when angular velocities and linear accelerations were used as outputs, the model was extremely sensitive to the initial value of the quaternions. To examine this problem further, data was generated using a simulator and the simulated data was used in the estimation. The estimator was initialised with the correct initial parameter values from the simulator, but it was free to estimate the initial value of the quaternions. As expected, the estimated starting quaternions were far from the true initial values, which in turn led to the parameters diverging from their true values and a low fit was obtained even though the true parameters were used. A result from such a test can be seen in \Figureref{fig:angVelSim}.
 
 \begin{figure}[htbp]
   \centering %comparison betwwen two simulations
@@ -157,9 +155,9 @@ An issue that was encountered when estimating the parameters was that when angul
     Comparison between simulated validation data (grey) and the simulated response from the estimated model (blue). The fit for the model in each state is stated in each plot. The validation data has been generated using the initial parameters used in the parameter estimation. The poor initial state estimate results in that the estimated parameters diverge from their true values.}
 \end{figure}\index{Fit} \index{Model structure} \index{Quaternions}
 
-To estimate the initial state of the quaternions, a Kalman smoother as described in \citet{Wallin} was used. The magnetometer was also added as an output, in the Kalman smoother, to further reduce the uncertainty of the initial quaternions. It is therefore recommended that attitude data is logged on quaternion form so that the initial quaternions can easily be obtained during parameter estimation. An alternative is that the \abbrROV's initial attitude is known. 
+A Kalman smoother described in \citet{Wallin} was used to estimate the initial state of the quaternions. The magnetometer was also added as an output in the Kalman smoother to further reduce the uncertainty of the initial quaternions. This issue could be avoided if the \abbrROV is in a known state or the initial condition is logged at the start of the data collection.
 
-The estimated parameter values obtained when using \eqref{eq:quatModel} with angular velocities and linear accelerations as inputs can be seen in \Tableref{tab:ResultEstimAngular}. The fit of the model using the estimated parameters can be seen in \Figureref{fig:angVelComparelz6}. The high fit of $50\ \%$ in $q$ and $r$ means that the model describes parts of the validation data well. The model did not describe the linear accelerations and $p$ well, which can be seen in the low fit.
+The estimated parameter values obtained when using \eqref{eq:quatModel} with angular velocities and linear accelerations as inputs can be seen in \Tableref{tab:ResultEstimAngular}. The fit of the model using the estimated parameters can be seen in \Figureref{fig:angVelComparelz6}. The high fit of $50\ \%$ in $q$ and $r$ means that the model describes parts of the validation data well. The fit in \sectionref{} is higher, but since that model did not follow the kinematic relations well, these results are considered more trustworthy. Unfortunately, the model did not describe the linear accelerations and $p$ well, this will be discussed further in \sectionref{sec:pdyn}.
 
 \begin{figure}[tbp]
   \centering
@@ -202,13 +200,15 @@ The estimated parameter values obtained when using \eqref{eq:quatModel} with ang
 \end{table}   
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Extended Kalman Filter Estimation}\label{sec:KalmanEstimation}\index{EKF@\abbrEKF!abbreviation} 
-To circumvent the issues with estimating the initial state during the prediction-error method, a \abbrEKF was used to estimated the parameters. An \abbrEKF can  be used to estimate parameters by extending the state vector of the \abbrEKF with the parameters that need to be estimated \citep{Roger}.  \index{Model structure}
+To circumvent the issues with estimating the initial state during the prediction-error method, an \abbrEKF was used to estimated the parameters. An \abbrEKF can  be used to estimate parameters by extending the state vector of the \abbrEKF with the parameters that need to be estimated \citep{Roger}.  \index{Model structure} 
+Extending the state vector gives the following augmented state
 \begin{equation}
 \bar{\boldsymbol{x}} = \begin{bmatrix}
 \boldsymbol{x}_k\\
 \boldsymbol{\theta}_k
 \end{bmatrix}
 \end{equation}
+where $\boldsymbol{\theta}_k$ are the modelled parameters and time $k T_s$.
 The added parameters were modelled using constant position, which gave the following augmented state-space form 
 \begin{equation}
 \bar{\boldsymbol{x}}_{k+1}(\boldsymbol{\theta}) =\begin{bmatrix}
@@ -220,7 +220,7 @@ The added parameters were modelled using constant position, which gave the follo
 \begin{equation}
 \boldsymbol{y}_k=\boldsymbol{h}(\bar{\boldsymbol{x}}_k(\boldsymbol{\theta}),\boldsymbol{u}_k)
 \end{equation}
-Since the \abbrEKF tries to minimise state variance it will also try to estimate the parameters $\boldsymbol{\theta}$ if they are included in the state vector \citep{Roger}.
+Since the \abbrEKF tries to minimise state variance, it will also try to estimate the parameters $\boldsymbol{\theta}$ if they are included in the state vector \citep{Roger}.
 
 %\subsection{Implementation}\label{sec:KalmanEstimatorImpl}
 %The reparametrised model \eqref{eq:quatModel} was used to model $\etaVector$ and $\nuVector$. Measurement equations were taken from \Chapterref{cha:sensor_fusion}. Each model parameter was modelled as a state using a constant position motion model and the motion model was discretised using the Euler forward discretisation method. The complete discrete model is
@@ -247,10 +247,10 @@ Since the \abbrEKF tries to minimise state variance it will also try to estimate
 %\end{equation}
 %Here, $\boldsymbol{\theta}$ is a vector containing the parameters that were estimated. The vector-valued function $\boldsymbol{f}(\etaVector,\nuVector,\boldsymbol{\theta})$ is \eqref{eq:quatModel}. The vector $\boldsymbol{b}$  contains the biases of the gyroscope. The vector $\boldsymbol{v}$ is the system noise and is assumed to enter each term directly, this resulted in a diagonal $\boldsymbol{Q}$-matrix when implementing the model in the \abbrEKF. The matrix $\boldsymbol{T}(\etaVector)$ is an angular velocity transformation matrix using the quaternion form of $\etaVector$ and is defined in \Chapterref{cha:modelling}. Measurement equations are taken from \sectionref{sec:Meas}.
 
-To increase the performance of the filter a method for outlier detection and rejection was implemented. Since time updates were done batch wise it was decided to use a different form of outlier rejection and not to reimplement the method used in \sectionref{sec:Meas}. The outlier rejection method is based on the assumption that the normalised innovation \begin{equation} \label{eq:chi}
+To increase the performance of the filter, a method for outlier detection and rejection was implemented. Since time updates were done batch wise it was decided to use a different form of outlier rejection and not to reimplement the method used in \sectionref{sec:Meas}. The outlier rejection method is based on the assumption that the normalised innovation \begin{equation} \label{eq:chi}
 \boldsymbol{\epsilon}^T \boldsymbol{S}^{-1} \boldsymbol{\epsilon} \sim \chi_{n}^{2}
-\end{equation}
-where $n$ is the number of measurements. To check the validity of a single measurement, \eqref{eq:chi} gives that $\epsilon_i^{2}/S_{i,i} \sim \chi_{1}^{2}$ \citep{sensorfusion}. This is implemented in the \abbrEKF using \Algoref{alg:outlier}.
+\end{equation} can be used.
+Here, $n$ is the number of measurements. To check the validity of a measurement from one sensor, \eqref{eq:chi} gives that $\epsilon_i^{2}/S_{i,i} \sim \chi_{1}^{2}$ \citep{sensorfusion}. Using this assumption, it is possible to eliminate bad measurements from individual sensors instead of rejecting all sampled data at that time instance. This is implemented in the \abbrEKF using \Algoref{alg:outlier}.
 \begin{algorithm}[h]
 \caption{The outlier rejection algorithm used during the measurement update step of the parameter estimation \abbrEKF.}\label{alg:outlier}
 \textbf{1.} Calculate $\boldsymbol{S}=h_{\boldsymbol{x}} \boldsymbol{P} h_{\boldsymbol{x}}^T + \boldsymbol{R}$ and the innovation $\epsilon$.
@@ -268,7 +268,7 @@ Here, $\boldsymbol{\sigma}$ is a $n\times1$ dimensional design variable and $n$ 
 %The filter was run on each collected dataset. The final values of $\hat{\boldsymbol{\theta}}$ from a dataset were used as initial values for $\hat{\boldsymbol{\theta}}$ when the filter was applied on the next dataset. The same was done for the covariance matrix $\boldsymbol{P}$. The final covariance from an earlier run was set as the initial covariance when the filter was applied on subsequent dataset. At completion the parameters were entered in a simulator which was feed with the control signals from the corresponding dataset. The simulated  output was then compared with the original data.
 
 \section{Estimation Using an Extended Kalman Filter}\label{sec:estimKalman}
-The \abbrEKF estimation used the method described in \sectionref{sec:KalmanEstimation} with the model \eqref{eq:quatModel} and quaternions as attitude representation. The estimation was feed with process noise covariance matrix
+The \abbrEKF estimation used the method described in \sectionref{sec:KalmanEstimation}, with additional bias states. The model \eqref{eq:quatModel} with quaternions as attitude representation was used to model $\nuVector$. The estimator was feed with process noise covariance matrix
 \begin{equation*}
 \boldsymbol{Q}=\text{diag}[\underbrace{\overbrace{1000}^{\times4}}_{\etaVector}... \underbrace{\overbrace{1000}^{\times3}}_{\nuVector}...\underbrace{\overbrace{0.01}^{\times3}}_{\boldsymbol{b}}... \underbrace{\overbrace{0.001}^{\times10}}_{\boldsymbol{\theta}}]\text{ ,}
 \end{equation*}
@@ -276,7 +276,7 @@ measurement noise covariance matrix
 \begin{equation*}
 \boldsymbol{R} = \text{diag}[\underbrace{\overbrace{0.001}^{\times3}}_{\text{Gyro}}... \underbrace{\overbrace{0.1}^{\times3}}_{\text{Acc}}... \underbrace{\overbrace{1000}^{\times3}}_{\text{mag}}]
 \end{equation*}
-Five data sets were feed in to the estimator, while the fourth and fifth were used as validation data. All data sets were of excitations in $p$, $q$ and $r$ simultaneously. Parameter values from the estimation can be viewed together with the initial states in \tableref{tab:ResultKalmanFixedMomentArms}.
+Three data sets were feed in to the estimator, while a fourth and fifth were used as validation data. All data sets were of excitations in $p$, $q$ and $r$ simultaneously. Parameter values from the estimation can be viewed together with the initial states in \tableref{tab:ResultKalmanFixedMomentArms}.
 \begin{table}[hbp]
   \centering
   \caption{\label{tab:ResultKalmanFixedMomentArms}%
@@ -302,7 +302,7 @@ Five data sets were feed in to the estimator, while the fourth and fifth were us
     \bottomrule%
   \end{tabular}
 \end{table}
-The fit of the model using the estimated parameters can be viewed in \figureref{fig:ResultKalmanFixedMomentArms}. The high fit in $q$ and $r$ indicate that the model describes the data well. However, the model does not describe the validation data well in $q$.\index{Fit}
+The fit of the model using the estimated parameters can be viewed in \figureref{fig:ResultKalmanFixedMomentArms}. The high fit in $q$ and $r$ indicate that the model describes the data well. However, the model does not describe the validation data well in $p$.\index{Fit}
 % results kalman fixed moment arms
 \begin{figure}[tbp]
   \centering
@@ -316,8 +316,8 @@ The fit of the model using the estimated parameters can be viewed in \figureref{
 \end{figure}
 
 
-\section{Investigating Low Fit in p Dynamics}
-An issue that was present in \sectionref{sec:estimPEM} and \sectionref{sec:estimKalman} was a low fit in $p$ during validations. This was further investigated by manually testing the each thruster and visual inspecting the response of the \abbrROV. During tests it was discovered that thruster 6, see \Figureref{fig:thrusterlocationfront}, had minimal effect on the $p$-dynamics. A test showed that thruster 6 effected only had significant effect in $p$ when it was actuated quickly. If the sixth thrusters power was incremented slowly an initial response in $p$ was noted before it settled at zero again. The effect of thruster 6 in $p$ can be seen in \Figureref{fig:thruster6}. Thruster 6 also effected $r$, this can be due to unmodelled water interaction or that the thruster is in front or behind the center of rotation.
+\section{Investigating Low Fit in p Dynamics}\label{sec:pdyn}
+An issue that was present in \sectionref{sec:estimPEM} and \sectionref{sec:estimKalman} was a low fit in $p$ during estimation. This was further investigated by manually testing each thruster individually and visual inspecting the response of the \abbrROV. During tests it was discovered that thruster 6, see \Figureref{fig:thrusterlocationfront}, had minimal effect on the $p$-dynamics. A test showed that thruster 6 effected only had significant effect in $p$ when it was actuated quickly. If the sixth thrusters power was incremented slowly an initial response in $p$ was noted before it settled at zero again. The effect of thruster 6 in $p$ can be seen in \Figureref{fig:thruster6}. Thruster 6 also effected $r$, this can be due to unmodelled water interaction or that the thruster is in front or behind the center of rotation.
 
 \begin{figure}
 \centering
