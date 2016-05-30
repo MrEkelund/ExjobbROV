@@ -497,7 +497,7 @@ where $\boldsymbol{r}_b = [0, 0, z_B]^T$ and $\boldsymbol{r}_g = [0, 0, 0]^T$ ar
 Here, $B = \rho g V$ and $W = m g$. In other words, the magnitude of the buoyancy forces is equal to the weight of the displaced water. For a fully submerged vehicle, $V$ will naturally be equal to the volume of the vehicle. It is henceforth assumed that the \abbrROV has neutral buoyancy \emph{i.e.} $B = W$. Note that the positions of the three centers are described using the coordinate system described in \Sectionref{sec:coordinates}, a roll and pitch stable \abbrROV should thus have a $z_B < 0$.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Actuators}  \index{Look-up table} \index{Actuators}
+\section{Actuators}\label{sec:act}  \index{Look-up table} \index{Actuators}
 The \abbrROV is equipped with six identical, three-bladed thrusters. These can be modelled as
 \begin{equation}\label{eq:act}
     \tauVector_{\text{Act}} = \thrusterGeometry \boldsymbol{\thrusterfun{}} 

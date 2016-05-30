@@ -1,7 +1,7 @@
 \chapter{Controlling the ROV} \label{cha:controller} \index{Open-Loop Control} \index{Controller} \index{Exact Linearisation} \index{Feedback Control}
-Automatic control is way of regulating a process without direct human interaction. The complexity can vary from decentralised proportional, integral and derivative controllers (\abbrPID:s) to more advanced model-based control methods, such as model predictive control (\abbrMPC). 
+Automatic control is a way of regulating a process without direct human interaction. The complexity can vary from decentralised proportional, integral and derivative controllers (\abbrPID:s) to more advanced model-based control methods, such as model predictive control (\abbrMPC) \citep{reglerteori}. 
 
-There are two main concepts of control, open-loop and feedback control. An open-loop controller is a controller that computes its output based on a model of the system and sometimes the current states. A disadvantage of open-loop controllers is that they require exact knowledge of the controlled system \citep{reglerteknik}. \Figureref{fig:control_system_open} illustrates the open-loop control scheme used in the \abbrROV. 
+There are two main concepts of control, open-loop and feedback control \citep{reglerteknik}. An open-loop controller is a controller that computes its output based on a model of the system and sometimes the current states. A disadvantage of open-loop controllers is that they require exact knowledge of the controlled system \citep{reglerteknik}. \Figureref{fig:control_system_open} illustrates the open-loop control scheme used in the \abbrROV. 
 
 \begin{figure}
 	\centering
@@ -19,14 +19,14 @@ There are two main concepts of control, open-loop and feedback control. An open-
 		    \draw [->] (controller) -- node[name=u] {$u$} (system);
 		    \node [output, right of=system] (output) {};
 		
-		    \draw [draw,->] (input) -- node {$u_{\nuVector}$} (controller);
+		    \draw [draw,->] (input) -- node {$x_{text{ref}}$} (controller);
 		    \draw [->] (system) -- node [name=y] {$y$}(output);
 		\end{tikzpicture}
 	\caption{The open-loop control scheme used in the \abbrROV. The control block F can be any type of open-loop control. Notice that this is an ideal case were no disturbances affect the system.}
 	\label{fig:control_system_open}
 \end{figure}
 
-A feedback controller is a controller that uses measurements of the states in a system to correct its actions. One such method is error-controlled regulation, where the difference between the desired value, setpoint, of a state and its actual value is used for control. The feedback control scheme used in the \abbrROV can be seen in \Figureref{fig:control_system}. 
+A feedback controller uses measurements of the outputs in a system to correct its actions. One such method is error-controlled regulation, where the difference between the desired value, setpoint, of a state and its actual value is used for control \citep{reglerteknik}. The feedback control scheme used in the \abbrROV can be seen in \Figureref{fig:control_system}. 
 
 Similarly to an open-loop controller, a feedback controller can use a model of the system. Using a model of the controlled system in the control structure can produce better performance and compensate for unwanted effects such as non-linearities. Compensating for non-linearities is desired due to the fact that a lot of control principles are based on linear systems \citep{reglerteori}. 
 
@@ -66,7 +66,7 @@ The open-loop control of the \abbrROV consists of an static thrust-allocation ma
 \begin{equation} \label{eq:pinv}
     \thrusterGeometryOnes[*] = \thrusterGeometryOnes[T](\thrusterGeometryOnes \thrusterGeometryOnes[T])^{-1}
 \end{equation}
-where $\thrusterGeometryOnes$ describes how the actuators effect the \abbrROV \citep{thrustallocation}. The thrust-geometry matrix could be $\thrusterGeometryOnes = T$ but then maximum thrust can not be achieved. If the thrust-geometry matrix is instead chosen as
+where $\thrusterGeometryOnes$ describes how the actuators effect the \abbrROV \citep{thrustallocation}. If the thrust-geometry matrix is chosen as
 \begin{equation} \label{eq:Tones}
     \thrusterGeometryOnes = 
     \begin{bmatrix}
@@ -78,7 +78,7 @@ where $\thrusterGeometryOnes$ describes how the actuators effect the \abbrROV \c
     0  & 0  & 1 & -1 &  0 &  0 \\
     \end{bmatrix}
 \end{equation}
-can maximum thrust be achieved but coupling effects can occur. Combining \eqref{eq:pinv} and \eqref{eq:Tones} gives
+maximum thrust can be achieved but coupling effects can occur. Combining \eqref{eq:pinv} and \eqref{eq:Tones} gives
 \begin{equation}
 \thrusterGeometryOnes= \begin{bmatrix}
 0 & 0 & -0.25 & 0.5 & 0.25 & 0 \\
@@ -89,8 +89,7 @@ can maximum thrust be achieved but coupling effects can occur. Combining \eqref{
 0 & -1 & 0 & 0 & 0 & 0 \\
 \end{bmatrix}
 \end{equation}
-The static thrust allocation matrix $\thrusterGeometryOnes[*]$ is the pseudo inverse of the thrust geometry matrix $\thrusterGeometryOnes$. An approximately decoupled control is achieved when the static thrust allocation matrix is used and thus can the \abbrROV be controlled better. \Figureref{fig:open_control} illustrates how the control signals are allocated to the different thrusters when given an control input.
-
+The static thrust allocation matrix $\thrusterGeometryOnes[*]$ is the pseudo inverse of the thrust geometry matrix $\thrusterGeometryOnes$. An approximately decoupled control is achieved when the static thrust allocation matrix is used and thus can the \abbrROV be controlled better. \Figureref{fig:open_control} illustrates how the control signals are allocated to the different thrusters when given an control input. The thrust-geometry matrix could be chosen as $\thrusterGeometryOnes = \boldsymbol{T}_{\text{normed}}$. Here, $\boldsymbol{T}_{\text{normed}}$ is the row-wise normed thrust matrix $\boldsymbol{T}$ from \sectionref{sec:act}. Using the aforementioned thruster matrix would reduce coupling effects but was not implemented on the \abbrROV since maximum thrust would be also reduced.
 \begin{figure}
     \centering
     \begin{tikzpicture}[auto, thick, node distance=3cm, >=latex',%
@@ -107,7 +106,7 @@ The static thrust allocation matrix $\thrusterGeometryOnes[*]$ is the pseudo inv
     	node [output, right of=inte1] (output1) {};
         % Joining blocks. 
         % Commands \draw with options like [->] must be written individually
-    	\draw[->](input1) -- node {$u_{\nuVectorLin}$}(inte1);
+    	\draw[->](input1) -- node {$x_{\text{ref}}$}(inte1);
      	\draw[->](inte1) -- node {$u$} (output1);
     \end{tikzpicture}
     \caption{The open-loop control allocate control signals using the thrust-allocation matrix $\thrusterGeometryOnes[*]$. The static thrust-allocation matrix approximately decouples the system.}
@@ -116,19 +115,15 @@ The static thrust allocation matrix $\thrusterGeometryOnes[*]$ is the pseudo inv
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Exact Linearisation} \index{Exact Linearisation} \index{Look-up table}
-To compensate for the non-linearities in a system using a non-linear control law, based on the system's non-linearities, is called exact linearisation. Doing this makes the system linear from an input-output perspective \citep{reglerteori}. Using the model structure from \Chapterref{cha:modelling} and the estimated parameters from \Chapterref{cha:parameterEstimation}, a non-linear control law was created 
+Exact linearisation is to compensate for the non-linearities in a system using a non-linear control law. This makes the system linear from an input-output perspective \citep{reglerteori}. Using the model structure from \Chapterref{cha:modelling} and the estimated parameters from \Chapterref{cha:parameterEstimation}, a non-linear control law was created 
 \begin{equation}\label{eq:exactLin}
 \tauVector_{\text{Lin}} = G^{-1}(\hat{\etaVector}_{2},\hat{\nuVector}_{2},\accVector^{\text{b}}) = \inertia \accVector^{\text{b}} + \damping(\hat{\nuVector}_{2})\hat{\nuVector}_{2} + \coriolis(\hat{\nuVector}_{2})\hat{\nuVector}_{2} + \gravity(\hat{\etaVector}_{2})
 \end{equation}
-where $\accVector^b$ is the desired angular acceleration in the body-fixed frame and $\tauVector_{\text{Lin}}$ is the estimated thrust needed to achieve the desired acceleration.
+where $\accVector^b$ is the desired angular acceleration in the body-fixed frame and $\tauVector_{\text{Lin}}$ is the estimated thrust needed to achieve the desired acceleration \citep{fossen}.
 The desired control signal $\boldsymbol{u}_{\text{Lin}}$ was then chosen using 
 \begin{equation}\label{eq:linControlSignal}
 \boldsymbol{u}_{\text{Lin}} = \boldsymbol{T}^{-1}I^{-1}(\bar{\tauVector}_{\text{Lin}})
-\end{equation} where $T$ is the geometry matrix defined in \eqref{eq:actuatorGeometry}, $\bar{\tauVector}_{\text{Lin}}=[0~0~0~\tauVector_{\text{Lin}}^T]^T$ and $I$ is 
-\begin{equation}
-I^{-1}(\cdot) = 400 f^{-1}(\cdot) + 1500 
-\end{equation}
-where $f$ is the look-up table from control signal to thrust defined in \appref{app:thrustmapping}. The function $I$ converts from control signal to \abbrPWM signal.
+\end{equation} where $\boldsymbol{T}$ is the geometry matrix defined in \eqref{eq:actuatorGeometry}, $\bar{\tauVector}_{\text{Lin}}=[0~0~0~\tauVector_{\text{Lin}}^T]^T$ and  $f$ is the look-up table from control signal to thrust defined in \appref{app:thrustmapping}. The function $I$ converts from control signal to \abbrPWM signal.
 In an ideal case, where the model is exact, using the non-linear control law \eqref{eq:exactLin} would produce the system
 \begin{equation}\label{eq:exactLinSys}
 \nuVectorAngdot = \accVector^b
