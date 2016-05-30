@@ -2,13 +2,10 @@
 This chapter describes how the \abbrROV is modelled using the framework of \citet{fossen2011}. A model describes how an object is affected by forces such as gravity and friction. Models can be derived by using different physical laws. Assumptions can often be made how the physical properties of the object affect the model and a simpler model can be derived. Assumptions can be symmetry of the object, no coupling inertia, low speed and several others. 
 
 An underwater vehicle with 6 \abbrDOF can be described by\index{Model of an underwater vehicle}
-\begin{equation}
-\etaVectordot = \boldsymbol{J}(\etaVector)\nuVector
-\end{equation}
-\begin{equation} \label{eq:model}
- \inertia \nuVectordot + \coriolis(\nuVector)\nuVector + \damping(\nuVector)\nuVector + \gravity(\etaVector) = \tauVector 
-\end{equation}
-  %= \tauVector_{\text{RB}} + \tauVector_{\text{Dyn}} +\tauVector_{\text{Stat}} + \tauVector_{\text{Act}}+ \tauVector_{\text{Env}}
+\begin{align}
+\etaVectordot& = \boldsymbol{J}(\etaVector)\nuVector \\\label{eq:model}
+ \inertia \nuVectordot &+ \coriolis(\nuVector)\nuVector + \damping(\nuVector)\nuVector + \gravity(\etaVector) = \tauVector 
+\end{align}
 where $\etaVector$ are generalised positions and $\nuVector$ are generalised velocities that are used to describe motion in 6 \abbrDOF \citep[p. 15]{fossen2011}. The matrices $\inertia$\index{Inertia matrix}, $\coriolis(\nuVector)$\index{Coriolis matrix}, $\damping(\nuVector)$\index{Damping matrix} and the vector $\gravity(\nuVector)$\index{Restoring forces matrix} respectively describes how inertia, Coriolis forces, damping forces, gravity and buoyancy affect the \abbrROV. The vector $\tauVector_{\text{Act}}$ describes the forces and torques produced by the \abbrROV's actuators.
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -386,9 +383,8 @@ Since the \abbrROV travels in a rotating reference frame, the Earth, the \abbrRO
 \end{split}
 \end{equation}
 where it is assumed that the \abbrROV is symmetric about the $xyz$-plane to eliminate cross-terms \citep[p. 55]{fossen2011}. \index{Coriolis}
-
-\section{Hydrodynamics} \index{Hydrodynamics} 
-The \abbrROV experiences forces and effects caused by interaction with water. These hydrodynamic effects can be modelled as
+\section{Hydrodynamics}  
+The \abbrROV experiences forces and effects caused by interaction with water. These hydrodynamic effects can be modelled as \index{Hydrodynamics}
 \begin{equation}\label{eq:dyn}
  \tauVector_\text{{Dyn}}=-\inertia_{\text{A}} \dot{\nuVector} -\coriolis_{\text{A}}(\nuVector)\nuVector - \damping(\nuVector)\nuVector  
 \end{equation} 
@@ -407,7 +403,7 @@ The added mass and moment of inertia is defined as
 \end{equation}
 under the assumption that the \abbrROV moves at low speeds relative to the water \citep[p. 121]{fossen2011}.
 The Coriolis-centripetal effects from the added mass and added moment of inertia are described as
-\begin{equation}
+\begin{align}
 \begin{split}
     \coriolis_\text{A}(\nuVector) \nuVector &= 
     \begin{bmatrix}
@@ -418,7 +414,7 @@ The Coriolis-centripetal effects from the added mass and added moment of inertia
     \Zwdot w & 0 & -\Xudot u & \Nrdot r & 0 & -\Kpdot p \\
     -\Yvdot v & \Xudot u & 0 & - \Mqdot q & \Kpdot p & 0 \\
     \end{bmatrix}
-    \nuVector = \\ 
+    \nuVector \\ 
     &= \begin{bmatrix}
         \Yvdot v r - \Zwdot w q\\
         \Zwdot w p - \Xudot u r\\
@@ -427,13 +423,14 @@ The Coriolis-centripetal effects from the added mass and added moment of inertia
         (\Zwdot - \Xudot) u w + (\Nrdot - \Kpdot) p r\\
         (\Xudot - \Yvdot) u v + (\Kpdot - \Mqdot) p q \\
     \end{bmatrix},
-\end{split}
-\end{equation} under the assumption that the \abbrROV is moving slowly and has three planes of symmetry \citep[p. 121]{fossen2011}. \index{Coriolis} \index{Damping}
+    \end{split}
+\end{align}
+under the assumption that the \abbrROV is moving slowly and has three planes of symmetry \citep[p. 121]{fossen2011}. \index{Coriolis} \index{Damping}
 
 There are three main sources of hydrodynamic damping acting upon a submersed vehicle \citep[p. 122]{fossen2011}.
 Potential damping, skin friction and damping from vortex shedding. The effects are split in to two parts, linear damping and quadratic damping.\index{Viscous damping}
 The matrix $\damping$ contains the linear damping terms, while the matrix $\damping_{\text{n}}(\nuVector)$ contains the quadratic, or non-linear, damping terms \citep{fossen2011}. The sum of these two matrices form the Viscous damping matrix $\damping(\nuVector)$ which in turn can be simplified to
-\begin{equation}
+\begin{align}
 \begin{split}
     \damping(\nuVector) &= \damping + \damping_{\text{n}}(\nuVector) = \\
     -& \scalemath{0.7}{\begin{bmatrix}
@@ -444,8 +441,8 @@ The matrix $\damping$ contains the linear damping terms, while the matrix $\damp
         0 & 0 & 0 & 0 & \Mq+\Mqabsq\abs{q} & 0 \\
         0 & 0 & 0 & 0 & 0 & \Nr+\Nrabsr\abs{r} \\
     \end{bmatrix}}
-\end{split}
-\end{equation}
+    \end{split}
+\end{align}
 where it is assumed that the \abbrROV is symmetric about the $xz$-plane and that the damping is decoupled, thus a diagonal matrix $\damping(\nuVector)$ is obtained \citep[p. 129]{fossen2011}. When the matrix $\damping(\nuVector)$ is multiplied with $\nuVector$ the following vector is obtained 
 \begin{equation}
     \damping(\nuVector) \nuVector =
@@ -506,7 +503,7 @@ The \abbrROV is equipped with six identical, three-bladed thrusters. These can b
     \tauVector_{\text{Act}} = \thrusterGeometry \boldsymbol{\thrusterfun{}} 
 \end{equation}
 where $\thrusterGeometry$\index{thruster geometry} is a matrix describing the geometry of the actuators \citep[p. 401]{fossen2011}. Figures~\ref{fig:thrusterlocationtop} and \ref{fig:thrusterlocationfront} illustrates the moment arms to each thruster. The positive rotation of the thrusters and the resulting positive forces can be seen in Figures~\ref{fig:thrusterRotation12} to \ref{fig:thrusterRotation6}.
-\begin{equation}\label{eq:actuatorGeometry}
+\begin{align}\label{eq:actuatorGeometry}
 \begin{split}
     \tauVector_{\text{Act}} = \thrusterGeometry \boldsymbol{\thrusterfun{}} 
     &=
@@ -536,7 +533,7 @@ where $\thrusterGeometry$\index{thruster geometry} is a matrix describing the ge
     \thrusterfun{3} \distance{y}{3} - \thrusterfun{5} \distance{y}{5} \\
     \end{bmatrix}
 \end{split}
-\end{equation}
+\end{align}
 where \distance{x}{i}, \distance{y}{i} and \distance{z}{i} are the offsets in the $x$, $y$ or $z$ directions of the $i^\text{th}$ thruster, respectively, and $\thrusterfun{i}$ is a lookup table from control signal $u_i$ to thrust in Newton. See \Appref{app:thrustmapping} for details regarding the look-up table.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

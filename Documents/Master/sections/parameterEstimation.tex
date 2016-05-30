@@ -46,8 +46,7 @@ Data preprocessing was done by synchronising the data streams by checking the st
   \centering
   \subfloat[][\label{fig:p_rTest}Excitation in $p$ during $r$ test.]{\includegraphics[width=0.4\textwidth]{p_r_test}}
   \qquad
-  \subfloat[][\label{fig:q_rTest}Excitation in $q$ during $r$ test.]{\includegraphics[width=0.4\textwidth]{q_r_test}}  | 848 ++++++++++++++-----------------------------------------------------------------------------------------
- Documents/texmf/tex/latex/rtphd-defs.sty                  
+  \subfloat[][\label{fig:q_rTest}Excitation in $q$ during $r$ test.]{\includegraphics[width=0.4\textwidth]{q_r_test}}
   \\
   \subfloat[][\label{fig:r_rTest}Excitation in $r$ during $r$ test.]{\includegraphics[width=0.4\textwidth]{r_r_test}}
   \caption{\label{fig:rTest}%
@@ -83,13 +82,13 @@ where $N$ is the number of samples in the dataset, $\boldsymbol{e}_k(\boldsymbol
 \section{Estimation Using Prediction-Error Method}\label{sec:estimPEM} \index{Fit} \index{Model structure}
 A initial set of model parameters were estimated using \eqref{eq:pq_dot_decouple} and \eqref{eq:r_dot_decouple}, while using appropriate data sets. These initial parameters were then used in model \eqref{eq:quatModel}. Estimated angles were used as inputs and angular velocities as outputs. This gave the following model structure to be estimated
 \begin{equation}
-\dot{\hat{\boldsymbol{\eta}}} = f(\nuVector, \hat{\etaVector}, \tauVector)
+\dot{\hat{\boldsymbol{\eta}}} = f(\hat{\nuVector}, \bar{\etaVector}, \tauVector)
 \end{equation}
 and
 \begin{equation}
-\hat{\boldsymbol{y}} = \nuVector + \boldsymbol{v}_{\text{Meas}}
+\hat{\boldsymbol{y}} = \hat{\nuVector}
 \end{equation}
-where $\hat{\etaVector}$ are the estimated Euler angles from the sensor fusion and $\boldsymbol{v}_{\text{Meas}}$ are measurement noise.
+where $\bar{\etaVector} = \hat{\etaVector}$ are the estimated Euler angles from the sensor fusion.
 The result of the estimation can be seen in \Tableref{tab:ResultEstimAngular}.  The fit of the model compared to validation data can be seen in \Figureref{fig:velocityCompareCong}. The model has a high fit of $50-60\ \%$ and thus describes the validation data well.
 %The estimation used two datasets as estimation data and used one dataset for validation data.%
 \begin{figure}[tbp]
@@ -125,12 +124,20 @@ Due to the aforementioned problems, the model \eqref{eq:quatModel} was used with
 \end{equation}
 with 
 \begin{equation}
-\hat{\boldsymbol{y}} = \begin{pmatrix}
+\hat{\boldsymbol{y}} = \begin{bmatrix}
 \hat{\nuVector} \\
 \hat{\boldsymbol{a}}
-\end{pmatrix}
+\end{bmatrix}
 \end{equation}
-where $\hat{\boldsymbol{a}}$ is the estimated linear acceleration in the \abbrROV frame.
+where $\hat{\boldsymbol{a}}$ is the estimated linear acceleration in the \abbrROV frame. The measurement equation for $\boldsymbol{a}$ is
+\begin{equation}
+\boldsymbol{a} = \begin{bmatrix}
+    2 g \quatO \quatII -2 g \quatI \quatIII \\
+    -2 g \quatO \quatI -2g \quatII \quatIII \\
+    2g \quatI^2 + 2 g \quatII^2 - g 
+    \end{bmatrix}
+\end{equation} 
+
 An issue that was encountered when estimating the parameters was that when angular velocities and linear accelerations were used as outputs, the model was extremely sensitive to the initial value of the quaternions. To examine this problem further, data was generated using a simulator and the simulated data was used in the estimation. The estimator was initialised with the correct initial parameter values from the simulator, but it was free to estimate the initial value of the quaternions. As expected, the estimated starting quaternion was not well estimated, which in turn led to the parameters diverging from their true values and a low fit was obtained. A result from such a test can be seen in \Figureref{fig:angVelSim}.
 
 \begin{figure}[htbp]
@@ -219,24 +226,24 @@ Since the \abbrEKF tries to minimise state variance it will also try to estimate
 %The reparametrised model \eqref{eq:quatModel} was used to model $\etaVector$ and $\nuVector$. Measurement equations were taken from \Chapterref{cha:sensor_fusion}. Each model parameter was modelled as a state using a constant position motion model and the motion model was discretised using the Euler forward discretisation method. The complete discrete model is
 %\begin{equation}
 %\label{eq:motionModelKalman}
-%\begin{pmatrix}
+%\begin{bmatrix}
 %\etaVector_{k+1}\\ 
 %\nuVector_{k+1}\\
 %\boldsymbol{b}_{k+1}\\
 %\boldsymbol{\theta}_{k+1}
-%\end{pmatrix} = 
-%\begin{pmatrix}
+%\end{bmatrix} = 
+%\begin{bmatrix}
 %\etaVector_k + T_s \boldsymbol{T}(\etaVector_k)\nuVector_k\\
 %\nuVector_k + T_s f(\etaVector_k,\nuVector_k,\boldsymbol{\theta}_k)\\
 %\boldsymbol{b}_k\\
 %\boldsymbol{\theta}_k
-%\end{pmatrix}
-%+ \begin{pmatrix}
+%\end{bmatrix}
+%+ \begin{bmatrix}
 %\boldsymbol{v}_{\etaVector}\\
 %\boldsymbol{v}_{\nuVector}\\
 %\boldsymbol{v}_{\boldsymbol{b}}\\
 %\boldsymbol{v}_{\boldsymbol{\theta}}
-%\end{pmatrix}
+%\end{bmatrix}
 %\end{equation}
 %Here, $\boldsymbol{\theta}$ is a vector containing the parameters that were estimated. The vector-valued function $\boldsymbol{f}(\etaVector,\nuVector,\boldsymbol{\theta})$ is \eqref{eq:quatModel}. The vector $\boldsymbol{b}$  contains the biases of the gyroscope. The vector $\boldsymbol{v}$ is the system noise and is assumed to enter each term directly, this resulted in a diagonal $\boldsymbol{Q}$-matrix when implementing the model in the \abbrEKF. The matrix $\boldsymbol{T}(\etaVector)$ is an angular velocity transformation matrix using the quaternion form of $\etaVector$ and is defined in \Chapterref{cha:modelling}. Measurement equations are taken from \sectionref{sec:Meas}.
 
@@ -269,7 +276,7 @@ measurement noise covariance matrix
 \begin{equation*}
 \boldsymbol{R} = \text{diag}[\underbrace{\overbrace{0.001}^{\times3}}_{\text{Gyro}}... \underbrace{\overbrace{0.1}^{\times3}}_{\text{Acc}}... \underbrace{\overbrace{1000}^{\times3}}_{\text{mag}}]
 \end{equation*}
-Five data sets were feed in to the estimator, while the fourth and fifth were used as validation data. All data sets were of excitations in $p$, $q$ and $r$ simultaneously. Parameter values from the estimation can be viewed together with the initial states in \tableref{tab:ResultKalmanFixedMomentArms}. \todo[inline]{fortsätt här!!!!!!!!!!}
+Five data sets were feed in to the estimator, while the fourth and fifth were used as validation data. All data sets were of excitations in $p$, $q$ and $r$ simultaneously. Parameter values from the estimation can be viewed together with the initial states in \tableref{tab:ResultKalmanFixedMomentArms}.
 \begin{table}[hbp]
   \centering
   \caption{\label{tab:ResultKalmanFixedMomentArms}%
@@ -323,9 +330,9 @@ An issue that was present in \sectionref{sec:estimPEM} and \sectionref{sec:estim
   The effect in $p$ and $r$ while only using thruster 6. As can be seen thruster 6 has a relatively small effect in $p$, thus ought the moment arm of thruster 6 be small. However, thruster 6 effected $p$ more when thruster 6 was quickly actuated.}
 \end{figure}
 
-It was decided that thruster 6 was to be eliminated from the estimation, and a second estimation was run with the moment arm for thruster 6, $\distance{z}{6}$ , fixed to zero. The filter was once again initialised with the following settings
+It was decided that thruster 6 was to be eliminated from the estimation, and a second estimation was run with the moment arm for thruster 6 $\distance{z}{6}$ fixed to zero. The filter was once again initialised with the following settings
 \begin{equation*}
-\boldsymbol{Q}=\text{diag}[\underbrace{\overbrace{1000}^{\times4}}_{\etaVector}... \underbrace{\overbrace{1000}^{\times3}}_{\nuVector}...\underbrace{\overbrace{0.01}^{\times3}}_{\boldsymbol{b}}... \underbrace{\overbrace{0.001}^{\times10}}_{\boldsymbol{\theta}}]\text{ ,}
+\boldsymbol{Q}=\text{diag}[\underbrace{\overbrace{1000}^{\times4}}_{\etaVector}... \underbrace{\overbrace{1000}^{\times3}}_{\nuVector}...\underbrace{\overbrace{0.01}^{\times3}}_{\boldsymbol{b}}... \underbrace{\overbrace{0.001}^{\times10}}_{\boldsymbol{\theta}}]
 \end{equation*}
 and
 \begin{equation*}
@@ -432,10 +439,10 @@ The estimation was done with five data sets, of which the first three were used 
 %\end{equation}
 %with 
 %\begin{equation}
-%\boldsymbol{y} = \begin{pmatrix}
+%\boldsymbol{y} = \begin{bmatrix}
 %\etaVector \\
 %\boldsymbol{a}
-%\end{pmatrix}
+%\end{bmatrix}
 %\end{equation}
 %where $\boldsymbol{a}$ are the linear accelerations in the \abbrROV frame. 
 %
@@ -468,16 +475,16 @@ The estimation was done with five data sets, of which the first three were used 
     $\distance{x}{5}$   & 0.17 \meter & Distance from \abbrCG to thruster 5 in $\xPosition$-direction.\\
     $\distance{y}{4}$   & 0.11 \meter & Distance from \abbrCG to thruster 4 in $\yPosition$-direction.\\
     $\distance{z}{6}$   & 0    \meter & Distance from \abbrCG to thruster 6 in $\zPosition$-direction.\\
-    	$z_B$               & -0.0331 \meter                                      & Distance from \abbrCG to \abbrCB.\\
-    $\Kp$               & -0.8325 \kilogram\usk\meter\squared                 & Linear damping coefficient due to rotation in water about the $\xPosition$-axis.\\
-    $\Kpabsp$           & -0.4933 \kilogram\usk\meter\squared                 & Quadratic damping coefficient due to rotation in water about the $\xPosition$-axis.\\
-    $\Mq$               & -0.8487 \kilogram\usk\meter\squared                 & Linear damping coefficient due to rotation in water about the $\yPosition$-axis.\\
-    $\Mqabsq$           & -0.2507 \kilogram\usk\meter\squared                 & Quadratic damping coefficient due to rotation in water about the $\yPosition$-axis.\\
-    $\Nr$               & -1.7580 \kilogram\usk\meter\squared                 & Linear damping coefficient due to rotation in water about the $\zPosition$-axis.\\
-    $\Nrabsr$           & -1.4595 \kilogram\usk\meter\squared                 & Quadratic damping coefficient due to rotation in water about the $\zPosition$-axis.\\
-    $A_p$               & 0.6024  \kilogram\usk\meter\squared                 & Inertia around the $\xPosition$-axis and increased inertia around the $\xPosition$-axis.\\
-    $B_q$               & 0.7834  \kilogram\usk\meter\squared                 & Inertia around the $\yPosition$-axis and increased inertia around the $\yPosition$-axis.\\
-    $C_r$               & 1.3993  \kilogram\usk\meter\squared                 & Inertia around the $\zPosition$-axis and increased inertia around the $\zPosition$-axis.\\
+    	$z_B$               & -0.0420 \meter                                      & Distance from \abbrCG to \abbrCB.\\
+    $\Kp$               & -0.8842 \kilogram\usk\meter\squared                 & Linear damping coefficient due to rotation in water about the $\xPosition$-axis.\\
+    $\Kpabsp$           & -0.6682 \kilogram\usk\meter\squared                 & Quadratic damping coefficient due to rotation in water about the $\xPosition$-axis.\\
+    $\Mq$               & -0.8547 \kilogram\usk\meter\squared                 & Linear damping coefficient due to rotation in water about the $\yPosition$-axis.\\
+    $\Mqabsq$           & -0.3354 \kilogram\usk\meter\squared                 & Quadratic damping coefficient due to rotation in water about the $\yPosition$-axis.\\
+    $\Nr$               & -1.0280 \kilogram\usk\meter\squared                 & Linear damping coefficient due to rotation in water about the $\zPosition$-axis.\\
+    $\Nrabsr$           & -1.0249 \kilogram\usk\meter\squared                 & Quadratic damping coefficient due to rotation in water about the $\zPosition$-axis.\\
+    $A_p$               & 0.8337  \kilogram\usk\meter\squared                 & Inertia around the $\xPosition$-axis and increased inertia around the $\xPosition$-axis.\\
+    $B_q$               & 0.7987  \kilogram\usk\meter\squared                 & Inertia around the $\yPosition$-axis and increased inertia around the $\yPosition$-axis.\\
+    $C_r$               & 1.1250  \kilogram\usk\meter\squared                 & Inertia around the $\zPosition$-axis and increased inertia around the $\zPosition$-axis.\\
     \bottomrule%
   \end{tabular}
 \end{table}
