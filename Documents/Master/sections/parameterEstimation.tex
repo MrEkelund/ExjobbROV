@@ -33,27 +33,27 @@ Data preprocessing was done by synchronising the data streams by checking the st
 
 \begin{figure}[htbp]
   \centering
-  \subfloat[][\label{fig:p_pqTest}Excitation in $p$ during $p$ and $q$ test.]{\includegraphics[width=0.4\textwidth]{p_pq_test}}
+  \subfloat[][\label{fig:p_pqTest}$p$.]{\includegraphics[width=0.4\textwidth]{p_pq_test}}
   \qquad
-  \subfloat[][\label{fig:q_pqTest}Excitation in $q$ during $p$ and $q$ test.]{\includegraphics[width=0.4\textwidth]{q_pq_test}}
+  \subfloat[][\label{fig:q_pqTest}$q$.]{\includegraphics[width=0.4\textwidth]{q_pq_test}}
   \\
-  \subfloat[][\label{fig:r_pqTest}Excitation in $r$ during $p$ and $q$ test.]{\includegraphics[width=0.4\textwidth]{r_pq_test}}
+  \subfloat[][\label{fig:r_pqTest}$r$.]{\includegraphics[width=0.4\textwidth]{r_pq_test}}
   \caption{\label{fig:pqTest}%
  Plots of excitation of the three angular velocities $p$, $q$ and $r$ from a test intended to mainly excite $p$ and $q$. Note that the amplitude in $r$ is four times smaller than that of $p$ and $q$.}
 \end{figure}
 
 \begin{figure}[htbp]
   \centering
-  \subfloat[][\label{fig:p_rTest}Excitation in $p$ during $r$ test.]{\includegraphics[width=0.4\textwidth]{p_r_test}}
+  \subfloat[][\label{fig:p_rTest}$p$.]{\includegraphics[width=0.4\textwidth]{p_r_test}}
   \qquad
-  \subfloat[][\label{fig:q_rTest}Excitation in $q$ during $r$ test.]{\includegraphics[width=0.4\textwidth]{q_r_test}}
+  \subfloat[][\label{fig:q_rTest}$q$.]{\includegraphics[width=0.4\textwidth]{q_r_test}}
   \\
-  \subfloat[][\label{fig:r_rTest}Excitation in $r$ during $r$ test.]{\includegraphics[width=0.4\textwidth]{r_r_test}}
+  \subfloat[][\label{fig:r_rTest}$r$.]{\includegraphics[width=0.4\textwidth]{r_r_test}}
   \caption{\label{fig:rTest}%
  Plots of excitation of the three angular velocities $p$, $q$ and $r$ from a test intended to mainly excite $r$. Note that the amplitude in $r$ is approximately two times larger than that of $p$ and $q$.}
 \end{figure}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Prediction-Error Method} \index{Cost function} \index{Prediction-Error Method}
+\section{Prediction-Error Method} \label{sec:pem} \index{Cost function} \index{Prediction-Error Method}
 The prediction-error method uses a predictor $\hat{\boldsymbol{y}}_k(\boldsymbol{\theta})$ of a model's output to compare with the present output of the system. The discrete-time predictor can be described by 
 \begin{equation}
 \hat{\boldsymbol{x}}_{k+1}(\theta) = f(\boldsymbol{\hat{x}_k}(\theta), \boldsymbol{u}_k,\boldsymbol{y}_k, \boldsymbol{\theta})
@@ -68,11 +68,11 @@ The fitting is done by minimising a cost function $V(\boldsymbol{\theta})$ with 
 \begin{equation}
 \hat{\boldsymbol{\theta}} = \underset{\boldsymbol{\theta}}{\argmin} V(\boldsymbol{\theta})
 \end{equation}
-The cost function in this thesis has been defined as the squared error with an error threshold to handle noisy signals. An error threshold means that after a breakpoint the cost function becomes linear instead of quadratic, which makes the parameter estimation less sensitive to outliers. To reduce the impact of the noise even further, the weight matrix was chosen as the inverse of the estimated noise covariance \citep{ljungtheory}. The cost function is then
+The cost function in this thesis has been defined as the squared error with an error threshold to handle noisy signals. An error threshold means that after a breakpoint the cost function becomes linear instead of quadratic, which makes the parameter estimation less sensitive to outliers\citep{ljungtheory}. To reduce the impact of the noise even further, the weight matrix was chosen as the inverse of the estimated noise covariance \citep{ljungtheory}. The cost function is
 \begin{equation}
-    V(\boldsymbol{\theta}) = \frac{1}{N} \left( \sum_{t \in i} \boldsymbol{e}^T_k(\boldsymbol{\theta}) \boldsymbol{W}(\boldsymbol{\theta})  \boldsymbol{e}_k(\boldsymbol{\theta}) + \sum_{t \in j} \boldsymbol{v}^T_k(\boldsymbol{\theta}) \boldsymbol{W}(\boldsymbol{\theta})  \boldsymbol{v}_k(\boldsymbol{\theta}) \right)
+    V(\boldsymbol{\theta}) = \frac{1}{N} \left( \sum_{t \in \mathcal{i}} \boldsymbol{e}^T_k(\boldsymbol{\theta}) \boldsymbol{W}(\boldsymbol{\theta})  \boldsymbol{e}_k(\boldsymbol{\theta}) + \sum_{t \in \mathcal{j}} \boldsymbol{v}^T_k(\boldsymbol{\theta}) \boldsymbol{W}(\boldsymbol{\theta})  \boldsymbol{v}_k(\boldsymbol{\theta}) \right)
 \end{equation}
-where $N$ is the number of samples in the dataset, $\boldsymbol{e}_k(\boldsymbol{\theta})$ is the error vector with the parameter vector~$\boldsymbol{\theta}$ and $\boldsymbol{W}$ is a positive definite weight matrix \citep{ljungtheory}. The set $i$ is the subset of errors for which $\abs{\boldsymbol{e}_k(\boldsymbol{\theta})} < \sigma \rho$ holds. Here, $\sigma$ is the estimated standard deviation of $\boldsymbol{e}_k(\boldsymbol{\theta})$ and $\rho$ is the chosen error threshold. The set $j$ is the complement of $i$. The error $\boldsymbol{v}_k(\boldsymbol{\theta})$ is defined as 
+where $N$ is the number of samples in the dataset, $\boldsymbol{e}_k(\boldsymbol{\theta})$ is the error vector with the parameter vector~$\boldsymbol{\theta}$ and $\boldsymbol{W}$ is a positive definite weight matrix \citep{ljungtheory}. The set $\mathcal{i}$ is the subset of indices for which $\abs{\boldsymbol{e}_k(\boldsymbol{\theta})} < \sigma \rho$ holds. Here, $\sigma$ is the estimated standard deviation of $\boldsymbol{e}_k(\boldsymbol{\theta})$ and $\rho$ is the chosen error threshold. The set $\mathcal{j}$ is the complement of $\mathcal{i}$. The error $\boldsymbol{v}_k(\boldsymbol{\theta})$ is defined as 
 \begin{equation}
 \boldsymbol{v}_k(\boldsymbol{\theta}) = \boldsymbol{e}_k(\boldsymbol{\theta}) \sigma\frac{\rho}{\sqrt{\abs{\boldsymbol{e}_k(\boldsymbol{\theta})}}}
 \end{equation}
@@ -80,7 +80,7 @@ where $N$ is the number of samples in the dataset, $\boldsymbol{e}_k(\boldsymbol
 %Several tools exists	which can estimate parameters using the prediction-error method. In this thesis the System Identification Toolbox\texttrademark has been used.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Estimation Using Prediction-Error Method}\label{sec:estimPEM} \index{Fit} \index{Model structure}
-A initial set of model parameters were estimated using \eqref{eq:pq_dot_decouple} and \eqref{eq:r_dot_decouple}, while using appropriate data sets. These initial parameters were then used in model \eqref{eq:quatModel}. Estimated angles were used as inputs and angular velocities as outputs. This gave the following model structure to be estimated
+An initial set of model parameters were estimated using the decoupled models \eqref{eq:pq_dot_decouple} and \eqref{eq:r_dot_decouple}, while using appropriate data sets. These initial parameters were then used to estimate the parameters of model \eqref{eq:quatModel}. Estimated angles were used as inputs and angular velocities as outputs. This gave the following model structure to be estimated
 \begin{equation}
 \dot{\hat{\boldsymbol{\eta}}} = f(\hat{\nuVector}, \bar{\etaVector}, \tauVector)
 \end{equation}
@@ -88,16 +88,16 @@ and
 \begin{equation}
 \hat{\boldsymbol{y}} = \hat{\nuVector}
 \end{equation}
-where $\bar{\etaVector} = \hat{\etaVector}$ are the estimated Euler angles from the sensor fusion.
-The result of the estimation can be seen in \Tableref{tab:ResultEstimAngular}.  The fit of the model compared to validation data can be seen in \Figureref{fig:velocityCompareCong}. The model has a high fit of $50-60\ \%$ and thus describes the validation data well.
+where $\bar{\etaVector}$ are the estimated Euler angles from the sensor fusion.
+The result of the estimation can be seen in \Tableref{tab:ResultEstimAngular}. The fit of the model compared to validation data can be seen in \Figureref{fig:velocityCompareCong}. The model has a high fit of $60\ \%$ in $p$ and $q$, thus it describes the validation data well. The model describes validation data well in $r$ which can be seen in the fit of $50\ \%$.
 %The estimation used two datasets as estimation data and used one dataset for validation data.%
 \begin{figure}[tbp]
   \centering
-  \subfloat[][\label{fig:velocityCompareCongp}Simulated model and validation data in $p$.]{\includegraphics[width=0.4\textwidth]{velocityCompareCongp}}
+  \subfloat[][\label{fig:velocityCompareCongp}$p$.]{\includegraphics[width=0.7\textwidth]{velocityCompareCongp}}
   \qquad
-  \subfloat[][\label{fig:velocityCompareCongq}Simulated model and validation data in $q$.]{\includegraphics[width=0.4\textwidth]{velocityCompareCongq}}
+  \subfloat[][\label{fig:velocityCompareCongq}$q$.]{\includegraphics[width=0.7\textwidth]{velocityCompareCongq}}
   \\
-  \subfloat[][\label{fig:velocityCompareCongr}Simulated model and validation data in $r$.]{\includegraphics[width=0.4\textwidth]{velocityCompareCongr}}
+  \subfloat[][\label{fig:velocityCompareCongr}$r$.]{\includegraphics[width=0.7\textwidth]{velocityCompareCongr}}
   \caption{\label{fig:velocityCompareCong}%
     Comparison of simulation of the attitude model (blue) against validation data (gray) using the estimated angels as inputs and angular velocities as outputs. The simulated model has a high fit compared to the validation data.}
 \end{figure}
@@ -106,13 +106,13 @@ The estimate of $\etaVector$ did not follow the kinematic relations described in
 
 \begin{figure}[htbp]
   \centering
-  \subfloat[][\label{fig:velocityAnglePhi}Comparison between integration of $\dot{\phi}$ and $\hat{\phi}$ from the \abbrEKF]{\includegraphics[width=0.4\textwidth]{velocityAnglePhi}}
+  \subfloat[][\label{fig:velocityAnglePhi}$\phi$.]{\includegraphics[width=0.4\textwidth]{velocityAnglePhi}}
   \qquad
-  \subfloat[][\label{fig:velocityAngleTheta}Comparison between integration of $\dot{\theta}$ and $\hat{\theta}$ from the \abbrEKF]{\includegraphics[width=0.4\textwidth]{velocityAngleTheta}}
+  \subfloat[][\label{fig:velocityAngleTheta}$\theta$.]{\includegraphics[width=0.4\textwidth]{velocityAngleTheta}}
   \\
-  \subfloat[][\label{fig:velocityAnglePsi}Comparison between integration of $\dot{\psi}$ and $\hat{\psi}$ from the \abbrEKF]{\includegraphics[width=0.4\textwidth]{velocityAnglePsi}}
+  \subfloat[][\label{fig:velocityAnglePsi}$\psi$.]{\includegraphics[width=0.4\textwidth]{velocityAnglePsi}}
   \caption{\label{fig:integratedAngleVelocities}%
-  A comparison between integration of euler angles (blue) using \eqref{eq:eulerAnglesdot} and the estimated euler angles from the \abbrEKF (red). The angles are poorly estimated and thus not suitable to use as outputs in parameter estimation.}
+  A comparison between integration of angular velocities (blue) using \eqref{eq:eulerAnglesdot} and the estimated euler angles from the \abbrEKF (red). The angles are poorly estimated and thus not suitable to use as outputs in parameter estimation.}
 \end{figure}
 \index{Model structure}
 Due to the aforementioned problems, the model \eqref{eq:quatModel} was used with angular velocities and linear acceleration as outputs. Thus the estimation structure became
@@ -140,17 +140,17 @@ An issue that was encountered when estimating the parameters was that when angul
 
 \begin{figure}[htbp]
   \centering %comparison betwwen two simulations
-  \subfloat[][\label{fig:angVelSimp}Angular velocity around the \abbrROV's x-axis.]{\includegraphics[width=0.4\textwidth]{angVelSimp}}
+  \subfloat[][\label{fig:angVelSimp}$p$.]{\includegraphics[width=0.4\textwidth]{angVelSimp}}
   \qquad
-  \subfloat[][\label{fig:angVelSimq}Angular velocity around the \abbrROV's y-axis.]{\includegraphics[width=0.4\textwidth]{angVelSimq}}
+  \subfloat[][\label{fig:angVelSimq}$q$.]{\includegraphics[width=0.4\textwidth]{angVelSimq}}
   \qquad
-  \subfloat[][\label{fig:angVelSimr}Angular velocity around the \abbrROV's z-axis.]{\includegraphics[width=0.4\textwidth]{angVelSimr}}
+  \subfloat[][\label{fig:angVelSimr}$r$.]{\includegraphics[width=0.4\textwidth]{angVelSimr}}
     \qquad
-  \subfloat[][\label{fig:linAccSimx}Linear acceleration in the \abbrROV's x-axis.]{\includegraphics[width=0.4\textwidth]{linAccSimx}}
+  \subfloat[][\label{fig:linAccSimx}$a_x$.]{\includegraphics[width=0.4\textwidth]{linAccSimx}}
     \qquad
-  \subfloat[][\label{fig:linAccSimy}Linear acceleration in the \abbrROV's y-axis.]{\includegraphics[width=0.4\textwidth]{linAccSimy}}
+  \subfloat[][\label{fig:linAccSimy}$a_y$.]{\includegraphics[width=0.4\textwidth]{linAccSimy}}
     \qquad
-  \subfloat[][\label{fig:linAccSimz}Linear acceleration  in the \abbrROV's z-axis.]{\includegraphics[width=0.4\textwidth]{linAccSimz}}
+  \subfloat[][\label{fig:linAccSimz}$a_z$.]{\includegraphics[width=0.4\textwidth]{linAccSimz}}
   \caption{\label{fig:angVelSim}%
     Comparison between simulated validation data (grey) and the simulated response from the estimated model (blue). The fit for the model in each state is stated in each plot. The validation data has been generated using the initial parameters used in the parameter estimation. The poor initial state estimate results in that the estimated parameters diverge from their true values.}
 \end{figure}\index{Fit} \index{Model structure} \index{Quaternions}
@@ -161,17 +161,17 @@ The estimated parameter values obtained when using \eqref{eq:quatModel} with ang
 
 \begin{figure}[tbp]
   \centering
-  \subfloat[][\label{fig:angVelCompareplz6}Angular velocity around the \abbrROV's x-axis.]{\includegraphics[width=0.4\textwidth]{angVelCompareplz6}}
+  \subfloat[][\label{fig:angVelCompareplz6}$p$.]{\includegraphics[width=0.4\textwidth]{angVelCompareplz6}}
   \qquad
-  \subfloat[][\label{fig:angVelCompareqlz6}Angular velocity around the \abbrROV's y-axis.]{\includegraphics[width=0.4\textwidth]{angVelCompareqlz6}}
+  \subfloat[][\label{fig:angVelCompareqlz6}$q$.]{\includegraphics[width=0.4\textwidth]{angVelCompareqlz6}}
   \qquad
-  \subfloat[][\label{fig:angVelComparerlz6}Angular velocity around the \abbrROV's z-axis.]{\includegraphics[width=0.4\textwidth]{angVelComparerlz6}}
+  \subfloat[][\label{fig:angVelComparerlz6}$r$.]{\includegraphics[width=0.4\textwidth]{angVelComparerlz6}}
     \qquad
-  \subfloat[][\label{fig:linAccComparexlz6}Linear acceleration in the \abbrROV's x-axis.]{\includegraphics[width=0.4\textwidth]{linAccComparexlz6}}
+  \subfloat[][\label{fig:linAccComparexlz6}$a_x$]{\includegraphics[width=0.4\textwidth]{linAccComparexlz6}}
     \qquad
-  \subfloat[][\label{fig:linAccCompareylz6}Linear acceleration in the \abbrROV's y-axis.]{\includegraphics[width=0.4\textwidth]{linAccCompareylz6}}
+  \subfloat[][\label{fig:linAccCompareylz6}$a_y$]{\includegraphics[width=0.4\textwidth]{linAccCompareylz6}}
     \qquad
-  \subfloat[][\label{fig:linAccComparezlz6}Linear acceleration in the \abbrROV's z-axis.]{\includegraphics[width=0.4\textwidth]{linAccComparezlz6}}
+  \subfloat[][\label{fig:linAccComparezlz6}$a_z$]{\includegraphics[width=0.4\textwidth]{linAccComparezlz6}}
   \caption{\label{fig:angVelComparelz6}%
     Comparison of validation data (grey) against the simulated response from the model(blue). The fit for the model in each state is stated in each plot. The estimation used angular velocities and linear accelerations as outputs. The model describes $q$ an $r$ well which can be seen in the high fit. The model do not describe the linear accelerations and $p$ well, this can be seen in the low fit.}
 \end{figure}
@@ -306,11 +306,11 @@ The fit of the model using the estimated parameters can be viewed in \figureref{
 % results kalman fixed moment arms
 \begin{figure}[tbp]
   \centering
-  \subfloat[][Comparison between a simulated model response and validation data in $p$.]{\includegraphics[width=0.7\textwidth]{ResultKalmanFixedMomentP}}
+  \subfloat[][$p$.]{\includegraphics[width=0.7\textwidth]{ResultKalmanFixedMomentP}}
   \qquad
-  \subfloat[][Comparison between a simulated model response and validation data in $q$.]{\includegraphics[width=0.7\textwidth]{ResultKalmanFixedMomentQ}}
+  \subfloat[][$q$.]{\includegraphics[width=0.7\textwidth]{ResultKalmanFixedMomentQ}}
   \\
-  \subfloat[][Comparison between a simulated model response and validation data in $r$.]{\includegraphics[width=0.7\textwidth]{ResultKalmanFixedMomentR}}
+  \subfloat[][$r$.]{\includegraphics[width=0.7\textwidth]{ResultKalmanFixedMomentR}}
   \caption{\label{fig:ResultKalmanFixedMomentArms}%
     Comparison between simulation of $\nuVector$ (blue) with validation data (red). Moment-arm parameters are fixed. Goodness of fit statistic is displayed at the top of each sub-figure. The model describe the validation data well in $q$ and $r$ which can be seen in the high fit. The low fit in $p$ indicates that the model does not describe the validation data well.}
 \end{figure}
@@ -321,11 +321,11 @@ An issue that was present in \sectionref{sec:estimPEM} and \sectionref{sec:estim
 
 \begin{figure}
 \centering
-  \subfloat[][\label{fig:thruster6p1} The effect in $p$ when only using thruster 6.]{\includegraphics[width=0.4\textwidth]{thruster6p}}
+  \subfloat[][\label{fig:thruster6p1} $p$.]{\includegraphics[width=0.7\textwidth]{thruster6p}}
   \qquad
-  \subfloat[][\label{fig:thruster6u61} The effect in $r$ when only using thruster 6.]{\includegraphics[width=0.4\textwidth]{thruster6r}}
+  \subfloat[][\label{fig:thruster6u61} $r$.]{\includegraphics[width=0.7\textwidth]{thruster6r}}
   \qquad
-  \subfloat[][\label{fig:thruster6r1} The control signal sent to thruster 6.]{\includegraphics[width=0.4\textwidth]{thruster6u6}}
+  \subfloat[][\label{fig:thruster6r1} The control signal sent to thruster 6.]{\includegraphics[width=0.7\textwidth]{thruster6u6}}
   \caption{\label{fig:thruster6}%
   The effect in $p$ and $r$ while only using thruster 6. As can be seen thruster 6 has a relatively small effect in $p$, thus ought the moment arm of thruster 6 be small. However, thruster 6 effected $p$ more when thruster 6 was quickly actuated.}
 \end{figure}
@@ -371,11 +371,11 @@ The estimation was done with five data sets, of which the first three were used 
 % results kalman lz6=0 fixed moment arms
 \begin{figure}[tbp]
   \centering
-  \subfloat[][Comparison between a simulated model response and validation data in $p$.]{\includegraphics[width=0.7\textwidth]{ResultKalmanFixedMomentPLz0}}
+  \subfloat[][$p$.]{\includegraphics[width=0.7\textwidth]{ResultKalmanFixedMomentPLz0}}
   \qquad
-  \subfloat[][Comparison between a simulated model response and validation data in $q$.]{\includegraphics[width=0.7\textwidth]{ResultKalmanFixedMomentQLz0}}
+  \subfloat[][$q$.]{\includegraphics[width=0.7\textwidth]{ResultKalmanFixedMomentQLz0}}
   \\
-  \subfloat[][Comparison between a simulated model response and validation data in $r$.]{\includegraphics[width=0.7\textwidth]{ResultKalmanFixedMomentRLz0}}
+  \subfloat[][$r$.]{\includegraphics[width=0.7\textwidth]{ResultKalmanFixedMomentRLz0}}
   \caption{\label{fig:ResultKalmanFixedMomentArmsLz6}%
     Comparison between simulation of $\nuVector$ (blue) with validation data (red). Moment-arm parameters are fixed and \distance{z}{6} is set to zero. Goodness of fit statistic is displayed at the top of each sub-figure.}
 \end{figure}
