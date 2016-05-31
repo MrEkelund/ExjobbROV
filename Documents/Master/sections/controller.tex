@@ -19,7 +19,7 @@ There are two main concepts of control, open-loop and feedback control \citep{re
 		    \draw [->] (controller) -- node[name=u] {$u$} (system);
 		    \node [output, right of=system] (output) {};
 		
-		    \draw [draw,->] (input) -- node {$x_{text{ref}}$} (controller);
+		    \draw [draw,->] (input) -- node {$x_{\text{ref}}$} (controller);
 		    \draw [->] (system) -- node [name=y] {$y$}(output);
 		\end{tikzpicture}
 	\caption{The open-loop control scheme used in the \abbrROV. The control block F can be any type of open-loop control. Notice that this is an ideal case were no disturbances affect the system.}
