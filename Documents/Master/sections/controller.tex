@@ -89,7 +89,7 @@ maximum thrust can be achieved but coupling effects can occur. Combining \eqref{
 0 & -1 & 0 & 0 & 0 & 0 \\
 \end{bmatrix}
 \end{equation}
-The static thrust allocation matrix $\thrusterGeometryOnes[*]$ is the pseudo inverse of the thrust geometry matrix $\thrusterGeometryOnes$. An approximately decoupled control is achieved when the static thrust allocation matrix is used and thus can the \abbrROV be controlled better. \Figureref{fig:open_control} illustrates how the control signals are allocated to the different thrusters when given an control input. The thrust-geometry matrix could be chosen as $\thrusterGeometryOnes = \boldsymbol{T}_{\text{normed}}$. Here, $\boldsymbol{T}_{\text{normed}}$ is the row-wise normed thrust matrix $\boldsymbol{T}$ from \sectionref{sec:act}. Using the aforementioned thruster matrix would reduce coupling effects but was not implemented on the \abbrROV since maximum thrust would be also reduced.
+The static thrust allocation matrix $\thrusterGeometryOnes[*]$ is the pseudo inverse of the thrust geometry matrix $\thrusterGeometryOnes$. An approximately decoupled control is achieved when the static thrust allocation matrix is used and thus can the \abbrROV be controlled better. \Figureref{fig:open_control} illustrates how the control signals are allocated to the different thrusters when given an control input. The thrust-geometry matrix could be chosen as $\thrusterGeometryOnes = \boldsymbol{T}_{\text{normed}}$. Here, $\boldsymbol{T}_{\text{normed}}$ is the row-wise normed thrust matrix $\boldsymbol{T}$ from \sectionref{sec:act}. Using the aforementioned thruster matrix would reduce coupling effects but was not implemented on the \abbrROV since maximum thrust would be reduced.
 \begin{figure}
     \centering
     \begin{tikzpicture}[auto, thick, node distance=3cm, >=latex',%
@@ -142,7 +142,7 @@ Like the desired body-fix acceleration $a^b$, the desired global frame accelerat
 \begin{equation}
 \etaTildeAng = \hat{\etaVector}_2 - \etaVectorAng[,{\text{ref}}] 
 \end{equation}
-$\accVector^n$ could be chosen using the following feedback 
+The desired acceleration $\accVector^n$ could be chosen using the following feedback 
 \begin{equation}\label{eq:attitudeFeedback}
 \accVector^n=-K_{\text{p}} \etaTildeAng - K_{\text{i}}\int \! \etaTildeAng \, \mathrm{d}t - K_{\text{d}} \etaTildeAngdot
 \end{equation}
@@ -569,7 +569,7 @@ x_2\\
 with $\tilde{a}=\hat{a}-a$ and $\tilde{b}=\hat{b}-b$.
 
 If $\hat{a}$ and $\hat{b}$ are estimated such that $\tilde{a} > 0$ and $\tilde{b} > 0$,
-the control law has created unstable non-linear system. The instability can nevertheless be compensated for by 
+the control law has created an unstable non-linear system. The instability can nevertheless be compensated for by 
 applying a strong enough feedback using $\bar{u}$. But a strong feedback is often undesirable since using a stronger control signal means that the system will use more energy. Furthermore, a large control signal is not always possible since $u$ might be saturated.  
 \end{example}
 
