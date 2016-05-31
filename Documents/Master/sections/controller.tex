@@ -19,7 +19,7 @@ There are two main concepts of control, open-loop and feedback control \citep{re
 		    \draw [->] (controller) -- node[name=u] {$u$} (system);
 		    \node [output, right of=system] (output) {};
 		
-		    \draw [draw,->] (input) -- node {$x_{text{ref}}$} (controller);
+		    \draw [draw,->] (input) -- node {$x_{\text{ref}}$} (controller);
 		    \draw [->] (system) -- node [name=y] {$y$}(output);
 		\end{tikzpicture}
 	\caption{The open-loop control scheme used in the \abbrROV. The control block F can be any type of open-loop control. Notice that this is an ideal case were no disturbances affect the system.}
@@ -115,16 +115,15 @@ The static thrust allocation matrix $\thrusterGeometryOnes[*]$ is the pseudo inv
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Exact Linearisation} \index{Exact Linearisation} \index{Look-up table}
-Exact linearisation is to compensate for the non-linearities in a system using a non-linear control law. This makes the system linear from an input-output perspective \citep{reglerteori}. Using the model structure from \Chapterref{cha:modelling} and the estimated parameters from \Chapterref{cha:parameterEstimation}, a non-linear control law was created 
+Exact linearisation is to compensate for the non-linearities in a system using a non-linear control law. The goal is to make the system linear from an input-output perspective \citep{reglerteori}. Using the model structure from \Chapterref{cha:modelling} and the estimated parameters from \Chapterref{cha:parameterEstimation}, a non-linear control law was created 
 \begin{equation}\label{eq:exactLin}
 \tauVector_{\text{Lin}} = G^{-1}(\hat{\etaVector}_{2},\hat{\nuVector}_{2},\accVector^{\text{b}}) = \inertia \accVector^{\text{b}} + \damping(\hat{\nuVector}_{2})\hat{\nuVector}_{2} + \coriolis(\hat{\nuVector}_{2})\hat{\nuVector}_{2} + \gravity(\hat{\etaVector}_{2})
 \end{equation}
-where $\accVector^b$ is the desired angular acceleration in the body-fixed frame and $\tauVector_{\text{Lin}}$ is the estimated thrust needed to achieve the desired acceleration \citep{fossen}.
+where $\accVector^b$ is the desired angular acceleration in the body-fixed frame and $\tauVector_{\text{Lin}}$ is the estimated thrust needed to achieve the desired acceleration \citep{fossen2011}.
 The desired control signal $\boldsymbol{u}_{\text{Lin}}$ was then chosen using 
 \begin{equation}\label{eq:linControlSignal}
-\boldsymbol{u}_{\text{Lin}} = \boldsymbol{T}^{-1}I^{-1}(\bar{\tauVector}_{\text{Lin}})
-\end{equation} where $\boldsymbol{T}$ is the geometry matrix defined in \eqref{eq:actuatorGeometry}, $\bar{\tauVector}_{\text{Lin}}=[0~0~0~\tauVector_{\text{Lin}}^T]^T$ and  $f$ is the look-up table from control signal to thrust defined in \appref{app:thrustmapping}. The function $I$ converts from control signal to \abbrPWM signal.
-In an ideal case, where the model is exact, using the non-linear control law \eqref{eq:exactLin} would produce the system
+\boldsymbol{u}_{\text{Lin}} = f^{-1}(\boldsymbol{T}^{-1}\bar{\tauVector}_{\text{Lin}})
+\end{equation} where $\boldsymbol{T}$ is the geometry matrix defined in \eqref{eq:actuatorGeometry}, $\bar{\tauVector}_{\text{Lin}}=[0~0~0~\tauVector_{\text{Lin}}^T]^T$ and  $f(\cdot)$ is the look-up table from control signal, $u \in [-1~1]$, to thrust defined in \appref{app:thrustmapping}. In an ideal case, where the model is exact, using the non-linear control law \eqref{eq:exactLin} would produce the system
 \begin{equation}\label{eq:exactLinSys}
 \nuVectorAngdot = \accVector^b
 \end{equation} 
@@ -132,14 +131,14 @@ where $\accVector^b$ could be chosen using any desired control method \citep[p.4
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Attitude Controller} \index{PID@\abbrPID!abbreviation} \index{Attitude Controller} \index{Exact Linearisation}
 An attitude controller was also implemented on the \abbrROV. The controller was chosen as \abbrPID-controller utilising exact linearisation \eqref{eq:exactLin}.
-Since \eqref{eq:exactLin} aimed to linearise the angular accelerations in the body-fixed frame and not the angular accelerations in the global coordinate system, an extra control law was needed.
-Choosing 
+Since \eqref{eq:exactLin} aimed to linearise the angular accelerations in the body-fixed frame, these have to be transformed into the global coordinate system.
+This is achieved by choosing 
 \begin{equation}\label{eq:anLaw}
 \accVector^b =L(\accVector^n,\hat{\eulerAngles},\hat{\nuVector}_2)=\boldsymbol{T}^{-1}_\theta(\hat{\eulerAngles})(\accVector^n - \dot{\boldsymbol{T}}_\theta(\hat{\eulerAngles})\hat{\nuVector}_2)\\
-\end{equation} where $\accVector^n$ is the desired angular acceleration in the global-frame. This gives the following linear system \begin{equation}
+\end{equation} where $\accVector^n$ is the desired angular acceleration in the global-frame \citep{fossen2011}. This gives the following linear system \begin{equation}
 \ddot{\boldsymbol{\eta}}_2=\accVector^n 
 \end{equation}
-Defining the control error as
+Like the desired body-fix acceleration $a^b$, the desired global frame acceleration can be chosen using an arbitrary control method. Here, the control error is chosen as
 \begin{equation}
 \etaTildeAng = \hat{\etaVector}_2 - \etaVectorAng[,{\text{ref}}] 
 \end{equation}
@@ -167,13 +166,13 @@ Combining \eqref{eq:etaTildeAngDot} with \eqref{eq:attitudeFeedback} gives the f
 %where $K_{\text{p}}$, $K_{\text{i}}$ and $K_{\text{d}}$ are positive definite design matrices \citep[p. 453]{fossen2011}. 
 The attitude controller was also combined with an open-loop control of the linear velocities
 \begin{equation}
-	u = \underbrace{I^{-1}(\boldsymbol{T}^{-1} G^{-1}(\hat{\etaVector}_2,\hat{\nuVector}_2,L(\accVector^n,\hat{\eulerAngles},\hat{\nuVector}_2)))}_{u_{\etaVectorAng}} + \underbrace{\thrusterGeometryOnes[*] \begin{bmatrix} \nuVector_{1,\text{ref}} \\ \zeroCol{3} \end{bmatrix}}_{u_{\nuVectorLin}}
+	u = \underbrace{f^{-1}(\boldsymbol{T}^{-1} G^{-1}(\hat{\etaVector}_2,\hat{\nuVector}_2,L(\accVector^n,\hat{\eulerAngles},\hat{\nuVector}_2)))}_{u_{\etaVectorAng}} + \underbrace{\thrusterGeometryOnes[*] \begin{bmatrix} \nuVector_{1,\text{ref}} \\ \zeroCol{3} \end{bmatrix}}_{u_{\nuVectorLin}}
 \end{equation}
 or
 \begin{equation}
-	u = \underbrace{I^{-1}(\boldsymbol{T}^{-1} L(\accVector^n,\hat{\eulerAngles},\hat{\nuVector}_2))}_{u_{\etaVectorAng}} + \underbrace{\thrusterGeometryOnes[*] \begin{bmatrix} \nuVector_{1,\text{ref}} \\ \zeroCol{3} \end{bmatrix}}_{u_{\nuVectorLin}}
+	u = \underbrace{f^{-1}(\boldsymbol{T}^{-1} L(\accVector^n,\hat{\eulerAngles},\hat{\nuVector}_2))}_{u_{\etaVectorAng}} + \underbrace{\thrusterGeometryOnes[*] \begin{bmatrix} \nuVector_{1,\text{ref}} \\ \zeroCol{3} \end{bmatrix}}_{u_{\nuVectorLin}}
 \end{equation}
-without the exact linearisation. This was implemented to allow the user to steer the \abbrROV while the controller unsures that the \abbrROV holds a given attitude. An illustration of how the attitude controller with open-loop control is implemented can be seen in \Figureref{fig:attitudecontroller}.
+without the exact linearisation. This was implemented to allow the user to steer the \abbrROV while the controller ensures that the \abbrROV holds a given attitude. An illustration of how the attitude controller with open-loop control is implemented can be seen in \Figureref{fig:attitudecontroller}.
 
 \begin{figure}
 	\centering
@@ -249,13 +248,13 @@ where $K_{\text{p}}$ and $K_{\text{i}}$ are positive definite design matrices an
 
 The angular velocities \abbrPI controller was also expanded with a open-loop control solution for control of linear velocities
 \begin{equation}
-	u = \underbrace{I^{-1}(\boldsymbol{T}^{-1} G^{-1}(\hat{\etaVector}_2,\hat{\nuVector}_2,\accVector^b))}_{u_{\nuVectorAng}} + \underbrace{\thrusterGeometryOnes[*] \begin{bmatrix}\nuVector_{1,\text{ref}} \\ \zeroCol{3} \end{bmatrix}}_{u_{\nuVectorLin}}	
+	u = \underbrace{f^{-1}(\boldsymbol{T}^{-1} G^{-1}(\hat{\etaVector}_2,\hat{\nuVector}_2,\accVector^b))}_{u_{\nuVectorAng}} + \underbrace{\thrusterGeometryOnes[*] \begin{bmatrix}\nuVector_{1,\text{ref}} \\ \zeroCol{3} \end{bmatrix}}_{u_{\nuVectorLin}}	
 \end{equation}
 or alternatively 
 \begin{equation}
-	u = \underbrace{I^{-1}(\boldsymbol{T}^{-1} \accVector^b)}_{u_{\nuVectorAng}} + \underbrace{\thrusterGeometryOnes[*] \begin{bmatrix} \nuVector_{1,\text{ref}} \\ \zeroCol{3} \end{bmatrix}}_{u_{\nuVectorLin}}
+	u = \underbrace{f^{-1}(\boldsymbol{T}^{-1} \accVector^b)}_{u_{\nuVectorAng}} + \underbrace{\thrusterGeometryOnes[*] \begin{bmatrix} \nuVector_{1,\text{ref}} \\ \zeroCol{3} \end{bmatrix}}_{u_{\nuVectorLin}}
 \end{equation}
-if the exact linearisation is removed. \Figureref{fig:ratecontroller} illustrates how the angular velocity controller is implemented in conjunction with the open-loop control of the linear velocities.
+if the exact linearisation is inactive. \Figureref{fig:ratecontroller} illustrates how the angular velocity controller is implemented in conjunction with the open-loop control of the linear velocities.
 \begin{figure}
 	\centering
 	\begin{tikzpicture}[auto, thick, node distance=2cm, >=latex',%
@@ -391,53 +390,30 @@ To be able to draw any conclusions about the performance of the controllers the 
 
 \item[Sine] A $\sin(\cdot)$ signal was applied to one \abbrDOF at the time and then to all \abbrDOF. Two $\sin$ signals with different amplitudes were used, amplitude $1$ and $0.5$. The frequency of the sine was $0.5\ \hertz$.
 
-\item[Smooth step] A smooth step was applied to one \abbrDOF at the time and then to all \abbrDOF at the same time. The used smooth step was the same as in \citet[p. 192]{robotics}. The smooth step parameters were $q_{\text{0}} = 0$, $q_{\text{f}} = 1$, $t_{\text{s}} = 3$, $t_{\text{f}} = 15$ and $V = 1.5 (q_{\text{f}} - q_{\text{0}})/(t_{\text{f}} - t_{\text{s}}))$
+\item[Smooth step] A smooth step, a step with smooth acceleration, was applied to one \abbrDOF at the time and then to all \abbrDOF at the same time. The used smooth step was the same as in \citet[p. 192]{robotics}. The smooth step parameters were $q_{\text{0}} = 0$, $q_{\text{f}} = 1$, $t_{\text{s}} = 3$, $t_{\text{f}} = 15$ and $V = 1.5 (q_{\text{f}} - q_{\text{0}})/(t_{\text{f}} - t_{\text{s}}))$.
 \end{description}
-for each controller separately. For each conducted test, except for depth tests, a simulated test was also performed. The \abbrROV model used during simulation used the parameters from \Sectionref{sec:parameterResults}. The exact linearisation, both in the simulator and the \abbrROV, used the parameters from \Sectionref{sec:parameterResults} with a scaling factor of $0.9$ all parameters except for $z_B$ which was scaled by $0.5$. In this Section a few representative test cases will be presented, several more tests were conducted and these can be seen in \Appref{app:controllerTestResults}. 
-Tests were conducted with the \abbrPID attitude controller without exact linearisation, the \abbrPI rate controller with exact linearisation and with the \abbrPI depth controller. The control parameters used in the \abbrPID and the \abbrPI:s during simulation and real tests can be seen in \Tableref{tab:parametersAttitude} - \Tableref{tab:parametersDepth}. Different performance measures, overshoot, undershoot and steady-state error will be used to specify the performance of the controllers. These measures are defined as in \citet{reglerteori}. 
+for each controller separately. For each conducted test, except for depth tests, a simulated test was also performed. The \abbrROV simulator used the parameters from \Sectionref{sec:parameterResults}. The exact linearisation, both in the simulator and the \abbrROV, used the parameters from \Sectionref{sec:parameterResults} with a scaling factor of $0.9$ except for $z_B$, which was scaled by $0.5$. In this Section, a few representative test cases will be presented, several more tests were conducted and these can be seen in \Appref{app:controllerTestResults}. 
+Tests were conducted with the \abbrPID attitude controller without exact linearisation, the \abbrPI rate controller with exact linearisation and with the \abbrPI depth controller. The control parameters used in the \abbrPID and the \abbrPI:s during simulation and real tests can be seen in \Tableref{tab:parametersAttitude}. Different performance measures, overshoot, undershoot and steady-state error will be used to specify the performance of the controllers. These measures are defined as in \citet{reglerteori}. 
 
 \begin{table}[tbp]
   \centering
   \caption{\label{tab:parametersAttitude}%
-    The parameters used in the attitude controller's \abbrPID.}
+    The parameters used in the \abbrPID:s.}
   \begin{tabular}{l l l l}
     \toprule%
        & \textbf{$K_\text{p}$} & \textbf{$K_\text{i}$}& \textbf{$K_\text{d}$}\\
     \otoprule%   
     $\rollAngle$  & 2   & 0.1 & 0.1 \\
     $\pitchAngle$ & 2.7 & 0.1 & 0.1 \\
-    $\yawAngle$   & 0.7 & 0.1 & 0.1 \\
-    \bottomrule%
-  \end{tabular}
-\end{table}
-
-\begin{table}[tbp]
-  \centering
-  \caption{\label{tab:parametersRate}%
-    The parameters used in the rate controller's \abbrPI.}
-  \begin{tabular}{l l l}
-    \toprule%
-       & \textbf{$K_\text{p}$} & \textbf{$K_\text{i}$}\\
-    \otoprule%   
+    $\yawAngle$   & 0.7 & 0.1 & 0.1 \\  
     $\rollVelocity$  & 3.5 & 2 \\
     $\pitchVelocity$ & 3.5 & 2 \\
-    $\yawVelocity$   & 3.0 & 2 \\
-    \bottomrule%
-  \end{tabular}
-\end{table}
-
-\begin{table}[tbp]
-  \centering
-  \caption{\label{tab:parametersDepth}%
-    The parameters used in the depth controller's \abbrPI.}
-  \begin{tabular}{l l l}
-    \toprule%
-       & \textbf{$K_\text{p}$} & \textbf{$K_\text{i}$}\\
-    \otoprule%   
+    $\yawVelocity$   & 3.0 & 2 \\  
     $\zPosition$  & 1 & 0.2 \\
     \bottomrule%
   \end{tabular}
 \end{table}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%Attitude%%%%%%%%%%%%%%%%%
 
 \begin{figure}
@@ -457,7 +433,7 @@ Tests were conducted with the \abbrPID attitude controller without exact lineari
  A smooth step with $q_{\text{0}} = 0$, $q_{\text{f}} = 1$, $t_{\text{s}} = 3$, $t_{\text{f}} = 15$ and $V = 1.5 (q_{\text{f}} - q_{\text{0}})/(t_{\text{f}} - t_{\text{s}}))$ was applied in all attitude angles at the same time while using the attitude controller.}
 \end{figure}
 
-\Figureref{fig:StepAllAttitude} shows smooth step reference signals applied in all attitude angles while using the attitude controller. Initially did $\rollAngle$ and $\pitchAngle$ follow the reference signals well in the real test. The $\rollAngle$ oscillated with a steady-state error of $0.9$ in the real test. However, $\pitchAngle$ was kept closer to the reference signal with a steady-state error of $0.4$. The attitude angle $\yawAngle$ could not be stabilised during the real test and drifted throughout the test. In the simulated test case did not the attitude angles reach the reference signal. The attitude angle $\pitchAngle$ had a steady-state error of $0.3$ and the other angles had a steady-state error of $0.5$.
+\Figureref{fig:StepAllAttitude} shows smooth-step reference signals applied in all attitude angles while using the attitude controller without linearisation. Initially, the roll angle and pitch angle did not follow the reference signals. During real tests the roll angle was oscillative and had a steady-state error of $0.9$. However, the control of the pitch angle was objectively better, with a steady-state error of $0.4$. The yaw angle could not be stabilised during the real test and drifted throughout the tests. The attitude angles did not reach the reference signals in the simulated test case either. The pitch angle $\pitchAngle$ had a steady-state error of $0.3$ and the other angles had a steady-state error of $0.5$.
 
 \begin{figure}
 \centering
@@ -476,7 +452,7 @@ Tests were conducted with the \abbrPID attitude controller without exact lineari
    A sine signal with amplitude $1$ and frequency $0.5\ \hertz$ was applied in in all attitude angles at the same time while using the attitude controller.}
 \end{figure}
 
-Results from an attitude test with sine reference signals of amplitude 1 and frequency $0.5\ \hertz$ can be seen in \Figureref{fig:SinAllAttitude}. The angles $\rollAngle$ and $\pitchAngle$ did not reach the desired amplitudes in the real test. However, they followed the general form of a sine with a phase shift relative to the reference signals. The same phase shift and lack of amplitude was observed in simulations. $\yawAngle$ followed the reference signal well during the live test but had a phase shift and a bias. The simulated result in $\yawAngle$ did not follow the reference signal at all. 
+Results from an attitude test with sine reference signals of amplitude 1 and frequency $0.5\ \hertz$ can be seen in \Figureref{fig:SinAllAttitude}. The roll angle and pitch angle did not reach the desired amplitudes in the real test. However, they followed the general form of a $0.5\ \hertz$ sine with a phase shift relative to the reference signals. The same phase shift and lack of amplitude was observed in simulations. The yaw angle followed the reference signal well during the live test but had a phase shift and a bias. The simulated result in yaw angle did not follow the reference signal at all. This may be caused by the feedback being to low for the system. 
 
 \begin{figure}
 \centering
@@ -491,7 +467,7 @@ Results from an attitude test with sine reference signals of amplitude 1 and fre
   Smooth steps with $q_{\text{0}} = 0$, $q_{\text{f}} = 1$, $t_{\text{s}} = 3$, $t_{\text{f}} = 15$ and $V = 1.5 (q_{\text{f}} - q_{\text{0}})/(t_{\text{f}} - t_{\text{s}}))$ were applied in \pitchAngle and \rollAngle at the same time while using the attitude controller. The attitude angle $\yawAngle$ was kept free during the test.}
 \end{figure}
 
-The result from a smoothed step test in $\rollAngle$ and $\pitchAngle$ can be seen in \Figureref{fig:StepPhiThetaAttitude}. During the test the attitude angle $\yawAngle$ was kept free. Both $\rollAngle$ and $\pitchAngle$ followed the shape of the reference signal but did not reach the desired magnitude. The steady-state errors for $\rollAngle$ and $\pitchAngle$ were approximately $0.35$. The simulated result in $\rollAngle$ and $\pitchAngle$ performed worse than the live test. The simulated attitude $\rollAngle$ had a steady-state error $0.5$ and the steady-state error for $\pitchAngle$ was $0.4$.
+The result from a smoothed step test in roll angle and pitch angle can be seen in \Figureref{fig:StepPhiThetaAttitude}. During the test, the yaw angle was kept free. Both the roll angle and the pitch angle followed the shape of the reference signal but did not reach the desired magnitude. The steady-state errors for roll and pitch angle were approximately $0.35$. The simulated result in roll angle and pitch angle performed worse than the live test. The simulated roll angle had a steady-state error $0.5$ and the steady-state error in pitch angle was $0.4$.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%Rate%%%%%%%%%%%%%%%%
 \begin{figure}
