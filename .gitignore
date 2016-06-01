@@ -24,3 +24,10 @@ main.dvi
 Documents/Master/sections/*.log
 *~
 *.orig
+*.aux
+*.log
+*.nav
+*.out
+*.snm
+*.toc
+

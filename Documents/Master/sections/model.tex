@@ -405,7 +405,7 @@ The added mass and moment of inertia is defined as
 under the assumption that the \abbrROV moves at low speeds relative to the water \citep[p. 121]{fossen2011}.
 The Coriolis-centripetal effects from the added mass and added moment of inertia are described as
 \begin{align}
-\begin{split}
+%\begin{split}
     \coriolis_\text{A}(\nuVector) \nuVector &= 
     \begin{bmatrix}
     0 & 0 & 0 & 0 & -\Zwdot w & \Yvdot v \\
@@ -415,7 +415,7 @@ The Coriolis-centripetal effects from the added mass and added moment of inertia
     \Zwdot w & 0 & -\Xudot u & \Nrdot r & 0 & -\Kpdot p \\
     -\Yvdot v & \Xudot u & 0 & - \Mqdot q & \Kpdot p & 0 \\
     \end{bmatrix}
-    \nuVector \\ 
+    \nuVector\nonumber \\ 
     &= \begin{bmatrix}
         \Yvdot v r - \Zwdot w q\\
         \Zwdot w p - \Xudot u r\\
@@ -424,7 +424,7 @@ The Coriolis-centripetal effects from the added mass and added moment of inertia
         (\Zwdot - \Xudot) u w + (\Nrdot - \Kpdot) p r\\
         (\Xudot - \Yvdot) u v + (\Kpdot - \Mqdot) p q \\
     \end{bmatrix},
-    \end{split}
+ %   \end{split}
 \end{align}
 under the assumption that the \abbrROV is moving slowly and has three planes of symmetry \citep[p. 121]{fossen2011}. \index{Coriolis} \index{Damping}
 
