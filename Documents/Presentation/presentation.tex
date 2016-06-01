@@ -1,0 +1,106 @@
+\documentclass[11pt]{beamer}
+\usetheme{Berlin}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{pgfpages}
+\author{Adam Aili \& Erik Ekelund}
+\title{Model-Based Development of an Underwater Vehicle}
+%\setbeamercovered{transparent} 
+\setbeamertemplate{navigation symbols}{} 
+%\logo{} 
+%\institute{} 
+\date{June 10} 
+%\subject{} 
+\setbeamertemplate{caption}{\insertcaption}
+%\setbeameroption{show notes}
+\setbeameroption{show notes on second screen=right}
+\input{notation}
+
+\begin{document}
+
+
+\begin{frame}
+\titlepage
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%Intro%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\begin{itemize}
+\item Model-based design development
+\item Control system
+\end{itemize}
+\note{Purpose of model-based design development}
+\note{Purpose of a control system}
+\end{frame}
+
+\begin{frame}
+\begin{itemize}
+\item Assemble the ROV.
+\item Develop a framework for changing controller in the ROV.
+\item Estimate a model of the ROV.
+\item Create a plant model of the ROV in Matlab/Simulink.
+\item Develop a robust model-based controller and evaluate its performance with simulations and tests.
+\end{itemize}
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%Rov platfrom%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{ROV Platform}
+\begin{frame}
+Bluerov
+I/O
+sensorfusion
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%Model%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Modelling the ROV}
+\begin{frame}
+what is a model and be used for
+damping - linear quadratic
+Coriolis
+restoring forces
+added mass and added moment of inertia
+simplifications and why they are needed
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%Parameter Estimation%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Parameter Estimation}
+\begin{frame}
+What is parameter estimation and why is it needed
+pem and problems
+kalman smoother
+pem results
+kalman estimation
+kalman results
+discussion
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%Controllers%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Controllers}
+\begin{frame}
+what is automatic control
+open-loop control
+exact linearisation
+attitude 
+angular velocity
+depth 
+results
+discussion
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%Conclusion%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Conclusion}
+\begin{frame}
+what is automatic control
+open-loop control
+exact linearisation
+attitude 
+angular velocity
+depth 
+results
+discussion
+\end{frame}
+
+\end{document}
