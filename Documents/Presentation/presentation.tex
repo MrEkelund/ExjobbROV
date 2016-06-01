@@ -9,6 +9,8 @@
 \usepackage{xcolor}
 \usepackage{booktabs}
 \usepackage{pgfpages}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows,positioning,calc}
 \author{Adam Aili \& Erik Ekelund}
 \title{Model-Based Development of an Underwater Vehicle}
 %\setbeamercovered{transparent} 
@@ -20,6 +22,7 @@
 \setbeamertemplate{caption}{\insertcaption}
 %\setbeameroption{show notes}
 \setbeameroption{show notes on second screen=right}
+
 \input{notation}
 
 \begin{document}
@@ -79,28 +82,154 @@ discussion
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%Controllers%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \section{Controllers}
 \begin{frame}
-what is automatic control
-open-loop control
-exact linearisation
-attitude 
-angular velocity
-depth 
-results
-discussion
+\begin{itemize}
+\item<1->  Automatic control - What is it?
+\item<2->  Open-loop control
+\item<3->  Feed-back control
+\item<4->  Exact linearisation
+\end{itemize}
+\only<2-2>{
+\begin{tikzpicture}[auto, thick, node distance=2cm,>=latex',
+ block/.style  = {draw, rectangle,minimum height=3em, minimum width=6em},
+ sum/.style    = {draw, circle, inner sep=0pt, text width=4mm,align=center, node distance=1cm},
+ input/.style  = {coordinate},
+ output/.style = {coordinate},
+ pinstyle/.style = {pin edge={to-,thin,black}}]
+ 
+ \node [input, name=input] {};
+ \node [block, right of=input, node distance=3cm] (controller) {F};
+ \node [block, right of=controller, node distance=3cm] (system) {\abbrROV};
+
+ \draw [->] (controller) -- node[name=u] {$u$} (system);
+ \node [output, right of=system] (output) {};
+
+ \draw [draw,->] (input) -- node {$x_{\text{ref}}$} (controller);
+ \draw [->] (system) -- node [name=y] {$y$}(output);
+\end{tikzpicture}
+}
+\only<3-3>{
+\begin{tikzpicture}[auto, thick, node distance=2cm,>=latex',
+			 block/.style  = {draw, rectangle,minimum height=3em, minimum width=6em},
+			 sum/.style    = {draw, circle, inner sep=0pt, text width=4mm,align=center, node distance=1cm},
+			 input/.style  = {coordinate},
+			 output/.style = {coordinate},
+			 pinstyle/.style = {pin edge={to-,thin,black}}]
+			 
+		    \node [input, name=input] {};
+		    \node [sum, right of=input] (sum) {+};
+		    \node [block, right of=sum] (controller) {F};
+		    \node [block, right of=controller, node distance=3cm] (system) {\abbrROV};
+		
+		    \draw [->] (controller) -- node[name=u] {$u$} (system);
+		    \node [output, right of=system] (output) {};
+		    \node [block, below of=u] (sensorfusion) {Observer};
+		
+		    \draw [draw,->] (input) -- node {$x_{\text{ref}}$} (sum);
+		    \draw [->] (sum) -- node {$e$} (controller);
+		    \draw [->] (system) -- node [name=y] {$y$}(output);
+		    \draw [->] (y) |- (sensorfusion);
+		    \draw [->] (sensorfusion) -| node[pos=0.99] {$-$} 
+		        node [near end] {$\hat{x}$} (sum);
+		\end{tikzpicture}
+}
+\only<4-4>{\begin{center}Consider the non-linear system\\
+$\begin{bmatrix}
+\dot{x}_1\\
+\dot{x}_2
+\end{bmatrix}=
+\begin{bmatrix}
+x_2\\
+-a x_1 - b x_2\abs{x_2} + u
+\end{bmatrix}$
+\end{center}
+}
+\only<5-5>{\begin{center}Choose the following control strategy\\
+$u = a x_1 +b x_2\abs{x_2} + \bar{u}$
+\end{center}
+}
+\only<6-6>{\begin{center}This will give the linear system\\
+$\begin{bmatrix}
+\dot{x}_1\\
+\dot{x}_2
+\end{bmatrix}=
+\begin{bmatrix}
+x_2\\
+\bar{u}
+\end{bmatrix}$
+\end{center}
+}
+\note{To control a system towards a desired state using input}
+\note{To control the system without measuring the current state. Needs to be modelled in order to attain good performance.}
+\note{To base the control action on measurements from outputs of the system.}
+\note{To compensate for a systems non-linearities using a model of the system.}
+
+%what is automatic control
+%open-loop control
+%exact linearisation
+%attitude 
+%angular velocity
+%depth 
+%results
+%discussion
 \end{frame}
-%%%%%%%%%%%%%%%%%%%%%Conclusion%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\begin{center}
+Attitude controller using exact linearisation.
+\end{center}
+\note{An attitude controller has been developed using the exact linearisation technique described earlier.}
+\end{frame}
+\begin{frame}
+\only<1-1>{
+\includegraphics[scale=0.28]{../Master/fig/testExactLinAttitudePhi}
+}
+\only<2-2>{
+\includegraphics[scale=0.28]{../Master/fig/testExactLinAttitudeTheta}
+}
+\only<3-3>{
+\includegraphics[scale=0.28]{../Master/fig/testExactLinAttitudePsi}
+}
+\end{frame}
+\begin{frame}
+
+\begin{center}
+Attitude controller \textbf{without} exact linearisation.
+\end{center}
+\note{An attitude controller has been developed using the exact linearisation technique described earlier.}
+\end{frame}
+
+
+\begin{frame}
+\only<1-1>{
+\includegraphics[scale=0.28]{../Master/fig/testStepAllPhis3e10a1}
+}
+\only<2-2>{
+\includegraphics[scale=0.28]{../Master/fig/testStepAllThetas3e10a1}
+}
+\only<3-3>{
+\includegraphics[scale=0.28]{../Master/fig/testStepAllPsis3e10a1}
+}
+\end{frame}
+
+\begin{frame}
+\only<1-1>{
+\includegraphics[scale=0.28]{../Master/fig/testStepThetaPhiPhis3e10a1}
+}
+\only<2-2>{
+\includegraphics[scale=0.28]{../Master/fig/testStepThetaPhiThetas3e10a1}
+}
+\end{frame}
+
+
+
+
+%%%%%%%%%Conclusion%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusion}
 \begin{frame}
-what is automatic control
-open-loop control
-exact linearisation
-attitude 
-angular velocity
-depth 
-results
-discussion
+
 \end{frame}
+%%%%%%%%%%%%
 
 \end{document}
