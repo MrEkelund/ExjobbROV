@@ -1,4 +1,4 @@
-\documentclass[11pt]{beamer}
+\documentclass[11pt,aspectratio=169]{beamer}
 \usetheme{Berlin}
 \usepackage[utf8]{inputenc}
 \usepackage[english]{babel}
@@ -58,15 +58,22 @@
 %%%%%%%%%%%%%%%%%%%%%Rov platfrom%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{ROV Platform}
 \begin{frame}
+\begin{columns}
+\begin{column}{0.5\textwidth}
 \begin{itemize}
 \item BlueROV package from Blue Robotics
 \item Raspberry Pi 2
 \item Raspicam
 \item HkPilot 2.7
 \end{itemize}
+\end{column}
+\begin{column}{0.5\textwidth}
 \begin{figure}
-\includegraphics[trim={40cm 0cm 45cm 0cm},clip,angle=270,width=0.6\textwidth]{fig/bluerov}
+\includegraphics[trim={40cm 0cm 45cm 0cm},clip,angle=270,width=\textwidth]{fig/bluerov}
 \end{figure}
+\end{column}
+\end{columns}
+
 \note{\begin{itemize}
 \item The blueROV package from Blue Robotics comes with 6 thrusters, 6 ESC:s and an acrylic tube.
 \item The on-board computer is the Raspberry Pi 2 which communicates with the workstation and perform controller calculations.
@@ -380,7 +387,7 @@ The ROV will experience forces and moments caused by the Earths gravitational pu
 \begin{frame}{Actuators}
 The \abbrROV is equipped with six identical, three-bladed thrusters. These can be modelled as
 \begin{align}\label{eq:act}
-    \tauVector_{\text{Act}} =  \thrusterGeometry \boldsymbol{\thrusterfun{}} 
+    \scalemath{0.9}{\tauVector_{\text{Act}} =  \thrusterGeometry \boldsymbol{\thrusterfun{}} 
     =
     \begin{bmatrix}
     0& 0& 1& 1& 0& 0\\
@@ -397,7 +404,7 @@ The \abbrROV is equipped with six identical, three-bladed thrusters. These can b
     \thrusterfun{4} \\
     \thrusterfun{5} \\
     \thrusterfun{6} \\
-    \end{bmatrix}
+    \end{bmatrix}}
 \end{align}
 \end{frame}
 
@@ -422,15 +429,14 @@ The expression can then be solved for $\nuVectordot$ and split into components
 Data-collection experiments can be designed such that linear velocities will be small and thus can linear velocities be neglected
 %\begin{subequations}\label{eq:angVelDynamics}
 \begin{multline*}
-\dot{p} = \frac{\thrusterfun{1} \distance{y}{1} - \thrusterfun{2} \distance{y}{2} + \thrusterfun{6} \distance{z}{6}}{\Ix - \Kpdot} + \frac{ (\Kp + \Kpabsp \abs{p})p}{\Ix - \Kpdot}  + \frac{-\Mqdot q r}{\Ix - \Kpdot} +  \frac{\Nrdot q r}{\Ix - \Kpdot} \\ + \frac{q r (\Iy - \Iz)}{\Ix - \Kpdot} {\color{red} + \frac{- \Yvdot v w}{\Ix - \Kpdot} + \frac{\Zwdot v w}{\Ix - \Kpdot}} + \frac{B z_B \cos{\theta} \sin{\phi}}{\Ix - \Kpdot}
+\dot{p} = \frac{\thrusterfun{1} \distance{y}{1} - \thrusterfun{2} \distance{y}{2} + \thrusterfun{6} \distance{z}{6}}{\Ix - \Kpdot} + \frac{ (\Kp + \Kpabsp \abs{p})p}{\Ix - \Kpdot}  + \frac{-\Mqdot q r}{\Ix - \Kpdot} +  \frac{\Nrdot q r}{\Ix - \Kpdot}  + \frac{q r (\Iy - \Iz)}{\Ix - \Kpdot} \\{\color{red} + \frac{- \Yvdot v w}{\Ix - \Kpdot} + \frac{\Zwdot v w}{\Ix - \Kpdot}} + \frac{B z_B \cos{\theta} \sin{\phi}}{\Ix - \Kpdot}
 \end{multline*}
 \begin{multline*}
-\dot{q} =\frac{\thrusterfun{1} \distance{x}{1} + \thrusterfun{2} \distance{x}{2} - \thrusterfun{5} \distance{x}{5}}{\Iy - \Mqdot} + \frac{(\Mq + \Mqabsq \abs{q})q}{\Iy - \Mqdot} + \frac{\Kpdot p r}{\Iy - \Mqdot} + \frac{-\Nrdot p r}{\Iy - \Mqdot} \\ +
-\frac{p r (\Iz - \Ix)}{\Iy - \Mqdot} {\color{red} + \frac{-\Zwdot u w}{\Iy - \Mqdot} + \frac{\Xudot u w}{\Iy - \Mqdot}} + \frac{B z_B \sin{\theta} }{\Iy - \Mqdot} 
+\dot{q} =\frac{\thrusterfun{1} \distance{x}{1} + \thrusterfun{2} \distance{x}{2} - \thrusterfun{5} \distance{x}{5}}{\Iy - \Mqdot} + \frac{(\Mq + \Mqabsq \abs{q})q}{\Iy - \Mqdot} + \frac{\Kpdot p r}{\Iy - \Mqdot} + \frac{-\Nrdot p r}{\Iy - \Mqdot}  +
+\frac{p r (\Iz - \Ix)}{\Iy - \Mqdot} \\ {\color{red} + \frac{-\Zwdot u w}{\Iy - \Mqdot} + \frac{\Xudot u w}{\Iy - \Mqdot}} + \frac{B z_B \sin{\theta} }{\Iy - \Mqdot} 
 \end{multline*}
 \begin{multline*}
-\dot{r} = \frac{\thrusterfun{3} \distance{y}{3} - \thrusterfun{4} \distance{y}{4}}{\Iz - \Nrdot} + \frac{(\Nr + \Nrabsr \abs{r})r}{\Iz - \Nrdot} + \frac{-\Kpdot p q}{\Iz - \Nrdot} + \frac{\Mqdot p q}{\Iz - \Nrdot} +
-\frac{p q (\Ix - \Iy)}{\Iz - \Nrdot}\\ {\color{red} + \frac{- \Xudot u v}{\Iz - \Nrdot} + \frac{\Yvdot u v}{\Iz - \Nrdot}}
+\dot{r} = \frac{\thrusterfun{3} \distance{y}{3} - \thrusterfun{4} \distance{y}{4}}{\Iz - \Nrdot} + \frac{(\Nr + \Nrabsr \abs{r})r}{\Iz - \Nrdot} + \frac{-\Kpdot p q}{\Iz - \Nrdot} + \frac{\Mqdot p q}{\Iz - \Nrdot} + \frac{p q (\Ix - \Iy)}{\Iz - \Nrdot}\\ {\color{red} + \frac{- \Xudot u v}{\Iz - \Nrdot} + \frac{\Yvdot u v}{\Iz - \Nrdot}}
 \end{multline*}
 %\end{subequations}
 \end{frame}
@@ -439,42 +445,26 @@ Data-collection experiments can be designed such that linear velocities will be 
 To gain identifiability, the reparametrisation $A_p = \Ix - \Kpdot$, $B_q = \Iy - \Mqdot$ and $C_r = \Iz - \Nrdot$ was introduced. These changes resulted in
 \begin{subequations}\label{eq:quatModel}
 \begin{multline} \label{eq:p_dotWithoutTranslation}
-\pdot = \frac{\thrusterfun{1} \distance{y}{1} - \thrusterfun{2} \distance{y}{2} + \thrusterfun{6} \distance{z}{6}}{A_p} + \frac{B z_B \cos{\theta} \sin{\phi}}{A_p} + \\ \frac{(\Kp + \Kpabsp \abs{p})p}{A_p} + \frac{q r (B_q - C_r)}{A_p},
+\pdot = \frac{\thrusterfun{1} \distance{y}{1} - \thrusterfun{2} \distance{y}{2} + \thrusterfun{6} \distance{z}{6}}{A_p} + \frac{B z_B \cos{\theta} \sin{\phi}}{A_p} + \frac{(\Kp + \Kpabsp \abs{p})p}{A_p} + \frac{q r (B_q - C_r)}{A_p},
 \end{multline}
 \begin{multline} \label{eq:q_dotWithoutTranslation}
-\qdot = \frac{\thrusterfun{1} \distance{x}{1} + \thrusterfun{2} \distance{x}{2} - \thrusterfun{5} \distance{x}{5}}{B_q} - \frac{B z_B \sin{\theta}}{B_q} + \\ \frac{(\Mq + \Mqabsq \abs{q})q}{B_q} - \frac{p r (A_p - C_r)}{B_q}
+\qdot = \frac{\thrusterfun{1} \distance{x}{1} + \thrusterfun{2} \distance{x}{2} - \thrusterfun{5} \distance{x}{5}}{B_q} - \frac{B z_B \sin{\theta}}{B_q} + \frac{(\Mq + \Mqabsq \abs{q})q}{B_q} - \frac{p r (A_p - C_r)}{B_q}
 \end{multline}
 and
 \begin{multline} \label{eq:r_dotWithoutTranslation}
 \rdot = \frac{\thrusterfun{3} \distance{y}{3} - \thrusterfun{4} \distance{y}{4}}{C_r} + \frac{(\Nr + \Nrabsr \abs{r})r}{C_r} + \frac{p q (A_p  - B_q)}{C_r}
 \end{multline}
 \end{subequations}
-\end{frame}
-\begin{frame}[shrink]
-To gain identifiability, the reparametrisation $A_p = \Ix - \Kpdot$, $B_q = \Iy - \Mqdot$ and $C_r = \Iz - \Nrdot$ was introduced. These changes resulted in
-\begin{subequations}\label{eq:quatModel}
-\begin{multline} \label{eq:p_dotWithoutTranslation}
-\pdot = \frac{\thrusterfun{1} \distance{y}{1} - \thrusterfun{2} \distance{y}{2} + \thrusterfun{6} \distance{z}{6}}{A_p} + \frac{B z_B \cos{\theta} \sin{\phi}}{A_p} + \\ \frac{(\Kp + \Kpabsp \abs{p})p}{A_p} + \frac{q r (B_q - C_r)}{A_p},
-\end{multline}
-\begin{multline} \label{eq:q_dotWithoutTranslation}
-\qdot = \frac{\thrusterfun{1} \distance{x}{1} + \thrusterfun{2} \distance{x}{2} - \thrusterfun{5} \distance{x}{5}}{B_q} - \frac{B z_B \sin{\theta}}{B_q} + \\ \frac{(\Mq + \Mqabsq \abs{q})q}{B_q} - \frac{p r (A_p - C_r)}{B_q}
-\end{multline}
-and
-\begin{multline} \label{eq:r_dotWithoutTranslation}
-\rdot = \frac{\thrusterfun{3} \distance{y}{3} - \thrusterfun{4} \distance{y}{4}}{C_r} + \frac{(\Nr + \Nrabsr \abs{r})r}{C_r} + \frac{p q (A_p  - B_q)}{C_r}
-\end{multline}
-\end{subequations}
-\note{as}
 \end{frame}
 
 
 \begin{frame}[shrink]
 \begin{subequations} \label{eq:pq_dot_decouple}
 \begin{multline} \label{eq:pq_dot_decouple1}
-\pdot = \frac{\thrusterfun{1} \distance{y}{1} - \thrusterfun{2} \distance{y}{2} + \thrusterfun{6} \distance{z}{6}}{A_p} + \frac{(Kp + \Kpabsp \abs{p})p}{A_p} \\ + \frac{B z_B \cos{\theta} \sin{\phi}}{A_p},
+\pdot = \frac{\thrusterfun{1} \distance{y}{1} - \thrusterfun{2} \distance{y}{2} + \thrusterfun{6} \distance{z}{6}}{A_p} + \frac{(Kp + \Kpabsp \abs{p})p}{A_p} + \frac{B z_B \cos{\theta} \sin{\phi}}{A_p},
 \end{multline}  
 \begin{multline} \label{eq:pq_dot_decouple2}
-\qdot =\frac{\thrusterfun{1} \distance{x}{1} + \thrusterfun{2} \distance{x}{2} - \thrusterfun{5} \distance{x}{5}}{B_q} + \frac{(\Mq + \Mqabsq \abs{q})q}{B_q} \\ + \frac{B z_B \sin{\theta}}{B_q} 
+\qdot =\frac{\thrusterfun{1} \distance{x}{1} + \thrusterfun{2} \distance{x}{2} - \thrusterfun{5} \distance{x}{5}}{B_q} + \frac{(\Mq + \Mqabsq \abs{q})q}{B_q} + \frac{B z_B \sin{\theta}}{B_q} 
 \end{multline}  
 \end{subequations} and
 \begin{equation} \label{eq:r_dot_decouple}
