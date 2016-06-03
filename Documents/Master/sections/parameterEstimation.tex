@@ -51,7 +51,7 @@ The main control signals used during data collection tests were telegraph signal
 \label{fig:telegraph}
 \end{figure}
 
-Data preprocessing was done by synchronising the data streams by checking the start and end of each experiment, here chosen as the time of arrival of the first control signal. The sensor data was aligned such that the data sample of each sensor whose arrival time was closest to the starting time of the test was chosen as the initial sample of each data stream. Data outside the test interval was discarded. After alignment, the data was resampled to 100 Hz. The sensor data was resampled using first-order hold while the control signals were resampled using zero-order hold since the control signal data only contained points were the control signals changed.  
+Data preprocessing was done by synchronising the data streams by checking the start and end of each experiment, here chosen as the time of arrival of the first control signal. The sensor data was aligned such that the data sample of each sensor whose arrival time was closest to the starting time of the test was chosen as the initial sample of each data stream. Data outside the test interval was discarded. After alignment, the data was resampled to 100 Hz. The sensor data was resampled using first-order hold while the control signals were resampled using zero-order hold since the control signal data only contained points where the control signals changed.  
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -70,11 +70,11 @@ The fitting is done by minimising a cost function $V(\boldsymbol{\theta})$ with 
 \begin{equation}
 \hat{\boldsymbol{\theta}} = \underset{\boldsymbol{\theta}}{\argmin} V(\boldsymbol{\theta})
 \end{equation}
-The cost function in this thesis has been defined as the squared error with an error threshold to handle noisy signals. An error threshold means that after a breakpoint the cost function becomes linear instead of quadratic, which makes the parameter estimation less sensitive to outliers\citep{ljungtheory}. To reduce the impact of the noise even further, the weight matrix was chosen as the inverse of the estimated noise covariance \citep{ljungtheory}. The cost function is
+The cost function in this thesis has been defined as the squared error with an error threshold to handle noisy signals. An error threshold means that after a breakpoint the cost function becomes linear instead of quadratic, which makes the parameter estimation less sensitive to outliers \citep{ljungtheory}. To reduce the impact of the noise even further, the weight matrix was chosen as the inverse of the estimated noise covariance \citep{ljungtheory}. The cost function is
 \begin{equation}
-    V(\boldsymbol{\theta}) = \frac{1}{N} \left( \sum_{k \in \mathcal{i}} \boldsymbol{e}^T_k(\boldsymbol{\theta}) \boldsymbol{W}(\boldsymbol{\theta})  \boldsymbol{e}_k(\boldsymbol{\theta}) + \sum_{k \in \mathcal{j}} \boldsymbol{v}^T_k(\boldsymbol{\theta}) \boldsymbol{W}(\boldsymbol{\theta})  \boldsymbol{v}_k(\boldsymbol{\theta}) \right)
+    V(\boldsymbol{\theta}) = \frac{1}{N} \left( \sum_{k \in \mathcal{I}} \boldsymbol{e}^T_k(\boldsymbol{\theta}) \boldsymbol{W}(\boldsymbol{\theta})  \boldsymbol{e}_k(\boldsymbol{\theta}) + \sum_{k \in \mathcal{J}} \boldsymbol{v}^T_k(\boldsymbol{\theta}) \boldsymbol{W}(\boldsymbol{\theta})  \boldsymbol{v}_k(\boldsymbol{\theta}) \right)
 \end{equation}
-where $N$ is the number of samples in the dataset, $\boldsymbol{e}_k(\boldsymbol{\theta})$ is the error vector with the parameter vector~$\boldsymbol{\theta}$ and $\boldsymbol{W}$ is a positive definite weight matrix \citep{ljungtheory}. The set $\mathcal{i}$ is the subset of indices for which $\abs{\boldsymbol{e}_k(\boldsymbol{\theta})} < \sigma \rho$ holds. Here, $\sigma$ is the estimated standard deviation of $\boldsymbol{e}_k(\boldsymbol{\theta})$ and $\rho$ is the chosen error threshold. The set $\mathcal{j}$ is the complement of $\mathcal{i}$. The error $\boldsymbol{v}_k(\boldsymbol{\theta})$ is defined as 
+where $N$ is the number of samples in the dataset, $\boldsymbol{e}_k(\boldsymbol{\theta})$ is the error vector with the parameter vector~$\boldsymbol{\theta}$ and $\boldsymbol{W}$ is a positive definite weight matrix \citep{ljungtheory}. The set $\mathcal{I}$ is the subset of indices for which $\abs{\boldsymbol{e}_k(\boldsymbol{\theta})} < \sigma \rho$ holds. Here, $\sigma$ is the estimated standard deviation of $\boldsymbol{e}_k(\boldsymbol{\theta})$ and $\rho$ is the chosen error threshold. The set $\mathcal{J}$ is the complement of $\mathcal{I}$. The error $\boldsymbol{v}_k(\boldsymbol{\theta})$ is defined as 
 \begin{equation}
 \boldsymbol{v}_k(\boldsymbol{\theta}) = \boldsymbol{e}_k(\boldsymbol{\theta}) \sigma\frac{\rho}{\sqrt{\abs{\boldsymbol{e}_k(\boldsymbol{\theta})}}}
 \end{equation}
@@ -101,10 +101,10 @@ The result of the estimation can be seen in \Tableref{tab:ResultEstimAngular}. T
   \\
   \subfloat[][\label{fig:velocityCompareCongr}$r$.]{\includegraphics[width=0.7\textwidth]{velocityCompareCongr}}
   \caption{\label{fig:velocityCompareCong}%
-    Comparison of simulation of the attitude model (blue) against validation data (gray) using the estimated angels as inputs and angular velocities as outputs. The simulated model has a high fit compared to the validation data.}
+    Comparison of simulation of the attitude model (blue) against validation data (gray) using the estimated angles as inputs and angular velocities as outputs. The simulated model has a high fit compared to the validation data.}
 \end{figure}
 
-The estimate of $\etaVector$ did not follow the kinematic relations described in \sectionref{sec:coordinates}. The problem with $\etaVector$ not following the kinematic relations was further investigated by comparing integration of \eqref{eq:eulerAnglesdot} with $\hat{\etaVector}$ from the sensor fusion. As can be seen in \Figureref{fig:integratedAngleVelocities} the result was not satisfactory, with the estimated angles and the integration of \eqref{eq:eulerAnglesdot} being dissimilar. It was therefore concluded that the estimated angles were unfit for use as outputs during parameter estimation unless a new motion model for the sensor fusion was created to solve the issue. It is therefore recommended that the validity of the observer is controlled using relations such as those in \sectionref{sec:coordinates} before collecting data. 
+The estimate of $\etaVector$ did not follow the kinematic relations described in \sectionref{sec:coordinates}. The problem with $\etaVector$ not following the kinematic relations was further investigated by comparing integration of \eqref{eq:eulerAnglesdot} with $\hat{\etaVector}$ from the sensor fusion. As can be seen in \Figureref{fig:integratedAngleVelocities} the result was not satisfactory, with the estimated angles and the integration of \eqref{eq:eulerAnglesdot} being dissimilar. It was therefore concluded that the estimated angles were unsuitable for use as outputs during parameter estimation unless a new motion model for the sensor fusion was created to solve the issue. It is therefore recommended that the validity of the observer is controlled using relations such as those in \sectionref{sec:coordinates} before collecting data. 
 
 \begin{figure}[htbp]
   \centering
@@ -114,7 +114,7 @@ The estimate of $\etaVector$ did not follow the kinematic relations described in
   \\
   \subfloat[][\label{fig:velocityAnglePsi}$\psi$.]{\includegraphics[width=0.4\textwidth]{velocityAnglePsi}}
   \caption{\label{fig:integratedAngleVelocities}%
-  A comparison between integration of angular velocities (blue) using \eqref{eq:eulerAnglesdot} and the estimated euler angles from the \abbrEKF (red). The angles are poorly estimated and thus not suitable to use as outputs in parameter estimation.}
+  A comparison between integration of angular velocities (blue) using \eqref{eq:eulerAnglesdot} and the estimated Euler angles from the \abbrEKF (red). The angles are poorly estimated and thus not suitable to use as outputs in parameter estimation.}
 \end{figure}
 \index{Model structure}
 Due to the aforementioned problems, the model \eqref{eq:quatModel} was used with angular velocities and linear acceleration as outputs. Thus the estimation structure became
@@ -159,7 +159,7 @@ An issue that was encountered when estimating the parameters was that when angul
 
 A Kalman smoother described in \citet{Wallin} was used to estimate the initial state of the quaternions. The magnetometer was also added as an output in the Kalman smoother to further reduce the uncertainty of the initial quaternions. This issue could be avoided if the \abbrROV is in a known state or the initial condition is logged at the start of the data collection.
 
-The estimated parameter values obtained when using \eqref{eq:quatModel} with angular velocities and linear accelerations as inputs can be seen in \Tableref{tab:ResultEstimAngular}. The fit of the model using the estimated parameters can be seen in \Figureref{fig:angVelComparelz6}. The high fit of $50\ \%$ in $q$ and $r$ means that the model describes parts of the validation data well. The fit in \sectionref{} is higher, but since that model did not follow the kinematic relations well, these results are considered more trustworthy. Unfortunately, the model did not describe the linear accelerations and $p$ well, this will be discussed further in \sectionref{sec:pdyn}.
+The estimated parameter values obtained when using \eqref{eq:quatModel} with angular velocities and linear accelerations as inputs can be seen in \Tableref{tab:ResultEstimAngular}. The fit of the model using the estimated parameters can be seen in \Figureref{fig:angVelComparelz6}. The high fit of $50\ \%$ in $q$ and $r$ means that the model describes parts of the validation data well. The fit of the model with estimated angles as input is higher, but since that model did not follow the kinematic relations well, these results are considered more trustworthy. Unfortunately, the model did not describe the linear accelerations and $p$ well, this will be discussed further in \sectionref{sec:pdyn}.
 
 \begin{figure}[tbp]
   \centering
@@ -175,7 +175,7 @@ The estimated parameter values obtained when using \eqref{eq:quatModel} with ang
     \qquad
   \subfloat[][\label{fig:linAccComparezlz6}$a_z$]{\includegraphics[width=0.4\textwidth]{linAccComparezlz6}}
   \caption{\label{fig:angVelComparelz6}%
-    Comparison of validation data (grey) against the simulated response from the model(blue). The fit for the model in each state is stated in each plot. The estimation used angular velocities and linear accelerations as outputs. The model describes $q$ an $r$ well which can be seen in the high fit. The model do not describe the linear accelerations and $p$ well, this can be seen in the low fit.}
+    Comparison of validation data (grey) against the simulated response from the model (blue). The fit for the model in each state is stated in each plot. The estimation used angular velocities and linear accelerations as outputs. The model describes $q$ an $r$ well which can be seen in the high fit. The model do not describe the linear accelerations and $p$ well, this can be seen in the low fit.}
 \end{figure}
 
 \begin{table}[hbp]
@@ -202,7 +202,7 @@ The estimated parameter values obtained when using \eqref{eq:quatModel} with ang
 \end{table}   
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Extended Kalman Filter Estimation}\label{sec:KalmanEstimation}\index{EKF@\abbrEKF!abbreviation} 
-To circumvent the issues with estimating the initial state during the prediction-error method, an \abbrEKF was used to estimated the parameters. An \abbrEKF can  be used to estimate parameters by extending the state vector of the \abbrEKF with the parameters that need to be estimated \citep{Roger}.  \index{Model structure} 
+To circumvent the issues with estimating the initial state during the prediction-error method, an \abbrEKF was used to estimated the parameters. An \abbrEKF can be used to estimate parameters by extending the state vector of the \abbrEKF with the parameters that need to be estimated \citep{Roger}.  \index{Model structure} 
 Extending the state vector gives the following augmented state
 \begin{equation}
 \bar{\boldsymbol{x}}_k = \begin{bmatrix}
@@ -270,7 +270,7 @@ Here, $\boldsymbol{\sigma}$ is a $n\times1$ dimensional design variable and $n$ 
 %The filter was run on each collected dataset. The final values of $\hat{\boldsymbol{\theta}}$ from a dataset were used as initial values for $\hat{\boldsymbol{\theta}}$ when the filter was applied on the next dataset. The same was done for the covariance matrix $\boldsymbol{P}$. The final covariance from an earlier run was set as the initial covariance when the filter was applied on subsequent dataset. At completion the parameters were entered in a simulator which was feed with the control signals from the corresponding dataset. The simulated  output was then compared with the original data.
 
 \section{Estimation Using an Extended Kalman Filter}\label{sec:estimKalman}
-The \abbrEKF estimation used the method described in \sectionref{sec:KalmanEstimation}, with additional bias states. The model \eqref{eq:quatModel} with quaternions as attitude representation was used to model $\nuVector$. The estimator was fed with process noise covariance matrix
+The \abbrEKF estimation used the method described in \sectionref{sec:KalmanEstimation}, with additional bias states. The model \eqref{eq:quatModel} with quaternions as attitude representation was used to model $\nuVector$. The estimator used the process noise covariance matrix
 \begin{equation*}
 \boldsymbol{Q}=\text{diag}[\underbrace{\overbrace{1000}^{\times4}}_{\etaVector}... \underbrace{\overbrace{1000}^{\times3}}_{\nuVector}...\underbrace{\overbrace{0.01}^{\times3}}_{\boldsymbol{b}}... \underbrace{\overbrace{0.001}^{\times10}}_{\boldsymbol{\theta}}]\text{ ,}
 \end{equation*}
@@ -278,7 +278,7 @@ and the measurement noise covariance matrix
 \begin{equation*}
 \boldsymbol{R} = \text{diag}[\underbrace{\overbrace{0.001}^{\times3}}_{\text{Gyro}}... \underbrace{\overbrace{0.1}^{\times3}}_{\text{Acc}}... \underbrace{\overbrace{1000}^{\times3}}_{\text{mag}}]
 \end{equation*}
-Three data sets were fed in to the estimator, where a fourth and fifth were used as validation data. All data sets were of the type with excitations in $p$, $q$ and $r$ simultaneously. Parameter values from the estimation can be viewed together with the initial states in \tableref{tab:ResultKalmanFixedMomentArms}.
+Three data sets were fed to the estimator, where a fourth and fifth were used as validation data. All data sets were of the type with excitations in $p$, $q$ and $r$ simultaneously. Parameter values from the estimation can be viewed together with the initial states in \tableref{tab:ResultKalmanFixedMomentArms}.
 \begin{table}[hbp]
   \centering
   \caption{\label{tab:ResultKalmanFixedMomentArms}%
@@ -314,12 +314,12 @@ The fit of the model using the estimated parameters can be viewed in \figureref{
   \\
   \subfloat[][$r$.]{\includegraphics[width=0.7\textwidth]{ResultKalmanFixedMomentR}}
   \caption{\label{fig:ResultKalmanFixedMomentArms}%
-    Comparison between simulation of $\nuVector$ (blue) with validation data (red). Moment-arm parameters are fixed. Goodness of fit statistic is displayed at the top of each sub-figure. The model describe the validation data well in $q$ and $r$ which can be seen in the high fit. The low fit in $p$ indicates that the model does not describe the validation data well.}
+    Comparison between simulation of $\nuVector$ (blue) with validation data (red). Moment-arm parameters are fixed. Quality of fit statistic is displayed at the top of each sub-figure. The model describe the validation data well in $q$ and $r$ which can be seen in the high fit. The low fit in $p$ indicates that the model does not describe the validation data well.}
 \end{figure}
 
 
 \section{Investigating Low Fit in p Dynamics}\label{sec:pdyn}
-An issue that was present in \sectionref{sec:estimPEM} and \sectionref{sec:estimKalman} was a low fit in $p$ during estimation. This was further investigated by manually testing each thruster individually and visual inspecting the response of the \abbrROV. During tests it was discovered that thruster 6, see \Figureref{fig:thrusterlocationfront}, had minimal effect on the $p$-dynamics. A test showed that thruster 6 effected only had significant effect in $p$ when it was actuated quickly. If the sixth thrusters power was incremented slowly an initial response in $p$ was noted before it settled at zero again. The effect of thruster 6 in $p$ can be seen in \Figureref{fig:thruster6}. Thruster 6 also affected $r$, this can be due to unmodelled water interaction or that the thruster is in front or behind the center of rotation.
+An issue that was present in \sectionref{sec:estimPEM} and \sectionref{sec:estimKalman} was a low fit in $p$ during estimation. This was further investigated by manually testing each thruster individually and visual inspecting the response of the \abbrROV. During tests it was discovered that thruster 6, see \Figureref{fig:thrusterlocationfront}, had minimal effect on the $p$-dynamics. A test showed that thruster 6 only had significant effect in $p$ when it was actuated quickly. If the sixth thrusters power was incremented slowly an initial response in $p$ was noted before it settled at zero again. The effect of thruster 6 in $p$ can be seen in \Figureref{fig:thruster6}. Thruster 6 also affected $r$, this can be due to unmodelled water interaction or that the thruster is in front or behind the center of rotation.
 
 \begin{figure}
 \centering
@@ -378,7 +378,7 @@ The estimation was done with five data sets, of which the first three were used 
   \\
   \subfloat[][$r$.]{\includegraphics[width=0.7\textwidth]{ResultKalmanFixedMomentRLz0}}
   \caption{\label{fig:ResultKalmanFixedMomentArmsLz6}%
-    Comparison between simulation of $\nuVector$ (blue) with validation data (red). Moment-arm parameters are fixed and \distance{z}{6} is set to zero. Goodness of fit statistic is displayed at the top of each sub-figure.}
+    Comparison between simulation of $\nuVector$ (blue) with validation data (red). Moment-arm parameters are fixed and \distance{z}{6} is set to zero. Quality of fit statistic is displayed at the top of each sub-figure.}
 \end{figure}
 
 

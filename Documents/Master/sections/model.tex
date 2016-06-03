@@ -71,6 +71,8 @@ To get a more compact way of writing, the following vector notation has been use
 \item $\boldsymbol{\eulerAngles}$: Euler Angles.
 \item $\boldsymbol{\quaternion}$: Quaternions.
 \item $\boldsymbol{\omega}$: Angular velocities.
+\item $\etaVectorLin$ and $\nuVectorLin$ means positions and linear velocities.
+\item $\etaVectorAng$ and $\nuVectorAng$ means attitude and angular velocities.
 \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -151,6 +153,12 @@ D\\
 \theta\\
 \psi
 \end{bmatrix}
+\end{equation}
+and
+\begin{equation}
+\nuVector = \begin{bmatrix}
+    \xVelocity\\ \yVelocity\\ \zVelocity \\ \rollVelocity \\ \pitchVelocity \\ \yawVelocity 
+    \end{bmatrix}
 \end{equation}
 
 
@@ -493,7 +501,7 @@ or alternatively using quaternions
     0
     \end{bmatrix}
 \end{equation}
-where $\boldsymbol{r}_b = [0, 0, z_B]^T$ and $\boldsymbol{r}_g = [0, 0, 0]^T$ are moment arms, and $\boldsymbol{f}_g = \boldsymbol{R}^n_b(\eulerAngles)^T [0, 0, W]^T$ and $\boldsymbol{f}_b = -\boldsymbol{R}^n_b(\eulerAngles)^T [0, 0, B]^T$ are restoring forces \citep[p. 60]{fossen2011}.
+where $\boldsymbol{r}_b = [0, 0, z_B]^T$ and $\boldsymbol{r}_g = [0, 0, 0]^T$ are moment arms, $\boldsymbol{f}_g = \boldsymbol{R}^n_b(\eulerAngles)^T [0, 0, W]^T$ and $\boldsymbol{f}_b = -\boldsymbol{R}^n_b(\eulerAngles)^T [0, 0, B]^T$ are restoring forces \citep[p. 60]{fossen2011}.
 Here, $B = \rho g V$ and $W = m g$. In other words, the magnitude of the buoyancy forces is equal to the weight of the displaced water. For a fully submerged vehicle, $V$ will naturally be equal to the volume of the vehicle. It is henceforth assumed that the \abbrROV has neutral buoyancy \emph{i.e.} $B = W$. Note that the positions of the three centers are described using the coordinate system described in \Sectionref{sec:coordinates}, a roll and pitch stable \abbrROV should thus have a $z_B < 0$.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -502,7 +510,7 @@ The \abbrROV is equipped with six identical, three-bladed thrusters. These can b
 \begin{equation}\label{eq:act}
     \tauVector_{\text{Act}} = \thrusterGeometry \boldsymbol{\thrusterfun{}} 
 \end{equation}
-where $\thrusterGeometry$\index{thruster geometry} is a matrix describing the geometry of the actuators \citep[p. 401]{fossen2011}. Figures~\ref{fig:thrusterlocationtop} and \ref{fig:thrusterlocationfront} illustrates the moment arms to each thruster. The positive rotation of the thrusters and the resulting positive forces can be seen in Figures~\ref{fig:thrusterRotation12} to \ref{fig:thrusterRotation6}.
+where $\thrusterGeometry$\index{thruster geometry} is a matrix describing the geometry of the actuators \citep[p. 401]{fossen2011}. Figures~\ref{fig:thrusterlocationtop} and \ref{fig:thrusterlocationfront} illustrate the moment arms to each thruster. The positive rotation of the thrusters and the resulting positive forces can be seen in Figures~\ref{fig:thrusterRotation12} to \ref{fig:thrusterRotation6}.
 \begin{align}\label{eq:actuatorGeometry}
 \begin{split}
     \tauVector_{\text{Act}} = \thrusterGeometry \boldsymbol{\thrusterfun{}} 
@@ -563,8 +571,6 @@ The expression can then be solved for $\nuVectordot$ and split into components
 \dot{w} = \frac{-\thrusterfun{1} - \thrusterfun{2} - \thrusterfun{5}}{m - \Zwdot} + \frac{(\Zw + \Zwabsw \abs{w})w}{m - \Zwdot} + \frac{-(B - W)\cos{\phi}\cos{\theta}}{m - \Zwdot} +\\
 \frac{m (q u - p v)}{m - \Zwdot} + \frac{-\Xudot q u}{m - \Zwdot} + \frac{\Yvdot p v}{m - \Zwdot},
 \end{multline}
-\end{subequations}
-\begin{subequations}\label{eq:angVelDynamics}
 \begin{multline} \label{eq:p_dot}
 \dot{p} = \frac{\thrusterfun{1} \distance{y}{1} - \thrusterfun{2} \distance{y}{2} + \thrusterfun{6} \distance{z}{6}}{\Ix - \Kpdot} + \frac{ (\Kp + \Kpabsp \abs{p})p}{\Ix - \Kpdot} + \frac{-\Mqdot q r}{\Ix - \Kpdot} + \frac{\Nrdot q r}{\Ix - \Kpdot} +\\
 \frac{q r (\Iy - \Iz)}{\Ix - \Kpdot} + \frac{- \Yvdot v w}{\Ix - \Kpdot} + \frac{\Zwdot v w}{\Ix - \Kpdot} + \frac{B z_B \cos{\theta} \sin{\phi}}{\Ix - \Kpdot},
