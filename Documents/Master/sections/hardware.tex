@@ -1,7 +1,7 @@
 \chapter{Hardware and Software}\label{cha:hardware} \index{ROS@\abbrROS!abbreviation} 
-The goal of this chapter is present the capabilities and limitations of the hardware used in this thesis. The hardware is divided into different sections and are described in moderate detail, for example, how things are connected and controlled.
+The goal of this chapter is to present the capabilities and limitations of the hardware used in this thesis. The hardware is divided into different sections and are described in moderate detail, for example, how things are connected and controlled.
 
-The \abbrROV frame and thrusters were included in a package from Blue Robotics. In addition to the \abbrROV frame, a Raspberry Pi was used as an onboard computer and a HKPilot Mega 2.7  was used as an input/output (\abbrIO) unit, see \Figureref{fig:apm}. The software in the \abbrROV was built on top of \abbrROS.  Instructions for installation of software and operation of the \abbrROV can be found in Appendices~\ref{app:dependencies} and \ref{app:operation}. \abbrROS is an open source operating system for robot applications. The operating system provides message passing, hardware abstraction and thus simplifies communication between different computers \citep{ROS}. The message passing in \abbrROS consists of two parties, subscribers and publishers. When a publisher sends a message on a specific topic any subscribers that listen to that topic receives the message. \Figureref{fig:rov_scheme} shows a schematic over the \abbrROV components and their connections.
+The \abbrROV frame and thrusters were included in a package from Blue Robotics. In addition to the \abbrROV frame, a Raspberry Pi was used as an onboard computer and a HKPilot Mega 2.7  was used as an input/output (\abbrIO) unit, see \Figureref{fig:apm}. The software in the \abbrROV was built on top of \abbrROS.  Instructions for installation of software and operation of the \abbrROV can be found in Appendices~\ref{app:dependencies} and \ref{app:operation}. \abbrROS is an open source operating system for robot applications. The operating system provides message passing and hardware abstraction, thus simplifies communication between different computers \citep{ROS}. The message passing in \abbrROS consists of two parties, subscribers and publishers. When a publisher sends a message on a specific topic any subscribers that listen to that topic receives the message. \Figureref{fig:rov_scheme} shows a schematic over the \abbrROV components and their connections.
 
 \begin{figure}
 	\centering
@@ -42,7 +42,7 @@ The \abbrROV frame and thrusters were included in a package from Blue Robotics. 
 	\label{fig:rov_scheme}
 \end{figure} 
 \section{BlueROV Package}
-\Figureref{fig:rov} shows the BlueROV from Blue Robotics used in this thesis. The BlueROV package includes an acrylic chassi, an acrylic tube, six electronic speed controllers (\abbrESC), six Blue Robotics T200 thrusters, cable penetrators and a cradle for mounting of electronics.
+\Figureref{fig:rov} shows the BlueROV from Blue Robotics used in this thesis. The BlueROV package includes an acrylic chassi, an acrylic tube, six electronic speed controllers (\abbrESC{}s), six Blue Robotics T200 thrusters, cable penetrators and a cradle for mounting of electronics.
 \begin{figure}
 \centering
 \includegraphics[trim={40cm 0cm 45cm 0cm},clip,angle=270,width=0.9\textwidth]{bluerov}

@@ -313,7 +313,7 @@ if the feedback linearisation is inactive. \Figureref{fig:ratecontroller} illust
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Depth Controller} \index{Depth Controller} \index{PI@\abbrPI!abbreviation}
-A \abbrPI-depth controller was also implemented on the \abbrROV. The depth controller was designed such that it could be used simultaneously with any other of the aforementioned rate and attitude controllers. 
+A \abbrPI-depth controller was also implemented on the \abbrROV. The depth controller was designed such that it could be used simultaneously with any other of the aforementioned angular velocity and attitude controllers. 
 
 If the error in depth $d$ is defined as 
 \begin{equation}
@@ -384,16 +384,16 @@ where $K_{\text{p}}$ and $K_{\text{i}}$ are design parameters. The rotation matr
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Benchmarking}
-To be able to draw any conclusions about the performance of the controllers the following reference signals were used during tests
+To be able to draw any conclusions regarding the performance of the controllers the following reference signals were used during tests for each controller separately.
 \begin{description}
-\item[Constant] A constant reference was applied to all \abbrDOF. This reference signal was only used for trimming the controllers initially, thus will no results be presented except for the depth controller.
+\item[Constant] A constant reference was applied to all \abbrDOF. This reference signal was only used for trimming the controllers initially, thus, no results are presented except for the depth controller.
 
-\item[Sine] A $\sin(\cdot)$ signal was applied to one \abbrDOF at the time and then to all \abbrDOF. Two sine signals with different amplitudes were used, amplitude $1$ and $0.5$. The frequency of the sine was $0.5\ \hertz$.
+\item[Sine] A $\sin(\cdot)$ signal was applied to one \abbrDOF at the time and then to all \abbrDOF. Two sine signals of different amplitudes were used, amplitude $1$ and $0.5$. The frequency of the sines were $0.5\ \hertz$.
 
 \item[Smooth step] A step with smooth acceleration, was applied to one \abbrDOF at the time and then to all \abbrDOF{}s at the same time. The used smooth step was the same as in \citet[p. 192]{robotics}. The smooth step parameters were $q_{\text{0}} = 0$, $q_{\text{f}} = 1$, $t_{\text{s}} = 3$, $t_{\text{f}} = 15$ and $V = 1.5 (q_{\text{f}} - q_{\text{0}})/(t_{\text{f}} - t_{\text{s}}))$.
 \end{description}
-for each controller separately. For each conducted test, except for depth tests, a simulated test was also performed. The \abbrROV simulator used the parameters from \Sectionref{sec:parameterResults}. The feedback linearisation, both in the simulator and the \abbrROV, used the parameters from \Sectionref{sec:parameterResults} with a scaling factor of $0.9$ except for $z_B$, which was scaled by $0.5$. In this section, a few representative test cases will be presented. Several more tests were conducted and these can be seen in \Appref{app:controllerTestResults}. 
-Tests were conducted with the \abbrPID attitude controller without feedback linearisation, the \abbrPI rate controller with feedback linearisation and with the \abbrPI depth controller. The control parameters used in the \abbrPID and the \abbrPI{}s during simulation and real tests can be seen in \Tableref{tab:parametersAttitude}. These were initially chosen using simulations and were further tweaked during some quick controller tests. Different performance measures, overshoot, undershoot and steady-state error will be used to specify the performance of the controllers. These measures are defined as in \citet{reglerteori}. 
+For each conducted test, excluding the depth tests, a simulated test was also performed. The \abbrROV simulator used the parameters from \Sectionref{sec:parameterResults}. The feedback linearisation, both in the simulator and the \abbrROV, used the parameters from \Sectionref{sec:parameterResults} with a scaling factor of $0.9$ except for $z_B$, which was scaled by $0.5$. In this section, a few representative test cases are presented. Several more tests were conducted and these can be seen in \Appref{app:controllerTestResults}. 
+Tests were conducted with the \abbrPID attitude controller without feedback linearisation, the \abbrPI angular velocity controller with feedback linearisation and with the \abbrPI depth controller. The control parameters used in the \abbrPID and the \abbrPI{}s during simulation and field tests can be seen in \Tableref{tab:parametersAttitude}. These were initially chosen using simulations and were further tuned during controller tests. Different performance measures, such as overshoot, undershoot and steady-state error are used to specify the performance of the controllers. These measures are defined as in \citet{reglerteori}. 
 
 \begin{table}[tbp]
   \centering
@@ -433,7 +433,7 @@ Tests were conducted with the \abbrPID attitude controller without feedback line
  A smooth step with $q_{\text{0}} = 0$, $q_{\text{f}} = 1$, $t_{\text{s}} = 3$, $t_{\text{f}} = 15$ and $V = 1.5 (q_{\text{f}} - q_{\text{0}})/(t_{\text{f}} - t_{\text{s}}))$ was applied in all attitude angles at the same time while using the attitude controller.}
 \end{figure}
 
-\Figureref{fig:StepAllAttitude} shows smooth-step reference signals applied in all attitude angles while using the attitude controller without linearisation. Initially, the roll angle and pitch angle did not follow the reference signals. During real tests, the roll angle was oscillative and had a steady-state error of $0.9$. However, the control of the pitch angle was objectively better, with a steady-state error of $0.4$. The yaw angle could not be stabilised during the real test and drifted throughout the tests. The attitude angles did not reach the reference signals in the simulated test case either. The pitch angle had a steady-state error of $0.3$ while the other angles had a steady-state error of $0.5$.
+\Figureref{fig:StepAllAttitude} shows the smooth-step reference signals applied in all attitude angles while using the attitude controller without linearisation. Initially, the roll and pitch angle did not follow the reference signals. During field tests, the roll angle was oscillative and had a steady-state error of $0.9$. However, the control of the pitch angle was objectively better, with a steady-state error of $0.4$. The yaw angle could not be stabilised during the field test and drifted throughout the tests. The attitude angles did not reach the reference signals in the simulated test case either. The pitch angle had a steady-state error of $0.3$ while the other angles had a steady-state error of $0.5$.
 
 \begin{figure}
 \centering
@@ -452,7 +452,7 @@ Tests were conducted with the \abbrPID attitude controller without feedback line
    A sine signal with amplitude $1$ and frequency $0.5\ \hertz$ was applied in all attitude angles at the same time while using the attitude controller.}
 \end{figure}
 
-Results from an attitude test with sine reference signals of amplitude 1 and frequency $0.5\ \hertz$ can be seen in \Figureref{fig:SinAllAttitude}. The roll angle and pitch angle did not reach the desired amplitudes in the real test. However, they followed the general form of a $0.5\ \hertz$ sine with a phase shift relative to the reference signals. The same phase shift and lack of amplitude was observed in simulations. The yaw angle followed the reference signal well during the live test but had a phase shift and a bias. The simulated result in yaw angle did not follow the reference signal at all. This may be caused by the feedback being too low for the system. This is a sign of a model error. 
+Results from an attitude test with sine reference signals of amplitude 1 and frequency $0.5\ \hertz$ can be seen in \Figureref{fig:SinAllAttitude}. The roll angle and pitch angle did not reach the desired amplitudes in the field test. However, they followed the general form of a $0.5\ \hertz$ sine with a phase shift relative to the reference signals. The same phase shift and lack of amplitude was observed in simulations. The yaw angle followed the reference signal well during the live test but had a phase shift and a bias. The simulated result in yaw angle did not follow the reference signal at all. This may be caused by the feedback being too low for the system. This is a sign of a model error. 
 
 \begin{figure}
 \centering
@@ -484,14 +484,14 @@ The result from a smooth step test in roll angle and pitch angle can be seen in 
   \qquad
   \subfloat[][\label{fig:simStepAllRRate} Simulated response in $\yawVelocity$.]{\includegraphics[width=0.4\textwidth]{simStepAllRs3e10a1}}
   \caption{\label{fig:StepAllRate}% 
-  A smooth step with $q_{\text{0}} = 0$, $q_{\text{f}} = 1$, $t_{\text{s}} = 3$, $t_{\text{f}} = 15$ and $V = 1.5 (q_{\text{f}} - q_{\text{0}})/(t_{\text{f}} - t_{\text{s}}))$ was applied in all angular velocities at the same time while using the rate controller.}
+  A smooth step with $q_{\text{0}} = 0$, $q_{\text{f}} = 1$, $t_{\text{s}} = 3$, $t_{\text{f}} = 15$ and $V = 1.5 (q_{\text{f}} - q_{\text{0}})/(t_{\text{f}} - t_{\text{s}}))$ was applied in all angular velocities at the same time while using the angular velocity controller.}
 \end{figure}
 
-\Figureref{fig:StepAllRate} shows a smooth step applied in all angular velocities while using the rate controller. An overshoot of $0.5$ was obtained in $\rollVelocity$ for the real test while the simulation it only had an overshoot of $0.2$ but suffers from stronger oscillations. Both the real test and the simulation in $\rollVelocity$ followed the reference signal and had a small steady-state error. 
+\Figureref{fig:StepAllRate} shows a smooth step applied in all angular velocities while using the angular velocity controller. An overshoot of $0.5$ was obtained in $\rollVelocity$ for the field test while the simulation it only had an overshoot of $0.2$ but suffers from stronger oscillations. Both the field test and the simulation in $\rollVelocity$ followed the reference signal and had a small steady-state error. 
 
-The real and simulated test in $\pitchVelocity$ followed the reference value well and had negligible steady-state errors with some oscillative behaviour. Moreover, the real test had no overshoot while the simulation in $\pitchVelocity$ had stronger oscillations and an overshoot of $0.4$. 
+The field and simulated test in $\pitchVelocity$ followed the reference value well and had negligible steady-state errors with some oscillative behaviour. Moreover, the field test had no overshoot while the simulation in $\pitchVelocity$ had stronger oscillations and an overshoot of $0.4$. 
 
-The simulated test in $\yawVelocity$ performed well and almost followed the reference perfectly. The real test in $\yawVelocity$ performed well, but it was slow to rise to the requested reference signal and had a small steady-state error of $0.1$. 
+The simulated test in $\yawVelocity$ performed well and followed the reference relatively well. The field test in $\yawVelocity$ performed well, but it was slow to rise to the requested reference signal and had a small steady-state error of $0.1$. 
 
 \begin{figure}
 \centering
@@ -507,10 +507,10 @@ The simulated test in $\yawVelocity$ performed well and almost followed the refe
   \qquad
   \subfloat[][\label{fig:simSinAllRRate} Simulated response in $\yawVelocity$.]{\includegraphics[width=0.4\textwidth]{simSinAllRA1}}
   \caption{\label{fig:SinAllRate}%
-  A sine signal with amplitude $1$ and frequency $0.5\ \hertz$ was applied in all angular velocities at the same time while using the rate controller.}
+  A sine signal with amplitude $1$ and frequency $0.5\ \hertz$ was applied in all angular velocities at the same time while using the angular velocity controller.}
 \end{figure}
 
-A sine signal was also applied to all angular velocities while using the rate controller. The results can be seen in \Figureref{fig:SinAllRate}. During the real tests all the angular velocities followed the reference signals well, except for some overshoots and undershoots. The simulated test followed a general sine form but the reference amplitude was not reached and a phase shift could be noted.
+A sine signal was also applied to all angular velocities while using the angular velocity controller. The results can be seen in \Figureref{fig:SinAllRate}. During the field tests all the angular velocities followed the reference signals well, except for some overshoots and undershoots. The simulated test followed a general sine form but the reference amplitude was not reached and a phase shift could be noted.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%Depth%%%%%%%%%%%%%%%%
 \begin{figure}[tbp]
@@ -577,21 +577,21 @@ Additional problems were encountered during tuning of the attitude \abbrPID usin
 
 \begin{figure}
 \centering
-  \subfloat[][\label{fig:testExactAttitudeRoll} The feedback linearisation in $\rollAngle$.]{\includegraphics[width=0.4\textwidth]{testExactLinAttitudePhi}}
+  \subfloat[][\label{fig:testExactAttitudeRoll} The feedback linearisation in $\rollAngle$.]{\includegraphics[width=0.7\textwidth]{testExactLinAttitudePhi}}
   \qquad
-  \subfloat[][\label{fig:testExactAttitudePitch} The feedback linearisation in $\pitchAngle$.]{\includegraphics[width=0.4\textwidth]{testExactLinAttitudeTheta}}
+  \subfloat[][\label{fig:testExactAttitudePitch} The feedback linearisation in $\pitchAngle$.]{\includegraphics[width=0.7\textwidth]{testExactLinAttitudeTheta}}
   \qquad
-  \subfloat[][\label{fig:testExactAttitudeYaw} The feedback linearisation in $\yawAngle$.]{\includegraphics[width=0.4\textwidth]{testExactLinAttitudePsi}}
+  \subfloat[][\label{fig:testExactAttitudeYaw} The feedback linearisation in $\yawAngle$.]{\includegraphics[width=0.7\textwidth]{testExactLinAttitudePsi}}
   \caption{\label{fig:ExactLinAttitude}% 
   The result of the feedback linearisation attitude controller with setpoints $\phi_{ref}=0$, $\theta_{ref}=0$ and $\psi_{ref}=0$. Note the instability in $\theta$ and $\psi$.}
 \end{figure}
 
-In general, comparisons of simulated tests and real tests gave mixed results.
-In some test the real tests outperformed their simulated counterparts. This is probably due to the fact that damping parameters in the simulator were larger than the actual damping values of the system. The larger damping parameters in the simulation caused the simulated \abbrROV to be more heavily damped, which decreased the magnitude of overshoots and but increased the steady-state errors. The larger damping parameters may also explain the larger phase shift in the simulations of sine-signal tests.  
+In general, comparisons of simulated tests and field tests gave mixed results.
+In some test the field tests outperformed their simulated counterparts. This is probably due to the fact that damping parameters in the simulator were larger than the actual damping values of the system. The larger damping parameters in the simulation caused the simulated \abbrROV to be more heavily damped, which decreased the magnitude of overshoots and but increased the steady-state errors. The larger damping parameters may also explain the larger phase shift in the simulations of sine-signal tests.  
 
 %A possible cause of the large parameter values might be the look-up table $\tau = f(u)$. If the look-up table returns a higher thrust than actually delivered, estimates of damping, inertia terms and the moment arm $z_b$ may be estimated with higher magnitudes. A possible way to bypass this is to model the thrusters using \begin{equation}
 %\tau=C_{tau}u_{\text{Control}}\abs{u_{\text{Control}}}
 %\end{equation} where $\tau$ is the thrust and $u_{\text{Control}}$ is the control signal sent to the thruster. 
 %Another solution would be to upgrade the \abbrESC{}s to Blue\abbrESC{}s from Blue Robotics, since these can measure the rotations per minute (\abbrRPM) of the thruster \citep{bluerobotics}. This would enable the relation between \abbrRPM and thrust to be modelled and the \abbrRPM to be controlled for more predictable thruster performance.\todo[inline]{Hur ska detta tas upp? Blandar regulator- och estimeringsdiskussion.}
 
-Overall, results were good in the view of the short amount of time available for controller tuning. The problem with the attitude controller and the linearising control law is unfortunate, but should be easily rectified with magnetometer calibration and some additional \abbrPID tweaking. Moreover, it is believed that exceptional rate controller performance may be possible with further trimming.
+Overall, results were good in the view of the short amount of time available for controller tuning. The problem with the attitude controller and the linearising control law is unfortunate, but should be easily rectified with magnetometer calibration and some additional \abbrPID tweaking. Moreover, it is believed that exceptional angular velocity controller performance may be possible with further trimming.

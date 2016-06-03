@@ -8,11 +8,11 @@ During recent years there have been an explosive growth in popularity and public
 
 \abbrROV{}s have a large area of application and commercial \abbrROV{}s are at the present time used for inspection of naval structures, seabed examination, underwater welding, ship cleaning, object location and recovery \citep{saab}. The open source products are more oriented towards exploration. It was of special interest for us to investigate how the control systems of an open source \abbrROV solution, in this thesis the BlueROV from Blue Robotics, could be developed via model-based design and control. The possibility of autonomous operation and underwater positioning was also of interest.
 
-Since a typical \abbrROV solution has 6 degrees of freedom (\abbrDOF) and most often is not decoupled, it is advantageous to use a control system when executing advanced manoeuvres during exploration and missions. The controller structure originally implemented in the BlueROV platform was an open-loop controller with ad hoc decoupling. This type of control is somewhat capable during manual operation with low requirements on accuracy but might be too inexact in autonomous and more delicate operation. 
+Since a typical \abbrROV solution has 6 degrees of freedom (\abbrDOF) and most often is not decoupled, it is advantageous to use a control system when executing advanced manoeuvres during exploration and missions. The controller structure originally implemented in the BlueROV platform was an open-loop controller with ad hoc decoupling. This type of control is somewhat capable during manual operation with low requirements on accuracy but might be too inexact in autonomous and more delicate operations. 
 
 Autonomous operation places special requirements on a control system. This is due to safety and precision requirements during operation \citep[p. 416]{safety}. To meet these needs, a model-based control strategy might be used which, however, needs a good model of the system. A model can be created via some base knowledge of the system and the underlying physics, via system identification or a combination of both \citep{modellbygge}. 
 
-A typical \abbrUV uses a GPS unit to estimate its position and to improve the velocity estimates. Unfortunately GPS signals quickly lose strength in underwater environments, which in turn places extra importance in how system identification of \abbrROV platforms is performed.
+A typical \abbrUV uses a \abbrGPS unit to estimate its position and to improve the velocity estimates. Unfortunately, \abbrGPS signals quickly lose strength in underwater environments, which in turn places extra importance in how system identification of \abbrROV platforms is performed.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -22,10 +22,10 @@ The purpose of this master's thesis were to show how model-based design developm
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Objective}
-The goals of this thesis were to develop a model of an \abbrROV and to use the model for developing a robust control system for the \abbrROV.
+The objectives of this thesis were to develop a model of an \abbrROV and to use the model for developing a robust control system for the \abbrROV.
 
 \subsubsection{Sub-Objectives}
-To get a better overview, the goals have been divided into the following sub-goals:
+To get a better overview, the objective have been divided into the following sub-objectives:
 \begin{itemize}
     \item Assemble the \abbrROV.
     \item Develop a framework for changing controllers in the \abbrROV.
@@ -50,11 +50,11 @@ Since no absolute position measurements are available on the \abbrROV platform, 
 In \Chapterref{cha:hardware}, the \abbrROV and its components are described. The \abbrROV's capabilities, physical limitations and its performance are explained and the operating system on which the \abbrROV platform is built on is briefly explained.
 
 The necessary prerequisites for parameter estimation, namely sensor fusion and modelling, are explained in \Chapterref{cha:modelling} and \Chapterref{cha:sensor_fusion}. In \Chapterref{cha:modelling}, the coordinate systems used to model the \abbrROV are displayed and kinematic relations are presented. Furthermore, the complete \abbrROV model is presented step by step. The effects of rigid-body kinetics, hydrostatics, hydrodynamics and the \abbrROV's actuators are modelled separately and then combined to produce the complete 6-\abbrDOF model. 
-Lastly in \Chapterref{cha:modelling}, ways of simplifying the model to improve identifiability and to reduce the number of parameters to be estimated are presented together with assumptions that had been made in order for the changes in the model to hold. 
+Lastly in \Chapterref{cha:modelling}, ways of simplifying the model to improve identifiability and to reduce the number of parameters to be estimated are presented together with assumptions that have been made in order for the changes in the model to hold. 
 
 In \Chapterref{cha:sensor_fusion}, an implementation of the chosen method of sensor fusion is explained. Two different motion models are presented together with measurements equations for each \abbrROV sensor. Moreover, methods of outlier rejection are presented for the sensors.
 
-In \Chapterref{cha:parameterEstimation}, the general idea and purpose of parameter estimation is explained. Two different ways of estimating parameters are presented, estimation using the prediction-error method and estimation using an \abbrEKF with an expanded state vector. Furthermore, the process of collecting and preprocessing data for parameter estimation is presented. Results using the different methods and different model structures are presented with parameter values. Comparisons between simulations of the model and validation data are presented along with the fit-values. Lastly, the advantages and drawbacks of the different approaches and models are discussed and a set of parameters are chosen for controller design.\\
+In \Chapterref{cha:parameterEstimation}, the general idea and purpose of parameter estimation is explained. Two different ways of estimating parameters are presented, estimation using the prediction-error method and estimation using an \abbrEKF with an expanded state vector. Furthermore, the process of collecting and preprocessing data for parameter estimation is presented. Results using the different methods and different model structures are presented with parameter values. Comparisons between simulations of the model and validation data are presented along with the fit-values. Lastly, the advantages and drawbacks of the different approaches and models are discussed. Also a set of parameters are chosen for controller design.
 
 In \Chapterref{cha:controller}, the control problem is briefly described and different ways of state control and exact linearisation are presented. The controllers implemented on the \abbrROV are further explained and results from tests and simulations are presented. Additionally, problems encountered during tests and ideas for solving these issues are brought up and discussed.
 

@@ -1,4 +1,4 @@
-\chapter{Operation of the \abbrROV} \label{app:operation}
+\chapter{Operation of the ROV} \label{app:operation}
 This Chapter describes normal operation of the \abbrROV, how to implement new controllers and some tips for troubleshooting.
 
 \section{Wiring} \label{sec:wiring}
@@ -18,7 +18,7 @@ First connect the cat 6 Ethernet cable to the Raspberry Pi. Then connect the pre
 Make sure that \abbrESC $i$ is connected to the HKPilot's output port $i$, see \Figureref{fig:i2c}. Connect the Raspberry Pi to the HKPilot by a \abbrUSB cable. By following the color coded cords, connect the thrusters and the \abbrESC{}s. Connect the Raspberry Pi with the JST-XH to \abbrUSB converter. Finally, connect the battery with the JST-XH to \abbrUSB converter and to the \abbrESC{}s.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Start up of the \abbrROV}
+\section{Start up of the ROV}
 For starting the \abbrROV connect all cables according to \Sectionref{sec:wiring}.
 \begin{itemize}
 	\item Make sure that the battery is tightly fastened and fully charged. 
@@ -36,14 +36,14 @@ Then in a new terminal navigate to the catkin\_ws folder and run the workstation
  ./startworkstation.sh
 \end{lstlisting} 
 
-\section{Shutdown of the \abbrROV}
+\section{Shutdown of the ROV}
 To shut down the \abbrROV run the following command
 \begin{lstlisting}
  ./shutdownrasp.sh
 \end{lstlisting}
 otherwise can the micro SD card in the Raspberry Pi take damage.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Operating the \abbrROV}
+\section{Operating the ROV}
 The \abbrROV can be controlled via the \abbrGUI and by an Xbox controller. Three different controllers are implemented in the \abbrROV.
 Choose which controller that is enabled by Dynamic Reconfigure $\rightarrow$ controller $\rightarrow$ controllers and choose wanted controller. To chose if Xbox or \abbrGUI is enabled do  Dynamic Reconfigure $\rightarrow$ controller $\rightarrow$ Xbox and chose either \abbrGUI or Xbox. The exact linearisation can be enabled and disabled by Dynamic Reconfigure $\rightarrow$ controller $\rightarrow$ lin\_active. Note that the \abbrROV has to be armed in either mode for the thruster to work.
 
@@ -71,7 +71,7 @@ In manual mode is the \abbrROV controlled via the Xbox controller. Three differe
   \end{tabular}
 \end{table}
 
-\subsection{\abbrGUI Mode}
+\subsection{GUI Mode}
 In \abbrGUI mode is the \abbrROV's attitude, angular velocities and depth controlled by the \abbrGUI. However, the translational velocities are controlled from the Xbox controller. To send reference signals, enable the wanted attitude or angular velocities. Then choose the wanted reference signals, check and uncheck start\_reference\_signals. 
 
 \subsection{Logging Data}\label{sec:logging}
@@ -107,7 +107,7 @@ For multi-array messages an extra \textit{\textbackslash data} field has to be a
 Plot the data with index 1 in the multi-array message on topics \textit{/rovio/imu/data}. Type /rovio/imu/data/data[1] in the into the topic field and press the green plus.  
 \end{example}
 
-\subsection{LED lights on the HKPilot}
+\subsection{LED Lights on the HKPilot}
 There are several different \abbrLED lights on the HKPilot Mega 2.7, \Tableref{tab:ledStatus} summaries some of \abbrLED statuses
  \begin{table}[tbp]
   \centering

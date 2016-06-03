@@ -67,7 +67,7 @@ In this chapter, the vector cross-product $\cross{\cdot}$ is defined as $\cross{
 To get a more compact way of writing, the following vector notation has been used
 \begin{itemize}
 \item $\boldsymbol{p}$: Positions.
-\item $\boldsymbol{v}$: Linear velocities.
+\item $\boldsymbol{\upsilon}$: Linear velocities.
 \item $\boldsymbol{\eulerAngles}$: Euler Angles.
 \item $\boldsymbol{\quaternion}$: Quaternions.
 \item $\boldsymbol{\omega}$: Angular velocities.
@@ -103,7 +103,7 @@ where $s\cdot$ stands for $\sin(\cdot)$ and $c\cdot$ stands for $\cos(\cdot)$ \c
 \end{equation}
 The super- and subscript notation is defined as
 \begin{equation}
-\boldsymbol{v}^{\text{to}}=\boldsymbol{R}^{\text{to}}_{\text{from}}(\eulerAngles)\boldsymbol{v}^{\text{from}}
+\boldsymbol{\upsilon}^{\text{to}}=\boldsymbol{R}^{\text{to}}_{\text{from}}(\eulerAngles)\boldsymbol{v}^{\text{from}}
 \end{equation}
 where $n$ denotes the global coordinate system, while $b$ denotes the body-fixed coordinate system.
 The notation $v_{b/n}$ means that $v$ is measured in $b$ relative $n$.
@@ -145,20 +145,11 @@ The kinematic equations can then be expressed in vector form as \index{Kinematic
 \end{equation}
 where 
 \begin{equation}
-\etaVector = \begin{bmatrix}
-N\\
-E\\
-D\\
-\phi\\
-\theta\\
-\psi
-\end{bmatrix}
+\etaVector = [N, E, D, \phi, \theta, \psi]^T
 \end{equation}
 and
 \begin{equation}
-\nuVector = \begin{bmatrix}
-    \xVelocity\\ \yVelocity\\ \zVelocity \\ \rollVelocity \\ \pitchVelocity \\ \yawVelocity 
-    \end{bmatrix}
+\listNu
 \end{equation}
 
 
@@ -233,7 +224,7 @@ and
 
 \begin{figure}
     \centering
-    \begin{tikzpicture}[scale=2]
+    \begin{tikzpicture}[scale=2.2]
         \pgfmathsetmacro\by{\coordinateRadius*sin(45)}
         \pgfmathsetmacro\bx{\coordinateRadius*cos(45)}
         \pgfmathsetmacro\ay{\coordinateRadius*sin(\coordRot)}
@@ -289,13 +280,8 @@ and
 \index{Quaternions} \index{Transformation matrices}
 Euler angles are singular for $\pm \frac{\pi}{2}$ in $\pitchAngle$ which might occur in an \abbrROV. Thus it is useful to express angles with unit quaternions since these are always well defined \citep{sensorfusion}. To use quaternions, $\etaVector$ is instead defined as
 \begin{equation}
-\etaVector = \begin{bmatrix}
-\north \\
-\east \\
-\down \\
-\quaternion
-\end{bmatrix}
-\end{equation} where $\boldsymbol{q} =[\quatO\quad \quatI\quad \quatII\quad \quatIII]^T$
+\etaVector = [ \north, \east, \down, \quaternion]^T
+\end{equation} where $\boldsymbol{q} =[\quatO, \quatI, \quatII, \quatIII]^T$
 
 The quaternions need to satisfy $\quaternion^T\quaternion = 1$ in order to represent angles and thus needs to be normalised.
 Approximate quaternion normalisation in continuous time can be achieved by adding a normalising term
@@ -310,7 +296,7 @@ to the dynamics of $\dot{q}$ \citep[p. 31]{fossen2011}. The parameter $\gamma$ i
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-If quaternions are used to represent attitude, the transformation matrix from body-fixed coordinates to global coordinates is defined as 
+If quaternions are used to represent the attitude, the transformation matrix from body-fixed coordinates to global coordinates is defined as 
 \begin{equation}
 \boldsymbol{R}^n_b(\quaternion) = \begin{bmatrix}
   1 - 2(\quatII^2 + \quatIII^2) & 2(\quatI\quatII - \quatIII\quatO)   & 2(\quatI\quatIII + \quatII\quatO) \\
@@ -510,7 +496,7 @@ The \abbrROV is equipped with six identical, three-bladed thrusters. These can b
 \begin{equation}\label{eq:act}
     \tauVector_{\text{Act}} = \thrusterGeometry \boldsymbol{\thrusterfun{}} 
 \end{equation}
-where $\thrusterGeometry$\index{thruster geometry} is a matrix describing the geometry of the actuators \citep[p. 401]{fossen2011}. Figures~\ref{fig:thrusterlocationtop} and \ref{fig:thrusterlocationfront} illustrate the moment arms to each thruster. The positive rotation of the thrusters and the resulting positive forces can be seen in Figures~\ref{fig:thrusterRotation12} to \ref{fig:thrusterRotation6}.
+where $\thrusterGeometry$\index{thruster geometry} is a matrix describing the geometry of the actuators \citep[p. 401]{fossen2011}. Figures~\ref{fig:thrusterlocationtop} and \ref{fig:thrusterlocationfront} illustrate the moment arms to each thruster. The positive rotation of the thrusters and the resulting positive forces can be seen in Figures~\ref{fig:thrusterRotation12} to \ref{fig:thrusterRotation6}. This gives
 \begin{align}\label{eq:actuatorGeometry}
 \begin{split}
     \tauVector_{\text{Act}} = \thrusterGeometry \boldsymbol{\thrusterfun{}} 
@@ -587,7 +573,7 @@ The expression can then be solved for $\nuVectordot$ and split into components
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Simplified Model Structures} \index{Model structure}
-Since the \abbrROV can not measure its position in $N$ and $E$ nor its velocity in $u$, $v$ and $w$ estimation of parameters linked to these terms are difficult to identify. To make estimation more convenient, data-collection experiments can be designed such that linear velocities will be small. The effects of the linear velocities in \eqref{eq:angVelDynamics} can then be neglected. For identifiability reasons it is necessary to reparametrise the model by congregating some of the original parameters before conducting parameter estimation. To gain identifiability, the reparametrisation $A_p = \Ix - \Kpdot$, $B_q = \Iy - \Mqdot$ and $C_r = \Iz - \Nrdot$ was introduced. These changes resulted in
+Since the \abbrROV can not measure its position in $N$ and $E$ nor its velocity in $u$, $v$ and $w$ estimation of parameters linked to these terms are difficult to identify. To make estimation more convenient, data-collection experiments can be designed such that linear velocities will be small. The effects of the linear velocities in \eqref{eq:linVelDynamics} can then be neglected. For identifiability reasons it is necessary to reparametrise the model by congregating some of the original parameters before conducting parameter estimation. To gain identifiability, the reparametrisation $A_p = \Ix - \Kpdot$, $B_q = \Iy - \Mqdot$ and $C_r = \Iz - \Nrdot$ was introduced. These changes resulted in
 \begin{subequations}\label{eq:quatModel}
 \begin{multline} \label{eq:p_dotWithoutTranslation}
 \pdot = \frac{\thrusterfun{1} \distance{y}{1} - \thrusterfun{2} \distance{y}{2} + \thrusterfun{6} \distance{z}{6}}{A_p} + \frac{B z_B \cos{\theta} \sin{\phi}}{A_p} + \\ \frac{(\Kp + \Kpabsp \abs{p})p}{A_p} + \frac{q r (B_q - C_r)}{A_p},
