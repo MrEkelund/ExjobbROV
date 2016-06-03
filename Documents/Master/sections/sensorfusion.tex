@@ -2,7 +2,7 @@
 In order to properly estimate the \abbrROV's attitude in the global coordinate system, the \abbrROV needs sensors to measure external effects from its environment.
 Unfortunately signals from sensors do not necessarily give direct information about attitude and their measurements are to some extent noisy. Algorithms can nevertheless be used to extract and combine the information from the different sensors into an attitude estimate. The process of combining, or fusing, the information from several measurements with or without a motion model to produce an estimate of a state is called sensor fusion. Since sensor fusion is only a prerequisite for control of the \abbrROV's attitude, no results will be presented in this section. 
 
-To be able to understand how a sensor fusion algorithm works, it is important to understand the notation. In  \Tableref{tab:notationKalman}, the notation used in this Chapter is listed.
+To be able to understand how a sensor fusion algorithm works, it is important to understand the notation. In  \Tableref{tab:notationKalman}, the notation used in this chapter is listed.
  \begin{table}[htbp]
   \centering
   \caption{\label{tab:notationKalman}%
@@ -104,7 +104,7 @@ Here $\bar{\boldsymbol{T}}(\nuVector)$ is defined as
 \end{equation} and $\boldsymbol{T}(\etaVector)$ is defined in \eqref{eq:Tquat}. Note that quaternion normalisation \eqref{eq:quatnorm} is done after each time- and measurement update.
 It is also important to note that this is an attitude model and thus $\etaVector$ and $\nuVector$ only contains quaternions and angular velocities respectively. Note that $\nuVector$ is not modelled as a state but is used as an input to reduce the dimension of the model as in \citet{Tornqvist}. 
 
-The second model was implemented to improve sensor fusion performance. This model was based on the continuous-time rigid-body kinematics model in \citet[p. 351]{sensorfusion} and incorporated gyroscope bias estimates and $\nuVector$ as a constant position states. The continuous-time model in \citet[p. 351]{sensorfusion} also modelled positions, linear- accelerations and velocities. Since no position measurements except for depth-measurements was available on the \abbrROV platform, linear- accelerations and velocities were neglected and the position state vector was reduced to only contain depth. The noise model was also slightly modified by giving each state its own noise source. This is not true from a physical standpoint since for example, a disturbance in angular velocity will effect the angles, but it made the filter easier to trim. The entire model was discretised using Euler forward which yielded the following discrete model
+The second model was implemented to improve sensor fusion performance. This model was based on the continuous-time rigid-body kinematics model in \citet[p. 351]{sensorfusion} and incorporated gyroscope bias estimates and $\nuVector$ as a constant position states. The continuous-time model in \citet[p. 351]{sensorfusion} also modelled positions, linear- accelerations and velocities. Since no position measurements except for depth-measurements were available on the \abbrROV platform, linear- accelerations and velocities were neglected and the position state vector was reduced to only contain depth. The noise model was also slightly modified by giving each state its own noise source. This is not true from a physical standpoint since for example, a disturbance in angular velocity will effect the angles, but it made the filter easier to trim. The entire model was discretised using Euler forward which yielded the following discrete model
 \begin{equation}\label{eq:expanded_model}
 \begin{bmatrix}
 \etaVector_{k+1}\\
@@ -134,7 +134,7 @@ Note that the quaternion normalisation \eqref{eq:quatnorm} is done after each up
 \section{Measurement Equations}\label{sec:Meas}
 To fuse information from different sensors, the readings of each sensor has to be related with the states and noise sources which is done using measurement equations.
 
-The \abbrROV is equipped with an \abbrIMU containing a gyroscope. Since readings from a gyroscope might not be zero in all axes even if the gyroscope is at a rest, it is important to incorporate bias states. Modelling for biases in the gyroscope gives the measurement equation
+The \abbrROV is equipped with an \abbrIMU containing a gyroscope. Since readings from a gyroscope might not be zero in all axes even if the gyroscope is at rest, it is important to incorporate bias states. Modelling for biases in the gyroscope gives the measurement equation
 \begin{equation}\label{eq:gyro}
 \boldsymbol{y}_\text{Gyro}= \nuVector + \boldsymbol{b} + \boldsymbol{v}_{\text{Gyro}}
 \end{equation}
@@ -173,7 +173,7 @@ The \abbrIO-unit of the \abbrROV is also equipped with a magnetometer which enab
     \end{bmatrix}
     + \boldsymbol{v}_{\text{Mag}}
 \end{equation}
-where $\boldsymbol{y}_{\text{Mag}}$ is the measured magnetic field in the body-fixed coordinate system and $\boldsymbol{v}_{\text{Mag}}$ is measurements noise. The parameters $m_\text{N}$, $m_\text{E}$ and $m_\text{D}$ are the the measured magnetic field in the local coordinate system at start up of the \abbrROV. Since the strength and inclination of the Earth's magnetic field vary with location $m_\text{N}$, $m_\text{E}$ and $m_\text{D}$ are set to values that represent the magnetic field at the current location. This is done via a calibration script that sets the $m_\text{N}$, $m_\text{E}$ and $m_\text{D}$ parameters to the current reading which in turn sets the current direction as the global coordinate system's North.
+where $\boldsymbol{y}_{\text{Mag}}$ is the measured magnetic field in the body-fixed coordinate system and $\boldsymbol{v}_{\text{Mag}}$ is measurements noise. The parameters $m_\text{N}$, $m_\text{E}$ and $m_\text{D}$ are the measured magnetic field in the local coordinate system at start up of the \abbrROV. Since the strength and inclination of the Earth's magnetic field vary with location $m_\text{N}$, $m_\text{E}$ and $m_\text{D}$ are set to values that represent the magnetic field at the current location. This is done via a calibration script that sets the $m_\text{N}$, $m_\text{E}$ and $m_\text{D}$ parameters to the current reading which in turn sets the current direction as the global coordinate system's North.
 
 The \abbrROV is not a noise free environment from an electromagnetic standpoint. Currents in the \abbrROV's electronics may induce magnetic fields which will distort the sensor readings of the magnetometer. If such noisy measurements are used the sensor fusion will not perform well when estimating the \abbrROV's attitude. To ensure that only measurements in good condition are used, an outlier rejection criteria was implemented. Magnetometer measurements are only used if 
 \begin{equation}

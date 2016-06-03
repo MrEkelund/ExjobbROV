@@ -22,11 +22,11 @@ There are two main concepts of control, open-loop and feedback control \citep{re
 		    \draw [draw,->] (input) -- node {$x_{\text{ref}}$} (controller);
 		    \draw [->] (system) -- node [name=y] {$y$}(output);
 		\end{tikzpicture}
-	\caption{The open-loop control scheme used in the \abbrROV. The control block F can be any type of open-loop control. Notice that this is an ideal case were no disturbances affect the system.}
+	\caption{The open-loop control scheme used in the \abbrROV. The control block F can be any type of open-loop control. Notice that this is an ideal case where no disturbances affect the system.}
 	\label{fig:control_system_open}
 \end{figure}
 
-A feedback controller uses measurements of the outputs in a system to get a desired behaviour. One such method is error-controlled regulation, where the difference between the desired value, the setpoint, of an output and its actual value is used for control \citep{reglerteknik}. The feedback control scheme used in the \abbrROV can be seen in \Figureref{fig:control_system}. 
+A feedback controller uses measurements of the outputs in a system to get a desired behaviour. One such method is error-controlled regulation, where the difference between the desired value, the setpoint, of an output and its measured or estimated value is used for control \citep{reglerteknik}. The feedback control scheme used in the \abbrROV can be seen in \Figureref{fig:control_system}. 
 
 Similarly to an open-loop controller, a feedback controller can use a model of the system. Using a model of the controlled system in the control structure can produce better performance and compensate for unwanted effects such as non-linearities. Compensating for non-linearities is desired due to the fact that a lot of control principles are based on linear systems \citep{reglerteori}. 
 
@@ -55,7 +55,7 @@ Similarly to an open-loop controller, a feedback controller can use a model of t
 		    \draw [->] (sensorfusion) -| node[pos=0.99] {$-$} 
 		        node [near end] {$\hat{x}$} (sum);
 		\end{tikzpicture}
-	\caption{The feedback control scheme used in the \abbrROV. The controller F can be any of the controllers discussed in this chapter. The observer in the \abbrROV is the sensor fusion described in \Chapterref{cha:sensor_fusion}. Notice that this is an ideal case were no disturbances effect the system.}
+	\caption{The feedback control scheme used in the \abbrROV. The controller F can be any of the controllers discussed in this chapter. The observer in the \abbrROV is the sensor fusion described in \Chapterref{cha:sensor_fusion}. Notice that this is an ideal case where no disturbances effect the system.}
 	\label{fig:control_system}
 \end{figure}
 
@@ -89,7 +89,7 @@ maximum thrust can be achieved but coupling effects can occur. Combining \eqref{
 0 & -1 & 0 & 0 & 0 & 0 \\
 \end{bmatrix}
 \end{equation}
-The static thrust allocation matrix $\thrusterGeometryOnes[+]$ is the pseudo inverse of the thrust geometry matrix $\thrusterGeometryOnes$. An approximately decoupled control is achieved when the static thrust allocation matrix is used and thus can the \abbrROV be controlled better. \Figureref{fig:open_control} illustrates how the control signals are allocated to the different thrusters when given an control input. The thrust-geometry matrix could be chosen as $\thrusterGeometryOnes = \boldsymbol{T}_{\text{normed}}$. Here, $\boldsymbol{T}_{\text{normed}}$ is the row-wise normed thrust matrix $\boldsymbol{T}$ from \sectionref{sec:act}. Using the aforementioned thruster matrix would reduce coupling effects but was not implemented on the \abbrROV since maximum thrust would be reduced.
+The static thrust-allocation matrix $\thrusterGeometryOnes[+]$ is the pseudo inverse of the thrust-geometry matrix $\thrusterGeometryOnes$. An approximately decoupled control is achieved when the static thrust allocation matrix is used and thus the \abbrROV can be controlled better. \Figureref{fig:open_control} illustrates how the control signals are allocated to the different thrusters when given a control input. The thrust-geometry matrix could be chosen as $\thrusterGeometryOnes = \boldsymbol{T}_{\text{normed}}$. Here, $\boldsymbol{T}_{\text{normed}}$ is the row-wise normed thrust matrix $\boldsymbol{T}$ from \sectionref{sec:act}. The use of the aforementioned thruster matrix reduces coupling effects but was not implemented on the \abbrROV since maximum thrust would be reduced.
 \begin{figure}
     \centering
     \begin{tikzpicture}[auto, thick, node distance=3cm, >=latex',%
@@ -120,7 +120,7 @@ Feedback linearisation is to compensate for the non-linearities in a system usin
 \tauVector_{\text{Lin}} = G^{-1}(\hat{\etaVector}_{2},\hat{\nuVector}_{2},\accVector^{\text{b}}) = \inertia \accVector^{\text{b}} + \damping(\hat{\nuVector}_{2})\hat{\nuVector}_{2} + \coriolis(\hat{\nuVector}_{2})\hat{\nuVector}_{2} + \gravity(\hat{\etaVector}_{2})
 \end{equation}
 where $\accVector^b$ is the desired angular acceleration in the body-fixed frame and $\tauVector_{\text{Lin}}$ is the estimated generalised force needed to achieve the desired acceleration \citep{fossen2011}.
-The desired control signal $\boldsymbol{u}_{\text{Lin}}$ was then chosen using 
+The desired control signal $\boldsymbol{u}_{\text{Lin}}$ was then chosen as 
 \begin{equation}\label{eq:linControlSignal}
 \boldsymbol{u}_{\text{Lin}} = f^{-1}(\boldsymbol{T}^{-1}\bar{\tauVector}_{\text{Lin}})
 \end{equation} where $\boldsymbol{T}$ is the geometry matrix defined in \eqref{eq:actuatorGeometry}, $\bar{\tauVector}_{\text{Lin}}=[0~0~0~\tauVector_{\text{Lin}}^T]^T$ and  $f(\cdot)$ is the look-up table from control signal, $u \in [-1~1]$, to thrust defined in \appref{app:thrustmapping}. In an ideal case, where the model is exact, using the non-linear control law \eqref{eq:exactLin} would produce the system
@@ -130,8 +130,8 @@ The desired control signal $\boldsymbol{u}_{\text{Lin}}$ was then chosen using
 where $\accVector^b$ could be chosen using any desired control method \citep[p.451]{fossen2011}.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Attitude Controller} \index{PID@\abbrPID!abbreviation} \index{Attitude Controller} \index{Feedback Linearisation}
-An attitude controller was also implemented on the \abbrROV. The controller was chosen as \abbrPID-controller utilising feedback linearisation \eqref{eq:exactLin}.
-Since \eqref{eq:exactLin} aimed to linearise the angular accelerations in the body-fixed frame, these have to be transformed into the global coordinate system.
+An attitude controller was also implemented on the \abbrROV. The controller was chosen as a \abbrPID-controller utilising feedback linearisation \eqref{eq:exactLin}.
+Since \eqref{eq:exactLin} aims to linearise the angular accelerations in the body-fixed frame, these have to be transformed into the global coordinate system.
 This is achieved by choosing 
 \begin{equation}\label{eq:anLaw}
 \accVector^b =L(\accVector^n,\hat{\eulerAngles},\hat{\nuVector}_2)=\boldsymbol{T}^{-1}_\theta(\hat{\eulerAngles})(\accVector^n - \dot{\boldsymbol{T}}_\theta(\hat{\eulerAngles})\hat{\nuVector}_2)\\
@@ -151,7 +151,7 @@ Using \eqref{eq:kinematicsticsEuler} and the assumption that $\etaVectorAng[,{\t
 \begin{equation}\label{eq:etaTildeAngDot}
 \etaTildeAngdot = \boldsymbol{T}_\theta(\hat{\boldsymbol{\Theta}})\hat{\nuVector}_{2}
 \end{equation}
-Combining \eqref{eq:etaTildeAngDot} with \eqref{eq:attitudeFeedback} gives the feedback
+Combining \eqref{eq:attitudeFeedback} with \eqref{eq:etaTildeAngDot} gives the feedback
 \begin{equation}
 \accVector^n=-K_{\text{p}} \etaTildeAng - K_{\text{i}}\int \! \etaTildeAng \, \mathrm{d}t - K_{\text{d}} \boldsymbol{T}_\theta(\hat{\boldsymbol{\Theta}})\hat{\nuVector}_{2}
 \end{equation}
@@ -229,14 +229,14 @@ without the feedback linearisation. This was implemented to allow the user to st
    		\draw node [output, right of=sum, node distance=2cm] (output) {};
     		\draw[->] (sum.east) -- node[align=center, below] {$u$} (output);	
 	\end{tikzpicture}
-    \caption{The linear velocities are controlled in the same way as in \Sectionref{sec:openloop}. However, the attitude are controlled via an \abbrPID and feedback linearisation can be enabled.} 
+    \caption{The linear velocities are controlled in the same way as in \Sectionref{sec:openloop}. Furthermore, the attitude is controlled via a \abbrPID and feedback linearisation can be enabled.} 
     \label{fig:attitudecontroller}
 \end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Angular Velocity Controller} \index{Angular Velocities Controller} \index{PI@\abbrPI!abbreviation} \index{Feedback Linearisation}
 An angular velocity controller was also implemented using the feedback linearisation \eqref{eq:exactLin}.
-Since no transformation is needed in order to control angular velocities in the body-fixed frame,
+Since no transformation is needed in order to control the angular velocities in the body-fixed frame,
 $\accVector^b$ can be chosen using the following \abbrPI feedback 
 \begin{equation}
 	\accVector^b =-K_{\text{p}} \nuTildeAng - K_{\text{i}}\int \! \nuTildeAng \, \mathrm{d}t
@@ -246,7 +246,7 @@ where $K_{\text{p}}$ and $K_{\text{i}}$ are positive definite design matrices an
 \nuTildeAng = \hat{\nuVector}_2 - \nuVectorAng[,{\text{ref}}]
 \end{equation} \citep[p. 453]{fossen2011}.
 
-The angular velocities \abbrPI controller was also expanded with a open-loop control solution for control of linear velocities
+The angular velocities \abbrPI controller was also extended with an open-loop control solution for control of linear velocities
 \begin{equation}
 	u = \underbrace{f^{-1}(\boldsymbol{T}^{-1} G^{-1}(\hat{\etaVector}_2,\hat{\nuVector}_2,\accVector^b))}_{u_{\nuVectorAng}} + \underbrace{\thrusterGeometryOnes[+] \begin{bmatrix}\nuVector_{1,\text{ref}} \\ \zeroCol{3} \end{bmatrix}}_{u_{\nuVectorLin}}	
 \end{equation}
@@ -307,13 +307,13 @@ if the feedback linearisation is inactive. \Figureref{fig:ratecontroller} illust
    		\draw node [output, right of=sum, node distance=2cm] (output) {};
     		\draw[->] (sum.east) -- node[align=center, below] {$u$} (output);	  
 	\end{tikzpicture}
-    \caption{The linear velocities are controlled in the same way as in \Sectionref{sec:openloop}. However, the angular velocities are controlled via an \abbrPI and feedback linearisation can be enabled.} 
+    \caption{The linear velocities are controlled in the same way as in \Sectionref{sec:openloop}. Furthermore, the angular velocities are controlled via a \abbrPI and feedback linearisation can be enabled.} 
     \label{fig:ratecontroller}
 \end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Depth Controller} \index{Depth Controller} \index{PI@\abbrPI!abbreviation}
-A \abbrPI-depth controller was also implemented on the \abbrROV. The depth controller was designed such that it could be used simultaneously with any other the aforementioned rate- and attitude controllers. 
+A \abbrPI-depth controller was also implemented on the \abbrROV. The depth controller was designed such that it could be used simultaneously with any other of the aforementioned rate and attitude controllers. 
 
 If the error in depth $d$ is defined as 
 \begin{equation}
@@ -388,12 +388,12 @@ To be able to draw any conclusions about the performance of the controllers the 
 \begin{description}
 \item[Constant] A constant reference was applied to all \abbrDOF. This reference signal was only used for trimming the controllers initially, thus will no results be presented except for the depth controller.
 
-\item[Sine] A $\sin(\cdot)$ signal was applied to one \abbrDOF at the time and then to all \abbrDOF. Two $\sin$ signals with different amplitudes were used, amplitude $1$ and $0.5$. The frequency of the sine was $0.5\ \hertz$.
+\item[Sine] A $\sin(\cdot)$ signal was applied to one \abbrDOF at the time and then to all \abbrDOF. Two sine signals with different amplitudes were used, amplitude $1$ and $0.5$. The frequency of the sine was $0.5\ \hertz$.
 
-\item[Smooth step] A smooth step, a step with smooth acceleration, was applied to one \abbrDOF at the time and then to all \abbrDOF at the same time. The used smooth step was the same as in \citet[p. 192]{robotics}. The smooth step parameters were $q_{\text{0}} = 0$, $q_{\text{f}} = 1$, $t_{\text{s}} = 3$, $t_{\text{f}} = 15$ and $V = 1.5 (q_{\text{f}} - q_{\text{0}})/(t_{\text{f}} - t_{\text{s}}))$.
+\item[Smooth step] A step with smooth acceleration, was applied to one \abbrDOF at the time and then to all \abbrDOF{}s at the same time. The used smooth step was the same as in \citet[p. 192]{robotics}. The smooth step parameters were $q_{\text{0}} = 0$, $q_{\text{f}} = 1$, $t_{\text{s}} = 3$, $t_{\text{f}} = 15$ and $V = 1.5 (q_{\text{f}} - q_{\text{0}})/(t_{\text{f}} - t_{\text{s}}))$.
 \end{description}
-for each controller separately. For each conducted test, except for depth tests, a simulated test was also performed. The \abbrROV simulator used the parameters from \Sectionref{sec:parameterResults}. The feedback linearisation, both in the simulator and the \abbrROV, used the parameters from \Sectionref{sec:parameterResults} with a scaling factor of $0.9$ except for $z_B$, which was scaled by $0.5$. In this Section, a few representative test cases will be presented, several more tests were conducted and these can be seen in \Appref{app:controllerTestResults}. 
-Tests were conducted with the \abbrPID attitude controller without feedback linearisation, the \abbrPI rate controller with feedback linearisation and with the \abbrPI depth controller. The control parameters used in the \abbrPID and the \abbrPI{}s during simulation and real tests can be seen in \Tableref{tab:parametersAttitude}. Theses were initially chosen using simulations and were further tweaked during some quick controller tests. Different performance measures, overshoot, undershoot and steady-state error will be used to specify the performance of the controllers. These measures are defined as in \citet{reglerteori}. 
+for each controller separately. For each conducted test, except for depth tests, a simulated test was also performed. The \abbrROV simulator used the parameters from \Sectionref{sec:parameterResults}. The feedback linearisation, both in the simulator and the \abbrROV, used the parameters from \Sectionref{sec:parameterResults} with a scaling factor of $0.9$ except for $z_B$, which was scaled by $0.5$. In this section, a few representative test cases will be presented. Several more tests were conducted and these can be seen in \Appref{app:controllerTestResults}. 
+Tests were conducted with the \abbrPID attitude controller without feedback linearisation, the \abbrPI rate controller with feedback linearisation and with the \abbrPI depth controller. The control parameters used in the \abbrPID and the \abbrPI{}s during simulation and real tests can be seen in \Tableref{tab:parametersAttitude}. These were initially chosen using simulations and were further tweaked during some quick controller tests. Different performance measures, overshoot, undershoot and steady-state error will be used to specify the performance of the controllers. These measures are defined as in \citet{reglerteori}. 
 
 \begin{table}[tbp]
   \centering
@@ -449,10 +449,10 @@ Tests were conducted with the \abbrPID attitude controller without feedback line
   \qquad
   \subfloat[][\label{fig:simSinAllYawAttitude} Simulated response in $\yawAngle$.]{\includegraphics[width=0.4\textwidth]{simSinAllPsiA1}}
   \caption{\label{fig:SinAllAttitude}%
-   A sine signal with amplitude $1$ and frequency $0.5\ \hertz$ was applied in in all attitude angles at the same time while using the attitude controller.}
+   A sine signal with amplitude $1$ and frequency $0.5\ \hertz$ was applied in all attitude angles at the same time while using the attitude controller.}
 \end{figure}
 
-Results from an attitude test with sine reference signals of amplitude 1 and frequency $0.5\ \hertz$ can be seen in \Figureref{fig:SinAllAttitude}. The roll angle and pitch angle did not reach the desired amplitudes in the real test. However, they followed the general form of a $0.5\ \hertz$ sine with a phase shift relative to the reference signals. The same phase shift and lack of amplitude was observed in simulations. The yaw angle followed the reference signal well during the live test but had a phase shift and a bias. The simulated result in yaw angle did not follow the reference signal at all. This may be caused by the feedback being to low for the system. This is a sign of a model error. 
+Results from an attitude test with sine reference signals of amplitude 1 and frequency $0.5\ \hertz$ can be seen in \Figureref{fig:SinAllAttitude}. The roll angle and pitch angle did not reach the desired amplitudes in the real test. However, they followed the general form of a $0.5\ \hertz$ sine with a phase shift relative to the reference signals. The same phase shift and lack of amplitude was observed in simulations. The yaw angle followed the reference signal well during the live test but had a phase shift and a bias. The simulated result in yaw angle did not follow the reference signal at all. This may be caused by the feedback being too low for the system. This is a sign of a model error. 
 
 \begin{figure}
 \centering
@@ -467,7 +467,7 @@ Results from an attitude test with sine reference signals of amplitude 1 and fre
   Smooth steps with $q_{\text{0}} = 0$, $q_{\text{f}} = 1$, $t_{\text{s}} = 3$, $t_{\text{f}} = 15$ and $V = 1.5 (q_{\text{f}} - q_{\text{0}})/(t_{\text{f}} - t_{\text{s}}))$ were applied in \pitchAngle and \rollAngle at the same time while using the attitude controller. The attitude angle $\yawAngle$ was kept free during the test.}
 \end{figure}
 
-The result from a smoothed step test in roll angle and pitch angle can be seen in \Figureref{fig:StepPhiThetaAttitude}. During the test, the yaw angle was kept free. Both the roll angle and the pitch angle followed the shape of the reference signal but did not reach the desired magnitude. The steady-state errors for roll and pitch angle were approximately $0.35$. The simulated result in roll angle and pitch angle performed worse than the live test. The simulated roll angle had a steady-state error $0.5$ and the steady-state error in pitch angle was $0.4$.
+The result from a smooth step test in roll angle and pitch angle can be seen in \Figureref{fig:StepPhiThetaAttitude}. During the test, the yaw angle was kept free. Both the roll angle and the pitch angle followed the shape of the reference signal but did not reach the desired magnitude. The steady-state errors for roll and pitch angle were approximately $0.35$. The simulated result in roll angle and pitch angle performed worse than the live test. The simulated roll angle had a steady-state error $0.5$ and the steady-state error in pitch angle was $0.4$.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%Rate%%%%%%%%%%%%%%%%
 \begin{figure}
@@ -487,7 +487,7 @@ The result from a smoothed step test in roll angle and pitch angle can be seen i
   A smooth step with $q_{\text{0}} = 0$, $q_{\text{f}} = 1$, $t_{\text{s}} = 3$, $t_{\text{f}} = 15$ and $V = 1.5 (q_{\text{f}} - q_{\text{0}})/(t_{\text{f}} - t_{\text{s}}))$ was applied in all angular velocities at the same time while using the rate controller.}
 \end{figure}
 
-\Figureref{fig:StepAllRate} shows a smooth step applied in all angular velocities while using the rate controller. An overshoot of $0.5$ is obtained in $\rollVelocity$ for the real test while in the simulation only has an overshoot of $0.2$ but suffers from stronger oscillations. Both the real test and the simulation in $\rollVelocity$ followed the reference signal and had a small steady-state error. 
+\Figureref{fig:StepAllRate} shows a smooth step applied in all angular velocities while using the rate controller. An overshoot of $0.5$ was obtained in $\rollVelocity$ for the real test while the simulation it only had an overshoot of $0.2$ but suffers from stronger oscillations. Both the real test and the simulation in $\rollVelocity$ followed the reference signal and had a small steady-state error. 
 
 The real and simulated test in $\pitchVelocity$ followed the reference value well and had negligible steady-state errors with some oscillative behaviour. Moreover, the real test had no overshoot while the simulation in $\pitchVelocity$ had stronger oscillations and an overshoot of $0.4$. 
 
@@ -507,7 +507,7 @@ The simulated test in $\yawVelocity$ performed well and almost followed the refe
   \qquad
   \subfloat[][\label{fig:simSinAllRRate} Simulated response in $\yawVelocity$.]{\includegraphics[width=0.4\textwidth]{simSinAllRA1}}
   \caption{\label{fig:SinAllRate}%
-  A sine signal with amplitude $1$ and frequency $0.5\ \hertz$ was applied in in all angular velocities at the same time while using the rate controller.}
+  A sine signal with amplitude $1$ and frequency $0.5\ \hertz$ was applied in all angular velocities at the same time while using the rate controller.}
 \end{figure}
 
 A sine signal was also applied to all angular velocities while using the rate controller. The results can be seen in \Figureref{fig:SinAllRate}. During the real tests all the angular velocities followed the reference signals well, except for some overshoots and undershoots. The simulated test followed a general sine form but the reference amplitude was not reached and a phase shift could be noted.
@@ -526,7 +526,7 @@ A sine signal was also applied to all angular velocities while using the rate co
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Discussion}\label{sec:controlDiscussion}
-Due to problems during implementation of the controllers, they were not as well trimmed as they could had been. This can be seen in the results since large steady-state errors were acquired during the tests. \abbrPID -parameters were trimmed in simulation before live test but the feedback used in simulations was to strong for live tests. The parameters in the feedback and the linearising control law both had to be scaled down to achieve a stable system. Since the \abbrROV is a non-linear and stable system, compensating for non-linearities run the risk of producing a non-linear and unstable system, this is further illustrated in \Exampleref{ex:exact}. We believe such an over compensation was what caused most of the initial problems during controller tests. This idea is further strengthened by the fact that the controller instability diminished when the parameters in the linearising control law were scaled down.
+Due to problems during implementation of the controllers, they were not as well tuned as they could have been. This can be seen in the results since large steady-state errors were acquired during the tests. The \abbrPID -parameters were trimmed in simulation before live test but the feedback used in simulations was too strong for live tests. The parameters in the feedback and the linearising control law both had to be scaled down to achieve a stable system. Since the \abbrROV is a non-linear and stable system, compensating for non-linearities run the risk of producing a non-linear and unstable system. This is further illustrated in \Exampleref{ex:exact}. We believe such an over compensation was what caused most of the initial problems during controller tests. This idea is further strengthened by the fact that the controller instability diminished when the parameters in the linearising control law were scaled down.
 \begin{example}\label{ex:exact}
 Consider the non-linear system
 \begin{equation}\label{eq:exampleSys}
@@ -573,7 +573,7 @@ the control law has created an unstable non-linear system. The instability can n
 applying a strong enough feedback using $\bar{u}$. But a strong feedback is often undesirable since using a stronger control signal means that the system will use more energy. Furthermore, a large control signal is not always possible since $u$ might be saturated.  
 \end{example}
 
-Additional problems were encountered during trimming of the attitude \abbrPID using feedback linearisation. The core of the problem was that regardless of the strength of the feedback the \abbrROV never stabilised around the desired references. The result from an attempt to stabilize the \abbrROV using the attitude controller can be seen in \Figureref{fig:ExactLinAttitude}. This problem might originate from bad magnetometer readings, which fluctuated when the \abbrROV engaged its thrusters. It is suspected that such fluctuations in magnetic field strength may cause rapid changes in the estimated quaternions and angular velocities. This would in turn lead to problems when computing \eqref{eq:anLaw} in the feedback linearisation. %The problem could also be caused by badly estimated parameters from \Chapterref{cha:modelling}. The likelihood of the problem lying with the parameters is strengthened by the fact that the estimated model parameters had to be scaled down in the exact linearisation to get the rate controller to be stable. 
+Additional problems were encountered during tuning of the attitude \abbrPID using feedback linearisation. The core of the problem was that regardless of the strength of the feedback the \abbrROV never stabilised around the desired references. The result from an attempt to stabilise the \abbrROV using the attitude controller can be seen in \Figureref{fig:ExactLinAttitude}. This problem might originate from bad magnetometer readings, which fluctuated when the \abbrROV engaged its thrusters. It is suspected that such fluctuations in magnetic field strength may cause rapid changes in the estimated quaternions and angular velocities. This would in turn lead to problems when computing \eqref{eq:anLaw} in the feedback linearisation. %The problem could also be caused by badly estimated parameters from \Chapterref{cha:modelling}. The likelihood of the problem lying with the parameters is strengthened by the fact that the estimated model parameters had to be scaled down in the exact linearisation to get the rate controller to be stable. 
 
 \begin{figure}
 \centering
@@ -594,4 +594,4 @@ In some test the real tests outperformed their simulated counterparts. This is p
 %\end{equation} where $\tau$ is the thrust and $u_{\text{Control}}$ is the control signal sent to the thruster. 
 %Another solution would be to upgrade the \abbrESC{}s to Blue\abbrESC{}s from Blue Robotics, since these can measure the rotations per minute (\abbrRPM) of the thruster \citep{bluerobotics}. This would enable the relation between \abbrRPM and thrust to be modelled and the \abbrRPM to be controlled for more predictable thruster performance.\todo[inline]{Hur ska detta tas upp? Blandar regulator- och estimeringsdiskussion.}
 
-Overall, results were good in the view of the short amount of time available for controller trimming. The problem with the attitude controller and the linearising control law is unfortunate, but should be easily rectified with magnetometer calibration and some additional \abbrPID tweaking. Moreover, it is believed that exceptional rate controller performance may be possible with further trimming, making controlling the \abbrROV manually a subjectively pleasant experience.
+Overall, results were good in the view of the short amount of time available for controller tuning. The problem with the attitude controller and the linearising control law is unfortunate, but should be easily rectified with magnetometer calibration and some additional \abbrPID tweaking. Moreover, it is believed that exceptional rate controller performance may be possible with further trimming.
