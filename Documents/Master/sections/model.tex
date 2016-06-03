@@ -145,20 +145,11 @@ The kinematic equations can then be expressed in vector form as \index{Kinematic
 \end{equation}
 where 
 \begin{equation}
-\etaVector = \begin{bmatrix}
-N\\
-E\\
-D\\
-\phi\\
-\theta\\
-\psi
-\end{bmatrix}
+\etaVector = [N, E, D, \phi, \theta, \psi]^T
 \end{equation}
 and
 \begin{equation}
-\nuVector = \begin{bmatrix}
-    \xVelocity\\ \yVelocity\\ \zVelocity \\ \rollVelocity \\ \pitchVelocity \\ \yawVelocity 
-    \end{bmatrix}
+\listNu
 \end{equation}
 
 
@@ -233,7 +224,7 @@ and
 
 \begin{figure}
     \centering
-    \begin{tikzpicture}[scale=2]
+    \begin{tikzpicture}[scale=2.2]
         \pgfmathsetmacro\by{\coordinateRadius*sin(45)}
         \pgfmathsetmacro\bx{\coordinateRadius*cos(45)}
         \pgfmathsetmacro\ay{\coordinateRadius*sin(\coordRot)}
@@ -289,13 +280,8 @@ and
 \index{Quaternions} \index{Transformation matrices}
 Euler angles are singular for $\pm \frac{\pi}{2}$ in $\pitchAngle$ which might occur in an \abbrROV. Thus it is useful to express angles with unit quaternions since these are always well defined \citep{sensorfusion}. To use quaternions, $\etaVector$ is instead defined as
 \begin{equation}
-\etaVector = \begin{bmatrix}
-\north \\
-\east \\
-\down \\
-\quaternion
-\end{bmatrix}
-\end{equation} where $\boldsymbol{q} =[\quatO\quad \quatI\quad \quatII\quad \quatIII]^T$
+\etaVector = [ \north, \east, \down, \quaternion]^T
+\end{equation} where $\boldsymbol{q} =[\quatO, \quatI, \quatII, \quatIII]^T$
 
 The quaternions need to satisfy $\quaternion^T\quaternion = 1$ in order to represent angles and thus needs to be normalised.
 Approximate quaternion normalisation in continuous time can be achieved by adding a normalising term
