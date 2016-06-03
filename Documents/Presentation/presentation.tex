@@ -489,14 +489,18 @@ discussion
 
 \section{Controllers}
 \begin{frame}
+\begin{columns}
+\begin{column}{0.5\textwidth}
 \begin{itemize}
-\item<1->  Automatic control - What is it?
-\item<2->  Open-loop control
-\item<3->  Feed-back control
-\item<4->  Exact linearisation
+\item  \structure<1> {What is automatic control}
+\item  \structure<2>{Open-loop control}
+\item  \structure<3>{Feed-back control}
+\item  \structure<4->{Exact linearisation}
 \end{itemize}
+\end{column}
+\begin{column}{0.5\textwidth}
 \only<2-2>{
-\begin{tikzpicture}[auto, thick, node distance=2cm,>=latex',
+\begin{tikzpicture}[auto, scale=0.8, every node/.style={scale=0.8}, thick, node distance=2cm,>=latex',
  block/.style  = {draw, rectangle,minimum height=3em, minimum width=6em},
  sum/.style    = {draw, circle, inner sep=0pt, text width=4mm,align=center, node distance=1cm},
  input/.style  = {coordinate},
@@ -515,7 +519,7 @@ discussion
 \end{tikzpicture}
 }
 \only<3-3>{
-\begin{tikzpicture}[auto, thick, node distance=2cm,>=latex',
+\begin{tikzpicture}[auto, scale=0.8, every node/.style={scale=0.8}, thick, node distance=2cm,>=latex',
 			 block/.style  = {draw, rectangle,minimum height=3em, minimum width=6em},
 			 sum/.style    = {draw, circle, inner sep=0pt, text width=4mm,align=center, node distance=1cm},
 			 input/.style  = {coordinate},
@@ -539,37 +543,44 @@ discussion
 		        node [near end] {$\hat{x}$} (sum);
 		\end{tikzpicture}
 }
-\only<4-4>{\begin{center}Consider the non-linear system\\
-$\begin{bmatrix}
+
+\only<4->{
+\begin{center}
+\begin{align*}
+\onslide<5->{
+\begin{bmatrix}
 \dot{x}_1\\
 \dot{x}_2
-\end{bmatrix}=
+\end{bmatrix}&=
 \begin{bmatrix}
 x_2\\
 -a x_1 - b x_2\abs{x_2} + u
-\end{bmatrix}$
-\end{center}
-}
-\only<5-5>{\begin{center}Choose the following control strategy\\
-$u = a x_1 +b x_2\abs{x_2} + \bar{u}$
-\end{center}
-}
-\only<6-6>{\begin{center}This will give the linear system\\
-$\begin{bmatrix}
+\end{bmatrix}\\}
+%
+%
+\onslide<6->{
+u &= a x_1 +b x_2\abs{x_2} + \bar{u}\\}
+%
+%
+\onslide<7->{
+\begin{bmatrix}
 \dot{x}_1\\
 \dot{x}_2
-\end{bmatrix}=
+\end{bmatrix}&=
 \begin{bmatrix}
 x_2\\
 \bar{u}
-\end{bmatrix}$
+\end{bmatrix}}
+\end{align*}
 \end{center}
 }
+\end{column}
+\end{columns}
 \note{To control a system towards a desired state using input}
 \note{To control the system without measuring the current state. Needs to be modelled in order to attain good performance.}
 \note{To base the control action on measurements from outputs of the system.}
 \note{To compensate for a systems non-linearities using a model of the system.}
-
+\end{frame}
 %what is automatic control
 %open-loop control
 %exact linearisation
@@ -578,7 +589,7 @@ x_2\\
 %depth 
 %results
 %discussion
-\end{frame}
+
 \begin{frame}
 \begin{center}
 Attitude controller using exact linearisation.
@@ -586,6 +597,7 @@ Attitude controller using exact linearisation.
 \note{An attitude controller has been developed using the exact linearisation technique described earlier.}
 \end{frame}
 \begin{frame}
+\begin{center}
 \only<1-1>{
 \includegraphics[scale=0.28]{../Master/fig/testExactLinAttitudePhi}
 }
@@ -595,11 +607,13 @@ Attitude controller using exact linearisation.
 \only<3-3>{
 \includegraphics[scale=0.28]{../Master/fig/testExactLinAttitudePsi}
 }
+\end{center}
 \end{frame}
 \begin{frame}
 
 \begin{center}
 Attitude controller \textbf{without} exact linearisation.
+
 \end{center}
 \note{An attitude controller has been developed using the exact linearisation technique described earlier.}
 \end{frame}
