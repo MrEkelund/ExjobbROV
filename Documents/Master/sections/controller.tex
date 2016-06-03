@@ -1,5 +1,5 @@
-\chapter{Controlling the ROV} \label{cha:controller} \index{Open-Loop Control} \index{Controller} \index{Exact Linearisation} \index{Feedback Control}
-Automatic control is a way of regulating a process without direct human interaction. The complexity can vary from decentralised proportional, integral and derivative controllers (\abbrPID:s) to more advanced model-based control methods, such as model predictive control (\abbrMPC) \citep{reglerteori}. 
+\chapter{Controlling the ROV} \label{cha:controller} \index{Open-Loop Control} \index{Controller} \index{Feedback Linearisation} \index{Feedback Control}
+Automatic control is a way of regulating a process without direct human interaction. The complexity can vary from decentralised proportional, integral and derivative controllers (\abbrPID{}s) to more advanced model-based control methods, such as model predictive control (\abbrMPC) \citep{reglerteori}. 
 
 There are two main concepts of control, open-loop and feedback control \citep{reglerteknik}. An open-loop controller is a controller that computes its output based on a model of the system. A disadvantage of open-loop controllers is that they require exact knowledge of the controlled system \citep{reglerteknik}. \Figureref{fig:control_system_open} illustrates the open-loop control scheme used in the \abbrROV. 
 
@@ -26,7 +26,7 @@ There are two main concepts of control, open-loop and feedback control \citep{re
 	\label{fig:control_system_open}
 \end{figure}
 
-A feedback controller uses measurements of the outputs in a system to get a desired behaviour. One such method is error-controlled regulation, where the difference between the desired value, setpoint, of an output and its actual value is used for control \citep{reglerteknik}. The feedback control scheme used in the \abbrROV can be seen in \Figureref{fig:control_system}. 
+A feedback controller uses measurements of the outputs in a system to get a desired behaviour. One such method is error-controlled regulation, where the difference between the desired value, the setpoint, of an output and its actual value is used for control \citep{reglerteknik}. The feedback control scheme used in the \abbrROV can be seen in \Figureref{fig:control_system}. 
 
 Similarly to an open-loop controller, a feedback controller can use a model of the system. Using a model of the controlled system in the control structure can produce better performance and compensate for unwanted effects such as non-linearities. Compensating for non-linearities is desired due to the fact that a lot of control principles are based on linear systems \citep{reglerteori}. 
 
@@ -62,9 +62,9 @@ Similarly to an open-loop controller, a feedback controller can use a model of t
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Open-Loop Control} \label{sec:openloop} \index{Open-Loop Control} \index{thrust allocation} \index{thruster geometry}
-The open-loop control of the \abbrROV consists of an static thrust-allocation matrix which is
+The open-loop control of the \abbrROV consists of a static thrust-allocation matrix which is
 \begin{equation} \label{eq:pinv}
-    \thrusterGeometryOnes[*] = \thrusterGeometryOnes[T](\thrusterGeometryOnes \thrusterGeometryOnes[T])^{-1}
+    \thrusterGeometryOnes[+] = \thrusterGeometryOnes[T](\thrusterGeometryOnes \thrusterGeometryOnes[T])^{-1}
 \end{equation}
 where $\thrusterGeometryOnes$ describes how the actuators effect the \abbrROV \citep{thrustallocation}. If the thrust-geometry matrix is chosen as
 \begin{equation} \label{eq:Tones}
@@ -89,7 +89,7 @@ maximum thrust can be achieved but coupling effects can occur. Combining \eqref{
 0 & -1 & 0 & 0 & 0 & 0 \\
 \end{bmatrix}
 \end{equation}
-The static thrust allocation matrix $\thrusterGeometryOnes[*]$ is the pseudo inverse of the thrust geometry matrix $\thrusterGeometryOnes$. An approximately decoupled control is achieved when the static thrust allocation matrix is used and thus can the \abbrROV be controlled better. \Figureref{fig:open_control} illustrates how the control signals are allocated to the different thrusters when given an control input. The thrust-geometry matrix could be chosen as $\thrusterGeometryOnes = \boldsymbol{T}_{\text{normed}}$. Here, $\boldsymbol{T}_{\text{normed}}$ is the row-wise normed thrust matrix $\boldsymbol{T}$ from \sectionref{sec:act}. Using the aforementioned thruster matrix would reduce coupling effects but was not implemented on the \abbrROV since maximum thrust would be reduced.
+The static thrust allocation matrix $\thrusterGeometryOnes[+]$ is the pseudo inverse of the thrust geometry matrix $\thrusterGeometryOnes$. An approximately decoupled control is achieved when the static thrust allocation matrix is used and thus can the \abbrROV be controlled better. \Figureref{fig:open_control} illustrates how the control signals are allocated to the different thrusters when given an control input. The thrust-geometry matrix could be chosen as $\thrusterGeometryOnes = \boldsymbol{T}_{\text{normed}}$. Here, $\boldsymbol{T}_{\text{normed}}$ is the row-wise normed thrust matrix $\boldsymbol{T}$ from \sectionref{sec:act}. Using the aforementioned thruster matrix would reduce coupling effects but was not implemented on the \abbrROV since maximum thrust would be reduced.
 \begin{figure}
     \centering
     \begin{tikzpicture}[auto, thick, node distance=3cm, >=latex',%
@@ -102,20 +102,20 @@ The static thrust allocation matrix $\thrusterGeometryOnes[*]$ is the pseudo inv
     \draw
     	% Drawing the blocks of first filter :
     	node at (0,0)[input, name=input1] (input1) {}
-    	node [block, right of=input1] (inte1) {\thrusterGeometryOnes[*]}
+    	node [block, right of=input1] (inte1) {\thrusterGeometryOnes[+]}
     	node [output, right of=inte1] (output1) {};
         % Joining blocks. 
         % Commands \draw with options like [->] must be written individually
     	\draw[->](input1) -- node {$x_{\text{ref}}$}(inte1);
      	\draw[->](inte1) -- node {$u$} (output1);
     \end{tikzpicture}
-    \caption{The open-loop control allocate control signals using the thrust-allocation matrix $\thrusterGeometryOnes[*]$. The static thrust-allocation matrix approximately decouples the system.}
+    \caption{The open-loop control allocate control signals using the thrust-allocation matrix $\thrusterGeometryOnes[+]$. The static thrust-allocation matrix approximately decouples the system.}
     \label{fig:open_control}
 \end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Exact Linearisation} \index{Exact Linearisation} \index{Look-up table}
-Exact linearisation is to compensate for the non-linearities in a system using a non-linear control law. The goal is to make the system linear from an input-output perspective \citep{reglerteori}. Using the model structure from \Chapterref{cha:modelling} and the estimated parameters from \Chapterref{cha:parameterEstimation}, a non-linear control law was created 
+\section{Feedback Linearisation} \index{Feedback Linearisation} \index{Look-up table}
+Feedback linearisation is to compensate for the non-linearities in a system using a non-linear control law. The goal is to make the system linear from an input-output perspective \citep{reglerteori}. Using the model structure from \Chapterref{cha:modelling} and the estimated parameters from \Chapterref{cha:parameterEstimation}, a non-linear control law was created 
 \begin{equation}\label{eq:exactLin}
 \tauVector_{\text{Lin}} = G^{-1}(\hat{\etaVector}_{2},\hat{\nuVector}_{2},\accVector^{\text{b}}) = \inertia \accVector^{\text{b}} + \damping(\hat{\nuVector}_{2})\hat{\nuVector}_{2} + \coriolis(\hat{\nuVector}_{2})\hat{\nuVector}_{2} + \gravity(\hat{\etaVector}_{2})
 \end{equation}
@@ -129,8 +129,8 @@ The desired control signal $\boldsymbol{u}_{\text{Lin}}$ was then chosen using
 \end{equation} 
 where $\accVector^b$ could be chosen using any desired control method \citep[p.451]{fossen2011}.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Attitude Controller} \index{PID@\abbrPID!abbreviation} \index{Attitude Controller} \index{Exact Linearisation}
-An attitude controller was also implemented on the \abbrROV. The controller was chosen as \abbrPID-controller utilising exact linearisation \eqref{eq:exactLin}.
+\section{Attitude Controller} \index{PID@\abbrPID!abbreviation} \index{Attitude Controller} \index{Feedback Linearisation}
+An attitude controller was also implemented on the \abbrROV. The controller was chosen as \abbrPID-controller utilising feedback linearisation \eqref{eq:exactLin}.
 Since \eqref{eq:exactLin} aimed to linearise the angular accelerations in the body-fixed frame, these have to be transformed into the global coordinate system.
 This is achieved by choosing 
 \begin{equation}\label{eq:anLaw}
@@ -166,13 +166,13 @@ Combining \eqref{eq:etaTildeAngDot} with \eqref{eq:attitudeFeedback} gives the f
 %where $K_{\text{p}}$, $K_{\text{i}}$ and $K_{\text{d}}$ are positive definite design matrices \citep[p. 453]{fossen2011}. 
 The attitude controller was also combined with an open-loop control of the linear velocities
 \begin{equation}
-	u = \underbrace{f^{-1}(\boldsymbol{T}^{-1} G^{-1}(\hat{\etaVector}_2,\hat{\nuVector}_2,L(\accVector^n,\hat{\eulerAngles},\hat{\nuVector}_2)))}_{u_{\etaVectorAng}} + \underbrace{\thrusterGeometryOnes[*] \begin{bmatrix} \nuVector_{1,\text{ref}} \\ \zeroCol{3} \end{bmatrix}}_{u_{\nuVectorLin}}
+	u = \underbrace{f^{-1}(\boldsymbol{T}^{-1} G^{-1}(\hat{\etaVector}_2,\hat{\nuVector}_2,L(\accVector^n,\hat{\eulerAngles},\hat{\nuVector}_2)))}_{u_{\etaVectorAng}} + \underbrace{\thrusterGeometryOnes[+] \begin{bmatrix} \nuVector_{1,\text{ref}} \\ \zeroCol{3} \end{bmatrix}}_{u_{\nuVectorLin}}
 \end{equation}
 or
 \begin{equation}
-	u = \underbrace{f^{-1}(\boldsymbol{T}^{-1} L(\accVector^n,\hat{\eulerAngles},\hat{\nuVector}_2))}_{u_{\etaVectorAng}} + \underbrace{\thrusterGeometryOnes[*] \begin{bmatrix} \nuVector_{1,\text{ref}} \\ \zeroCol{3} \end{bmatrix}}_{u_{\nuVectorLin}}
+	u = \underbrace{f^{-1}(\boldsymbol{T}^{-1} L(\accVector^n,\hat{\eulerAngles},\hat{\nuVector}_2))}_{u_{\etaVectorAng}} + \underbrace{\thrusterGeometryOnes[+] \begin{bmatrix} \nuVector_{1,\text{ref}} \\ \zeroCol{3} \end{bmatrix}}_{u_{\nuVectorLin}}
 \end{equation}
-without the exact linearisation. This was implemented to allow the user to steer the \abbrROV while the controller ensures that the \abbrROV holds a given attitude. An illustration of how the attitude controller with open-loop control is implemented can be seen in \Figureref{fig:attitudecontroller}.
+without the feedback linearisation. This was implemented to allow the user to steer the \abbrROV while the controller ensures that the \abbrROV holds a given attitude. An illustration of how the attitude controller with open-loop control is implemented can be seen in \Figureref{fig:attitudecontroller}.
 
 \begin{figure}
 	\centering
@@ -212,7 +212,7 @@ without the exact linearisation. This was implemented to allow the user to steer
    		\draw (exactlin) -| (merge);
    		
    		%Input to thrust
-   		\draw node[block, right of=vel_input] (thrust) {$\thrusterGeometryOnes[*]$};
+   		\draw node[block, right of=vel_input] (thrust) {$\thrusterGeometryOnes[+]$};
    		\draw[->] (vel_input) -- node[align=center, below] {$\nuVectorLin[,\text{ref}]$} (thrust.west);
    		
    		
@@ -229,13 +229,13 @@ without the exact linearisation. This was implemented to allow the user to steer
    		\draw node [output, right of=sum, node distance=2cm] (output) {};
     		\draw[->] (sum.east) -- node[align=center, below] {$u$} (output);	
 	\end{tikzpicture}
-    \caption{The linear velocities are controlled in the same way as in \Sectionref{sec:openloop}. However, the attitude are controlled via an \abbrPID and exact linearisation can be enabled.} 
+    \caption{The linear velocities are controlled in the same way as in \Sectionref{sec:openloop}. However, the attitude are controlled via an \abbrPID and feedback linearisation can be enabled.} 
     \label{fig:attitudecontroller}
 \end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Angular Velocity Controller} \index{Angular Velocities Controller} \index{PI@\abbrPI!abbreviation} \index{Exact Linearisation}
-An angular velocity controller was also implemented using the exact linearisation \eqref{eq:exactLin}.
+\section{Angular Velocity Controller} \index{Angular Velocities Controller} \index{PI@\abbrPI!abbreviation} \index{Feedback Linearisation}
+An angular velocity controller was also implemented using the feedback linearisation \eqref{eq:exactLin}.
 Since no transformation is needed in order to control angular velocities in the body-fixed frame,
 $\accVector^b$ can be chosen using the following \abbrPI feedback 
 \begin{equation}
@@ -248,13 +248,13 @@ where $K_{\text{p}}$ and $K_{\text{i}}$ are positive definite design matrices an
 
 The angular velocities \abbrPI controller was also expanded with a open-loop control solution for control of linear velocities
 \begin{equation}
-	u = \underbrace{f^{-1}(\boldsymbol{T}^{-1} G^{-1}(\hat{\etaVector}_2,\hat{\nuVector}_2,\accVector^b))}_{u_{\nuVectorAng}} + \underbrace{\thrusterGeometryOnes[*] \begin{bmatrix}\nuVector_{1,\text{ref}} \\ \zeroCol{3} \end{bmatrix}}_{u_{\nuVectorLin}}	
+	u = \underbrace{f^{-1}(\boldsymbol{T}^{-1} G^{-1}(\hat{\etaVector}_2,\hat{\nuVector}_2,\accVector^b))}_{u_{\nuVectorAng}} + \underbrace{\thrusterGeometryOnes[+] \begin{bmatrix}\nuVector_{1,\text{ref}} \\ \zeroCol{3} \end{bmatrix}}_{u_{\nuVectorLin}}	
 \end{equation}
 or alternatively 
 \begin{equation}
-	u = \underbrace{f^{-1}(\boldsymbol{T}^{-1} \accVector^b)}_{u_{\nuVectorAng}} + \underbrace{\thrusterGeometryOnes[*] \begin{bmatrix} \nuVector_{1,\text{ref}} \\ \zeroCol{3} \end{bmatrix}}_{u_{\nuVectorLin}}
+	u = \underbrace{f^{-1}(\boldsymbol{T}^{-1} \accVector^b)}_{u_{\nuVectorAng}} + \underbrace{\thrusterGeometryOnes[+] \begin{bmatrix} \nuVector_{1,\text{ref}} \\ \zeroCol{3} \end{bmatrix}}_{u_{\nuVectorLin}}
 \end{equation}
-if the exact linearisation is inactive. \Figureref{fig:ratecontroller} illustrates how the angular velocity controller is implemented in conjunction with the open-loop control of the linear velocities.
+if the feedback linearisation is inactive. \Figureref{fig:ratecontroller} illustrates how the angular velocity controller is implemented in conjunction with the open-loop control of the linear velocities.
 \begin{figure}
 	\centering
 	\begin{tikzpicture}[auto, thick, node distance=2cm, >=latex',%
@@ -291,7 +291,7 @@ if the exact linearisation is inactive. \Figureref{fig:ratecontroller} illustrat
    		\draw (exactlin) -| (merge);
    		
    		%Input to thrust
-   		\draw node[block, right of=vel_input] (thrust) {$\thrusterGeometryOnes[*]$};
+   		\draw node[block, right of=vel_input] (thrust) {$\thrusterGeometryOnes[+]$};
    		\draw[->] (vel_input) -- node[align=center, below] {$\nuVectorLin[,\text{ref}]$} (thrust.west);
    		
    		%To sum
@@ -307,7 +307,7 @@ if the exact linearisation is inactive. \Figureref{fig:ratecontroller} illustrat
    		\draw node [output, right of=sum, node distance=2cm] (output) {};
     		\draw[->] (sum.east) -- node[align=center, below] {$u$} (output);	  
 	\end{tikzpicture}
-    \caption{The linear velocities are controlled in the same way as in \Sectionref{sec:openloop}. However, the angular velocities are controlled via an \abbrPI and exact linearisation can be enabled.} 
+    \caption{The linear velocities are controlled in the same way as in \Sectionref{sec:openloop}. However, the angular velocities are controlled via an \abbrPI and feedback linearisation can be enabled.} 
     \label{fig:ratecontroller}
 \end{figure}
 
@@ -321,7 +321,7 @@ If the error in depth $d$ is defined as
 \end{equation}
 then the \abbrPI depth controller can be defined as
 \begin{equation}
-u_{d} = \thrusterGeometryOnes[*]\begin{bmatrix} \boldsymbol{R}^n_b(\hat{\Theta})^T \begin{bmatrix}
+u_{d} = \thrusterGeometryOnes[+]\begin{bmatrix} \boldsymbol{R}^n_b(\hat{\Theta})^T \begin{bmatrix}
 0 \\
 0 \\
 - K_{\text{p}} \tilde{d} - K_{\text{i}}\int \! \tilde{d} \, \mathrm{d}t
@@ -370,7 +370,7 @@ where $K_{\text{p}}$ and $K_{\text{i}}$ are design parameters. The rotation matr
    		\draw (controller.east) ++(4,0) node[sum, name=sum] {$+$};
 		\draw[->] (controller.east) -- (sum.west);
 		\draw node[block, right of=switchup,node distance=1cm] (rotate) {$\boldsymbol{R}^n_b(\hat{\eulerAngles})^T$};
-		\draw node[block, below of=sum,node distance=1.3cm] (thrust) {$\thrusterGeometryOnes[*]$};
+		\draw node[block, below of=sum,node distance=1.3cm] (thrust) {$\thrusterGeometryOnes[+]$};
 		\draw[->] (switchup) -- (rotate.west); 
 		\draw[->] (rotate.east) -| (thrust.south); 
    		\draw[->] (thrust.north) -- node[align=center, right] {$u_{d}$}  (sum.south);   		   		
@@ -392,13 +392,13 @@ To be able to draw any conclusions about the performance of the controllers the 
 
 \item[Smooth step] A smooth step, a step with smooth acceleration, was applied to one \abbrDOF at the time and then to all \abbrDOF at the same time. The used smooth step was the same as in \citet[p. 192]{robotics}. The smooth step parameters were $q_{\text{0}} = 0$, $q_{\text{f}} = 1$, $t_{\text{s}} = 3$, $t_{\text{f}} = 15$ and $V = 1.5 (q_{\text{f}} - q_{\text{0}})/(t_{\text{f}} - t_{\text{s}}))$.
 \end{description}
-for each controller separately. For each conducted test, except for depth tests, a simulated test was also performed. The \abbrROV simulator used the parameters from \Sectionref{sec:parameterResults}. The exact linearisation, both in the simulator and the \abbrROV, used the parameters from \Sectionref{sec:parameterResults} with a scaling factor of $0.9$ except for $z_B$, which was scaled by $0.5$. In this Section, a few representative test cases will be presented, several more tests were conducted and these can be seen in \Appref{app:controllerTestResults}. 
-Tests were conducted with the \abbrPID attitude controller without exact linearisation, the \abbrPI rate controller with exact linearisation and with the \abbrPI depth controller. The control parameters used in the \abbrPID and the \abbrPI:s during simulation and real tests can be seen in \Tableref{tab:parametersAttitude}. Theses were initially chosen using simulations and were further tweaked during some quick controller tests. Different performance measures, overshoot, undershoot and steady-state error will be used to specify the performance of the controllers. These measures are defined as in \citet{reglerteori}. 
+for each controller separately. For each conducted test, except for depth tests, a simulated test was also performed. The \abbrROV simulator used the parameters from \Sectionref{sec:parameterResults}. The feedback linearisation, both in the simulator and the \abbrROV, used the parameters from \Sectionref{sec:parameterResults} with a scaling factor of $0.9$ except for $z_B$, which was scaled by $0.5$. In this Section, a few representative test cases will be presented, several more tests were conducted and these can be seen in \Appref{app:controllerTestResults}. 
+Tests were conducted with the \abbrPID attitude controller without feedback linearisation, the \abbrPI rate controller with feedback linearisation and with the \abbrPI depth controller. The control parameters used in the \abbrPID and the \abbrPI{}s during simulation and real tests can be seen in \Tableref{tab:parametersAttitude}. Theses were initially chosen using simulations and were further tweaked during some quick controller tests. Different performance measures, overshoot, undershoot and steady-state error will be used to specify the performance of the controllers. These measures are defined as in \citet{reglerteori}. 
 
 \begin{table}[tbp]
   \centering
   \caption{\label{tab:parametersAttitude}%
-    The parameters used in the \abbrPID:s.}
+    The parameters used in the \abbrPID{}s.}
   \begin{tabular}{l l l l}
     \toprule%
        & \textbf{$K_\text{p}$} & \textbf{$K_\text{i}$}& \textbf{$K_\text{d}$}\\
@@ -539,7 +539,7 @@ x_2\\
 -a x_1 - b x_2\abs{x_2} + u
 \end{bmatrix}
 \end{equation}
-Using exact linearisation, the ideal case would be to use the control law 
+Using feedback linearisation, the ideal case would be to use the control law 
 \begin{equation}\label{eq:exampleLaw}
 u = a x_1 +b x_2\abs{x_2} + \bar{u}
 \end{equation} which would yield the linear system
@@ -573,17 +573,17 @@ the control law has created an unstable non-linear system. The instability can n
 applying a strong enough feedback using $\bar{u}$. But a strong feedback is often undesirable since using a stronger control signal means that the system will use more energy. Furthermore, a large control signal is not always possible since $u$ might be saturated.  
 \end{example}
 
-Additional problems were encountered during trimming of the attitude \abbrPID using exact linearisation. The core of the problem was that regardless of the strength of the feedback the \abbrROV never stabilised around the desired references. The result from an attempt to stabilize the \abbrROV using the attitude controller can be seen in \Figureref{fig:ExactLinAttitude}. This problem might originate from bad magnetometer readings, which fluctuated when the \abbrROV engaged its thrusters. It is suspected that such fluctuations in magnetic field strength may cause rapid changes in the estimated quaternions and angular velocities. This would in turn lead to problems when computing \eqref{eq:anLaw} in the exact-linearisation block. %The problem could also be caused by badly estimated parameters from \Chapterref{cha:modelling}. The likelihood of the problem lying with the parameters is strengthened by the fact that the estimated model parameters had to be scaled down in the exact linearisation to get the rate controller to be stable. 
+Additional problems were encountered during trimming of the attitude \abbrPID using feedback linearisation. The core of the problem was that regardless of the strength of the feedback the \abbrROV never stabilised around the desired references. The result from an attempt to stabilize the \abbrROV using the attitude controller can be seen in \Figureref{fig:ExactLinAttitude}. This problem might originate from bad magnetometer readings, which fluctuated when the \abbrROV engaged its thrusters. It is suspected that such fluctuations in magnetic field strength may cause rapid changes in the estimated quaternions and angular velocities. This would in turn lead to problems when computing \eqref{eq:anLaw} in the feedback linearisation. %The problem could also be caused by badly estimated parameters from \Chapterref{cha:modelling}. The likelihood of the problem lying with the parameters is strengthened by the fact that the estimated model parameters had to be scaled down in the exact linearisation to get the rate controller to be stable. 
 
 \begin{figure}
 \centering
-  \subfloat[][\label{fig:testExactAttitudeRoll} The exact linearisation in $\rollAngle$.]{\includegraphics[width=0.4\textwidth]{testExactLinAttitudePhi}}
+  \subfloat[][\label{fig:testExactAttitudeRoll} The feedback linearisation in $\rollAngle$.]{\includegraphics[width=0.4\textwidth]{testExactLinAttitudePhi}}
   \qquad
-  \subfloat[][\label{fig:testExactAttitudePitch} The exact linearisation in $\pitchAngle$.]{\includegraphics[width=0.4\textwidth]{testExactLinAttitudeTheta}}
+  \subfloat[][\label{fig:testExactAttitudePitch} The feedback linearisation in $\pitchAngle$.]{\includegraphics[width=0.4\textwidth]{testExactLinAttitudeTheta}}
   \qquad
-  \subfloat[][\label{fig:testExactAttitudeYaw} The exact linearisation in $\yawAngle$.]{\includegraphics[width=0.4\textwidth]{testExactLinAttitudePsi}}
+  \subfloat[][\label{fig:testExactAttitudeYaw} The feedback linearisation in $\yawAngle$.]{\includegraphics[width=0.4\textwidth]{testExactLinAttitudePsi}}
   \caption{\label{fig:ExactLinAttitude}% 
-  The result of the exact linearisation attitude controller with setpoints $\phi_{ref}=0$, $\theta_{ref}=0$ and $\psi_{ref}=0$. Note the instability in $\theta$ and $\psi$.}
+  The result of the feedback linearisation attitude controller with setpoints $\phi_{ref}=0$, $\theta_{ref}=0$ and $\psi_{ref}=0$. Note the instability in $\theta$ and $\psi$.}
 \end{figure}
 
 In general, comparisons of simulated tests and real tests gave mixed results.
@@ -592,6 +592,6 @@ In some test the real tests outperformed their simulated counterparts. This is p
 %A possible cause of the large parameter values might be the look-up table $\tau = f(u)$. If the look-up table returns a higher thrust than actually delivered, estimates of damping, inertia terms and the moment arm $z_b$ may be estimated with higher magnitudes. A possible way to bypass this is to model the thrusters using \begin{equation}
 %\tau=C_{tau}u_{\text{Control}}\abs{u_{\text{Control}}}
 %\end{equation} where $\tau$ is the thrust and $u_{\text{Control}}$ is the control signal sent to the thruster. 
-%Another solution would be to upgrade the \abbrESC:s to Blue\abbrESC:s from Blue Robotics, since these can measure the rotations per minute (\abbrRPM) of the thruster \citep{bluerobotics}. This would enable the relation between \abbrRPM and thrust to be modelled and the \abbrRPM to be controlled for more predictable thruster performance.\todo[inline]{Hur ska detta tas upp? Blandar regulator- och estimeringsdiskussion.}
+%Another solution would be to upgrade the \abbrESC{}s to Blue\abbrESC{}s from Blue Robotics, since these can measure the rotations per minute (\abbrRPM) of the thruster \citep{bluerobotics}. This would enable the relation between \abbrRPM and thrust to be modelled and the \abbrRPM to be controlled for more predictable thruster performance.\todo[inline]{Hur ska detta tas upp? Blandar regulator- och estimeringsdiskussion.}
 
 Overall, results were good in the view of the short amount of time available for controller trimming. The problem with the attitude controller and the linearising control law is unfortunate, but should be easily rectified with magnetometer calibration and some additional \abbrPID tweaking. Moreover, it is believed that exceptional rate controller performance may be possible with further trimming, making controlling the \abbrROV manually a subjectively pleasant experience.

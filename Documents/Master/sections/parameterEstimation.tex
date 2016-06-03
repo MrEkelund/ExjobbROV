@@ -4,32 +4,23 @@ A central part of modelling is parameter estimation and its importance is often 
 \boldsymbol{x}_{k+1} &=f(\boldsymbol{x}_k,\boldsymbol{u}_k,\boldsymbol{w}_k|\boldsymbol{\theta})\\
 \boldsymbol{y}_{k} &= h(\boldsymbol{x}_k,\boldsymbol{u}_k,\boldsymbol{v}_k|\boldsymbol{\theta})
 \end{align}
-but several of the parameters $\boldsymbol{\theta}$ are unknown.
-To estimate parameters in a know model structure is called-gray box modelling. 
+where several of the parameters in $\boldsymbol{\theta}$ are unknown.
+To estimate parameters in a known model structure is called-gray box modelling. 
 
 In general, parameter estimation is to fit a model structure's parameter vector $\boldsymbol{\theta}$ such that the model best describes the estimation data. The model is then validated with a dataset which was not used during estimation. If the model describes the validation data well, the model and its parameter values are accepted. A measure of how well a model describes a dataset is the normalised root mean square error given by
 \begin{equation}
 \text{Fit} = 100 \left(1 - \frac{\sqrt{\sum\limits_{t=1}^N \bigr(\boldsymbol{y}(t) - \hat{\boldsymbol{y}}(t)\bigl)^2}}{\sqrt{\sum\limits_{t=1}^N \bigr(\boldsymbol{y}(t)-\frac{1}{N}\sum\limits_{t=1}^N \boldsymbol{y}(t)\bigl)^2}}\right)
 \end{equation}% 
-A high fit value indicate that the model describes the validation data well.\index{Fit}
+A high fit value indicates that the model describes the validation data well.\index{Fit}
 
-An aspect to consider when estimating model parameters is what to model as inputs and what to model as outputs. Inputs to a system are considered to be true signals, thus if they are noisy or inaccurate they can effect the estimation negatively \citep{modellbygge}. Outputs from a system are measurements of a state or states and are thus expected to be somewhat noisy and can not be used as ground truth. 
+An aspect to consider when estimating model parameters is what to model as inputs and what to model as outputs. Inputs to a system are considered to be true signals, thus if they are noisy or inaccurate they can effect the estimation negatively \citep{modellbygge}. Outputs from a system are measurements of one or several states and are thus expected to be somewhat noisy and can not be used as ground truth. 
 
 To estimate the unknown parameters in the \abbrROV model described in \Chapterref{cha:modelling}, different methods can be used. Two different methods will be explained further in \sectionref{sec:pem} and \sectionref{sec:KalmanEstimation}.  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Data Collection and Processing} \index{Data preprocessing} 
-To conduct parameter estimation, experimental data tests had to be collected. To be able to use the assumptions in \eqref{eq:pq_dot_decouple} and \eqref{eq:r_dot_decouple} data collection had to be done in three specific ways.
+To conduct parameter estimation, experimental data sets had to be collected. To be able to use the assumptions in \eqref{eq:pq_dot_decouple} and \eqref{eq:r_dot_decouple} the data collection had to be performed in three specific ways.
 First the \abbrROV was excited in $p$ and $q$, then in $r$ and lastly the \abbrROV was excited in all rotations. \Figureref{fig:pqTest} and \Figureref{fig:rTest} illustrates the conducted tests. All experiments were conducted in such a way that linear velocities were kept at a minimum.
 The main control signals used during data collection tests were telegraph signals. Both the scaling of the output magnitude and switch factors were changed in between tests in order to find signals that excited the desired states sufficiently. An example of a such a signal can be seen in \Figureref{fig:telegraph}.
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.8\textwidth]{telegraph}
-\caption{An example of a telegraph signal which was sent to a thruster during data collection experiments.}
-\label{fig:telegraph}
-\end{figure}
-
-Data preprocessing was done by synchronising the data streams by checking the start and end times of each experiment, here chosen as the time of arrival of the first control signal. The sensor data was aligned such that the data sample of each sensor whose arrival time was closest to the starting time of the test was chosen as the initial sample of each data stream. Data outside the test interval was discarded. After alignment the data was resampled to 100 Hz. The sensor data was resampled using first-order hold while the control signals were resampled using zero-order hold since the control signal data only contained points were the control signals changed.  
 
 \begin{figure}[htbp]
   \centering
@@ -52,17 +43,28 @@ Data preprocessing was done by synchronising the data streams by checking the st
   \caption{\label{fig:rTest}%
  Plots of excitation of the three angular velocities $p$, $q$ and $r$ from a test intended to mainly excite $r$. Note that the amplitude in $r$ is approximately two times larger than that of $p$ and $q$.}
 \end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.8\textwidth]{telegraph}
+\caption{An example of a telegraph signal which was sent to a thruster during data collection experiments.}
+\label{fig:telegraph}
+\end{figure}
+
+Data preprocessing was done by synchronising the data streams by checking the start and end of each experiment, here chosen as the time of arrival of the first control signal. The sensor data was aligned such that the data sample of each sensor whose arrival time was closest to the starting time of the test was chosen as the initial sample of each data stream. Data outside the test interval was discarded. After alignment, the data was resampled to 100 Hz. The sensor data was resampled using first-order hold while the control signals were resampled using zero-order hold since the control signal data only contained points were the control signals changed.  
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Prediction-Error Method} \label{sec:pem} \index{Cost function} \index{Prediction-Error Method}
 The prediction-error method uses a predictor $\hat{\boldsymbol{y}}_k(\boldsymbol{\theta})$ of a model's output to compare with the present output of the system. The discrete-time predictor can be described by 
 \begin{equation}
-\hat{\boldsymbol{x}}_{k+1}(\theta) = f(\boldsymbol{\hat{x}_k}(\theta), \boldsymbol{u}_k,\boldsymbol{y}_k, \boldsymbol{\theta})
+\hat{\boldsymbol{x}}_{k+1}(\boldsymbol{\theta}) = f(\boldsymbol{\hat{x}_k}(\boldsymbol{\theta}), \boldsymbol{u}_k,\boldsymbol{y}_k, \boldsymbol{\theta})
 \end{equation}
 and
 \begin{equation}
 \hat{\boldsymbol{y}}_k(\boldsymbol{\theta}) = h(\hat{\boldsymbol{x}}_k, \boldsymbol{u}_k, \boldsymbol{\theta})
 \end{equation}
-where $\hat{\boldsymbol{x}}$ is the estimated state vector, $\boldsymbol{u}$ are the inputs and $\hat{\boldsymbol{y}}_k(\boldsymbol{\theta})$ is the predicted output of the model \citep[p. 13]{Roger}. 
+where $\hat{\boldsymbol{x}_k}$ is the estimated state vector, $\boldsymbol{u}_k$ are the inputs and $\hat{\boldsymbol{y}}_k(\boldsymbol{\theta})$ is the predicted output of the model \citep[p. 13]{Roger}. 
 
 The fitting is done by minimising a cost function $V(\boldsymbol{\theta})$ with respect to the parameter vector $\boldsymbol{\theta}$ \emph{i.e.}
 \begin{equation}
@@ -70,7 +72,7 @@ The fitting is done by minimising a cost function $V(\boldsymbol{\theta})$ with 
 \end{equation}
 The cost function in this thesis has been defined as the squared error with an error threshold to handle noisy signals. An error threshold means that after a breakpoint the cost function becomes linear instead of quadratic, which makes the parameter estimation less sensitive to outliers\citep{ljungtheory}. To reduce the impact of the noise even further, the weight matrix was chosen as the inverse of the estimated noise covariance \citep{ljungtheory}. The cost function is
 \begin{equation}
-    V(\boldsymbol{\theta}) = \frac{1}{N} \left( \sum_{t \in \mathcal{i}} \boldsymbol{e}^T_k(\boldsymbol{\theta}) \boldsymbol{W}(\boldsymbol{\theta})  \boldsymbol{e}_k(\boldsymbol{\theta}) + \sum_{t \in \mathcal{j}} \boldsymbol{v}^T_k(\boldsymbol{\theta}) \boldsymbol{W}(\boldsymbol{\theta})  \boldsymbol{v}_k(\boldsymbol{\theta}) \right)
+    V(\boldsymbol{\theta}) = \frac{1}{N} \left( \sum_{k \in \mathcal{i}} \boldsymbol{e}^T_k(\boldsymbol{\theta}) \boldsymbol{W}(\boldsymbol{\theta})  \boldsymbol{e}_k(\boldsymbol{\theta}) + \sum_{k \in \mathcal{j}} \boldsymbol{v}^T_k(\boldsymbol{\theta}) \boldsymbol{W}(\boldsymbol{\theta})  \boldsymbol{v}_k(\boldsymbol{\theta}) \right)
 \end{equation}
 where $N$ is the number of samples in the dataset, $\boldsymbol{e}_k(\boldsymbol{\theta})$ is the error vector with the parameter vector~$\boldsymbol{\theta}$ and $\boldsymbol{W}$ is a positive definite weight matrix \citep{ljungtheory}. The set $\mathcal{i}$ is the subset of indices for which $\abs{\boldsymbol{e}_k(\boldsymbol{\theta})} < \sigma \rho$ holds. Here, $\sigma$ is the estimated standard deviation of $\boldsymbol{e}_k(\boldsymbol{\theta})$ and $\rho$ is the chosen error threshold. The set $\mathcal{j}$ is the complement of $\mathcal{i}$. The error $\boldsymbol{v}_k(\boldsymbol{\theta})$ is defined as 
 \begin{equation}
@@ -102,7 +104,7 @@ The result of the estimation can be seen in \Tableref{tab:ResultEstimAngular}. T
     Comparison of simulation of the attitude model (blue) against validation data (gray) using the estimated angels as inputs and angular velocities as outputs. The simulated model has a high fit compared to the validation data.}
 \end{figure}
 
-The estimate of $\etaVector$ did not follow the kinematic relations described in \sectionref{sec:coordinates}. The problem with $\etaVector$ not following the kinematic relations was further investigated by comparing integration of \eqref{eq:eulerAnglesdot} with $\hat{\etaVector}$ from the sensor fusion. As can be seen in \Figureref{fig:integratedAngleVelocities} the result was not satisfactory, with the estimated angles and the integration of \eqref{eq:eulerAnglesdot} being very dissimilar. It was therefore concluded that the estimated angles were unfit for use as outputs during parameter estimation unless a new motion model for the sensor fusion was created to solve the issue. It is therefore recommended that the validity of the observer is controlled using relations such as those in \sectionref{sec:coordinates} before collecting data. 
+The estimate of $\etaVector$ did not follow the kinematic relations described in \sectionref{sec:coordinates}. The problem with $\etaVector$ not following the kinematic relations was further investigated by comparing integration of \eqref{eq:eulerAnglesdot} with $\hat{\etaVector}$ from the sensor fusion. As can be seen in \Figureref{fig:integratedAngleVelocities} the result was not satisfactory, with the estimated angles and the integration of \eqref{eq:eulerAnglesdot} being dissimilar. It was therefore concluded that the estimated angles were unfit for use as outputs during parameter estimation unless a new motion model for the sensor fusion was created to solve the issue. It is therefore recommended that the validity of the observer is controlled using relations such as those in \sectionref{sec:coordinates} before collecting data. 
 
 \begin{figure}[htbp]
   \centering
@@ -127,7 +129,7 @@ with
 \hat{\boldsymbol{a}}
 \end{bmatrix}
 \end{equation}
-where $\hat{\boldsymbol{a}}$ is the estimated linear acceleration in the \abbrROV frame and $\nuVector$ is a state. The measurement equation for $\boldsymbol{a}$ is
+where $\hat{\boldsymbol{a}}$ is the estimated linear acceleration in the body frame and $\nuVector$ is a state. The measurement equation for $\boldsymbol{a}$ is
 \begin{equation}
 \boldsymbol{a} = \begin{bmatrix}
     2 g \quatO \quatII -2 g \quatI \quatIII \\
@@ -203,7 +205,7 @@ The estimated parameter values obtained when using \eqref{eq:quatModel} with ang
 To circumvent the issues with estimating the initial state during the prediction-error method, an \abbrEKF was used to estimated the parameters. An \abbrEKF can  be used to estimate parameters by extending the state vector of the \abbrEKF with the parameters that need to be estimated \citep{Roger}.  \index{Model structure} 
 Extending the state vector gives the following augmented state
 \begin{equation}
-\bar{\boldsymbol{x}} = \begin{bmatrix}
+\bar{\boldsymbol{x}}_k = \begin{bmatrix}
 \boldsymbol{x}_k\\
 \boldsymbol{\theta}_k
 \end{bmatrix}
@@ -220,7 +222,7 @@ The added parameters were modelled using constant position, which gave the follo
 \begin{equation}
 \boldsymbol{y}_k=\boldsymbol{h}(\bar{\boldsymbol{x}}_k(\boldsymbol{\theta}),\boldsymbol{u}_k)
 \end{equation}
-Since the \abbrEKF tries to minimise state variance, it will also try to estimate the parameters $\boldsymbol{\theta}$ if they are included in the state vector \citep{Roger}.
+Since the \abbrEKF tries to minimise the state variance, it will also try to estimate the parameters $\boldsymbol{\theta}$ if they are included in the state vector \citep{Roger}.
 
 %\subsection{Implementation}\label{sec:KalmanEstimatorImpl}
 %The reparametrised model \eqref{eq:quatModel} was used to model $\etaVector$ and $\nuVector$. Measurement equations were taken from \Chapterref{cha:sensor_fusion}. Each model parameter was modelled as a state using a constant position motion model and the motion model was discretised using the Euler forward discretisation method. The complete discrete model is
@@ -247,7 +249,7 @@ Since the \abbrEKF tries to minimise state variance, it will also try to estimat
 %\end{equation}
 %Here, $\boldsymbol{\theta}$ is a vector containing the parameters that were estimated. The vector-valued function $\boldsymbol{f}(\etaVector,\nuVector,\boldsymbol{\theta})$ is \eqref{eq:quatModel}. The vector $\boldsymbol{b}$  contains the biases of the gyroscope. The vector $\boldsymbol{v}$ is the system noise and is assumed to enter each term directly, this resulted in a diagonal $\boldsymbol{Q}$-matrix when implementing the model in the \abbrEKF. The matrix $\boldsymbol{T}(\etaVector)$ is an angular velocity transformation matrix using the quaternion form of $\etaVector$ and is defined in \Chapterref{cha:modelling}. Measurement equations are taken from \sectionref{sec:Meas}.
 
-To increase the performance of the filter, a method for outlier detection and rejection was implemented. Since time updates were done batch wise it was decided to use a different form of outlier rejection and not to reimplement the method used in \sectionref{sec:Meas}. The outlier rejection method is based on the assumption that the normalised innovation \begin{equation} \label{eq:chi}
+To increase the performance of the filter, a method for outlier detection and rejection was implemented. Since time updates were performed batch wise it was decided to use a different form of outlier rejection and not to reimplement the method described in \sectionref{sec:Meas}. The outlier rejection method is based on the assumption that the normalised innovation \begin{equation} \label{eq:chi}
 \boldsymbol{\epsilon}^T \boldsymbol{S}^{-1} \boldsymbol{\epsilon} \sim \chi_{n}^{2}
 \end{equation} can be used.
 Here, $n$ is the number of measurements. To check the validity of a measurement from one sensor, \eqref{eq:chi} gives that $\epsilon_i^{2}/S_{i,i} \sim \chi_{1}^{2}$ \citep{sensorfusion}. Using this assumption, it is possible to eliminate bad measurements from individual sensors instead of rejecting all sampled data at that time instance. This is implemented in the \abbrEKF using \Algoref{alg:outlier}.
@@ -268,15 +270,15 @@ Here, $\boldsymbol{\sigma}$ is a $n\times1$ dimensional design variable and $n$ 
 %The filter was run on each collected dataset. The final values of $\hat{\boldsymbol{\theta}}$ from a dataset were used as initial values for $\hat{\boldsymbol{\theta}}$ when the filter was applied on the next dataset. The same was done for the covariance matrix $\boldsymbol{P}$. The final covariance from an earlier run was set as the initial covariance when the filter was applied on subsequent dataset. At completion the parameters were entered in a simulator which was feed with the control signals from the corresponding dataset. The simulated  output was then compared with the original data.
 
 \section{Estimation Using an Extended Kalman Filter}\label{sec:estimKalman}
-The \abbrEKF estimation used the method described in \sectionref{sec:KalmanEstimation}, with additional bias states. The model \eqref{eq:quatModel} with quaternions as attitude representation was used to model $\nuVector$. The estimator was feed with process noise covariance matrix
+The \abbrEKF estimation used the method described in \sectionref{sec:KalmanEstimation}, with additional bias states. The model \eqref{eq:quatModel} with quaternions as attitude representation was used to model $\nuVector$. The estimator was fed with process noise covariance matrix
 \begin{equation*}
 \boldsymbol{Q}=\text{diag}[\underbrace{\overbrace{1000}^{\times4}}_{\etaVector}... \underbrace{\overbrace{1000}^{\times3}}_{\nuVector}...\underbrace{\overbrace{0.01}^{\times3}}_{\boldsymbol{b}}... \underbrace{\overbrace{0.001}^{\times10}}_{\boldsymbol{\theta}}]\text{ ,}
 \end{equation*}
-measurement noise covariance matrix
+and the measurement noise covariance matrix
 \begin{equation*}
 \boldsymbol{R} = \text{diag}[\underbrace{\overbrace{0.001}^{\times3}}_{\text{Gyro}}... \underbrace{\overbrace{0.1}^{\times3}}_{\text{Acc}}... \underbrace{\overbrace{1000}^{\times3}}_{\text{mag}}]
 \end{equation*}
-Three data sets were feed in to the estimator, while a fourth and fifth were used as validation data. All data sets were of excitations in $p$, $q$ and $r$ simultaneously. Parameter values from the estimation can be viewed together with the initial states in \tableref{tab:ResultKalmanFixedMomentArms}.
+Three data sets were fed in to the estimator, where a fourth and fifth were used as validation data. All data sets were of the type with excitations in $p$, $q$ and $r$ simultaneously. Parameter values from the estimation can be viewed together with the initial states in \tableref{tab:ResultKalmanFixedMomentArms}.
 \begin{table}[hbp]
   \centering
   \caption{\label{tab:ResultKalmanFixedMomentArms}%
@@ -302,7 +304,7 @@ Three data sets were feed in to the estimator, while a fourth and fifth were use
     \bottomrule%
   \end{tabular}
 \end{table}
-The fit of the model using the estimated parameters can be viewed in \figureref{fig:ResultKalmanFixedMomentArms}. The high fit in $q$ and $r$ indicate that the model describes the data well. However, the model does not describe the validation data well in $p$.\index{Fit}
+The fit of the model using the estimated parameters can be viewed in \figureref{fig:ResultKalmanFixedMomentArms}. The high fit in $q$ and $r$ indicates that the model describes the data well. However, the model does not describe the validation data well in $p$.\index{Fit}
 % results kalman fixed moment arms
 \begin{figure}[tbp]
   \centering
@@ -317,7 +319,7 @@ The fit of the model using the estimated parameters can be viewed in \figureref{
 
 
 \section{Investigating Low Fit in p Dynamics}\label{sec:pdyn}
-An issue that was present in \sectionref{sec:estimPEM} and \sectionref{sec:estimKalman} was a low fit in $p$ during estimation. This was further investigated by manually testing each thruster individually and visual inspecting the response of the \abbrROV. During tests it was discovered that thruster 6, see \Figureref{fig:thrusterlocationfront}, had minimal effect on the $p$-dynamics. A test showed that thruster 6 effected only had significant effect in $p$ when it was actuated quickly. If the sixth thrusters power was incremented slowly an initial response in $p$ was noted before it settled at zero again. The effect of thruster 6 in $p$ can be seen in \Figureref{fig:thruster6}. Thruster 6 also effected $r$, this can be due to unmodelled water interaction or that the thruster is in front or behind the center of rotation.
+An issue that was present in \sectionref{sec:estimPEM} and \sectionref{sec:estimKalman} was a low fit in $p$ during estimation. This was further investigated by manually testing each thruster individually and visual inspecting the response of the \abbrROV. During tests it was discovered that thruster 6, see \Figureref{fig:thrusterlocationfront}, had minimal effect on the $p$-dynamics. A test showed that thruster 6 effected only had significant effect in $p$ when it was actuated quickly. If the sixth thrusters power was incremented slowly an initial response in $p$ was noted before it settled at zero again. The effect of thruster 6 in $p$ can be seen in \Figureref{fig:thruster6}. Thruster 6 also affected $r$, this can be due to unmodelled water interaction or that the thruster is in front or behind the center of rotation.
 
 \begin{figure}
 \centering
@@ -327,7 +329,7 @@ An issue that was present in \sectionref{sec:estimPEM} and \sectionref{sec:estim
   \qquad
   \subfloat[][\label{fig:thruster6r1} The control signal sent to thruster 6.]{\includegraphics[width=0.7\textwidth]{thruster6u6}}
   \caption{\label{fig:thruster6}%
-  The effect in $p$ and $r$ while only using thruster 6. As can be seen thruster 6 has a relatively small effect in $p$, thus ought the moment arm of thruster 6 be small. However, thruster 6 effected $p$ more when thruster 6 was quickly actuated.}
+  The effect in $p$ and $r$ while only using thruster 6. As can be seen thruster 6 has a relatively small effect in $p$, thus ought the moment arm of thruster 6 be small. However, thruster 6 affected $p$ more when thruster 6 was quickly actuated.}
 \end{figure}
 
 It was decided that thruster 6 was to be eliminated from the estimation, and a second estimation was run with the moment arm for thruster 6 $\distance{z}{6}$ fixed to zero. The filter was once again initialised with the following settings
@@ -338,8 +340,7 @@ and
 \begin{equation*}
 \boldsymbol{R} = \text{diag}[\underbrace{\overbrace{0.001}^{\times3}}_{\text{Gyro}}... \underbrace{\overbrace{0.1}^{\times3}}_{\text{Acc}}... \underbrace{\overbrace{1000}^{\times3}}_{\text{mag}}]
 \end{equation*} 
-The estimation was done with five data sets, of which the first three were used for estimation while the fourth and fifth were used for validation. The estimator was iterated 2 times, using the parameter values from the previous iteration as the new initial states. The resulting parameter values and their initial values can be viewed in \tableref{tab:ResultKalmanFixedMomentArmsLz6} and a comparison of a simulated run against validation data is shown in \figureref{fig:ResultKalmanFixedMomentArmsLz6}. As can clearly be seen in \Figureref{fig:ResultKalmanFixedMomentArmsLz6}, a drastic improvement in fit for $p$ is noted. It is unclear what is causing thruster 6 to diminish the fit of the model, but there are some possible explanations. The assumption in \sectionref{cha:modelling}, that \abbrCG and the \abbrCO are placed at the same place in the \abbrROV may be invalid. If the \abbrCG is placed lower than the \abbrCO the measured moment arm of thruster 6 $\distance{z}{6}$
- will be to long. This will result in the effect in $p$ of thruster 6 to be less than expected. A similar performance increase was achieved when using the prediction-error method with $\distance{z}{6}=0$.
+The estimation was done with five data sets, of which the first three were used for estimation while the fourth and fifth were used for validation. The estimator was iterated 2 times, using the parameter values from the previous iteration as the new initial states. The resulting parameter values and their initial values can be viewed in \tableref{tab:ResultKalmanFixedMomentArmsLz6} and a comparison of a simulated run against validation data is shown in \figureref{fig:ResultKalmanFixedMomentArmsLz6}. As can clearly be seen in \Figureref{fig:ResultKalmanFixedMomentArmsLz6}, a drastic improvement in fit for $p$ is noted. It is unclear what was causing thruster 6 to diminish the fit of the model, but there are some possible explanations. The assumption in \sectionref{cha:modelling}, that \abbrCG and the \abbrCO are placed at the same place in the \abbrROV may be invalid. If the \abbrCG is placed lower than the \abbrCO the measured moment arm of thruster 6 $\distance{z}{6}$ will be to long. This will result in the effect in $p$ of thruster 6 to be less than expected. A similar performance increase was achieved when using the prediction-error method with $\distance{z}{6}=0$.
 
 % results kalman lz6=0 fixed moment arms
 \begin{table}[hbp]
@@ -458,7 +459,7 @@ The estimation was done with five data sets, of which the first three were used 
 \begin{table}[tbp]
   \centering
   \caption{\label{tab:parameterConstants}%
-    The known and estimated parameters used in the \abbrROV model.}
+    The known, measured and estimated parameters used in the \abbrROV model.}
   \begin{tabular}{l l p{0.58\linewidth}}
     \toprule%
     \textbf{Notation}   & \textbf{Value} & \textbf{Description} \\

@@ -6,7 +6,7 @@ An underwater vehicle with 6 \abbrDOF can be described by\index{Model of an unde
 \etaVectordot& = \boldsymbol{J}(\etaVector)\nuVector \\\label{eq:model}
  \inertia \nuVectordot &+ \coriolis(\nuVector)\nuVector + \damping(\nuVector)\nuVector + \gravity(\etaVector) = \tauVector 
 \end{align}
-where $\etaVector$ are generalised positions and $\nuVector$ are generalised velocities that are used to describe motion in 6 \abbrDOF \citep[p. 15]{fossen2011}. The matrices $\inertia$\index{Inertia matrix}, $\coriolis(\nuVector)$\index{Coriolis matrix}, $\damping(\nuVector)$\index{Damping matrix} and the vector $\gravity(\nuVector)$\index{Restoring forces matrix} respectively describes how inertia, Coriolis forces, damping forces, gravity and buoyancy affect the \abbrROV. The vector $\tauVector_{\text{Act}}$ describes the forces and torques produced by the \abbrROV's actuators.
+where $\etaVector$ are generalised positions and $\nuVector$ are generalised velocities that are used to describe motion in 6 \abbrDOF \citep[p. 15]{fossen2011}. The matrices $\inertia$\index{Inertia matrix}, $\coriolis(\nuVector)$\index{Coriolis matrix}, $\damping(\etaVector)$\index{Damping matrix} and the vector $\gravity(\nuVector)$\index{Restoring forces matrix} respectively describes how inertia, Coriolis forces, damping forces, gravity and buoyancy affect the \abbrROV. The vector $\tauVector$ are the generalised forces caused by the \abbrROV's actuators and unmodelled disturbances.
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 In this chapter, the vector cross-product $\cross{\cdot}$ is defined as $\cross{a\boldsymbol{A}} \boldsymbol{B} = a\boldsymbol{A} \times \boldsymbol{B}$. The notation used for the parameters in this thesis can be seen in \Tableref{tab:notationModelling}. The notation for forces, moments, linear and angular velocities, positions and Euler angles used in the model is summarised in \Tableref{tab:notationMarine}. 
@@ -76,7 +76,7 @@ To get a more compact way of writing, the following vector notation has been use
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Coordinate Systems and Kinematics} 
 \label{sec:coordinates}\index{NED}\index{body-fixed coordinate system}\index{global coordinate system} \index{Kinematics}
-During modelling it is important to choose proper coordinate systems in which to describe the systems behaviour.
+When modelling it is important to choose proper coordinate systems in which to describe the systems behaviour.
 In this thesis, two coordinate systems are used in the \abbrROV model. 
 
 The first system, the body-fixed coordinate system, is fixed to the \abbrROV and rotates with the \abbrROV. 
@@ -279,7 +279,7 @@ D\\
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %\section{Quaternions} 
 \index{Quaternions} \index{Transformation matrices}
-Euler angles are singular for $\pm \frac{\pi}{2}$ in $\pitchAngle$ which might occur in a \abbrROV. Thus it is useful to express angles with unit quaternions since these are always well defined \citep{sensorfusion}. To use quaternions, $\etaVector$ is instead defined as
+Euler angles are singular for $\pm \frac{\pi}{2}$ in $\pitchAngle$ which might occur in an \abbrROV. Thus it is useful to express angles with unit quaternions since these are always well defined \citep{sensorfusion}. To use quaternions, $\etaVector$ is instead defined as
 \begin{equation}
 \etaVector = \begin{bmatrix}
 \north \\
@@ -353,8 +353,8 @@ The rigid-body inertia matrix \index{Inertia}
     m\cross{\boldsymbol{r}^b_g} & \bodyinertia{b}
     \end{bmatrix}
 \end{equation}
-describes the resistance to change in linear- and angular velocity in the \abbrROV's 6 \abbrDOF. Here, $\boldsymbol{r}^b_g$ is the vector from the \abbrROV's \abbrCO to its \abbrCG and $\bodyinertia{b}$ is the inertia matrix for rotation about the \abbrROV's \abbrCO \citep[p. 50]{fossen2011}.
-Assuming that the \abbrROV's center of origin (\abbrCO) and \abbrCG coincide, simplifies \eqref{eq:inertia} to
+describes the resistance to change in linear- and angular velocity in the \abbrROV's 6 \abbrDOF. Here, $\boldsymbol{r}^b_g$ is the vector from the \abbrROV's center of origin (\abbrCO) to its \abbrCG, $m$ is the mass of the \abbrROV and $\bodyinertia{b}$ is the inertia matrix for rotation about the \abbrROV's \abbrCO \citep[p. 50]{fossen2011}.
+Assuming that the \abbrROV's \abbrCO and \abbrCG coincide, simplifies \eqref{eq:inertia} to
 \begin{equation}
    \inertia_{RB} = 
     \begin{bmatrix}
@@ -389,7 +389,7 @@ The \abbrROV experiences forces and effects caused by interaction with water. Th
 \begin{equation}\label{eq:dyn}
  \tauVector_\text{{Dyn}}=-\inertia_{\text{A}} \dot{\nuVector} -\coriolis_{\text{A}}(\nuVector)\nuVector - \damping(\nuVector)\nuVector  
 \end{equation} 
-where $\coriolis_{\text{A}}(\nuVector)\nuVector$ and $\inertia_{\text{A}}$ models the Coriolis forces and inertia from the added mass and moment of inertia and the vector $\damping(\nuVector)$ models linear and quadratic damping effects.
+where $\coriolis_{\text{A}}(\nuVector)\nuVector$ and $\inertia_{\text{A}}$ models the Coriolis forces and inertia from the added mass and moment of inertia and the vector $\damping(\nuVector)\nuVector$ models linear and quadratic damping effects.
 The added mass and moment of inertia is defined as
 \begin{equation}
 \inertia_\text{A} =
@@ -403,7 +403,7 @@ The added mass and moment of inertia is defined as
     \end{bmatrix},
 \end{equation}
 under the assumption that the \abbrROV moves at low speeds relative to the water \citep[p. 121]{fossen2011}.
-The Coriolis-centripetal effects from the added mass and added moment of inertia are described as
+The Coriolis-centripetal effects from the added mass and the added moment of inertia are described as
 \begin{align}
 %\begin{split}
     \coriolis_\text{A}(\nuVector) \nuVector &= 
@@ -428,8 +428,7 @@ The Coriolis-centripetal effects from the added mass and added moment of inertia
 \end{align}
 under the assumption that the \abbrROV is moving slowly and has three planes of symmetry \citep[p. 121]{fossen2011}. \index{Coriolis} \index{Damping}
 
-There are three main sources of hydrodynamic damping acting upon a submersed vehicle \citep[p. 122]{fossen2011}.
-Potential damping, skin friction and damping from vortex shedding. The effects are split in to two parts, linear damping and quadratic damping.\index{Viscous damping}
+There are three main sources of hydrodynamic damping acting upon a submersed vehicle: potential damping, skin friction and damping from vortex shedding \citep[p. 122]{fossen2011}. The effects are split in to two parts, linear damping and quadratic damping.\index{Viscous damping}
 The matrix $\damping$ contains the linear damping terms, while the matrix $\damping_{\text{n}}(\nuVector)$ contains the quadratic, or non-linear, damping terms \citep{fossen2011}. The sum of these two matrices form the Viscous damping matrix $\damping(\nuVector)$ which in turn can be simplified to
 \begin{align}
 \begin{split}
