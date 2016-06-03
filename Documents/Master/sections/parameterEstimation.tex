@@ -5,7 +5,7 @@ A central part of modelling is parameter estimation and its importance is often 
 \boldsymbol{y}_{k} &= h(\boldsymbol{x}_k,\boldsymbol{u}_k,\boldsymbol{v}_k|\boldsymbol{\theta})
 \end{align}
 where several of the parameters in $\boldsymbol{\theta}$ are unknown.
-To estimate parameters in a known model structure is called-gray box modelling. 
+To estimate parameters in a known model structure is called gray-box modelling. 
 
 In general, parameter estimation is to fit a model structure's parameter vector $\boldsymbol{\theta}$ such that the model best describes the estimation data. The model is then validated with a dataset which was not used during estimation. If the model describes the validation data well, the model and its parameter values are accepted. A measure of how well a model describes a dataset is the normalised root mean square error given by
 \begin{equation}
@@ -82,7 +82,7 @@ where $N$ is the number of samples in the dataset, $\boldsymbol{e}_k(\boldsymbol
 %Several tools exists	which can estimate parameters using the prediction-error method. In this thesis the System Identification Toolbox\texttrademark has been used.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Estimation Using Prediction-Error Method}\label{sec:estimPEM} \index{Fit} \index{Model structure}
-An initial set of model parameters were estimated using the decoupled models \eqref{eq:pq_dot_decouple} and \eqref{eq:r_dot_decouple}, while using appropriate data sets. These initial parameters were then used to estimate the parameters of model \eqref{eq:quatModel}. Estimated angles were used as inputs and angular velocities as outputs. This gave the following model structure to be estimated
+An initial set of model parameters were estimated using the decoupled models \eqref{eq:pq_dot_decouple} and \eqref{eq:r_dot_decouple}, together with appropriate data sets. These initial parameters were then used to estimate the parameters of model \eqref{eq:quatModel}. Estimated angles were used as inputs and angular velocities as outputs. This gave the following model structure to be estimated
 \begin{equation}
 \dot{\hat{\boldsymbol{\eta}}} = f(\hat{\nuVector}, \bar{\etaVector}, \tauVector)
 \end{equation}
@@ -138,7 +138,7 @@ where $\hat{\boldsymbol{a}}$ is the estimated linear acceleration in the body fr
     \end{bmatrix}
 \end{equation} 
 
-An issue that was encountered when estimating the parameters was that when angular velocities and linear accelerations were used as outputs, the model was extremely sensitive to the initial value of the quaternions. To examine this problem further, data was generated using a simulator and the simulated data was used in the estimation. The estimator was initialised with the correct initial parameter values from the simulator, but it was free to estimate the initial value of the quaternions. As expected, the estimated starting quaternions were far from the true initial values, which in turn led to the parameters diverging from their true values and a low fit was obtained even though the true parameters were used. A result from such a test can be seen in \Figureref{fig:angVelSim}.
+An issue that was encountered when estimating the parameters was that when angular velocities and linear accelerations were used as outputs, the model was sensitive to the initial value of the quaternions. To examine this problem further, data was generated using a simulator and the simulated data was used in the estimation. The estimator was initialised with the correct initial parameter values from the simulator, but it was free to estimate the initial value of the quaternions. As expected, the estimated starting quaternions were far from the true initial values, which in turn led to the parameters diverging from their true values and a low fit was obtained even though the true parameters were used. A result from such a test can be seen in \Figureref{fig:angVelSim}.
 
 \begin{figure}[htbp]
   \centering %comparison betwwen two simulations
@@ -202,7 +202,7 @@ The estimated parameter values obtained when using \eqref{eq:quatModel} with ang
 \end{table}   
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Extended Kalman Filter Estimation}\label{sec:KalmanEstimation}\index{EKF@\abbrEKF!abbreviation} 
-To circumvent the issues with estimating the initial state during the prediction-error method, an \abbrEKF was used to estimated the parameters. An \abbrEKF can be used to estimate parameters by extending the state vector of the \abbrEKF with the parameters that need to be estimated \citep{Roger}.  \index{Model structure} 
+To circumvent the issues of estimating the initial state during the prediction-error method, an \abbrEKF was used to estimated the parameters. An \abbrEKF can be used to estimate parameters by extending the state vector of the \abbrEKF with the parameters that need to be estimated \citep{Roger}.  \index{Model structure} 
 Extending the state vector gives the following augmented state
 \begin{equation}
 \bar{\boldsymbol{x}}_k = \begin{bmatrix}

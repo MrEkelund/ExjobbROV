@@ -67,7 +67,7 @@ In this chapter, the vector cross-product $\cross{\cdot}$ is defined as $\cross{
 To get a more compact way of writing, the following vector notation has been used
 \begin{itemize}
 \item $\boldsymbol{p}$: Positions.
-\item $\boldsymbol{v}$: Linear velocities.
+\item $\boldsymbol{\upsilon}$: Linear velocities.
 \item $\boldsymbol{\eulerAngles}$: Euler Angles.
 \item $\boldsymbol{\quaternion}$: Quaternions.
 \item $\boldsymbol{\omega}$: Angular velocities.
@@ -103,7 +103,7 @@ where $s\cdot$ stands for $\sin(\cdot)$ and $c\cdot$ stands for $\cos(\cdot)$ \c
 \end{equation}
 The super- and subscript notation is defined as
 \begin{equation}
-\boldsymbol{v}^{\text{to}}=\boldsymbol{R}^{\text{to}}_{\text{from}}(\eulerAngles)\boldsymbol{v}^{\text{from}}
+\boldsymbol{\upsilon}^{\text{to}}=\boldsymbol{R}^{\text{to}}_{\text{from}}(\eulerAngles)\boldsymbol{v}^{\text{from}}
 \end{equation}
 where $n$ denotes the global coordinate system, while $b$ denotes the body-fixed coordinate system.
 The notation $v_{b/n}$ means that $v$ is measured in $b$ relative $n$.
@@ -310,7 +310,7 @@ to the dynamics of $\dot{q}$ \citep[p. 31]{fossen2011}. The parameter $\gamma$ i
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-If quaternions are used to represent attitude, the transformation matrix from body-fixed coordinates to global coordinates is defined as 
+If quaternions are used to represent the attitude, the transformation matrix from body-fixed coordinates to global coordinates is defined as 
 \begin{equation}
 \boldsymbol{R}^n_b(\quaternion) = \begin{bmatrix}
   1 - 2(\quatII^2 + \quatIII^2) & 2(\quatI\quatII - \quatIII\quatO)   & 2(\quatI\quatIII + \quatII\quatO) \\
@@ -510,7 +510,7 @@ The \abbrROV is equipped with six identical, three-bladed thrusters. These can b
 \begin{equation}\label{eq:act}
     \tauVector_{\text{Act}} = \thrusterGeometry \boldsymbol{\thrusterfun{}} 
 \end{equation}
-where $\thrusterGeometry$\index{thruster geometry} is a matrix describing the geometry of the actuators \citep[p. 401]{fossen2011}. Figures~\ref{fig:thrusterlocationtop} and \ref{fig:thrusterlocationfront} illustrate the moment arms to each thruster. The positive rotation of the thrusters and the resulting positive forces can be seen in Figures~\ref{fig:thrusterRotation12} to \ref{fig:thrusterRotation6}.
+where $\thrusterGeometry$\index{thruster geometry} is a matrix describing the geometry of the actuators \citep[p. 401]{fossen2011}. Figures~\ref{fig:thrusterlocationtop} and \ref{fig:thrusterlocationfront} illustrate the moment arms to each thruster. The positive rotation of the thrusters and the resulting positive forces can be seen in Figures~\ref{fig:thrusterRotation12} to \ref{fig:thrusterRotation6}. This gives
 \begin{align}\label{eq:actuatorGeometry}
 \begin{split}
     \tauVector_{\text{Act}} = \thrusterGeometry \boldsymbol{\thrusterfun{}} 
