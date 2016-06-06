@@ -674,6 +674,13 @@ Attitude controller \textbf{without} exact linearisation.
 }
 \end{frame}
 
+
+\begin{frame}
+\begin{center}
+Disabling control in yaw
+\end{center}
+\end{frame}
+
 \begin{frame}
 \begin{center}
 \only<1-1>{
@@ -694,10 +701,12 @@ Attitude controller \textbf{without} exact linearisation.
 \begin{frame}
 \begin{center}
 Angular velocity controller using exact linearisation.
+\only<2->{
 \begin{align*}
 \nuVectorAngdot &= \accVector^b\\
 \accVector^b &=-K_{\text{p}} \nuTildeAng - K_{\text{i}}\int \! \nuTildeAng \, \mathrm{d}t
 \end{align*}
+}
 \end{center}
 \note{
 \begin{itemize}
@@ -710,13 +719,13 @@ Angular velocity controller using exact linearisation.
 \begin{frame}
 \begin{center}
 \only<1-1>{
-\includegraphics[scale=0.28]{../Master/fig/testExactLinAttitudePhi}
+\includegraphics[scale=0.28]{../Master/fig/testStepAllPs3e10a1}
 }
 \only<2-2>{
-\includegraphics[scale=0.28]{../Master/fig/testExactLinAttitudeTheta}
+\includegraphics[scale=0.28]{../Master/fig/testStepAllQs3e10a1}
 }
 \only<3-3>{
-\includegraphics[scale=0.28]{../Master/fig/testExactLinAttitudePsi}
+\includegraphics[scale=0.28]{../Master/fig/testStepAllRs3e10a1}
 }
 \end{center}
 \end{frame}
