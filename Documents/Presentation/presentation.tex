@@ -595,7 +595,29 @@ x_2\\
 \nuVectorAngdot &= \accVector^b
 \end{align*}
 \end{center}
+\note{\begin{itemize}
+\item Linearise using the model
+\item Tau are generalised forces needed to give the system
+\item  $\accVector^b$ could be chosen using any desired control
+\end{itemize}
+}
+\end{frame}
 
+
+\begin{frame}
+\begin{align*}
+\nuVectorAngdot &= \accVector^b\\
+\accVector^b &=L(\accVector^n,\hat{\eulerAngles},\hat{\nuVector}_2)=\boldsymbol{T}^{-1}_\theta(\hat{\eulerAngles})(\accVector^n - \dot{\boldsymbol{T}}_\theta(\hat{\eulerAngles})\hat{\nuVector}_2)\\
+\only<2->{
+\ddot{\boldsymbol{\eta}}_2&=\accVector^n
+}
+\end{align*}
+\end{frame}
+\begin{frame}
+\begin{align*}
+\etaTildeAng &= \hat{\etaVector}_2 - \etaVectorAng[,{\text{ref}}]\\
+\accVector^n &=-K_{\text{p}} \etaTildeAng - K_{\text{i}}\int \! \etaTildeAng \, \mathrm{d}t - K_{\text{d}} \etaTildeAngdot
+\end{align*}
 \end{frame}
 
 
@@ -672,6 +694,10 @@ Attitude controller \textbf{without} exact linearisation.
 \begin{frame}
 \begin{center}
 Angular velocity controller using exact linearisation.
+\begin{align*}
+\nuVectorAngdot &= \accVector^b\\
+\accVector^b &=-K_{\text{p}} \nuTildeAng - K_{\text{i}}\int \! \nuTildeAng \, \mathrm{d}t
+\end{align*}
 \end{center}
 \note{
 \begin{itemize}
