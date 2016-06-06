@@ -32,6 +32,7 @@
 \titlepage
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%Intro%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction}
 \begin{frame}
 \begin{itemize}
 \item Model-based design development
@@ -576,19 +577,24 @@ x_2\\
 }
 \end{column}
 \end{columns}
-\note{To control a system towards a desired state using input}
-\note{To control the system without measuring the current state. Needs to be modelled in order to attain good performance.}
-\note{To base the control action on measurements from outputs of the system.}
-\note{To compensate for a systems non-linearities using a model of the system.}
+\note{
+\begin{itemize}
+\item To control a system towards a desired state using input
+\item To control the system without measuring the current state. Needs to be modelled in order to attain good performance.
+\item To base the control action on measurements from outputs of the system.
+\item To compensate for a systems non-linearities using a model of the system.
+\end{itemize}
+}
 \end{frame}
-%what is automatic control
-%open-loop control
-%exact linearisation
-%attitude 
-%angular velocity
-%depth 
-%results
-%discussion
+
+\begin{frame}
+\begin{center}
+Attitude controller
+\end{center}
+
+\end{frame}
+
+
 
 \begin{frame}
 \begin{center}
@@ -598,7 +604,6 @@ Attitude controller using exact linearisation.
 \end{frame}
 \begin{frame}
 \begin{center}
-Attitude controller using feedback linearisation
 \only<1-1>{
 \includegraphics[scale=0.28]{../Master/fig/testExactLinAttitudePhi}
 }
@@ -610,17 +615,20 @@ Attitude controller using feedback linearisation
 }
 \end{center}
 \end{frame}
-\begin{frame}
 
+\begin{frame}
 \begin{center}
 Attitude controller \textbf{without} exact linearisation.
-
 \end{center}
-\note{An attitude controller has been developed using the exact linearisation technique described earlier.}
+\note{
+\begin{itemize}
+\item To solve the instability
+\item Remove Feedback lin
+\end{itemize}}
 \end{frame}
 
-
 \begin{frame}
+\begin{center}
 \only<1-1>{
 \includegraphics[scale=0.28]{../Master/fig/testStepAllPhis3e10a1}
 }
@@ -630,15 +638,57 @@ Attitude controller \textbf{without} exact linearisation.
 \only<3-3>{
 \includegraphics[scale=0.28]{../Master/fig/testStepAllPsis3e10a1}
 }
+\end{center}
+\note{
+\begin{itemize}
+\item Result when disabling feedback lin
+\item Not good result i yaw
+\item Magnetometer disturbed by motors
+\end{itemize}
+}
 \end{frame}
 
 \begin{frame}
+\begin{center}
 \only<1-1>{
 \includegraphics[scale=0.28]{../Master/fig/testStepThetaPhiPhis3e10a1}
 }
 \only<2-2>{
 \includegraphics[scale=0.28]{../Master/fig/testStepThetaPhiThetas3e10a1}
 }
+\note{
+\begin{itemize}
+\item Not controlling yaw
+\item Improvement in performance
+\end{itemize}
+}
+\end{center}
+\end{frame}
+
+\begin{frame}
+\begin{center}
+Angular velocity controller using exact linearisation.
+\end{center}
+\note{
+\begin{itemize}
+\item Ang controller
+\item Better performance
+\item Less dependent on attitude measurements
+\end{itemize}
+}
+\end{frame}
+\begin{frame}
+\begin{center}
+\only<1-1>{
+\includegraphics[scale=0.28]{../Master/fig/testExactLinAttitudePhi}
+}
+\only<2-2>{
+\includegraphics[scale=0.28]{../Master/fig/testExactLinAttitudeTheta}
+}
+\only<3-3>{
+\includegraphics[scale=0.28]{../Master/fig/testExactLinAttitudePsi}
+}
+\end{center}
 \end{frame}
 
 
@@ -647,7 +697,7 @@ Attitude controller \textbf{without} exact linearisation.
 %%%%%%%%%Conclusion%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusion}
 \begin{frame}
-
+lol
 \end{frame}
 %%%%%%%%%%%%
 
