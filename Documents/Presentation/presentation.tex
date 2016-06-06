@@ -589,7 +589,11 @@ x_2\\
 
 \begin{frame}
 \begin{center}
-Attitude controller
+\begin{align*}
+\tauVector_{\text{Lin}} &= G^{-1}(\hat{\etaVector}_{2},\hat{\nuVector}_{2},\accVector^{\text{b}}) = \inertia \accVector^{\text{b}} + \damping(\hat{\nuVector}_{2})\hat{\nuVector}_{2} + \coriolis(\hat{\nuVector}_{2})\hat{\nuVector}_{2} + \gravity(\hat{\etaVector}_{2})\\
+%
+\nuVectorAngdot &= \accVector^b
+\end{align*}
 \end{center}
 
 \end{frame}
