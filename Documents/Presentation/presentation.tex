@@ -12,7 +12,7 @@
 \usepackage{tikz}
 \usetikzlibrary{shapes,arrows,positioning,calc}
 \author{Adam Aili \& Erik Ekelund}
-\title{Model-Based Development of an Underwater Vehicle}
+\title{Model-Based Design, Development and Control of an Underwater Vehicle}
 %\setbeamercovered{transparent} 
 \setbeamertemplate{navigation symbols}{} 
 %\logo{} 
@@ -23,6 +23,7 @@
 %\setbeameroption{show notes}
 \setbeameroption{show notes on second screen=right}
 \newcommand\scalemath[2]{\scalebox{#1}{\mbox{\ensuremath{\displaystyle #2}}}}
+\DeclareMathOperator*{\argmin}{\arg\!\min}
 \input{notation}
 
 \begin{document}
@@ -58,7 +59,7 @@
 
 %%%%%%%%%%%%%%%%%%%%%Rov platfrom%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{ROV Platform}
-\begin{frame}
+\begin{frame}{ROV Platform}
 \begin{columns}
 \begin{column}{0.5\textwidth}
 \begin{itemize}
@@ -76,10 +77,10 @@
 \end{columns}
 
 \note{\begin{itemize}
-\item The blueROV package from Blue Robotics comes with 6 thrusters, 6 ESC:s and an acrylic tube.
+\item The BlueROV package from Blue Robotics comes with 6 thrusters, 6 ESCs and an acrylic tube.
 \item The on-board computer is the Raspberry Pi 2 which communicates with the workstation and perform controller calculations.
 \item The camera is used to get live video.
-\item HkPilot 2.7 is based on a multicopter autopilot. The HkPilot has three on-chip sensors: barometer, IMU and magnetometer. An external pressure sensor is wired to the HkPilot via I2C
+\item HkPilot 2.7 is based on a multicopter autopilot. The HKPilot has three on-chip sensors: barometer, IMU and magnetometer. An external pressure sensor is wired to the HkPilot via I2C
 \end{itemize}
 }
 \end{frame}
@@ -130,7 +131,7 @@
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%Model%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Modelling the ROV}
-\begin{frame}{Coordinate systems}
+\begin{frame}{Modelling the ROV}
 \begin{itemize}
 \item What is a model and how can it be used?
 \item Notation
@@ -476,20 +477,276 @@ and
 
 %%%%%%%%%%%%%%%%%%%%%Parameter Estimation%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Parameter Estimation}
+\begin{frame}{Parameter Estimation}
+\begin{columns}
+\begin{column}{0.5\textwidth}
+\begin{itemize}
+\item \structure<1-2> {What is parameter estimation?}
+\item \structure<3> {Input signals}
+\item \structure<4> {Validation of a model}
+\end{itemize}
+\end{column}
+\begin{column}{0.5\textwidth}
+
+\only<2-2>{
+\begin{align*}
+\boldsymbol{x}_{k+1} &=f(\boldsymbol{x}_k,\boldsymbol{u}_k,\boldsymbol{w}_k|\boldsymbol{\theta})\\
+\boldsymbol{y}_{k} &= h(\boldsymbol{x}_k,\boldsymbol{u}_k,\boldsymbol{v}_k|\boldsymbol{\theta})
+\end{align*}
+}
+
+\only<3-3>{
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{fig/telegraph}
+\end{figure}
+}
+
+\only<4-4>{
+\begin{equation*}
+\text{Fit} = 100 \left(1 - \frac{\sqrt{\sum\limits_{t=1}^N \bigr(\boldsymbol{y}(t) - \hat{\boldsymbol{y}}(t)\bigl)^2}}{\sqrt{\sum\limits_{t=1}^N \bigr(\boldsymbol{y}(t)-\frac{1}{N}\sum\limits_{t=1}^N \boldsymbol{y}(t)\bigl)^2}}\right)
+\end{equation*}
+}
+
+\end{column}
+\end{columns}
+\note{\begin{itemize}
+\item Parameter estimation is to estimate parameters in a model. The model can either be known (Gray-box) or unknown (Black-box).
+\item If parameters are not well estimated could problems arise when synthesising model-based controllers.
+\end{itemize}}
+\end{frame}
+
+\begin{frame}{Prediction-Error Method}
+\begin{columns}
+	\begin{column}{0.5\textwidth}
+	\begin{itemize}
+	\item \structure<1> {Estimation structure}
+	\item \structure<2-3> {Cost function}
+	\end{itemize}
+	\end{column}
+	
+	\begin{column}{0.5\textwidth}
+	\only<1-1>{
+	\begin{equation*}
+	\hat{\boldsymbol{x}}_{k+1}(\boldsymbol{\theta}) = f(\boldsymbol{\hat{x}_k}(\boldsymbol{\theta}), \boldsymbol{u}_k,\boldsymbol{y}_k, \boldsymbol{\theta})
+	\end{equation*}
+	\begin{equation*}
+	\hat{\boldsymbol{y}}_k(\boldsymbol{\theta}) = h(\hat{\boldsymbol{x}}_k, \boldsymbol{u}_k, \boldsymbol{\theta})
+	\end{equation*}}
+	
+	\only<2-3>{
+	\begin{equation*}
+	\hat{\boldsymbol{\theta}} = \underset{\boldsymbol{\theta}}{\argmin} V(\boldsymbol{\theta})
+	\end{equation*}
+	}
+	
+	\only<3-3>{
+	\begin{equation*}
+    \scalemath{0.75}{V(\boldsymbol{\theta}) = \frac{1}{N} \left( \sum_{k \in \mathcal{I}} \boldsymbol{e}^T_k(\boldsymbol{\theta}) \boldsymbol{W}(\boldsymbol{\theta}) 	\boldsymbol{e}_k(\boldsymbol{\theta}) + \sum_{k \in \mathcal{J}} \boldsymbol{v}^T_k(\boldsymbol{\theta}) \boldsymbol{W}(\boldsymbol{\theta})  	  \boldsymbol{v}_k(\boldsymbol{\theta}) \right)}
+	\end{equation*}
+	}
+	
+	\end{column}
+\end{columns}
+\end{frame}
+
 \begin{frame}
-What is parameter estimation and why is it needed
-pem and problems
-kalman smoother
-pem results
-kalman estimation
-kalman results
-discussion
+
+\begin{columns}
+	\begin{column}{0.5\textwidth}
+	\begin{itemize}
+	\item \structure<1> {Prediction}
+	\end{itemize}
+	\end{column}
+	
+	\begin{column}{0.5\textwidth}
+	\only<1-1>{
+	\begin{equation*}
+	\dot{\hat{\boldsymbol{\eta}}} = f(\hat{\nuVector}, \bar{\etaVector}, \tauVector)
+	\end{equation*}
+	\begin{equation*}
+	\hat{\boldsymbol{y}} = \hat{\nuVector}
+	\end{equation*}}
+	
+	\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}
+\only<1-1>{
+\begin{figure}
+\includegraphics[width=\textwidth]{fig/velocityCompareCongp}
+\end{figure}}
+
+\only<2-2>{
+\begin{figure}
+\includegraphics[width=\textwidth]{fig/velocityCompareCongp}
+\end{figure}}
+
+\only<3-3>{
+\begin{figure}
+\includegraphics[width=\textwidth]{fig/velocityCompareCongr}
+\end{figure}}
+\end{frame}
+
+\begin{frame}
+\begin{columns}
+	\begin{column}{0.5\textwidth}
+	\begin{equation*}
+	\etaVectordot = \boldsymbol{J}_\theta(\etaVector)\nuVector \quad\Longleftrightarrow\quad
+	\eulerAnglesdot = \boldsymbol{T}_\theta(\eulerAngles)\angVelBody
+	\end{equation*}
+	\end{column}
+	
+	\begin{column}{0.5\textwidth}
+	\only<2-2>{\includegraphics[width=\textwidth]{fig/velocityAnglePhi}}
+	\only<3-3>{\includegraphics[width=\textwidth]{fig/velocityAngleTheta}}
+	\only<4-4>{\includegraphics[width=\textwidth]{fig/velocityAnglePsi}}
+	\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}
+\begin{columns}
+	\begin{column}{0.5\textwidth}
+	\begin{itemize}
+	\item \structure<1> {Estimation structure}
+	\item \structure<2> {Initial state estimation}
+	\end{itemize}
+	\end{column}
+	
+	\begin{column}{0.5\textwidth}
+	\only<1-2>{
+	\begin{align*}
+	\dot{\hat{\etaVector}} = J(\hat{\etaVector}) \hat{\nuVector},\\
+	\dot{\hat{\nuVector}} =  f(\hat{\etaVector}, \hat{\nuVector}, \tauVector)
+	\end{align*}
+	\begin{equation*}
+	\hat{\boldsymbol{y}} = \begin{bmatrix}
+	\hat{\nuVector} \\
+	\hat{\boldsymbol{a}}
+	\end{bmatrix}
+	\end{equation*}
+	\begin{equation*}
+	\hat{\boldsymbol{a}} = \begin{bmatrix}
+    2 g \hat{\quatO} \hat{\quatII} -2 g \hat{\quatI} \hat{\quatIII} \\
+    -2 g \hat{\quatO} \hat{\quatI} -2g \hat{\quatII} \hat{\quatIII} \\
+    2g \hat{\quatI}^2 + 2 g \hat{\quatII}^2 - g 
+    \end{bmatrix}
+	\end{equation*}}
+
+	\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}
+\only<1-1>{
+\begin{figure}
+\includegraphics[width=\textwidth]{fig/angVelCompareplz6}
+\end{figure}}
+
+\only<2-2>{
+\begin{figure}
+\includegraphics[width=\textwidth]{fig/angVelCompareqlz6}
+\end{figure}}
+
+\only<3-3>{
+\begin{figure}
+\includegraphics[width=\textwidth]{fig/angVelComparerlz6}
+\end{figure}}
+
+\only<4-4>{
+\begin{figure}
+\includegraphics[width=\textwidth]{fig/linAccComparexlz6}
+\end{figure}}
+
+\only<5-5>{
+\begin{figure}
+\includegraphics[width=\textwidth]{fig/linAccCompareylz6}
+\end{figure}}
+
+\only<6-6>{
+\begin{figure}
+\includegraphics[width=\textwidth]{fig/linAccComparezlz6}
+\end{figure}}
+\end{frame}
+
+\begin{frame}{Extended Kalman Estimation}
+\begin{columns}
+	\begin{column}{0.5\textwidth}
+	\begin{itemize}
+	\item \structure<1> {qwe}
+	\end{itemize}
+	\end{column}
+	
+	\begin{column}{0.5\textwidth}
+	\only<1-1>{
+	\begin{equation*}
+	\bar{\boldsymbol{x}}_{k+1}(\boldsymbol{\theta}) =\begin{bmatrix}
+	\boldsymbol{f}(\boldsymbol{x}_k(\boldsymbol{\theta}),\boldsymbol{u}_k,\boldsymbol{\theta})\\
+	\boldsymbol{\theta}_k
+	\end{bmatrix} 
+	+\boldsymbol{v}
+	\end{equation*}
+	\begin{equation*}
+	\boldsymbol{y}_k=\boldsymbol{h}(\bar{\boldsymbol{x}}_k(\boldsymbol{\theta}),\boldsymbol{u}_k)
+	\end{equation*}}
+	\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}
+\only<1-1>{
+\begin{figure}
+\includegraphics[width=\textwidth]{fig/ResultKalmanFixedMomentP}
+\end{figure}}
+
+\only<2-2>{
+\begin{figure}
+\includegraphics[width=\textwidth]{fig/ResultKalmanFixedMomentQ}
+\end{figure}}
+
+\only<3-3>{
+\begin{figure}
+\includegraphics[width=\textwidth]{fig/ResultKalmanFixedMomentR}
+\end{figure}}
+\end{frame}
+
+\begin{frame}
+\begin{columns}
+	\begin{column}{0.5\textwidth}
+	Low fit in p
+	\end{column}
+	
+	\begin{column}{0.5\textwidth}
+	\only<2-2>{\includegraphics[width=\textwidth]{fig/thruster6u6}}
+	\only<3-3>{\includegraphics[width=\textwidth]{fig/thruster6p}}
+	\only<4-4>{\includegraphics[width=\textwidth]{fig/thruster6r}}
+	\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}
+\only<1-1>{
+\begin{figure}
+\includegraphics[width=\textwidth]{fig/ResultKalmanFixedMomentPLz0}
+\end{figure}}
+
+\only<2-2>{
+\begin{figure}
+\includegraphics[width=\textwidth]{fig/ResultKalmanFixedMomentQLz0}
+\end{figure}}
+
+\only<3-3>{
+\begin{figure}
+\includegraphics[width=\textwidth]{fig/ResultKalmanFixedMomentRLz0}
+\end{figure}}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%Controllers%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Controllers}
-\begin{frame}
+\begin{frame}{Controllers}
 \begin{columns}
 \begin{column}{0.5\textwidth}
 \begin{itemize}
