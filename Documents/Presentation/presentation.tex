@@ -638,7 +638,6 @@ and
     2g \hat{\quatI}^2 + 2 g \hat{\quatII}^2 - g 
     \end{bmatrix}
 	\end{equation*}}
-
 	\end{column}
 \end{columns}
 \end{frame}
@@ -679,24 +678,32 @@ and
 \begin{columns}
 	\begin{column}{0.5\textwidth}
 	\begin{itemize}
-	\item \structure<1> {qwe}
+	\item \structure<2> {Utöka tillståndsvektorn}
+	\item \structure<3> {Använd den kompletta modellen vid tidsuppdateringen}
 	\end{itemize}
 	\end{column}
-	
 	\begin{column}{0.5\textwidth}
-	\only<1-1>{
-	\begin{equation*}
-	\bar{\boldsymbol{x}}_{k+1}(\boldsymbol{\theta}) =\begin{bmatrix}
-	\boldsymbol{f}(\boldsymbol{x}_k(\boldsymbol{\theta}),\boldsymbol{u}_k,\boldsymbol{\theta})\\
+	\begin{align*}
+	\onslide<2->{\bar{\boldsymbol{x}} &= \begin{bmatrix}
+	\boldsymbol{x}\\
+	\boldsymbol{\theta}
+	\end{bmatrix}\\}
+	\onslide<3->{
+	\bar{\boldsymbol{x}}_{k+1} &=\begin{bmatrix}
+	\boldsymbol{f}(\bar{\boldsymbol{x}}_k,\boldsymbol{u}_k)\\
 	\boldsymbol{\theta}_k
 	\end{bmatrix} 
-	+\boldsymbol{v}
-	\end{equation*}
-	\begin{equation*}
-	\boldsymbol{y}_k=\boldsymbol{h}(\bar{\boldsymbol{x}}_k(\boldsymbol{\theta}),\boldsymbol{u}_k)
-	\end{equation*}}
+	+\boldsymbol{v}_k\\
+	\boldsymbol{y}_k&=\boldsymbol{h}(\bar{\boldsymbol{x}}_k,\boldsymbol{u}_k) + \boldsymbol{w}_k}
+	\end{align*}
 	\end{column}
 \end{columns}
+\note{\begin{itemize}
+\item För att lösa problemet med initialtillstånden implementerades en Kalman estimator
+\item Utöka tillståndsvektorn med modell parametrarna
+\item Använd modellen vid tidssteget 
+\item Dessa resultat erhölls
+\end{itemize}}
 \end{frame}
 
 \begin{frame}
@@ -719,15 +726,23 @@ and
 \begin{frame}
 \begin{columns}
 	\begin{column}{0.5\textwidth}
-	Low fit in p
+	\structure<2> {Låg fit i P}
+	\structure<3-> {Truster 6}
 	\end{column}
 	
 	\begin{column}{0.5\textwidth}
-	\only<2-2>{\includegraphics[width=\textwidth]{fig/thruster6u6}}
-	\only<3-3>{\includegraphics[width=\textwidth]{fig/thruster6p}}
-	\only<4-4>{\includegraphics[width=\textwidth]{fig/thruster6r}}
+	\only<3-3>{\includegraphics[width=\textwidth]{fig/thruster6u6}}
+	\only<4-4>{\includegraphics[width=\textwidth]{fig/thruster6p}}
+	\only<5-5>{\includegraphics[width=\textwidth]{fig/thruster6r}}
 	\end{column}
 \end{columns}
+\note{
+\begin{itemize}
+\item En sak vi la märke till var låg fit i p
+\item Under test upptäcktes att truster 6 inte hade den effekt vi förväntat oss
+\item Lägre påverkan än modellerat
+\item Orsak: Felaktigt antagande rotationscentrum
+\end{itemize}}
 \end{frame}
 
 \begin{frame}
@@ -754,10 +769,10 @@ and
 \begin{columns}
 \begin{column}{0.5\textwidth}
 \begin{itemize}
-\item  \structure<1> {What is automatic control}
-\item  \structure<2>{Open-loop control}
-\item  \structure<3>{Feed-back control}
-\item  \structure<4->{Exact linearisation}
+\item  \structure<1> {Vad är reglerteknik}
+\item  \structure<2>{Öppen styrning}
+\item  \structure<3>{Styrning med återkoppling}
+\item  \structure<4->{Exakt linjärisering}
 \end{itemize}
 \end{column}
 \begin{column}{0.5\textwidth}
@@ -840,16 +855,17 @@ x_2\\
 \end{columns}
 \note{
 \begin{itemize}
-\item To control a system towards a desired state using input
-\item To control the system without measuring the current state. Needs to be modelled in order to attain good performance.
-\item To base the control action on measurements from outputs of the system.
-\item To compensate for a systems non-linearities using a model of the system.
+\item Att styra ett system mot ett önskat börvärde mha styrsignaler
+\item Att styra systemet utan att mäta dess tillstånd. Kräver en modeller för att uppnå god prestanda
+\item Att basera styrsignaler på mätningar av systemets utsignaler.
+\item Att kompensera för icke-linjäriteter i ett system mha en icke-linjär styrlag.
 \end{itemize}
 }
 \end{frame}
 
 \begin{frame}
 \begin{center}
+Exakt linjärisering i det kroppsfixa koordinatsystemet
 \begin{align*}
 \tauVector_{\text{Lin}} &= G^{-1}(\hat{\etaVector}_{2},\hat{\nuVector}_{2},\accVector^{\text{b}}) = \inertia \accVector^{\text{b}} + \damping(\hat{\nuVector}_{2})\hat{\nuVector}_{2} + \coriolis(\hat{\nuVector}_{2})\hat{\nuVector}_{2} + \gravity(\hat{\etaVector}_{2})\\
 %
@@ -857,15 +873,17 @@ x_2\\
 \end{align*}
 \end{center}
 \note{\begin{itemize}
-\item Linearise using the model
-\item Tau are generalised forces needed to give the system
-\item  $\accVector^b$ could be chosen using any desired control
+\item Linjärisera mha modellen
+\item Tau är de generaliserade krafter som tros behövas för att få systemet linjärt
+\item  $\accVector^b$ kan väljas med vilken styrlag man behagar.
 \end{itemize}
 }
 \end{frame}
 
 
 \begin{frame}
+\begin{center}
+Exakt linjärisering i det globala koordinatsystemet
 \begin{align*}
 \nuVectorAngdot &= \accVector^b\\
 \accVector^b &=L(\accVector^n,\hat{\eulerAngles},\hat{\nuVector}_2)=\boldsymbol{T}^{-1}_\theta(\hat{\eulerAngles})(\accVector^n - \dot{\boldsymbol{T}}_\theta(\hat{\eulerAngles})\hat{\nuVector}_2)\\
@@ -873,21 +891,37 @@ x_2\\
 \ddot{\boldsymbol{\eta}}_2&=\accVector^n
 }
 \end{align*}
+\end{center}
+
 \end{frame}
 \begin{frame}
+\begin{center}
+
 \begin{align*}
 \etaTildeAng &= \hat{\etaVector}_2 - \etaVectorAng[,{\text{ref}}]\\
 \accVector^n &=-K_{\text{p}} \etaTildeAng - K_{\text{i}}\int \! \etaTildeAng \, \mathrm{d}t - K_{\text{d}} \etaTildeAngdot
 \end{align*}
+\end{center}
+\note{
+\begin{itemize}
+\item Om reglerfelet definieras på följande vis.
+\item hatt är estimerad attityd. ref är börvärdet
+\item Så valdes följande regulatorstruktur
+\end{itemize}}
 \end{frame}
 
 
 
 \begin{frame}
 \begin{center}
-Attitude controller using exact linearisation.
+Attitydregulator med exakt linjärisering
 \end{center}
-\note{An attitude controller has been developed using the exact linearisation technique described earlier.}
+\note{\begin{itemize}
+\item Problematik: Ej stabilt
+\item Börvärde noll
+\item Instabilt
+\end{itemize}
+
 \end{frame}
 \begin{frame}
 \begin{center}
@@ -905,12 +939,12 @@ Attitude controller using exact linearisation.
 
 \begin{frame}
 \begin{center}
-Attitude controller \textbf{without} exact linearisation.
+Attitydregulator \textbf{utan} exakt linjärisering
 \end{center}
 \note{
 \begin{itemize}
-\item To solve the instability
-\item Remove Feedback lin
+\item För att lösa problemet med instabilitet / hitta orsaken
+\item Tog bort exakta linjäriseringen 
 \end{itemize}}
 \end{frame}
 
@@ -928,9 +962,9 @@ Attitude controller \textbf{without} exact linearisation.
 \end{center}
 \note{
 \begin{itemize}
-\item Result when disabling feedback lin
-\item Not good result i yaw
-\item Magnetometer disturbed by motors
+\item Resultaten då exakta linjäriseringen kopplas bort
+\item Tyvärr inta bra i r
+\item Magnetometer störs av armerade betongen eller motorerna 
 \end{itemize}
 }
 \end{frame}
@@ -938,7 +972,7 @@ Attitude controller \textbf{without} exact linearisation.
 
 \begin{frame}
 \begin{center}
-Disabling control in yaw
+Slutar reglera $r$
 \end{center}
 \end{frame}
 
@@ -952,8 +986,8 @@ Disabling control in yaw
 }
 \note{
 \begin{itemize}
-\item Not controlling yaw
-\item Improvement in performance
+\item Om vi slutar styra $r$
+\item Förbättrad prestanda
 \end{itemize}
 }
 \end{center}
@@ -961,7 +995,7 @@ Disabling control in yaw
 
 \begin{frame}
 \begin{center}
-Angular velocity controller using exact linearisation.
+Vinkelhastighetsregulator
 \only<2->{
 \begin{align*}
 \nuVectorAngdot &= \accVector^b\\
@@ -971,9 +1005,10 @@ Angular velocity controller using exact linearisation.
 \end{center}
 \note{
 \begin{itemize}
-\item Ang controller
-\item Better performance
-\item Less dependent on attitude measurements
+\item Vinkelhastighetsregulator utvecklades. delvis för att användas då man styr roboten med xboxdosa
+\item bra prestanda jämfört med attityd
+\item Gick att få stabil med exakt lin
+\item Mindre beroende av attityden då man alltid använder samma trustrar
 \end{itemize}
 }
 \end{frame}
@@ -995,9 +1030,9 @@ Angular velocity controller using exact linearisation.
 
 
 %%%%%%%%%Conclusion%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Conclusion}
+\section{Slutsats}
 \begin{frame}
-lol
+Shit be real Yo!
 \end{frame}
 %%%%%%%%%%%%
 
