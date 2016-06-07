@@ -35,13 +35,13 @@
 %%%%%%%%%%%%%%%%%%%%%Intro%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduktion}
 \begin{frame}
-\begin{itemize}
-\item Modellbaserad design, utveckling och reglering
-\item Reglersystem
-\end{itemize}
+\begin{center}
+Vad innebär modellbaserad design, utveckling och reglering?
+\end{center}
+
 \note{\begin{itemize}
 \item Syftet med modellbaserad design, utveckling och reglering 
-\item Syftet med ett reglersystem
+\item Vad behövs
 \end{itemize}}
 \end{frame}
 
@@ -184,15 +184,11 @@
 \newcommand*{\coordRot}{30}
 \begin{column}{0.5\textwidth}
 \only<2-2>{
-\begin{equation*}
-\etaVector = [ \north, \east, \down, \quatO, \quatI, \quatII, \quatIII]^T
-\end{equation*}
-\begin{equation*}
-\etaVector = [N, E, D, \phi, \theta, \psi]^T
-\end{equation*}
-\begin{equation*}
-\listNu
-\end{equation*}}
+\begin{align*}
+\etaVector &= [ \north, \east, \down, \quatO, \quatI, \quatII, \quatIII]^T \\
+\etaVector &= [N, E, D, \phi, \theta, \psi]^T \\
+\nuVector  &= [\xVelocity, \yVelocity, \zVelocity, \rollVelocity, \pitchVelocity, \yawVelocity]^T
+\end{align*}}
 \only<3-3>{
 \begin{figure}
     \centering
@@ -660,7 +656,7 @@ and
 
 \only<2-2>{
 \begin{figure}
-\includegraphics[width=\textwidth]{fig/velocityCompareCongp}
+\includegraphics[width=\textwidth]{fig/velocityCompareCongq}
 \end{figure}}
 
 \only<3-3>{
@@ -690,8 +686,8 @@ and
 \begin{columns}
 	\begin{column}{0.5\textwidth}
 	\begin{itemize}
-	\item \structure<1> {Estimation structure}
-	\item \structure<2> {Initial state estimation}
+	\item \structure<1> {Skattningsstruktur}
+	\item \structure<2> {Initialtillstånds skattning}
 	\end{itemize}
 	\end{column}
 	
@@ -804,8 +800,10 @@ and
 \begin{frame}
 \begin{columns}
 	\begin{column}{0.5\textwidth}
-	\structure<2> {Dålig anpassning i P}
-	\structure<3-> {Truster 6}
+	\begin{itemize}
+	\item \structure<2> {Dålig anpassning i P}
+	\item \structure<3-> {Truster 6}
+	\end{itemize}
 	\end{column}
 	
 	\begin{column}{0.5\textwidth}
@@ -998,7 +996,7 @@ Attitydregulator med exakt linjärisering
 \item Problematik: Ej stabilt
 \item Börvärde noll
 \item Instabilt
-\end{itemize}
+\end{itemize}}
 
 \end{frame}
 \begin{frame}
@@ -1050,7 +1048,7 @@ Attitydregulator \textbf{utan} exakt linjärisering
 
 \begin{frame}
 \begin{center}
-Slutar reglera $r$
+Slutar reglera $\psi$
 \end{center}
 \end{frame}
 
@@ -1104,9 +1102,8 @@ Vinkelhastighetsregulator
 \end{center}
 \end{frame}
 \begin{frame}
-\movie[options]{placeholder box}{movie filename}
+%\movie[options]{placeholder box}{movie filename}
 \end{frame}
-
 
 
 %%%%%%%%%Conclusion%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
