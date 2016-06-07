@@ -10,6 +10,8 @@
 \usepackage{booktabs}
 \usepackage{pgfpages}
 \usepackage{tikz}
+\usepackage{multimedia}
+\usepackage{hyperref}
 \usetikzlibrary{shapes,arrows,positioning,calc}
 \author{Adam Aili \& Erik Ekelund}
 \title{Modellbaserad design, utveckling och reglering av ett undervattensfordon}
@@ -531,12 +533,12 @@ and
 %\end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%Parameter Estimation%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Parameter skattning}
-\begin{frame}{Parameter skattning}
+\section{Parameterskattning}
+\begin{frame}{Parameterskattning}
 \begin{columns}
 \begin{column}{0.5\textwidth}
 \begin{itemize}
-\item \structure<1-2> {Vad är parameter skattning?}
+\item \structure<1-2> {Vad är parameterskattning?}
 \item \structure<3> {Kontrollsignaler}
 \item \structure<4> {Insignaler och utsignaler}
 \item \structure<5> {Validering av modellen}
@@ -583,7 +585,11 @@ and
 \end{itemize}}
 \end{frame}
 
-\begin{frame}{Prediktionsfels metoden}
+\begin{frame}
+\note{FILM}
+\end{frame}
+
+\begin{frame}{Prediktionsfelsmetoden}
 \begin{columns}
 	\begin{column}{0.5\textwidth}
 	\begin{itemize}
@@ -627,7 +633,7 @@ and
 \begin{columns}
 	\begin{column}{0.5\textwidth}
 	\begin{itemize}
-	\item \structure<1> {Estimation structure}
+	\item \structure<1> {Skattningsstruktur}
 	\end{itemize}
 	\end{column}
 	
@@ -669,8 +675,8 @@ and
 \begin{columns}
 	\begin{column}{0.5\textwidth}
 	\begin{align*}
-	\dot{\hat{\eulerAngles}} &= \boldsymbol{T}_\theta(\hat{\eulerAngles})\angVelBody \\ &\quad\Longleftrightarrow\quad \\
-	\hat{\eulerAngles} &= \int \boldsymbol{T}_\theta(\hat{\eulerAngles})\angVelBody
+	\dot{\hat{\etaVector}}_2 &= \boldsymbol{T}_\theta(\hat{\etaVector}_2)\nuVectorAng\\ &\quad\Longleftrightarrow\quad \\
+	\hat{\etaVector}_2 &= \int \boldsymbol{T}_\theta(\hat{\etaVector}_2)\nuVectorAng
 	\end{align*}
 	\end{column}
 	
@@ -680,6 +686,7 @@ and
 	\only<4-4>{\includegraphics[width=\textwidth]{fig/velocityAnglePsi}}
 	\end{column}
 \end{columns}
+\note{Blå sensorfusion, rött integrerat}
 \end{frame}
 
 \begin{frame}
@@ -687,7 +694,7 @@ and
 	\begin{column}{0.5\textwidth}
 	\begin{itemize}
 	\item \structure<1> {Skattningsstruktur}
-	\item \structure<2> {Initialtillstånds skattning}
+	\item \structure<2> {Initialtillståndsskattning}
 	\end{itemize}
 	\end{column}
 	
@@ -1101,15 +1108,21 @@ Vinkelhastighetsregulator
 }
 \end{center}
 \end{frame}
+
 \begin{frame}
-%\movie[options]{placeholder box}{movie filename}
+\note{FILM}
 \end{frame}
 
 
 %%%%%%%%%Conclusion%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Slutsats}
-\begin{frame}
-Shit be real Yo!
+\section{Slutsatser}
+\begin{frame}{Slutsatser}
+\begin{itemize}
+\item Svårt att skatta parametrar utan positionering
+\item Ytterligare experiment borde utföras för att bestämma rotationscentrum och masscentrum
+\item Bra prestanda för vinkelhastighetsregulatorn
+\item Enkelt att implementera och testa nya regulatorer
+\end{itemize}
 \end{frame}
 %%%%%%%%%%%%
 
