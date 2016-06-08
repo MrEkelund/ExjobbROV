@@ -33,20 +33,14 @@
 
 \begin{frame}
 \titlepage
+\note{{{\huge{Erik}}}
+\begin{itemize}
+\item Syftet med modellbaserad design, utveckling och reglering 
+\item Vad behövs: En modell och något att modellera
+\end{itemize}}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%Intro%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduktion}
-\begin{frame}
-\begin{center}
-Vad innebär modellbaserad design, utveckling och reglering?
-\end{center}
-
-\note{\begin{itemize}
-\item Syftet med modellbaserad design, utveckling och reglering 
-\item Vad behövs
-\end{itemize}}
-\end{frame}
-
 \begin{frame}
 \begin{itemize}
 \item Ihopmontering av ROV:en
@@ -55,7 +49,7 @@ Vad innebär modellbaserad design, utveckling och reglering?
 \item Skapa en simulerings modell av ROV:en i Matlab/Simulink
 \item Utveckla en robust modellbaserad regulator och utvärdera prestandan i simuleringar och testfall
 \end{itemize}
-\note{Mål för tesen}
+\note{{\huge{Adam}} Mål för tesen}
 \end{frame}
 
 
@@ -65,19 +59,19 @@ Vad innebär modellbaserad design, utveckling och reglering?
 \begin{columns}
 \begin{column}{0.5\textwidth}
 \begin{itemize}
-\item \structure<1> {BlueROV paket från Blue Robotics}
-\item \structure<2> {Raspberry Pi 2}
-\item \structure<3> {Raspicam}
-\item \structure<4> {HkPilot 2.7}
+\item  {BlueROV paket från Blue Robotics}
+\item  {Raspberry Pi 2}
+\item  {Raspicam}
+\item  {HkPilot 2.7}
 \end{itemize}
 \end{column}
 \begin{column}{0.5\textwidth}
-\only<1-4>{
+\only<1-1>{
 \begin{figure}
 \includegraphics[trim={40cm 0cm 45cm 0cm},clip,angle=270,width=\textwidth]{fig/bluerov}
 \end{figure}}
 
-\only<5-5>{
+\only<2-2>{
 \begin{figure}
 	\centering
 		\begin{tikzpicture}[auto, thick, node distance=2cm,>=latex',
@@ -117,7 +111,7 @@ Vad innebär modellbaserad design, utveckling och reglering?
 \end{column}
 \end{columns}
 
-\note{\begin{itemize}
+\note{{{\huge{Erik}}} \begin{itemize}
 \item BlueROV paketet från Blue Robotics kommer med 6 thrustrar, 6 ESCs (elektroniska hastighets regulatorer) och en akryl tub.
 \item Dator som är i ROV:en är en Raspberry Pi 2. Den kommunicerar med landdatorn och har alla reglersystem.
 \item Kameran används till att få video.
@@ -177,9 +171,9 @@ Vad innebär modellbaserad design, utveckling och reglering?
 \begin{columns}
 \begin{column}{0.5\textwidth}
 \begin{itemize}
-\item \structure<1> {Vad är en modell och hur kan den användas?}
-\item \structure<2> {Notation}
-\item \structure<3-4> {Koordinatsystem}
+\item {Vad är en modell och hur kan den användas?}
+\item {Notation}
+\item {Koordinatsystem}
 \end{itemize}
 \end{column}
 \newcommand*{\coordinateRadius}{0.05}
@@ -253,7 +247,7 @@ Vad innebär modellbaserad design, utveckling och reglering?
 \end{column}
 \end{columns}
 
-\note{\begin{itemize}
+\note{{\huge{Adam}} \begin{itemize}
 \item En modell är en matematisk beskrivning av fysikaliska samband. 
 \item En modell kan användas för att konstruera regulatorer och för simulering
 \item Notation
@@ -311,16 +305,17 @@ Vad innebär modellbaserad design, utveckling och reglering?
     
     \end{tikzpicture}
 \end{figure}
-\note{Hur de två olika koordinatsystemen är relaterade. Samt hur vinklar är definierade.}
+\note{{{{\huge{Erik}}}} Hur de två olika koordinatsystemen är relaterade. Samt hur vinklar är definierade.}
 \end{frame}
 
-\begin{frame}{6-DOF model}
+\begin{frame}{6-DOF modell}
 Ett undervattensfordon kan modelleras som
 \begin{align*}
 \etaVectordot& = \boldsymbol{J}(\etaVector)\nuVector \\
  \inertia \nuVectordot &+ \coriolis(\nuVector)\nuVector + \damping(\nuVector)\nuVector + \gravity(\etaVector) = \tauVector 
 \end{align*}
-\note{\begin{itemize}
+\note{{{{\huge{Erik}}}}
+\begin{itemize}
 \item Översta ekvationen är hur de olika koordinatsystemen är relaterade till varandra.
 \item M är tröghetsmoment
 \item C är Coriolis krafter
@@ -473,20 +468,20 @@ Ett undervattensfordon kan modelleras som
 %\end{frame}
 
 \begin{frame}[shrink]
-Experiment kan designas så att linjära hastigheter är små.
+Experiment kan designas så att translations hastigheter är små.
 %\begin{subequations}\label{eq:angVelDynamics}
 \begin{multline*}
-\dot{p} = \frac{\thrusterfun{1} \distance{y}{1} - \thrusterfun{2} \distance{y}{2} + \thrusterfun{6} \distance{z}{6}}{\Ix - \Kpdot} + \frac{ (\Kp + \Kpabsp \abs{p})p}{\Ix - \Kpdot}  + \frac{-\Mqdot q r}{\Ix - \Kpdot} +  \frac{\Nrdot q r}{\Ix - \Kpdot}  + \frac{q r (\Iy - \Iz)}{\Ix - \Kpdot} \\{\color{red} + \frac{- \Yvdot v w}{\Ix - \Kpdot} + \frac{\Zwdot v w}{\Ix - \Kpdot}} + \frac{B z_B \cos{\theta} \sin{\phi}}{\Ix - \Kpdot}
+\dot{p} = \frac{\thrusterfun{1} \distance{y}{1} - \thrusterfun{2} \distance{y}{2} + \thrusterfun{6} \distance{z}{6}}{{\color{blue}\Ix} - {\color{blue}\Kpdot}} + \frac{ ({\color{blue}\Kp} + {\color{blue}\Kpabsp} \abs{p})p}{{\color{blue}\Ix} - {\color{blue}\Kpdot}}  + \frac{-{\color{blue}\Mqdot} q r}{{\color{blue}\Ix} - {\color{blue}\Kpdot}} +  \frac{{\color{blue}\Nrdot} q r}{{\color{blue}\Ix} - {\color{blue}\Kpdot}}  + \frac{q r ({\color{blue}\Iy} - {\color{blue}\Iz})}{{\color{blue}\Ix} - {\color{blue}\Kpdot}} \\{\color{red} + \frac{- \Yvdot v w}{\Ix - \Kpdot} + \frac{\Zwdot v w}{\Ix - \Kpdot}} + \frac{B {\color{blue}z_B} \cos{\theta} \sin{\phi}}{{\color{blue}\Ix} - {\color{blue}\Kpdot}}
 \end{multline*}
 \begin{multline*}
-\dot{q} =\frac{\thrusterfun{1} \distance{x}{1} + \thrusterfun{2} \distance{x}{2} - \thrusterfun{5} \distance{x}{5}}{\Iy - \Mqdot} + \frac{(\Mq + \Mqabsq \abs{q})q}{\Iy - \Mqdot} + \frac{\Kpdot p r}{\Iy - \Mqdot} + \frac{-\Nrdot p r}{\Iy - \Mqdot}  +
-\frac{p r (\Iz - \Ix)}{\Iy - \Mqdot} \\ {\color{red} + \frac{-\Zwdot u w}{\Iy - \Mqdot} + \frac{\Xudot u w}{\Iy - \Mqdot}} + \frac{B z_B \sin{\theta} }{\Iy - \Mqdot} 
+\dot{q} =\frac{\thrusterfun{1} \distance{x}{1} + \thrusterfun{2} \distance{x}{2} - \thrusterfun{5} \distance{x}{5}}{{\color{blue}\Iy} - {\color{blue}\Mqdot}} + \frac{({\color{blue}\Mq} + {\color{blue}\Mqabsq} \abs{q})q}{{\color{blue}{\Iy}} - {\color{blue}\Mqdot}} + \frac{{\color{blue}\Kpdot} p r}{{\color{blue}\Iy} - {\color{blue}\Mqdot}} + \frac{-{\color{blue}\Nrdot} p r}{{\color{blue}\Iy} - {\color{blue}\Mqdot}}  +
+\frac{p r ({\color{blue}\Iz} - {\color{blue}\Ix})}{{\color{blue}\Iy} - {\color{blue}\Mqdot}} \\ {\color{red} + \frac{-\Zwdot u w}{\Iy - \Mqdot} + \frac{\Xudot u w}{\Iy - \Mqdot}} + \frac{B {\color{blue}z_B} \sin{\theta} }{{\color{blue}\Iy} - {\color{blue}\Mqdot}} 
 \end{multline*}
 \begin{multline*}
-\dot{r} = \frac{\thrusterfun{3} \distance{y}{3} - \thrusterfun{4} \distance{y}{4}}{\Iz - \Nrdot} + \frac{(\Nr + \Nrabsr \abs{r})r}{\Iz - \Nrdot} + \frac{-\Kpdot p q}{\Iz - \Nrdot} + \frac{\Mqdot p q}{\Iz - \Nrdot} + \frac{p q (\Ix - \Iy)}{\Iz - \Nrdot}\\ {\color{red} + \frac{- \Xudot u v}{\Iz - \Nrdot} + \frac{\Yvdot u v}{\Iz - \Nrdot}}
+\dot{r} = \frac{\thrusterfun{3} \distance{y}{3} - \thrusterfun{4} \distance{y}{4}}{{\color{blue}\Iz} - {\color{blue}\Nrdot}} + \frac{({\color{blue}\Nr} + {\color{blue}\Nrabsr} \abs{r})r}{{\color{blue}\Iz} - {\color{blue}\Nrdot}} + \frac{-{\color{blue}\Kpdot} p q}{{\color{blue}\Iz} - {\color{blue}\Nrdot}} + \frac{{\color{blue}\Mqdot} p q}{{\color{blue}\Iz} - {\color{blue}\Nrdot}} + \frac{p q ({\color{blue}\Ix} - {\color{blue}\Iy)}}{{\color{blue}\Iz} - {\color{blue}\Nrdot}}\\ {\color{red} + \frac{- \Xudot u v}{\Iz - \Nrdot} + \frac{\Yvdot u v}{\Iz - \Nrdot}}
 \end{multline*}
 %\end{subequations}
-\note{\begin{itemize}
+\note{{{\huge{Erik}}} \begin{itemize}
 \item $f$ är en funktion från kontrollsignal till kraft
 \item $u$ är kontrollsignaler
 \item $B$ är flytkraft
@@ -494,6 +489,7 @@ Experiment kan designas så att linjära hastigheter är små.
 \item $I_x$ mfl är trögheter
 \item $\Kp$ mfl är dämpningar från vattnet
 \item $\Kpabsp$ är kvadratiska dämpningar med tecken
+\item Alla parametrar som kommer skattas är blå markerade
 \end{itemize}}
 \end{frame}
 
@@ -501,18 +497,18 @@ Experiment kan designas så att linjära hastigheter är små.
 För att öka identifierbarheten av parametrarna omparametriserades dem till $A_p = \Ix - \Kpdot$, $B_q = \Iy - \Mqdot$ och $C_r = \Iz - \Nrdot$.
 %\begin{subequations}\label{eq:quatModel}
 \begin{multline*}
-\pdot = \frac{\thrusterfun{1} \distance{y}{1} - \thrusterfun{2} \distance{y}{2} + \thrusterfun{6} \distance{z}{6}}{A_p} + \frac{B z_B \cos{\theta} \sin{\phi}}{A_p} + \frac{(\Kp + \Kpabsp \abs{p})p}{A_p} + \frac{q r (B_q - C_r)}{A_p},
+\pdot = \frac{\thrusterfun{1} \distance{y}{1} - \thrusterfun{2} \distance{y}{2} + \thrusterfun{6} \distance{z}{6}}{{\color{blue}A_p}} + \frac{B {\color{blue}z_B} \cos{\theta} \sin{\phi}}{{\color{blue}A_p}} + \frac{({\color{blue}\Kp} + {\color{blue}\Kpabsp} \abs{p})p}{{\color{blue}A_p}} + \frac{q r ({\color{blue}B_q} - {\color{blue}C_r})}{{\color{blue}A_p}},
 \end{multline*}
 \begin{multline*} 
-\qdot = \frac{\thrusterfun{1} \distance{x}{1} + \thrusterfun{2} \distance{x}{2} - \thrusterfun{5} \distance{x}{5}}{B_q} - \frac{B z_B \sin{\theta}}{B_q} + \frac{(\Mq + \Mqabsq \abs{q})q}{B_q} - \frac{p r (A_p - C_r)}{B_q}
+\qdot = \frac{\thrusterfun{1} \distance{x}{1} + \thrusterfun{2} \distance{x}{2} - \thrusterfun{5} \distance{x}{5}}{{\color{blue}B_q}} - \frac{B {\color{blue}z_B} \sin{\theta}}{{\color{blue}B_q}} + \frac{({\color{blue}\Mq} + {\color{blue}\Mqabsq} \abs{q})q}{{\color{blue}B_q}} - \frac{p r ({\color{blue}A_p} - {\color{blue}C_r})}{{\color{blue}B_q}}
 \end{multline*}
 and
 \begin{multline*} 
-\rdot = \frac{\thrusterfun{3} \distance{y}{3} - \thrusterfun{4} \distance{y}{4}}{C_r} + \frac{(\Nr + \Nrabsr \abs{r})r}{C_r} + \frac{p q (A_p  - B_q)}{C_r}
+\rdot = \frac{\thrusterfun{3} \distance{y}{3} - \thrusterfun{4} \distance{y}{4}}{{\color{blue}C_r}} + \frac{({\color{blue}\Nr} + {\color{blue}\Nrabsr} \abs{r})r}{{\color{blue}C_r}} + \frac{p q ({\color{blue}A_p}  -{\color{blue}B_q})}{{\color{blue}C_r}}
 \end{multline*}
 %\end{subequations}
-\note{\begin{itemize}
-\item Identifierbarhet är om man kan urskilja vilken parameter som påverkar vad
+\note{{\huge{Adam}} \begin{itemize}
+\item Identifierbarhet är om man kan urskilja enskilda parametervärden
 \end{itemize}}
 \end{frame}
 
@@ -538,10 +534,10 @@ and
 \begin{columns}
 \begin{column}{0.5\textwidth}
 \begin{itemize}
-\item \structure<1-2> {Vad är parameterskattning?}
-\item \structure<3> {Kontrollsignaler}
-\item \structure<4> {Insignaler och utsignaler}
-\item \structure<5> {Validering av modellen}
+\item {Vad är parameterskattning?}
+\item {Kontrollsignaler}
+\item {Insignaler och utsignaler}
+\item {Validering av modellen}
 \end{itemize}
 \end{column}
 \begin{column}{0.5\textwidth}
@@ -577,24 +573,21 @@ and
 
 \end{column}
 \end{columns}
-\note{\begin{itemize}
+\note{{\huge{Adam}}\begin{itemize}
 \item Parameter skattning är att man bestämmer värdet på en parameter. Modellen kan vara antigen känd (Gray-box) eller helt okänd (Black-box).
+\item Skattningsstruktur
 \item Använder oss av telegraf singnaler för att excitera tillstånden.
 \item Viktigt med valet av insignaler och utsignaler.
 \item Hög anpassning innebär att modellen beskriver valideringsdatan bra. 
 \end{itemize}}
 \end{frame}
 
-\begin{frame}
-\note{FILM}
-\end{frame}
-
 \begin{frame}{Prediktionsfelsmetoden}
 \begin{columns}
 	\begin{column}{0.5\textwidth}
 	\begin{itemize}
-	\item \structure<1> {Skattningsstruktur}
-	\item \structure<2-3> {Kostnadsfunktion}
+	\item {Skattningsstruktur}
+	\item {Kostnadsfunktion}
 	\end{itemize}
 	\end{column}
 	
@@ -615,13 +608,19 @@ and
 	
 	\only<3-3>{
 	\begin{equation*}
+	\boldsymbol{e}(\boldsymbol{\theta})_k = \boldsymbol{y}_k(\boldsymbol{\theta}) - \hat{\boldsymbol{y}}_k(\boldsymbol{\theta})
+	\end{equation*}
+	\begin{equation*}
+	\boldsymbol{v}_k(\boldsymbol{\theta}) = \boldsymbol{e}_k(\boldsymbol{\theta}) \sigma\frac{\rho}{\sqrt{\abs{\boldsymbol{e}_k(\boldsymbol{\theta})}}}
+	\end{equation*}
+	\begin{equation*}
     \scalemath{0.75}{V(\boldsymbol{\theta}) = \frac{1}{N} \left( \sum_{k \in \mathcal{I}} \boldsymbol{e}^T_k(\boldsymbol{\theta}) \boldsymbol{W}(\boldsymbol{\theta}) 	\boldsymbol{e}_k(\boldsymbol{\theta}) + \sum_{k \in \mathcal{J}} \boldsymbol{v}^T_k(\boldsymbol{\theta}) \boldsymbol{W}(\boldsymbol{\theta})  	  \boldsymbol{v}_k(\boldsymbol{\theta}) \right)}
 	\end{equation*}
 	}
 	
 	\end{column}
 \end{columns}
-\note{\begin{itemize}
+\note{{{\huge{Adam}}}\begin{itemize}
 \item Skattningsstruktur: insignaler och utsignaler
 \item Kostnadsfunktion: Viktar upp fel. Kvadratisk och linjär kostnad
 \end{itemize}
@@ -633,7 +632,7 @@ and
 \begin{columns}
 	\begin{column}{0.5\textwidth}
 	\begin{itemize}
-	\item \structure<1> {Skattningsstruktur}
+	\item {Skattningsstruktur}
 	\end{itemize}
 	\end{column}
 	
@@ -686,20 +685,20 @@ and
 	\only<4-4>{\includegraphics[width=\textwidth]{fig/velocityAnglePsi}}
 	\end{column}
 \end{columns}
-\note{Blå sensorfusion, rött integrerat}
+\note{{\huge{Adam}}Blå skattade vinklar, rött integrerade vinkelhastigheter}
 \end{frame}
 
 \begin{frame}
 \begin{columns}
 	\begin{column}{0.5\textwidth}
 	\begin{itemize}
-	\item \structure<1> {Skattningsstruktur}
-	\item \structure<2> {Initialtillståndsskattning}
+	\item {Skattningsstruktur}
+	\item {Initialtillståndsskattning}
 	\end{itemize}
 	\end{column}
 	
 	\begin{column}{0.5\textwidth}
-	\only<1-2>{
+	\only<1-1>{
 	\begin{align*}
 	\dot{\hat{\etaVector}} = J(\hat{\etaVector}) \hat{\nuVector},\\
 	\dot{\hat{\nuVector}} =  f(\hat{\etaVector}, \hat{\nuVector}, \tauVector)
@@ -720,6 +719,7 @@ and
 
 	\end{column}
 \end{columns}
+\note{{\huge{Adam}}}
 \end{frame}
 
 \begin{frame}
@@ -754,12 +754,12 @@ and
 \end{figure}}
 \end{frame}
 
-\begin{frame}{Extended Kalman Estimation}
+\begin{frame}{EKF-skattning}
 \begin{columns}
 	\begin{column}{0.5\textwidth}
 	\begin{itemize}
-	\item \structure<2> {Utöka tillståndsvektorn}
-	\item \structure<3> {Använd den kompletta modellen vid tidsuppdateringen}
+	\item {Utöka tillståndsvektorn}
+	\item {Använd den kompletta modellen vid tidsuppdateringen}
 	\end{itemize}
 	\end{column}
 	
@@ -779,7 +779,7 @@ and
 	\end{align*}
 	\end{column}
 \end{columns}
-\note{\begin{itemize}
+\note{{\huge{Erik}} \begin{itemize}
 \item För att lösa problemet med initialtillstånden implementerades en Kalman estimator
 \item Utöka tillståndsvektorn med modell parametrarna
 \item Använd modellen vid tidssteget 
@@ -808,18 +808,19 @@ and
 \begin{columns}
 	\begin{column}{0.5\textwidth}
 	\begin{itemize}
-	\item \structure<2> {Dålig anpassning i P}
-	\item \structure<3-> {Truster 6}
+	\item {Dålig anpassning i P}
+	\item {Truster 6}
 	\end{itemize}
 	\end{column}
 	
 	\begin{column}{0.5\textwidth}
-	\only<3-3>{\includegraphics[width=\textwidth]{fig/thruster6u6}}
-	\only<4-4>{\includegraphics[width=\textwidth]{fig/thruster6p}}
-	\only<5-5>{\includegraphics[width=\textwidth]{fig/thruster6r}}
+	\only<2-2>{\includegraphics[width=\textwidth]{fig/thruster6u6}}
+	\only<3-3>{\includegraphics[width=\textwidth]{fig/thruster6p}}
+	\only<4-4>{\includegraphics[width=\textwidth]{fig/thruster6r}}
 	\end{column}
 \end{columns}
 \note{
+{{\huge{Erik}}}
 \begin{itemize}
 \item En sak vi la märke till var dålig anpassning i p
 \item Under test upptäcktes att truster 6 inte hade den effekt vi förväntat oss
@@ -852,10 +853,10 @@ and
 \begin{columns}
 \begin{column}{0.5\textwidth}
 \begin{itemize}
-\item  \structure<1> {Vad är reglerteknik}
-\item  \structure<2>{Öppen styrning}
-\item  \structure<3>{Styrning med återkoppling}
-\item  \structure<4->{Exakt linjärisering}
+\item {Vad är reglerteknik?}
+\item {Öppen styrning}
+\item {Styrning med återkoppling}
+\item {Exakt linjärisering}
 \end{itemize}
 \end{column}
 \begin{column}{0.5\textwidth}
@@ -936,7 +937,7 @@ x_2\\
 }
 \end{column}
 \end{columns}
-\note{
+\note{{\huge{Adam}}
 \begin{itemize}
 \item Att styra ett system mot ett önskat börvärde mha styrsignaler
 \item Att styra systemet utan att mäta dess tillstånd. Kräver en modeller för att uppnå god prestanda
@@ -955,7 +956,7 @@ Exakt linjärisering i det kroppsfixa koordinatsystemet
 \nuVectorAngdot &= \accVector^b
 \end{align*}
 \end{center}
-\note{\begin{itemize}
+\note{{{\huge{Erik}}}\begin{itemize}
 \item Linjärisera mha modellen
 \item Tau är de generaliserade krafter som tros behövas för att få systemet linjärt
 \item  $\accVector^b$ kan väljas med vilken styrlag man behagar.
@@ -975,7 +976,7 @@ Exakt linjärisering i det globala koordinatsystemet
 }
 \end{align*}
 \end{center}
-
+\note{{{\huge{Erik}}}}
 \end{frame}
 \begin{frame}
 \begin{center}
@@ -985,7 +986,7 @@ Exakt linjärisering i det globala koordinatsystemet
 \accVector^n &=-K_{\text{p}} \etaTildeAng - K_{\text{i}}\int \! \etaTildeAng \, \mathrm{d}t - K_{\text{d}} \etaTildeAngdot
 \end{align*}
 \end{center}
-\note{
+\note{{{\huge{Erik}}}
 \begin{itemize}
 \item Om reglerfelet definieras på följande vis.
 \item hatt är estimerad attityd. ref är börvärdet
@@ -999,7 +1000,7 @@ Exakt linjärisering i det globala koordinatsystemet
 \begin{center}
 Attitydregulator med exakt linjärisering
 \end{center}
-\note{\begin{itemize}
+\note{{{\huge{Erik}}}\begin{itemize}
 \item Problematik: Ej stabilt
 \item Börvärde noll
 \item Instabilt
@@ -1024,7 +1025,7 @@ Attitydregulator med exakt linjärisering
 \begin{center}
 Attitydregulator \textbf{utan} exakt linjärisering
 \end{center}
-\note{
+\note{{{\huge{Erik}}}
 \begin{itemize}
 \item För att lösa problemet med instabilitet / hitta orsaken
 \item Tog bort exakta linjäriseringen 
@@ -1043,7 +1044,7 @@ Attitydregulator \textbf{utan} exakt linjärisering
 \includegraphics[scale=0.28]{../Master/fig/testStepAllPsis3e10a1}
 }
 \end{center}
-\note{
+\note{{{\huge{Erik}}}
 \begin{itemize}
 \item Resultaten då exakta linjäriseringen kopplas bort
 \item Tyvärr inta bra i r
@@ -1067,9 +1068,9 @@ Slutar reglera $\psi$
 \only<2-2>{
 \includegraphics[scale=0.28]{../Master/fig/testStepThetaPhiThetas3e10a1}
 }
-\note{
+\note{{{\huge{Erik}}}
 \begin{itemize}
-\item Om vi slutar styra $r$
+\item Om vi slutar styra $\psi$
 \item Förbättrad prestanda
 \end{itemize}
 }
@@ -1087,6 +1088,7 @@ Vinkelhastighetsregulator
 }
 \end{center}
 \note{
+{\huge{Adam}}
 \begin{itemize}
 \item Vinkelhastighetsregulator utvecklades. delvis för att användas då man styr roboten med xboxdosa
 \item bra prestanda jämfört med attityd
@@ -1121,8 +1123,9 @@ Vinkelhastighetsregulator
 \item Svårt att skatta parametrar utan positionering
 \item Ytterligare experiment borde utföras för att bestämma rotationscentrum och masscentrum
 \item Bra prestanda för vinkelhastighetsregulatorn
-\item Enkelt att implementera och testa nya regulatorer
+\item Dålig prestanda för attitydregulatorn
 \end{itemize}
+\note{{\huge{Erik}}}
 \end{frame}
 %%%%%%%%%%%%
 
